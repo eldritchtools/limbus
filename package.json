@@ -9,9 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.27",
     "next": "16.2.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-tooltip": "^5.30.0"
   },
   "devDependencies": {
     "babel-plugin-react-compiler": "1.0.0",

@@ -1,0 +1,5 @@
+NEXT_PUBLIC_SUPABASE_URL = https://sb-id.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = sb-publishable-key
+ENABLE_LOCAL_DATA = true
+DATA_PATH = C:\Users\path-to-data
+ASSETS_PATH = C:\Users\path-to-assets
