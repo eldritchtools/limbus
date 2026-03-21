@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import NoPrefetchLink from "./components/objects/NoPrefetchLink";
 import { AuthProvider } from "./database/authProvider";
 import { RequestsCacheProvider } from "./database/RequestsCacheProvider";
-import { DataProvider } from "./components/DataProvider";
+import { DataProvider, getMeta } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
 import AllTooltips from "./components/tooltips/AllTooltip";
 import UserStatus from "./components/objects/UserStatus";

@@ -1,13 +1,13 @@
 "use client";
 
 import "./UserStatus.css";
-import { useAuth } from "../database/authProvider";
+import { useAuth } from "@/app/database/authProvider";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { getNotifications, getUnreadNotificationsCount } from "../database/notifications";
+import { getNotifications, getUnreadNotificationsCount } from "@/app/database/notifications";
 import Notification from "./Notification";
-import { getSupabase } from "../database/connection";
 import NoPrefetchLink from "./NoPrefetchLink";
+import { getSupabase } from "@/app/database/connection";
 
 function UserStatus() {
     const { user, profile, logout } = useAuth();

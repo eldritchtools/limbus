@@ -12,6 +12,7 @@
     "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.29",
     "@radix-ui/react-select": "^2.2.6",
     "@supabase/supabase-js": "^2.99.3",
+    "dexie": "^4.3.0",
     "next": "16.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",

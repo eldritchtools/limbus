@@ -1,5 +1,5 @@
 import { useData } from "../components/DataProvider";
-import { Status } from "./status";
+import Status from "../components/objects/Status";
 
 function TextWithStatuses({ templateText, includeTooltips = true, iconStyleOverride = {}, nameStyleOverride = {} }) {
     const [statuses, statusesLoading] = useData("statuses");

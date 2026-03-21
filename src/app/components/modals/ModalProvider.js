@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 import ModalContainer from "./ModalContainer";
 import GiftModalContent from "./GiftModalContent";
 

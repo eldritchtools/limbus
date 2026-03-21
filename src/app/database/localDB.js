@@ -1,15 +1,16 @@
 import Dexie from "dexie";
 
-export const db = new Dexie("limbus-team-building-hub");
+export const db = new Dexie("limbus-company-tools");
 
-db.version(1).stores({
-    builds: "++id",
-    lists: "++id",
-    saves: "id",
-    savedLists: "id",
-    mdplans: "++id",
-    savedplans: "id"
-});
+const itemStores = ["builds", "collections", "mdPlans"];
+const savedStores = ["savedBuilds", "savedCollections", "savedMdPlans"];
+
+db.version(1).stores(
+    {
+        ...Object.fromEntries(itemStores.map(x => [x, "++id"])),
+        ...Object.fromEntries(savedStores.map(x => [x, "id"]))
+    }
+);
 
 function makeStore(table) {
     return {
@@ -17,13 +18,12 @@ function makeStore(table) {
         get: key => table.get(key),
         getAll: () => table.toArray(),
         remove: key => table.delete(key),
-        clear: () => table.clear()
+        clear: () => table.clear(),
+        isEmpty: () => table.count() === 0
     };
 }
 
-export const buildsStore = makeStore(db.builds);
-export const savesStore = makeStore(db.saves);
-export const listsStore = makeStore(db.lists);
-export const savedListsStore = makeStore(db.savedLists);
-export const mdPlansStore = makeStore(db.mdplans);
-export const savedMdPlansStore = makeStore(db.savedplans);
+export const localStores = {
+    ...Object.fromEntries(itemStores.map(x => [x, makeStore(db[x])])),
+    ...Object.fromEntries(savedStores.map(x => [x, makeStore(db[x])]))
+}
