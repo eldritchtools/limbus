@@ -18,3 +18,13 @@ export const giftTagColors = {
     blessed: "#38bdf8"
     // #14b8a6, #0d9488
 }
+
+export function ColoredResistance({ resist }) {
+    if (resist < 1) {
+        return <span style={{ color: "#888", fontWeight: "bold" }}>x{resist}</span>
+    } else if (resist > 1) {
+        return <span style={{ color: "#fe0000", fontWeight: "bold" }}>x{resist}</span>
+    } else {
+        return <span style={{ color: "#c8aa80", fontWeight: "bold" }}>x{resist}</span>
+    }
+}

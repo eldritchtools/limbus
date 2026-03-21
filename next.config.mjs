@@ -9,6 +9,12 @@ const nextConfig = {
         hostname: "limbus-assets.eldritchtools.com",
         pathname: "/**",
       },
+      {
+        // Youtube thumbnails
+        protocol: "https",
+        hostname: "img.youtube.com",
+        pathname: "/vi/**"
+      }
     ]
   },
   env: {

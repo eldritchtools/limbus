@@ -1,12 +1,12 @@
 "use client";
 
-import "./UserStatus.css";
+import styles from "./UserStatus.module.css";
 import { useAuth } from "@/app/database/authProvider";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { getNotifications, getUnreadNotificationsCount } from "@/app/database/notifications";
-import Notification from "./Notification";
-import NoPrefetchLink from "./NoPrefetchLink";
+import Notification from "../objects/Notification";
+import NoPrefetchLink from "../NoPrefetchLink";
 import { getSupabase } from "@/app/database/connection";
 
 function UserStatus() {
@@ -85,9 +85,9 @@ function UserStatus() {
                                 </div>
                             </div> : null}
                     </div>
-                    <button onClick={() => logout()} className="log-in-out">Logout</button>
+                    <button onClick={() => logout()} className={styles.logInOut}>Logout</button>
                 </div> :
-                <button onClick={() => router.push("/login")} className="log-in-out">Login</button>
+                <button onClick={() => router.push("/login")} className={styles.logInOut}>Login</button>
             }
         </div>
     </div>

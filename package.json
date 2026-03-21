@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.29",
+    "@heroicons/react": "^2.2.0",
     "@radix-ui/react-select": "^2.2.6",
     "@supabase/supabase-js": "^2.99.3",
     "dexie": "^4.3.0",

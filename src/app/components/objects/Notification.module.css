@@ -8,7 +8,7 @@
     box-sizing: border-box;
 }
 
-.notif-read {
+.notifRead {
     width: 100%;
     margin-bottom: 10px;
     padding: 8px;
@@ -22,6 +22,6 @@
     background: #444;
 }
 
-.notif-read:hover {
+.notifRead:hover {
     background: #444;
 }

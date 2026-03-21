@@ -1,4 +1,4 @@
-.log-in-out {
+.logInOut {
     background: none; 
     border: none; 
     color: #ddd;
@@ -8,7 +8,7 @@
     cursor: pointer;
 }
 
-.log-in-out:hover {
+.logInOut:hover {
   color: #60a5fa;
   background: none;
   filter: brightness(1.2);

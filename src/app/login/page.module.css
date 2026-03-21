@@ -1,4 +1,4 @@
-.google-button {
+.googleButton {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,12 +13,12 @@
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-.google-button:hover {
+.googleButton:hover {
   background-color: #d43c33;
   border-color: #a03030;
 }
 
-.signup-button {
+.signupButton {
   background: none;
   border: none;
   color: #ddd;
@@ -28,7 +28,7 @@
   transition: all 0.2s ease;
 }
 
-.signup-button:hover {
+.signupButton:hover {
   color: #60a5fa;
   background: none;
   filter: brightness(1.2);

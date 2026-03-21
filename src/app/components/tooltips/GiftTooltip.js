@@ -1,8 +1,8 @@
 import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
-import TextWithStatuses from "@/app/lib/statusReplacement";
 import GiftIcon from "../icons/GiftIcon";
+import ProcessedText from "@/app/lib/statusReplacement";
 
 const tooltipDescStyle = { display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap" };
 const TOOLTIP_ID = "gift-tooltip";
@@ -32,7 +32,7 @@ function GiftTooltipContent({ gift, enhanceRank = 0, expandable = true }) {
                 {gift.blessedPair ? <span style={{ color: giftTagColors.blessed }}>Blessed</span> : null}
             </div>
             <div style={{ ...tooltipDescStyle, display: "flex", flexDirection: "column", textAlign: "left" }}>
-                <TextWithStatuses templateText={gift.descs[enhanceRank]} />
+                <ProcessedText text={gift.descs[enhanceRank]} />
                 {gift.exclusiveTo ? exclusiveText(gift.exclusiveTo) : null}
             </div>
         </div>

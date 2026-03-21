@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import './LoginPage.css';
+import styles from "./page.module.css";
 import { getSupabase } from '../database/connection';
-import NoPrefetchLink from '../components/objects/NoPrefetchLink';
+import NoPrefetchLink from '../components/NoPrefetchLink';
 
 function AuthForm() {
     const router = useRouter();
@@ -112,7 +112,7 @@ function AuthForm() {
 
             <div style={{ margin: '1rem 0', textAlign: 'center', color: '#aaa' }}>OR</div>
 
-            <button onClick={handleGoogleLogin} className="google-button">
+            <button onClick={handleGoogleLogin} className={styles.googleButton}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 488 512"
@@ -128,7 +128,7 @@ function AuthForm() {
                 {isLogin ? 'Need an account?' : 'Already have one?'}{' '}
                 <button
                     onClick={() => setIsLogin(!isLogin)}
-                    className='signup-button'
+                    className={styles.signupButton}
                 >
                     {isLogin ? 'Sign up' : 'Login'}
                 </button>

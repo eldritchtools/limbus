@@ -1,0 +1,24 @@
+.username {
+    color: #ddd;
+    font-weight: bold;
+    text-decoration: none;
+    pointer-events: none;
+    cursor: default;
+}
+
+.usernameLink{
+    color: #ddd;
+    font-weight: bold;
+    text-decoration: none;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.usernameLink:visited {
+    color: #ddd;
+}
+
+.usernameLink:hover,
+.usernameLink:visited:hover {
+  color: #38bdf8;
+}

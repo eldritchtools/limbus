@@ -1,10 +1,10 @@
 import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
 import { useState } from "react";
 import Gift from "../objects/Gift";
-import TextWithStatuses from "@/app/lib/statusReplacement";
 import ThemePackIcon from "../icons/ThemePackIcon";
 import { useFloorsForPack } from "../dataHooks/mdFloors";
 import FusionRecipe from "../objects/FusionRecipe";
+import ProcessedText from "@/app/lib/statusReplacement";
 
 const buttonStyle = { border: "1px #aaa solid", padding: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transiton: "background-color 0.2s, border-color 0.2s" };
 const iconTextStyle = { fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "20px", color: "#ffd84d" };
@@ -63,7 +63,7 @@ export default function GiftModalContent({ gift, enhanceRank }) {
             <div style={{ flex: "1 1 0", minHeight: 0, overflowY: "auto" }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
-                        <TextWithStatuses templateText={gift.descs[level]} />
+                        <ProcessedText text={gift.descs[level]} />
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "1rem" }}>
                         {

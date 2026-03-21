@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import "./Notification.css";
+import styles from "./Notification.module.css";
 import ReactTimeAgo from "react-time-ago";
 import { setNotificationRead } from "@/app/database/notifications";
 
@@ -53,7 +53,7 @@ export default function Notification({ notif, updateNotif }) {
         }
     }
 
-    return <div onClick={() => handleNotifClick(notif)} className={notif.is_read ? "notif-read" : "notif"}>
+    return <div onClick={() => handleNotifClick(notif)} className={notif.is_read ? styles.notifRead : styles.notif}>
         <div style={{ fontSize: "1rem", marginBottom: "4px" }} onClick={() => handleNotifClick(notif)}>
             {constructNotifMessage(notif)}
         </div>
