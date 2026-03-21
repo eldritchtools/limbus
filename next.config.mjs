@@ -3,7 +3,16 @@ const nextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
-    domains: ["https://limbus-assets.eldritchtools.com/"]
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "limbus-assets.eldritchtools.com",
+        pathname: "/**",
+      },
+    ]
+  },
+  env: {
+    NEXT_PUBLIC_LAST_UPDATED: new Date().toISOString(),
   }
 };
 

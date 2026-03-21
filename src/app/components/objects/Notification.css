@@ -1,0 +1,27 @@
+.notif {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px; 
+    background: #333;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.notif-read {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px; 
+    background: transparent;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.notif:hover {
+    background: #444;
+}
+
+.notif-read:hover {
+    background: #444;
+}

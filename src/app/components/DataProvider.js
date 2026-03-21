@@ -133,5 +133,8 @@ export function useDataMultiple(paths = [], enabled = true) {
 }
 
 export async function getMeta() {
-    return (await fetch(`${PUBLIC_ROOT}/meta.json`)).json();
+    if (process.env.ENABLE_LOCAL_DATA)
+        return { datetime: new Date().toISOString() };
+    else
+        return (await fetch(`${PUBLIC_ROOT}/meta.json`)).json();
 }

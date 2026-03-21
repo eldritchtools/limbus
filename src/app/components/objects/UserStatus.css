@@ -1,0 +1,16 @@
+.log-in-out {
+    background: none; 
+    border: none; 
+    color: #ddd;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.log-in-out:hover {
+  color: #60a5fa;
+  background: none;
+  filter: brightness(1.2);
+  text-shadow: 0 0 4px rgba(128, 207, 255, 0.6);
+}

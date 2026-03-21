@@ -1,0 +1,17 @@
+.page-button {
+  color: #4da6ff;
+  /* text-decoration: underline; */
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+  background: transparent;
+  border: transparent;
+}
+
+.page-button:disabled {
+  pointer-events: none;
+}
+
+.page-button:hover,
+.page-button:focus {
+  color: #80cfff;
+  text-shadow: 0 0 4px rgba(128, 207, 255, 0.6);
+}
