@@ -1,6 +1,7 @@
 import { createContext, useState } from "react";
-import ModalContainer from "./ModalContainer";
+
 import GiftModalContent from "./GiftModalContent";
+import ModalContainer from "./ModalContainer";
 
 const ModalContext = createContext();
 

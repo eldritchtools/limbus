@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import styles from "./Notification.module.css";
 import ReactTimeAgo from "react-time-ago";
+
+import styles from "./Notification.module.css";
+
 import { setNotificationRead } from "@/app/database/notifications";
 
 function constructActorStr(actors) {
