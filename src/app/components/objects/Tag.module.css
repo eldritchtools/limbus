@@ -1,0 +1,23 @@
+.tag {
+  background-color: #3a3a3a;
+  color: #ddd;
+  border: 1px solid #5a5a5a;
+  padding: 4px 8px;
+  border-radius: 1rem;
+  margin: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: background-color 0.2s, border-color 0.2s;
+  pointer-events: auto;
+}
+
+.tag:hover {
+  color: #ddd;
+  background-color: #5a5a5a;
+}
+
+.tag:visited,
+.tag:hover:visited {
+    color: #ddd;
+}

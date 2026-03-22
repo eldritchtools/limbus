@@ -1,0 +1,30 @@
+.cardButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.cardButton.disabled {
+    opacity: 0.5;
+}
+
+.cardButton:hover:not(.cardButton.disabled) {
+    background: #3a3a3a;
+    cursor: pointer;
+}
+
+.cardButton.left {
+    border-bottom-left-radius: 12px;
+}
+
+.cardButton.right {
+    border-bottom-right-radius: 12px;
+}
+
+.cardButton.middle {
+    border-left: 2px #7c6a55 dashed;
+    border-right: 2px #7c6a55 dashed;
+}

@@ -10,16 +10,10 @@
     font-size: 1rem;
 }
 
-.toggle-button-disabled {
+.toggle-button.disabled {
     background-color: #1a1a1a;
     color: #777;
-    border: 1px solid #555;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin: 2px;
-    transition: background-color 0.2s, border-color 0.2s;
-    cursor: "not-allowed";
-    font-size: 1rem;
+    cursor: not-allowed;
     opacity: 0.6;
 }
 
@@ -30,7 +24,7 @@
 .toggle-button:disabled {
     background-color: #1a1a1a;
     color: #777;
-    cursor: "not-allowed";
+    cursor: not-allowed;
     opacity: 0.6;
 }
 
