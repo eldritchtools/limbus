@@ -68,16 +68,4 @@ function replaceStatusesInString(templateText, statuses, skillTags) {
     return textPieces.join("");
 }
 
-function ProcessedText({ text, enableTooltips = true, iconStyleOverride = {}, nameStyleOverride = {} }) {
-    let str = text.replaceAll("<style=\"highlight\">", "").replaceAll("</style>", "");
-
-    return <TextWithStatuses
-        templateText={str} 
-        includeTooltips={enableTooltips}
-        iconStyleOverride={iconStyleOverride}
-        nameStyleOverride={nameStyleOverride}
-    />
-}
-
-export default ProcessedText;
 export { TextWithStatuses, replaceStatusesInString };

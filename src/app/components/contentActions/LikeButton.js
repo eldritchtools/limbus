@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 
 import ActionTemplate from "./ActionTemplate";
 import { LikeOutline, LikeSolid } from "./Symbols";
-import { useAuth } from "../database/authProvider";
-import { useRequestsCache } from "../database/RequestsCacheProvider";
+
+import { useAuth } from "@/app/database/authProvider";
+import { useRequestsCache } from "@/app/database/RequestsCacheProvider";
 
 export default function LikeButton({ targetType, targetId, likeCount, type = "button", iconSize, shortText = false }) {
     const { user } = useAuth();

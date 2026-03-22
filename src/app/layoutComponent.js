@@ -5,16 +5,17 @@ import "./styles/text-link.css";
 import "./styles/toggle-button.css";
 
 import { Layout } from "@eldritchtools/shared-components";
-import { useEffect, useState } from "react";
-import NoPrefetchLink from "./components/NoPrefetchLink";
-import { AuthProvider } from "./database/authProvider";
-import { RequestsCacheProvider } from "./database/RequestsCacheProvider";
-import { DataProvider, getMeta } from "./components/DataProvider";
-import { ModalProvider } from "./components/modals/ModalProvider";
-import AllTooltips from "./components/tooltips/AllTooltip";
-import UserStatus from "./components/user/UserStatus";
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
+import { useEffect, useState } from "react";
+
+import { DataProvider, getMeta } from "./components/DataProvider";
+import { ModalProvider } from "./components/modals/ModalProvider";
+import NoPrefetchLink from "./components/NoPrefetchLink";
+import AllTooltips from "./components/tooltips/AllTooltip";
+import UserStatus from "./components/user/UserStatus";
+import { AuthProvider } from "./database/authProvider";
+import { RequestsCacheProvider } from "./database/RequestsCacheProvider";
 
 TimeAgo.addDefaultLocale(en);
 

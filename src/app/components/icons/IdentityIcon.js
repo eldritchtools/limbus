@@ -1,7 +1,10 @@
-import { useData } from "../DataProvider";
-import TierIcon from "./TierIcon";
-import RarityIcon from "./RarityIcon";
 import Image from "next/image";
+
+import { useData } from "../DataProvider";
+import RarityIcon from "./RarityIcon";
+import TierIcon from "./TierIcon";
+import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
+
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getIdentityImgSrc(identity, uptie = 4) {
@@ -9,10 +12,13 @@ export function getIdentityImgSrc(identity, uptie = 4) {
     return `${ASSETS_ROOT}/identities/${identity.id}_${type}_profile.png`;
 }
 
-function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, level = null }) {
-    const img = <Image src={getIdentityImgSrc(identity, uptie)} alt={identity.name} title={identity.name} style={{ ...style, objectFit: "cover" }} />
+function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null }) {
+    const img = <Image src={getIdentityImgSrc(identity, uptie)} alt={identity.name} title={identity.name} width={128} height={128} style={{ ...style, objectFit: "cover" }} />
 
-    return <div style={{ position: "relative", width: style.width, aspectRatio: "1/1", containerType: "size" }}>
+    return <div 
+        style={{ position: "relative", width: style.width, aspectRatio: "1/1", containerType: "size" }} 
+        {...(includeTooltip ? getIdentityTooltipProps(identity.id) : {})}
+    >
         {img}
         {displayRarity ?
             <RarityIcon rarity={identity.rank} style={{ position: "absolute", top: "4px", left: "4px", height: "2rem", objectFit: "contain", pointerEvents: "none" }} /> :

@@ -32,7 +32,7 @@ export default function BuildIdentitiesGrid({ identityIds, scale, deploymentOrde
             <div key={i} style={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {id ?
                     <IdentityIcon key={i} id={id} scale={scale} uptie={identityUpties?.[i] ?? undefined} style={{ borderRadius: "4px" }} /> :
-                    <SinnerIcon key={i} num={i + 1} style={{ height: `${size * .75}px` }} />}
+                    <SinnerIcon key={i} num={i + 1} style={{ width: `${size * .75}px`, height: `${size * .75}px` }} />}
 
                 <DeploymentPosition sinnerId={i + 1} deploymentOrder={deploymentOrder} activeSinners={activeSinners} />
             </div>

@@ -1,9 +1,13 @@
+import Image from "next/image";
+
 import { useData } from "../DataProvider";
+import RarityIcon from "./RarityIcon";
+import TierIcon from "./TierIcon";
+import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
+
 import { affinityColorMapping } from "@/app/lib/colors";
 import { ASSETS_ROOT } from "@/app/paths";
-import TierIcon from "./TierIcon";
-import RarityIcon from "./RarityIcon";
-import Image from "next/image";
+
 
 export function getEgoImgSrc(ego, type) {
     return `${ASSETS_ROOT}/egos/${ego.id}_${type}_profile.png`;
@@ -13,13 +17,19 @@ const rarityStyle = { position: "absolute", top: "4px", left: "4px", height: "1.
 const threadspinStyle = { position: "absolute", textAlign: "right", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000" };
 const nameStyle = { position: "absolute", overflow: "hidden", textWrap: "balance", fontWeight: "bold", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 8px #000, -2px -2px 8px #000" }
 
-function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, threadspin = null }) {
+function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, includeTooltip = false, threadspin = null }) {
     const src = getEgoImgSrc(ego, type);
+    const { width, height, ...remStyle } = style;
 
-    const newStyle = { ...style, aspectRatio: banner ? "4/1" : "1/1", height: null, objectFit: "cover" };
-    const img = <Image src={src} alt={ego.name} title={ego.name} style={newStyle} />
+    const img = <Image src={src} alt={ego.name} title={ego.name} fill sizes="auto" style={{ ...remStyle, objectFit: "cover" }} />
 
-    return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative", width: newStyle.width, aspectRatio: newStyle.aspectRatio, containerType: "size" }}>
+    return <div
+        style={{
+            display: "flex", alignItems: "center", justifyContent: "center", position: "relative",
+            width: width, height: height, aspectRatio: banner ? "4/1" : "1/1", containerType: "size"
+        }}
+        {...(includeTooltip ? getEgoTooltipProps(ego.id) : {})}
+    >
         {img}
         {displayRarity ?
             <RarityIcon rarity={ego.rank.toLowerCase()} style={rarityStyle} /> :

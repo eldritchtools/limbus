@@ -1,6 +1,10 @@
-import { ASSETS_ROOT } from "@/app/paths";
 import Image from "next/image";
 
+import { ASSETS_ROOT } from "@/app/paths";
+
 export default function Icon({ path, style = {} }) {
-    return <Image src={`${ASSETS_ROOT}/icons/${path}.png`} alt={path} title={path} style={style} />
+    const { width, height, ...remStyle } = style;
+    return <div style={{ width, height, position: "relative" }}>
+        <Image src={`${ASSETS_ROOT}/icons/${path}.png`} alt={path} title={path} fill style={{ ...remStyle, objectFit: "cover" }} />
+    </div>
 }

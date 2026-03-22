@@ -45,7 +45,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
         {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} /> : null}
 
         {build.keyword_ids.length > 0 ?
-            <div className={styles.teamBuildIconRails}>
+            <div className={styles.teamBuildIconRail}>
                 {build.keyword_ids.slice(0, sizes.maxRailIcons).map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} size={sizes.iconSize} />)}
                 {hiddenIcons > 0 ? <span style={{
                     width: sizes.iconSize, height: sizes.iconSize, display: "flex",
@@ -56,7 +56,9 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
         }
 
         <div className={styles.teamBuildContent}>
-            <h2 className={styles.teamBuildTitle}>{build.title}</h2>
+            <div className={styles.teamBuildTitleContainer}>
+                <h2 className={styles.teamBuildTitle}>{build.title}</h2>
+            </div>
             <HoverBlocker setBlockHover={setBlockHover}>
                 <UsernameWithTime data={build} scale={.8} includeUpdatedAt={false} />
             </HoverBlocker>

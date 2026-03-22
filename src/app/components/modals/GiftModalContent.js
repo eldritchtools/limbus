@@ -1,10 +1,12 @@
-import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
 import { useState } from "react";
-import Gift from "../objects/Gift";
-import ThemePackIcon from "../icons/ThemePackIcon";
+
 import { useFloorsForPack } from "../dataHooks/mdFloors";
+import ThemePackIcon from "../icons/ThemePackIcon";
 import FusionRecipe from "../objects/FusionRecipe";
-import ProcessedText from "@/app/lib/statusReplacement";
+import Gift from "../objects/Gift";
+import ProcessedText from "../texts/ProcessedText";
+
+import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
 
 const buttonStyle = { border: "1px #aaa solid", padding: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transiton: "background-color 0.2s, border-color 0.2s" };
 const iconTextStyle = { fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "20px", color: "#ffd84d" };

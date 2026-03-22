@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import ActionTemplate from "./ActionTemplate";
 import { SaveOutline, SaveSolid } from "./Symbols";
-import { useAuth } from "../database/authProvider";
-import { useRequestsCache } from "../database/RequestsCacheProvider";
 
+import { useAuth } from "@/app/database/authProvider";
 import { isLocalId, localStores } from "@/app/database/localDB";
+import { useRequestsCache } from "@/app/database/RequestsCacheProvider";
 
 function NormalSaveButton({ targetType, targetId, type = "button", iconSize, shortText = false }) {
     const { checkSaved, toggleSave, fetchUserData } = useRequestsCache();

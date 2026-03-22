@@ -85,12 +85,16 @@ BEGIN
     ),
 
     'showcase', (
-      SELECT json_agg(s ORDER BY array_position(show_ids, s.id))
+      SELECT json_agg(s ORDER BY array_position(ids.show_ids, s.id))
       FROM (
-        SELECT array_agg(hs.build_id ORDER BY hs.featured_at DESC)
-        FROM public.homepage_showcase hs
-        LIMIT showcase_limit
-      ) ids(show_ids),
+        SELECT array_agg(build_id) AS show_ids
+        FROM (
+          SELECT hs.build_id
+          FROM public.homepage_showcase hs
+          ORDER BY hs.featured_at DESC
+          LIMIT showcase_limit
+        ) top_show
+      ) ids,
       LATERAL public.search_builds_v9(
         build_id_filter := ids.show_ids,
         p_limit := showcase_limit

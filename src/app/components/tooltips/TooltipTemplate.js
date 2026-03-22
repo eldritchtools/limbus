@@ -10,11 +10,12 @@ const style = {
     maxWidth: "min(90vw, 800px)"
 };
 
-export default function TooltipTemplate({ id, contentFunc }) {
+export default function TooltipTemplate({ id, contentFunc, clickable }) {
     return <Tooltip
         id={id}
         render={({ content }) => <div style={style}>{contentFunc(content)}</div>}
         getTooltipContainer={() => document.body}
         style={{ backgroundColor: "transparent", zIndex: "9999" }}
+        clickable={clickable}
     />
 }

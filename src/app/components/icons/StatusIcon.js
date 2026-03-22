@@ -1,6 +1,9 @@
-import { useData } from "../DataProvider";
 import Image from "next/image";
 import { useState } from "react";
+
+import { useData } from "../DataProvider";
+
+import { ASSETS_ROOT } from "@/app/paths";
 
 export function getStatusImgSrc(status, fallback = null) {
     const src = fallback ?? ("imageOverride" in status ? status.imageOverride : status.name);
@@ -22,7 +25,7 @@ function StatusIconMain({ id, status, style }) {
         }
     }
 
-    return <Image src={src} alt={status.name} style={style} onError={handleError} />
+    return <Image src={src} alt={status.name} width={32} height={32} style={style} onError={handleError} />
 }
 
 function StatusIconFetch({id, style}) {

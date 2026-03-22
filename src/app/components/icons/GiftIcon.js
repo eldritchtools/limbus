@@ -1,6 +1,8 @@
 import Image from "next/image";
-import TierIcon from "./TierIcon";
+
 import KeywordIcon from "./KeywordIcon";
+import TierIcon from "./TierIcon";
+
 import { giftTagColors } from "@/app/lib/colors";
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -39,7 +41,7 @@ function GiftImg({ gift, style }) {
         }
     }
 
-    return <Image src={src} alt={gift.names[0]} style={style} onError={handleError} />
+    return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} onError={handleError} />
 }
 
 function TagStrips({ gift, scale }) {
@@ -56,7 +58,7 @@ function TagStrips({ gift, scale }) {
 
 function GiftIconContainer({ scale = 1, children }) {
     return <div style={scaleStyle(giftContainerStyle, scale)}>
-        <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" style={scaleStyle(giftBackgroundStyle, scale)} />
+        <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" width={64} height={64} style={scaleStyle(giftBackgroundStyle, scale)} />
         {children}
     </div>
 }

@@ -6,7 +6,7 @@ import { isLocalId } from "@/app/database/localDB";
 
 export default function UsernameWithTime({ data, scale = 1, clickable = true, includeUpdatedAt = true }) {
     return <div style={{ fontSize: `${scale}rem` }}>
-        {!isLocalId(id) ?
+        {!isLocalId(data.id) ?
             <span>by <Username username={data.username} flair={data.user_flair} clickable={clickable} /> • </span> :
             null
         }

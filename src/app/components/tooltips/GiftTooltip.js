@@ -1,8 +1,9 @@
-import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import GiftIcon from "../icons/GiftIcon";
-import ProcessedText from "@/app/lib/statusReplacement";
+import ProcessedText from "../texts/ProcessedText";
+
+import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
 
 const tooltipDescStyle = { display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap" };
 const TOOLTIP_ID = "gift-tooltip";

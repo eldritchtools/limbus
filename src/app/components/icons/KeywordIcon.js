@@ -1,5 +1,6 @@
-import { ASSETS_ROOT } from "@/app/paths";
 import Image from "next/image";
+
+import { ASSETS_ROOT } from "@/app/paths";
 
 const caseMapping = {
     "burn": "Burn",
@@ -27,6 +28,8 @@ const caseMapping = {
 export default function KeywordIcon({ id, size = 32 }) {
     return <Image
         src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
-        alt={id} title={id} style={{ width: `${size}px`, height: `${size}px` }}
+        alt={id} title={id} 
+        width={32} height={32} 
+        style={{ width: `${size}px`, height: `${size}px` }}
     />;
 }
