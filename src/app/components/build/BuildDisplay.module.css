@@ -1,0 +1,38 @@
+.buildDisplay {
+  display: grid;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Default (large screens): 6 columns */
+.buildDisplay {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* Medium screens: switch to 4 columns */
+@container (max-width: 1399px) {
+  .buildDisplay {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Smaller screens: switch to 3 columns */
+@container (max-width: 999px) {
+  .buildDisplay {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile fallback: 1–2 columns */
+@container (max-width: 599px) {
+  .buildDisplay {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (max-width: 299px) {
+  .buildDisplay {
+    grid-template-columns: 1fr;
+  }
+}

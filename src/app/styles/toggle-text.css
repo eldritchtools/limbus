@@ -1,0 +1,9 @@
+.toggle-text {
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.toggle-text:hover {
+  filter: brightness(1.2);
+}

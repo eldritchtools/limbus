@@ -1,0 +1,74 @@
+.cm-bold {
+  font-weight: bold;
+}
+
+.cm-italic {
+  font-style: italic;
+}
+
+.cm-code {
+  font-family: "Fira Code", monospace;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cm-code-marker {
+  font-family: "Fira Code", monospace;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cm-heading {
+  font-weight: bold;
+  font-size: 1.3em;
+  color: #9cdcfe;
+}
+
+.cm-quote {
+  border-left: 3px solid #888;
+  padding-left: 8px;
+  opacity: 0.9;
+}
+
+.cm-list {
+  color: #c586c0;
+}
+
+.cm-link {
+  color: #4ea1ff;
+  text-decoration: underline;
+}
+
+.cm-link-marker {
+  color: #4ea1ff;
+  text-decoration: underline;
+}
+
+.cm-link-url {
+  color: #dcdcaa;
+  text-decoration: underline;
+}
+
+.cm-link-url-marker {
+  color: #dcdcaa;
+  text-decoration: underline;
+}
+
+.cm-image {
+  color: #dcdcaa;
+}
+
+.cm-math-inline {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cm-math-block {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px;
+  border-radius: 4px;
+  display: block;
+}
+
+.cm-tooltip-autocomplete li[aria-selected="true"] {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  /* background: transparent; */
+}

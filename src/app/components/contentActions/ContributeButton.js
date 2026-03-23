@@ -1,6 +1,7 @@
 import ActionTemplate from "./ActionTemplate";
 import { ContributeSolid } from "./Symbols";
-import { useAuth } from "../database/authProvider";
+
+import { useAuth } from "@/app/database/authProvider";
 
 export default function ContributeButton({ collectionId, type = "button", iconSize }) {
     const { user } = useAuth();

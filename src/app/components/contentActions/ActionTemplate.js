@@ -5,9 +5,9 @@ export default function ActionTemplate({ type = "button", active, disabled, onCl
     const className = (() => {
         switch (type) {
             case "button": return `toggle-button ${active ? "active" : ""} ${disabled ? "disabled" : ""}`;
-            case "card-left": return `${styles.cardButton} ${styles.left}`;
-            case "card-right": return `${styles.cardButton} ${styles.right}`;
-            case "card-middle": return `${styles.cardButton} ${styles.middle}`;
+            case "card-left": return `${styles.cardButton} ${styles.left} ${disabled ? styles.disabled : ""}`;
+            case "card-right": return `${styles.cardButton} ${styles.right} ${disabled ? styles.disabled : ""}`;
+            case "card-middle": return `${styles.cardButton} ${styles.middle} ${disabled ? styles.disabled : ""}`;
             default: return ""
         }
     })();

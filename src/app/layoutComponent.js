@@ -1,8 +1,10 @@
 "use client";
 
 import "./styles/page-button.css";
+import "./styles/tabs.css";
 import "./styles/text-link.css";
 import "./styles/toggle-button.css";
+import "./styles/toggle-text.css";
 
 import { Layout } from "@eldritchtools/shared-components";
 import TimeAgo from "javascript-time-ago"
@@ -54,7 +56,7 @@ export default function LayoutComponent({ children }) {
             <Layout
                 title={"Limbus Company Tools"}
                 lastUpdated={lastUpdated}
-                linkSet={"limbus"}
+                // linkSet={"limbus"}
                 description={description}
                 gameName={"Limbus Company"}
                 developerName={"Project Moon"}

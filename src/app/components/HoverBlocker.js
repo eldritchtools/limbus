@@ -1,10 +1,9 @@
 export default function HoverBlocker({ setBlockHover, children }) {
-    return (
-        <div
-            onMouseEnter={() => setBlockHover(true)}
-            onMouseLeave={() => setBlockHover(false)}
-        >
-            {children}
-        </div>
-    );
+    return <div
+        style={{ display: "contents" }}
+        onMouseEnter={() => setBlockHover(true)}
+        onMouseLeave={() => setBlockHover(false)}
+    >
+        {children}
+    </div>;
 }

@@ -29,9 +29,17 @@ export const seasonMapping = {
     8000: "Pilgrimage of Compassion"
 }
 
+export const egoRanks = ["ZAYIN", "TETH", "HE", "WAW", "ALEPH"];
+
 export const LEVEL_CAP = 60;
 
 export function getSeasonString(season) {
     if (season > 9100) return `Walpurgisnacht ${season - 9100}`;
     else return seasonMapping[season];
+}
+
+export const typePageMapping = {
+    "build": "builds",
+    "collection": "collections",
+    "md_plan": "md-plans"
 }

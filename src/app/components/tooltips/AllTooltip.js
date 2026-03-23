@@ -2,6 +2,7 @@ import EgoTooltip from "./EgoTooltip";
 import GeneralTooltip from "./GeneralTooltip";
 import GiftTooltip from "./GiftTooltip";
 import IdentityTooltip from "./IdentityTooltip";
+import { MarkdownTooltip } from "./MarkdownTooltip";
 import StatusTooltip from "./StatusTooltip";
 
 export default function AllTooltips() {
@@ -11,5 +12,6 @@ export default function AllTooltips() {
         <IdentityTooltip />
         <EgoTooltip />
         <GeneralTooltip />
+        <MarkdownTooltip />
     </>;
 }

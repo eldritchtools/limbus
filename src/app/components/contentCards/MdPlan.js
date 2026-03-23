@@ -1,14 +1,15 @@
 "use client";
 
-import { Icon, KeywordIcon } from "@eldritchtools/limbus-shared-library";
 import { useBreakpoint } from "@eldritchtools/shared-components";
 
 import NoPrefetchLink from "../NoPrefetchLink";
-import LikeButton from "./LikeButton";
 import styles from "./MdPlan.module.css";
 import CommentButton from "../contentActions/CommentButton";
+import LikeButton from "../contentActions/LikeButton";
 import SaveButton from "../contentActions/SaveButton";
 import HoverBlocker from "../HoverBlocker";
+import Icon from "../icons/Icon";
+import KeywordIcon from "../icons/KeywordIcon";
 import Tag from "../objects/Tag";
 import UsernameWithTime from "../user/UsernameWithTime";
 
@@ -50,7 +51,7 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
                 {complete ? <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                     {plan.tags.map((t, i) => t ?
                         <HoverBlocker key={i} setBlockHover={setBlockHover}>
-                            <Tag tag={t} type={"md-plans"} />
+                            <Tag tag={t} type={"md_plan"} />
                         </HoverBlocker> :
                         null
                     )}
@@ -61,7 +62,7 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
             <div className={styles.mdPlanButtonsContainer}>
                 <HoverBlocker setBlockHover={setBlockHover}>
                     <LikeButton targetType={"md_plan"} targetId={plan.id} likeCount={plan.like_count} type={"card-left"} iconSize={20} shortText={true} />
-                    <CommentButton targetPath={"md-plans"} targetId={plan.id} count={plan.comment_count} type={"card-middle"} iconSize={20} shortText={true} />
+                    <CommentButton targetPath={"md_plan"} targetId={plan.id} count={plan.comment_count} type={"card-middle"} iconSize={20} shortText={true} />
                     <SaveButton targetType={"md_plan"} targetId={plan.id} type={"card-right"} iconSize={20} shortText={true} />
                 </HoverBlocker>
             </div>

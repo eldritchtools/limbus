@@ -21,7 +21,7 @@ function scaleStyle(style, scale) {
     return { ...style, width: `${scaleSize(scale)}px`, height: `${scaleSize(scale)}px` };
 }
 
-function getGiftImgSrc(gift, fallback = null) {
+export function getGiftImgSrc(gift, fallback = null) {
     const src = fallback ?? ("imageOverride" in gift ? gift["imageOverride"] : gift.names[0]);
     return `${ASSETS_ROOT}/gifts/${src}.png`;
 }

@@ -1,0 +1,45 @@
+import { useMemo, useState } from "react";
+
+import styles from "./BuildDisplay.module.css";
+import BuildDisplayCalcMenu from "./BuildDisplayCalcMenu";
+import BuildDisplaySinnerContainer from "./BuildDisplaySinnerContainer";
+import { useData } from "../DataProvider";
+
+export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, deploymentOrder, activeSinners, displayType }) {
+    const [identities, identitiesLoading] = useData("identities");
+    const [egos, egosLoading] = useData("egos");
+
+    // Convert empty strings (if editing) to nulls
+    const upties = useMemo(() => identityUpties ? identityUpties.map(x => x === "" ? null : x) : null, [identityUpties]);
+    const levels = useMemo(() => identityLevels ? identityLevels.map(x => x === "" ? null : x) : null, [identityLevels]);
+    const threadspins = useMemo(() => egoThreadspins ? egoThreadspins.map(x => x.map(y => y === "" ? null : y)) : null, [egoThreadspins]);
+
+    const [otherOpts, setOtherOpts] = useState({});
+
+    if (identitiesLoading || egosLoading) return null;
+
+    return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
+        {displayType === "calc" ?
+            <BuildDisplayCalcMenu opts={otherOpts} setOpts={setOtherOpts} /> :
+            null
+        }
+
+        <div className={styles.buildDisplay} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
+            {Array.from({ length: 12 }, (_, index) =>
+                <BuildDisplaySinnerContainer
+                    key={index}
+                    displayType={displayType}
+                    sinnerId={index + 1}
+                    identity={identities[identityIds[index]] || null}
+                    egos={egoIds[index].map(id => egos[id] || null)}
+                    identityUptie={upties ? upties[index] : null}
+                    identityLevel={levels ? levels[index] : null}
+                    egoThreadspins={threadspins ? threadspins[index] : null}
+                    deploymentOrder={deploymentOrder}
+                    activeSinners={activeSinners}
+                    otherOpts={otherOpts}
+                />
+            )}
+        </div>
+    </div>
+}

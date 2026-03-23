@@ -1,6 +1,6 @@
 import { diffArrays, diffWords } from "diff";
 
-import { ProcessedText } from "../utils";
+import ProcessedText from "./ProcessedText";
 
 const addedStyle = {
     backgroundColor: "rgba(46, 160, 67, 0.35)",

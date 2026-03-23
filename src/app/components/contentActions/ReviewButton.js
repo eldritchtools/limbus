@@ -1,6 +1,7 @@
 import ActionTemplate from "./ActionTemplate";
 import { ReviewSolid } from "./Symbols";
-import { useAuth } from "../database/authProvider";
+
+import { useAuth } from "@/app/database/authProvider";
 
 export default function ReviewButton({ collectionId, type = "button", iconSize }) {
     const { user } = useAuth();

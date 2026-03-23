@@ -35,11 +35,11 @@ function EgoTooltipContent({ id, ego, uptie = 4 }) {
                         Atk #:
                         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                             <div style={{ display: "flex", gap: "0.5rem" }}>
-                                {awakeningSkills.map((data, i) => <AtkWeight key={i} skillData={data} />)}
+                                {awakeningSkills.map((skill, i) => <AtkWeight key={i} skillData={skill.data} />)}
                             </div>
                             {corrosionSkills.length > 0 ?
                                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                                    {corrosionSkills.map((data, i) => <AtkWeight key={i} skillData={data} />)}
+                                    {corrosionSkills.map((skill, i) => <AtkWeight key={i} skillData={skill.data} />)}
                                 </div> :
                                 null
                             }

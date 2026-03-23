@@ -1,12 +1,18 @@
 import { createContext, useState } from "react";
 
+import DeleteCommentModalContent from "./DeleteCommentModalContent";
+import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
 import ModalContainer from "./ModalContainer";
+import SelectBuildModalContent from "./SelectBuildModalContent";
 
 const ModalContext = createContext();
 
 const MODAL_COMPONENTS = {
-    gift: GiftModalContent
+    "gift": GiftModalContent,
+    "selectBuild": SelectBuildModalContent,
+    "deleteContent": DeleteContentModalContent,
+    "deleteComment": DeleteCommentModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -20,19 +26,38 @@ export function ModalProvider({ children }) {
         openModal("gift", { gift, enhanceRank });
     }
 
+    const openSelectBuildModal = ({ onSelectBuild, allowDrafts = false }) => {
+        openModal("selectBuild", { onSelectBuild, allowDrafts });
+    }
+
+    const openDeleteContentModal = ({ targetType, targetId, title }) => {
+        openModal("deleteContent", { targetType, targetId, title });
+    }
+
+    const openDeleteCommentModal = ({ targetType, commentId, commentBody }) => {
+        openModal("deleteComment", { targetType, commentId, commentBody });
+    }
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
 
+    const exportFunctions = {
+        openGiftModal,
+        openSelectBuildModal,
+        openDeleteContentModal,
+        openDeleteCommentModal
+    }
+
     return (
-        <ModalContext.Provider value={{ openGiftModal }}>
+        <ModalContext.Provider value={exportFunctions}>
             {children}
 
             {stack.map((entry, index) => {
                 const ModalComponent = MODAL_COMPONENTS[entry.type];
 
                 <ModalContainer key={index} isOpen={true} onClose={closeModal} index={index}>
-                    <ModalComponent {...entry.props} />
+                    <ModalComponent {...entry.props} onClose={closeModal} />
                 </ModalContainer>
             })}
         </ModalContext.Provider>

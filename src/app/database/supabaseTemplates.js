@@ -2,7 +2,7 @@ const { getSupabase } = require("./connection");
 
 export function convertParams(params, paramsMapping) {
     return Object.entries(paramsMapping).reduce((acc, [s, t]) => {
-        if(s in params) acc[params[s]] = t;
+        if(s in params) acc[t] = params[s];
         return acc;
     }, {});
 }

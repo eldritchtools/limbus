@@ -1,0 +1,23 @@
+.dropdownButtonOption {
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.dropdownButtonOption:hover {
+    background: #3f3f3f;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%, ;
+    background: #1a1a1a;
+    border: 1px solid #777;
+    border-radius: 4px;
+    z-index: 10;
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1a;
+}

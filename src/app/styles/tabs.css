@@ -1,0 +1,11 @@
+.tab-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #777;
+}
+
+.tab-header.active {
+    color: #ddd;
+}

@@ -25,11 +25,15 @@ const caseMapping = {
     "Envy": "envy"
 }
 
-export default function KeywordIcon({ id, size = 32 }) {
+export function isValidKeywordId(id) {
+    return Object.entries(caseMapping).some(([k, v]) => id === k || id === v);
+}
+
+export default function KeywordIcon({ id, size = 32, style = {} }) {
     return <Image
         src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
         alt={id} title={id} 
         width={32} height={32} 
-        style={{ width: `${size}px`, height: `${size}px` }}
+        style={{ width: `${size}px`, height: `${size}px`, ...style }}
     />;
 }

@@ -41,6 +41,8 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
     const hiddenIcons = build.keyword_ids.length - sizes.maxRailIcons;
 
+    const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
+
     return <div className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null}`} style={{ width: sizes.width }}>
         {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} /> : null}
 
@@ -74,7 +76,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
             {complete ? <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                 {build.tags.map((t, i) => t ?
                     <HoverBlocker key={i} setBlockHover={setBlockHover}>
-                        <Tag tag={t} type={"builds"} />
+                        <Tag tag={t} type={"build"} />
                     </HoverBlocker> :
                     null
                 )}
@@ -82,11 +84,9 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
         </div>
         {complete ?
             <div className={styles.teamBuildButtonsContainer}>
-                <HoverBlocker setBlockHover={setBlockHover}>
-                    <LikeButton targetType={"build"} targetId={build.id} likeCount={build.like_count} type={"card-left"} iconSize={sizes.buttonIconSize} />
-                    <CommentButton targetPath={"builds"} targetId={build.id} count={build.comment_count} type={"card-middle"} iconSize={sizes.buttonIconSize} />
-                    <SaveButton targetType={"build"} targetId={build.id} type={"card-right"} iconSize={sizes.buttonIconSize} />
-                </HoverBlocker>
+                {hoverWrap(<LikeButton targetType={"build"} targetId={build.id} likeCount={build.like_count} type={"card-left"} iconSize={sizes.buttonIconSize} />)}
+                {hoverWrap(<CommentButton targetType={"build"} targetId={build.id} count={build.comment_count} type={"card-middle"} iconSize={sizes.buttonIconSize} />)}
+                {hoverWrap(<SaveButton targetType={"build"} targetId={build.id} type={"card-right"} iconSize={sizes.buttonIconSize} />)}
             </div>
             : null}
     </div>

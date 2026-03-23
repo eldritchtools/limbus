@@ -1,0 +1,26 @@
+.social {
+  color: #aaa;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.hoverableSocial {
+  color: #aaa;
+  font-weight: bold;
+  /* text-decoration: none; */
+  transition: all ease 0.2s;
+}
+
+.hoverableSocial:visited {
+  color: #aaa;
+}
+
+.hoverableSocial:hover,
+.hoverableSocial:hover:visited {
+  color: #60a5fa;
+  background: none;
+  filter: brightness(1.2);
+  text-shadow: 0 0 4px rgba(128, 207, 255, 0.6);
+}
+
+

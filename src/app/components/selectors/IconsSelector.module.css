@@ -1,0 +1,41 @@
+.iconSelectorButton {
+    height: 32px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 2px transparent solid;
+}
+
+.iconSelectorButton.selected {
+    background-color: #3f3f3f;
+    border-bottom: 2px #4caf50 solid;
+}
+
+.iconSelectorButton.excluded {
+    background-color: rgba(239,68,68, 0.8);
+    border-bottom: 2px #dc2626 solid;
+}
+
+.iconSelectorContainer {
+    display: flex;
+    border: 1px #777 dotted;
+    border-radius: 1rem;
+    min-width: 200px;
+    padding: 0.5rem;
+}
+
+.iconSelectorContainer.wrappingRow {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconSelectorContainer.column {
+    flex-direction: column;
+    align-items: center;
+}
