@@ -52,7 +52,7 @@ export default function BuildPage({ params }) {
 
     const teamCode = useMemo(() => loading ? "" : constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order), [build, loading]);
 
-    if(loading) return <LoadingContentPageTemplate />
+    if (loading) return <LoadingContentPageTemplate />
 
     return <ContentPageTemplate
         targetType={"build"} targetId={id} content={build}

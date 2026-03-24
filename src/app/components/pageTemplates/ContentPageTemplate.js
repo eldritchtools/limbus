@@ -4,9 +4,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 import CommentSection from "./CommentSection";
+import ContributeButton from "../contentActions/ContributeButton";
 import DeleteButton from "../contentActions/DeleteButton";
 import EditButton from "../contentActions/EditButton";
 import LikeButton from "../contentActions/LikeButton";
+import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
 import { ViewSolid } from "../contentActions/Symbols";
 import Tag from "../objects/Tag";
@@ -57,6 +59,13 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
             return (user && user.id === content.user_id) || isLocalId(targetId) ?
                 <DeleteButton key={"delete"} targetType={targetType} targetId={targetId} title={content.title} /> :
                 null
+
+        // For collections only
+        if (action === "contribute" && targetType === "collection")
+            return content.submission_mode === "open" ? <ContributeButton collectionId={targetId} /> : null;
+
+        if (action === "review" && targetType === "collection")
+            return user && user.id === content.user_id ? <ReviewButton collectionId={targetId} /> : null;
     }
 
     if (!content)

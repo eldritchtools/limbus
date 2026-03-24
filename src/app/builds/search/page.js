@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import BuildsSearchDisplay from "@/app/components/contentCardDisplays/BuildsSearchDisplay";
 import BuildsSearchComponent, { prepareBuildFilters } from "@/app/components/search/BuildsSearchComponent";
 import { searchBuilds } from "@/app/database/builds";
+import { uiStrings } from "@/app/lib/uiStrings";
 
 export default function SearchBuildsPage() {
     const searchParams = useSearchParams();
@@ -52,14 +53,14 @@ export default function SearchBuildsPage() {
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
             builds.length === 0 ?
                 <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
-                    {page === 1 ? "No published builds yet." : "No more builds."}
+                    {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                 </p> :
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <BuildsSearchDisplay builds={builds} />
 
                     <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
                         <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        <button className="page-button" disabled={builds.length < 24} onClick={() => setPage(p => p + 1)}>Next</button>
+                        <button className="page-button" disabled={builds.length > 0} onClick={() => setPage(p => p + 1)}>Next</button>
                     </div>
                 </div>}
     </div>;

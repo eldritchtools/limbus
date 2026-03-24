@@ -27,8 +27,10 @@ import { useAuth } from "@/app/database/authProvider";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId, localStores } from "@/app/database/localDB";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
+import { uiColors } from "@/app/lib/colors";
 import { egoRankMapping, egoRanks, LEVEL_CAP } from "@/app/lib/constants";
 import { constructTeamCode, parseTeamCode } from "@/app/lib/teamCodeEncoding";
+import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
 
 
@@ -226,8 +228,8 @@ export default function BuildEditor({ mode, buildId }) {
         <h2 style={{ fontSize: "1.2rem", margin: 0 }}>
             {mode === "edit" ? "Editing" : "Creating"} Build
         </h2>
-        {!user ?
-            <div style={{ color: "rgba(255, 99, 71, 0.85)" }}>When not logged in, builds are saved locally on this device. After logging in, you can sync them to your account. Builds that are not synced cannot be accessed while logged in.</div>
+        {!user
+            ? <div style={{ color: uiColors.red }}>{uiStrings.contentNoUser("builds")}</div>
             : null
         }
         <span style={{ fontSize: "1.2rem" }}>Title</span>
@@ -304,7 +306,7 @@ export default function BuildEditor({ mode, buildId }) {
                     className={`toggle-button ${uptieLevelToggle ? "active" : ""}`}
                     onClick={() => setUptieLevelToggle(p => !p)}
                     {...getGeneralTooltipProps("optionaluptieorlevel")}
-                    style={{fontSize: "0.95rem"}}
+                    style={{ fontSize: "0.95rem" }}
                 >
                     Toggle Uptie and Level Inputs
                 </button>
@@ -312,7 +314,7 @@ export default function BuildEditor({ mode, buildId }) {
                     className={`toggle-button ${allIdEgoToggle ? "active" : ""}`}
                     onClick={() => setAllIdEgoToggle(p => !p)}
                     {...getGeneralTooltipProps("allIdEgoMenu")}
-                    style={{fontSize: "0.95rem"}}
+                    style={{ fontSize: "0.95rem" }}
                 >
                     Toggle All Ids & E.G.Os Menu
                 </button>
@@ -386,9 +388,7 @@ export default function BuildEditor({ mode, buildId }) {
             }
         </div>
         {user && !isPublished ?
-            <div style={{ color: "#aaa" }}>
-                {"Drafts can still be shared through the link, but aren't searchable and don't allow comments."}
-            </div> :
+            <div style={{ color: "#aaa" }}>{uiStrings.drafts}</div> :
             null
         }
         {isPublished ?

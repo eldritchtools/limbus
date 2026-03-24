@@ -16,7 +16,7 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.3",
     "@codemirror/view": "^6.39.4",
-    "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.29",
+    "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.30",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-select": "^2.2.6",
     "@supabase/supabase-js": "^2.99.3",

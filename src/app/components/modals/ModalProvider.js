@@ -5,12 +5,14 @@ import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
 import ModalContainer from "./ModalContainer";
 import SelectBuildModalContent from "./SelectBuildModalContent";
+import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
 
 const ModalContext = createContext();
 
 const MODAL_COMPONENTS = {
     "gift": GiftModalContent,
     "selectBuild": SelectBuildModalContent,
+    "selectMdPlan": SelectMdPlanModalContent,
     "deleteContent": DeleteContentModalContent,
     "deleteComment": DeleteCommentModalContent
 };
@@ -30,6 +32,10 @@ export function ModalProvider({ children }) {
         openModal("selectBuild", { onSelectBuild, allowDrafts });
     }
 
+    const openSelectMdPlanModal = ({ onSelectMdPlan, allowDrafts = false }) => {
+        openModal("selectMdPlan", { onSelectMdPlan, allowDrafts });
+    }
+
     const openDeleteContentModal = ({ targetType, targetId, title }) => {
         openModal("deleteContent", { targetType, targetId, title });
     }
@@ -45,8 +51,10 @@ export function ModalProvider({ children }) {
     const exportFunctions = {
         openGiftModal,
         openSelectBuildModal,
+        openSelectMdPlanModal,
         openDeleteContentModal,
-        openDeleteCommentModal
+        openDeleteCommentModal,
+        closeModal
     }
 
     return <ModalContext.Provider value={exportFunctions}>

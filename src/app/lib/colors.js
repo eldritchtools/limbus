@@ -19,6 +19,10 @@ export const giftTagColors = {
     // #14b8a6, #0d9488
 }
 
+export const uiColors = {
+    red: "rgba(255, 99, 71, 0.85)"
+}
+
 export function ColoredResistance({ resist }) {
     if (resist < 1) {
         return <span style={{ color: "#888", fontWeight: "bold" }}>x{resist}</span>

@@ -4,12 +4,19 @@ import TeamBuild from "../contentCards/TeamBuild";
 
 import useLocalState from "@/app/lib/useLocalState";
 
-export default function BuildsSearchDisplay({ builds }) {
+const sizeMapping = {
+    "S": 300,
+    "M": 460,
+    "L": 640
+}
+
+export default function BuildsSearchDisplay({ builds, complete = true, clickOverride, sizeOverride }) {
     const [compressed, setCompressed] = useLocalState("buildsCompressed", false);
     const { isMobile } = useBreakpoint();
+    const size = sizeOverride ?? (isMobile ? "S" : compressed ? "M" : "L");
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {!isMobile ?
+        {!isMobile && !sizeOverride ?
             <div style={{ alignSelf: "center" }}>
                 <label>
                     <input type="checkbox" checked={compressed} onChange={e => setCompressed(e.target.checked)} />
@@ -17,17 +24,10 @@ export default function BuildsSearchDisplay({ builds }) {
                 </label>
             </div> : null}
 
-        {isMobile ?
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 300px)", gap: "1rem", justifyContent: "center" }}>
-                {builds.map(build => <TeamBuild key={build.id} build={build} size={"S"} />)}
-            </div> :
-            compressed ?
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 460px)", gap: "1rem", justifyContent: "center" }}>
-                    {builds.map(build => <TeamBuild key={build.id} build={build} size={"M"} />)}
-                </div> :
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 640px)", gap: "1rem", justifyContent: "center" }}>
-                    {builds.map(build => <TeamBuild key={build.id} build={build} size={"L"} />)}
-                </div>
-        }
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${sizeMapping[size]}px)`, gap: "1rem", justifyContent: "center" }}>
+            {builds.map(build => <div key={build.id} onClick={clickOverride ? () => clickOverride(build) : undefined}>
+                <TeamBuild build={build} size={size} complete={complete} clickable={!clickOverride} />
+            </div>)}
+        </div>
     </div>
 }

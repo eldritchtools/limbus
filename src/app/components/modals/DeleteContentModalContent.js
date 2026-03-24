@@ -21,10 +21,12 @@ export default function DeleteContentModalContent({ targetType, targetId, title,
         setDeleting(true);
         if (isLocalId(targetId)) {
             await targetMapping[targetType].store.remove(Number(targetId));
+            onClose();
             router.push(`/my-profile`);
         } else {
             const data = await targetMapping[targetType].dbFunc(targetId);
             if (data && data.deleted) {
+                onClose();
                 router.push(`/${typePageMapping[targetType]}`);
             }
         }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-import TeamBuild from "../contentCards/TeamBuild";
+import BuildsSearchDisplay from "../contentCardDisplays/BuildsSearchDisplay";
 import BuildsSearchComponent, { prepareBuildFilters } from "../search/BuildsSearchComponent";
 
 import { useAuth } from "@/app/database/authProvider";
 import { searchBuilds } from "@/app/database/builds";
+import { uiStrings } from "@/app/lib/uiStrings";
 
 export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = false }) {
     const { user } = useAuth();
@@ -61,9 +62,9 @@ export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = f
             }
         </div>
         {searchMode === "search" ?
-            <BuildsSearchComponent options={filters} inPage={true} setFilters={setFilters} /> :
+            <BuildsSearchComponent searchFunc={setFilters} /> :
             (!user ?
-                <span>Locally saved builds are not supported.</span> :
+                <span>{uiStrings.noLocalContent("builds")}</span> :
                 null
             )
         }
@@ -74,19 +75,14 @@ export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = f
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
             builds.length === 0 ?
                 <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
-                    {page === 1 ? "No published builds yet." : "No more builds."}
+                    {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                 </p> :
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 300px)", gap: "1rem", justifyContent: "center" }}>
-                        {builds.map(build => <div key={build.id} onClick={() => onSelectBuild(build)}>
-                            <TeamBuild build={build} size={"S"} complete={false} clickable={false} />
-                        </div>
-                        )}
-                    </div>
+                    <BuildsSearchDisplay builds={builds} complete={false} clickOverride={onSelectBuild} sizeOverride={"S"} />
 
                     <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
                         <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        <button className="page-button" disabled={builds.length < 24} onClick={() => setPage(p => p + 1)}>Next</button>
+                        <button className="page-button" disabled={builds.length > 0} onClick={() => setPage(p => p + 1)}>Next</button>
                     </div>
                 </div>
         }

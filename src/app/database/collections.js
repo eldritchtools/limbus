@@ -5,7 +5,7 @@ const searchParams = {
     query: "p_query",
     collectionIds: "collection_id_filter",
     userId: "user_id_filter",
-    usernameExact: "username_exact_filter",
+    username: "username_exact_filter",
     tags: "tag_filter",
     ignoreBlockDiscovery: "p_ignore_block_discovery",
     published: "p_published",

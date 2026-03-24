@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../database/authProvider";
+
 import Notification from "../components/objects/Notification";
+import { useAuth } from "../database/authProvider";
 import { getNotifications } from "../database/notifications";
 
 export default function NotificationsPage() {
