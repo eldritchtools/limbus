@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
@@ -34,8 +34,8 @@ export function ModalProvider({ children }) {
         openModal("deleteContent", { targetType, targetId, title });
     }
 
-    const openDeleteCommentModal = ({ targetType, commentId, commentBody }) => {
-        openModal("deleteComment", { targetType, commentId, commentBody });
+    const openDeleteCommentModal = ({ targetType, commentId, commentBody, onDelete }) => {
+        openModal("deleteComment", { targetType, commentId, commentBody, onDelete });
     }
 
     const closeModal = () => {
@@ -49,19 +49,17 @@ export function ModalProvider({ children }) {
         openDeleteCommentModal
     }
 
-    return (
-        <ModalContext.Provider value={exportFunctions}>
-            {children}
+    return <ModalContext.Provider value={exportFunctions}>
+        {children}
 
-            {stack.map((entry, index) => {
-                const ModalComponent = MODAL_COMPONENTS[entry.type];
+        {stack.map((entry, index) => {
+            const ModalComponent = MODAL_COMPONENTS[entry.type];
 
-                <ModalContainer key={index} isOpen={true} onClose={closeModal} index={index}>
-                    <ModalComponent {...entry.props} onClose={closeModal} />
-                </ModalContainer>
-            })}
-        </ModalContext.Provider>
-    );
+            return <ModalContainer key={index} isOpen={true} onClose={closeModal} index={index}>
+                <ModalComponent {...entry.props} onClose={closeModal} />
+            </ModalContainer>
+        })}
+    </ModalContext.Provider>;
 }
 
 export function useModal() {

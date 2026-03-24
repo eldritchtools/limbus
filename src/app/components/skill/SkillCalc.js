@@ -433,12 +433,12 @@ function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
     const applyCrits = opts.crit === "all" || (opts.crit === "poise" && identity.skillKeywordList?.includes("Poise"))
 
     const [atkskills] = identity.skillTypes.reduce(([skills, counts], skill) => {
+        if(!(skill.id in skillData.skills)) return [skills, counts];
+
         const tier = skillData.skills[skill.id].tier;
 
         const finalApplyCrits = applyCrits || (opts.crit === "poise" && (skillData.skills[skill.id].critSkill ?? false));
         const data = extractSkillData(skillData.skills[skill.id], level, [tier, (counts[tier] ?? 0) + 1], finalApplyCrits);
-
-        if (!data.skill) return [skills, counts];
 
         if (tier in counts) {
             return [
@@ -454,10 +454,12 @@ function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
     }, [[], {}]);
 
     const defskills = identity.defenseSkillTypes.map(s => {
+        if(!(s.id in skillData.skills)) return null;
+
         const finalApplyCrits = applyCrits || (opts.crit === "poise" && (skillData.skills[s.id].critSkill ?? false));
 
         return extractSkillData(skillData.skills[s.id], level, ["Defense"], finalApplyCrits);
-    }).filter(x => x.skill);
+    }).filter(x => x);
 
     const list = [...atkskills, ...defskills];
 

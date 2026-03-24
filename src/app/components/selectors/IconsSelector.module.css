@@ -39,3 +39,8 @@
     flex-direction: column;
     align-items: center;
 }
+
+.iconSelectorContainer.borderless {
+    border: transparent;
+    padding: 0;
+}

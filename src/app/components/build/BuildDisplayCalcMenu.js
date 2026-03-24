@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import Icon from "../icons/Icon";
+import KeywordIcon from "../icons/KeywordIcon";
 import DropdownButton from "../objects/DropdownButton";
 import NumberInput from "../objects/NumberInput";
 
@@ -12,7 +13,10 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
     }, [setOpts]);
 
     const valueComponent = (name, key, def) => <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
-        <Icon path={name} style={{ width: "32px", height: "32px" }} />
+        {["off", "def"].includes(key) ? 
+            <Icon path={name} style={{ width: "32px", height: "32px" }} /> :
+            <KeywordIcon id={name} />
+        }
         <NumberInput
             value={opts.target ? (opts.target[key] ?? def) : def}
             onChange={v => setOpts(p => ({ ...p, target: { ...p.target, [key]: v } }))}
@@ -71,24 +75,13 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
                             options={{ "compress": "Compressed", "expand": "Expanded" }}
                         />
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            Coin Rolls:
-                            <DropdownButton
-                                value={opts.type ?? "max"}
-                                setValue={(x) => setOpts(p => ({ ...p, type: x }))}
-                                options={{ "max": "Max Rolls", "avg": "Average", "min": "Min Rolls" }}
-                            />
-                        </div>
-                        {opts.type === "avg" ?
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                                <span>SP:</span>
-                                <input type="number" min={-45} max={45} value={opts.sp === 0 ? "" : (opts.sp ?? 0)}
-                                    onChange={e => setOpts(p => ({ ...p, sp: e.target.value === "" ? 0 : Math.min(45, Math.max(-45, Number(e.target.value))) }))}
-                                    style={{ width: "3ch", textAlign: "center" }}
-                                />
-                            </div> :
-                            null}
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        Coin Rolls:
+                        <DropdownButton
+                            value={opts.type ?? "max"}
+                            setValue={(x) => setOpts(p => ({ ...p, type: x }))}
+                            options={{ "max": "Max Rolls", "avg": "Average", "min": "Min Rolls" }}
+                        />
                     </div>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         Apply Crits:
@@ -98,6 +91,15 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
                             options={{ "all": "All Skills", "poise": "Poise Ids/Skills", "none": "Ignore Crits" }}
                         />
                     </div>
+                    {opts.type === "avg" ?
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                            <span>SP:</span>
+                            <input type="number" min={-45} max={45} value={opts.sp === 0 ? "" : (opts.sp ?? 0)}
+                                onChange={e => setOpts(p => ({ ...p, sp: e.target.value === "" ? 0 : Math.min(45, Math.max(-45, Number(e.target.value))) }))}
+                                style={{ width: "3ch", textAlign: "center" }}
+                            />
+                        </div> :
+                        null}
                     <div style={{ display: "flex", flexDirection: "column", gridColumn: "span 2", alignItems: "center" }}>
                         <div style={{ display: "flex", alignItems: "center" }}>
                             Conditionals:

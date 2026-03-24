@@ -14,7 +14,21 @@ const categoryItems = {
     "skillType": ["Slash", "Pierce", "Blunt", "Guard", "Evade", "Counter"]
 }
 
-export default function IconsSelector({ type, categories, values, setValues }) {
+const additionalCategories = {
+    "atkType": ["Slash", "Pierce", "Blunt"],
+    "defType": ["Guard", "Evade", "Counter"],
+}
+
+export const filterCategories = Object.entries(categoryItems).reduce((acc, [type, list]) => {
+    list.forEach(filter => {acc[filter] = type;});
+    return acc;
+}, {});
+
+function getCategoryItems(category) {
+    return categoryItems[category] ?? additionalCategories[category];
+}
+
+export default function IconsSelector({ type, categories, values, setValues, borderless=false }) {
     const handleToggle = (filter, selected, excluded) => {
         if (selected)
             setValues(values.map(x => x === filter ? `-${x}` : x));
@@ -41,9 +55,9 @@ export default function IconsSelector({ type, categories, values, setValues }) {
                 icon = <RarityIcon rarity={filter} style={{height: "24px"}} />
                 break;
             case "sinner":
-                icon = <SinnerIcon num={filter} style={{height: "32px"}} />
+                icon = <SinnerIcon num={filter} style={{height: "32px", width: "32px"}} />
                 break;
-            case "status": case "affinity": case "skillType":
+            case "status": case "affinity": case "skillType": case "atkType": case "defType":
                 icon = <KeywordIcon id={filter} />
                 break;
             default:
@@ -63,22 +77,22 @@ export default function IconsSelector({ type, categories, values, setValues }) {
         categories.forEach(category => {
             if(category === "sinner") {
                 pieces.push(<div key={category} style={{display: "grid", gridTemplateColumns: "repeat(6, 1fr)", padding: "0.2rem", borderBottom: "1px #777 dotted"}}>
-                    {categoryItems[category].map(filter => toggleComponent(category, filter))}
+                    {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             } else {
                 pieces.push(<div key={category} style={{display: "flex", justifyContent: "center", padding: "0.2rem", borderBottom: "1px #777 dotted"}}>
-                    {categoryItems[category].map(filter => toggleComponent(category, filter))}
+                    {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             }
         })
     } else {
         categories.forEach(category => {
-            categoryItems[category].forEach(filter => pieces.push(toggleComponent(category, filter)))
+            getCategoryItems(category).forEach(filter => pieces.push(toggleComponent(category, filter)))
         })
     }
     pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={clearAll}>Clear All</div>)
 
-    return <div className={`${styles.iconSelectorContainer} ${type === "row" ? styles.wrappingRow : null} ${type === "column" ? styles.column : null}`}>
+    return <div className={`${styles.iconSelectorContainer} ${type === "row" ? styles.wrappingRow : null} ${type === "column" ? styles.column : null} ${borderless ? styles.borderless : null}`}>
         {pieces}
     </div>
 }

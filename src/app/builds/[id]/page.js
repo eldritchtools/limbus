@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 import BuildDisplay from "@/app/components/build/BuildDisplay";
+import BuildDisplayMenuCard from "@/app/components/build/BuildDisplayMenuCard";
 import DisplayTypeButton from "@/app/components/build/DisplayTypeButton";
 import SinDistribution from "@/app/components/build/SinDistribution";
 import TeamCodeComponent from "@/app/components/build/TeamCodeComponent";
@@ -10,7 +11,9 @@ import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import { getBuild } from "@/app/database/builds";
+import { keywordIdMapping } from "@/app/database/keywordIds";
 import { isLocalId, localStores } from "@/app/database/localDB";
+import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import useLocalState from "@/app/lib/useLocalState";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
@@ -53,11 +56,7 @@ export default function BuildPage({ params }) {
 
     return <ContentPageTemplate
         targetType={"build"} targetId={id} content={build}
-        titleIcons={build.keyword_ids.map(id => <KeywordIcon key={id} id={id} />)}
-        sideComponent={<div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center", gap: "0.2rem" }}>
-            <div>Display Type</div>
-            <DisplayTypeButton value={displayType} setValue={setDisplayType} />
-        </div>}
+        titleIcons={build.keyword_ids.map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
         actions={["like", "save", "edit", "delete"]}
     >
         <BuildDisplay
@@ -70,13 +69,16 @@ export default function BuildPage({ params }) {
             activeSinners={build.active_sinners}
             displayType={displayType}
         />
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", alignSelf: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+            <BuildDisplayMenuCard>
+                <div>Display Type</div>
+                <DisplayTypeButton value={displayType} setValue={setDisplayType} />
+            </BuildDisplayMenuCard>
             <SinDistribution
                 identityIds={build.identity_ids}
                 identityUpties={identityUpties}
                 deploymentOrder={build.deployment_order}
                 activeSinners={build.active_sinners}
-                alignment="start"
             />
             <TeamCodeComponent teamCode={teamCode} />
         </div>

@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { deleteBuild } from "@/app/database/builds";
@@ -14,6 +15,7 @@ const targetMapping = {
 
 export default function DeleteContentModalContent({ targetType, targetId, title, onClose }) {
     const [deleting, setDeleting] = useState(false);
+    const router = useRouter();
 
     const handleDelete = async () => {
         setDeleting(true);

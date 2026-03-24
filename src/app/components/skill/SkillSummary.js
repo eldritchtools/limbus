@@ -11,6 +11,8 @@ import { constructSkillLabel } from "@/app/lib/skill";
 function IdentitySkillSummary({ identity, type, uptie = 4, level = LEVEL_CAP }) {
     const { skills, combatPassives, supportPassives } = useSkillData("identity", identity.id, uptie);
 
+    if (Object.keys(skills).length === 0) return null;
+
     const cards = [];
 
     if (type === "s1" || type === "skills") {
@@ -60,36 +62,45 @@ function IdentitySkillSummary({ identity, type, uptie = 4, level = LEVEL_CAP }) 
 
 function EgoSkillSummary({ egos, type, threadspins, num }) {
     const chosen = useMemo(() => (num !== undefined) ?
-        ([[egos[num], threadspins?.[num] ?? 4, num]]) :
+        ([[egos[num], threadspins?.[num] ?? 4, num]]).filter(([ego]) => ego) :
         egos.map((ego, i) => [ego, threadspins?.[i] ?? 4, i]).filter(([ego]) => ego),
         [egos, threadspins, num]);
 
     const skillData = useSkillData("ego", chosen.map(([ego]) => ego.id), chosen.map(([, threadspin]) => threadspin));
+    
+    if(chosen.length === 0) return null;
 
     const cards = [];
     if (type === "ego") {
         const [ego] = chosen[0];
-        skillData[ego.id].awakeningSkills.forEach(skill =>
-            cards.push(<SkillCard key={skill.id} skill={skill.data} mini={true} label={constructSkillLabel("awakening")} />)
-        )
-        skillData[ego.id].corrosionSkills.forEach(skill =>
-            cards.push(<SkillCard key={skill.id} skill={skill.data} mini={true} label={constructSkillLabel("corrosion")} />)
-        )
-        skillData[ego.id].passives.forEach((p, i) =>
+        console.log(skillData[ego.id]);
+        skillData[ego.id].awakeningSkills.forEach((skill, i) => {
+            cards.push(<SkillCard key={`awa-${i}`} skill={skill.data} mini={true} label={constructSkillLabel("awakening")} />)
+        })
+        skillData[ego.id].corrosionSkills.forEach((skill, i) => {
+            cards.push(<SkillCard key={`cor-${i}`} skill={skill.data} mini={true} label={constructSkillLabel("corrosion")} />)
+        })
+        skillData[ego.id].passives.forEach((p, i) => {
             cards.push(<PassiveCard key={`passive-${i}`} passive={p} mini={true} label={"Passive"} />)
-        )
+        })
     } else if (type === "egoa") {
-        chosen.forEach(([ego, ts, rank]) => skillData[ego.id].awakeningSkills.forEach(skill =>
-            cards.push(<SkillCard key={skill.id} skill={skill.data} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
-        ))
+        chosen.forEach(([ego, ts, rank], i) => {
+            skillData[ego.id].awakeningSkills.forEach((skill, j) =>
+                cards.push(<SkillCard key={`awa-${i}-${j}`} skill={skill.data} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
+            )
+        })
     } else if (type === "egob") {
-        chosen.forEach(([ego, ts, rank]) => skillData[ego.id].corrosionSkills.forEach(skill =>
-            cards.push(<SkillCard key={skill.id} skill={skill.data} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
-        ))
+        chosen.forEach(([ego, ts, rank], i) => {
+            skillData[ego.id].corrosionSkills.forEach((skill, j) =>
+                cards.push(<SkillCard key={`cor-${i}-${j}`} skill={skill.data} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
+            )
+        })
     } else if (type === "egopassives") {
-        chosen.forEach(([ego, ts, rank]) => skillData[ego.id].passives.forEach(p =>
-            cards.push(<PassiveCard key={`passive-${rank}`} passive={p} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
-        ))
+        chosen.forEach(([ego, ts, rank]) => {
+            skillData[ego.id].passives.forEach(p =>
+                cards.push(<PassiveCard key={`passive-${rank}`} passive={p} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
+            )
+        })
     }
 
     if (cards.length === 0) return null;

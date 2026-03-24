@@ -1,3 +1,4 @@
+import { useData } from "../DataProvider";
 import GiftIcon from "../icons/GiftIcon";
 import { useModal } from "../modals/ModalProvider";
 import { getGiftTooltipProps } from "../tooltips/GiftTooltip";

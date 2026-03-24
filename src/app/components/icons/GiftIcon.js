@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useState } from "react";
 
 import KeywordIcon from "./KeywordIcon";
 import TierIcon from "./TierIcon";

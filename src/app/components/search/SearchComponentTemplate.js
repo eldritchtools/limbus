@@ -119,6 +119,9 @@ export default function SearchComponentTemplate({ initialValues, setValues, filt
 
     useEffect(() => {
         setValues(filters.reduce((acc, type) => {
+            if(filterValues[type] === componentsMapping[type].default || (Array.isArray(filterValues[type]) && filterValues[type].length === 0))
+                return acc;
+            
             acc[type] = filterValues[type];
             if (componentsMapping[type].transform) acc[type] = componentsMapping[type].transform(acc[type]);
             return acc;

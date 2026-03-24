@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+import MarkdownRenderer from "../markdown/MarkdownRenderer";
+
+import { deleteComment } from "@/app/database/comments";
+
 export default function DeleteCommentModalContent({ targetType, commentId, commentBody, onDelete, onClose }) {
     const [deleting, setDeleting] = useState(false);
 

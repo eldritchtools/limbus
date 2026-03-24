@@ -6,7 +6,7 @@ const searchParams = {
     buildIds: "build_id_filter",
     userId: "user_id_filter",
     username: "username_exact_filter",
-    tags: "tags_filter",
+    tags: "tag_filter",
     identities: "identity_filter",
     identitiesExclude: "identity_exclude",
     egos: "ego_filter",

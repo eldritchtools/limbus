@@ -8,12 +8,12 @@ function getPath(type, id) {
 
 function compileSkillData(data, uptie) {
     const result = data.reduce((acc, dataTier) => dataTier.uptie <= uptie ? { ...acc, ...dataTier } : acc, {});
-    if(Object.keys(result).length === 0) return null;
+    if (Object.keys(result).length === 0) return null;
     return result;
 }
 
 function compileCombatPassives(skillData, uptie) {
-    const passives = skillData.combatPassives.findLast(p => p.uptie <= uptie) ?? [];
+    const passives = skillData.combatPassives.findLast(p => p.uptie <= uptie)?.passives ?? [];
     return passives.map(p => {
         const passive = skillData.passiveData[p];
         if (passive.condition) return passive;
@@ -26,7 +26,7 @@ function compileCombatPassives(skillData, uptie) {
 }
 
 function compileSupportPassives(skillData, uptie) {
-    const passives = skillData.supportPassives.findLast(p => p.uptie <= uptie) ?? [];
+    const passives = skillData.supportPassives.findLast(p => p.uptie <= uptie)?.passives ?? [];
     return passives.map(p => skillData.passiveData[p]);
 }
 
@@ -40,31 +40,37 @@ export function useSkillData(type, ids, tiers) {
     const [skillData, skillDataLoading] = useDataMultiple(list.map(id => getPath(type, id)));
 
     const result = useMemo(() => {
-        const tierMapping = ids.reduce((acc, id, i) => { acc[id] = tiers[i]; return acc; }, {});
+        const tierMapping = list.reduce((acc, id, i) => { 
+            if(Array.isArray(tiers)) acc[id] = tiers[i]; 
+            else acc[id] = tiers;
+            return acc; 
+        }, {});
 
-        list.reduce((acc, id) => {
+        return list.reduce((acc, id) => {
             const tier = tierMapping[id];
             if (type === "identity") {
-                if (skillDataLoading) return acc[id] = { skills: [], combatPassives: [], supportPassives: [] };
+                const path = getPath(type, id);
+                if (skillDataLoading) acc[id] = { skills: [], combatPassives: [], supportPassives: [] };
                 else acc[id] = {
-                    skills: Object.fromEntries(Object.entries(skillData[id].skills)
+                    skills: Object.fromEntries(Object.entries(skillData[path].skills)
                         .map(([id, x]) => ([id, { ...x, data: compileSkillData(x.data, tier) }]))
                         .filter(([, x]) => x.data)
                     ),
-                    combatPassives: compileCombatPassives(skillData[id], tier),
-                    supportPassives: compileSupportPassives(skillData[id], tier)
+                    combatPassives: compileCombatPassives(skillData[path], tier),
+                    supportPassives: compileSupportPassives(skillData[path], tier)
                 };
             } else if (type === "ego") {
-                if (skillDataLoading) return acc[id] = { awakeningSkills: [], corrosionSkills: [], passives: [] };
+                const path = getPath(type, id);
+                if (skillDataLoading) acc[id] = { awakeningSkills: [], corrosionSkills: [], passives: [] };
                 else acc[id] = {
-                    awakeningSkills: skillData[id].awakeningSkills.map(x => ({...x, data: compileSkillData(x.data, tier)})),
-                    corrosionSkills: skillData[id].corrosionSkills?.map(x => ({...x, data: compileSkillData(x.data, tier)})) ?? [],
-                    passives: compileEgoPassives(skillData[id], tier)
+                    awakeningSkills: skillData[path].awakeningSkills.map(x => ({ ...x, data: compileSkillData(x.data, tier) })),
+                    corrosionSkills: skillData[path].corrosionSkills?.map(x => ({ ...x, data: compileSkillData(x.data, tier) })) ?? [],
+                    passives: compileEgoPassives(skillData[path], tier)
                 }
             }
             return acc;
         }, {});
-    }, [skillData, skillDataLoading, ids, tiers, list, type]);
+    }, [skillData, skillDataLoading, tiers, list, type]);
 
     if (!Array.isArray(ids)) return Object.values(result)[0];
     return result;

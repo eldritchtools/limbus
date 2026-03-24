@@ -104,14 +104,16 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
                 <CommentInput targetType={targetType} targetId={targetId} initialValue={comment.body} parentId={comment.parent_id}
                     editId={comment.id} onEdit={(body) => { setEditing(false); onEdit(comment.id, body); }} onCancel={() => setEditing(false)} /> :
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                    <div style={{ fontSize: "0.8rem" }}>by <UsernameWithTime data={comment} scale={.8} includeUpdatedAt={false} /> {comment.edited ? `(edited)` : null}</div>
+                    <div style={{ fontSize: "0.8rem" }}><UsernameWithTime data={comment} scale={.8} includeUpdatedAt={false} /> {comment.edited ? `(edited)` : null}</div>
                     <MarkdownRenderer content={comment.body} />
 
                     <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
                         {user ? <button onClick={() => setReplying(r => !r)}>↩ Reply</button> : null}
                         {user?.id === comment.user_id && <>
                             <button onClick={() => setEditing(true)}>✎ Edit</button>
-                            <button onClick={() => openDeleteCommentModal(targetType, comment.id, comment.body, handleDelete)}>🗑 Delete</button>
+                            <button onClick={() => openDeleteCommentModal
+                                ({ targetType: targetType, commentId: comment.id, commentBody: comment.body, onDelete: handleDelete })
+                            }>🗑 Delete</button>
                         </>
                         }
                         {user?.id === buildOwnerId ? (

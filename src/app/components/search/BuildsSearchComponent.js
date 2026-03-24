@@ -7,13 +7,6 @@ import SearchComponentTemplate from "./SearchComponentTemplate";
 
 import { keywordToIdMapping } from "@/app/database/keywordIds";
 
-// if (inPage) {
-//     setFilters(searchFilters);
-// } else {
-//     const params = new URLSearchParams(searchFilters);
-//     window.location.href = `/builds/search?${params.toString()}`;
-// }
-
 export default function BuildsSearchComponent({ initialValues = {}, createLink = false, searchFunc }) {
     const [filters, setFilters] = useState(null);
 

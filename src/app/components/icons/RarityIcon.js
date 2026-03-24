@@ -1,6 +1,9 @@
 import { ASSETS_ROOT } from "@/app/paths";
 
-const mapping = { 1: "0", 2: "00", 3: "000" }
+const mapping = { 
+    1: "0", 2: "00", 3: "000", 
+    "ZAYIN": "zayin", "TETH": "teth", "HE": "he", "WAW": "waw", "ALEPH": "aleph"
+}
 
 export default function RarityIcon({ rarity, style = {}, alt = false }) {
     const label = mapping[rarity] ?? rarity;

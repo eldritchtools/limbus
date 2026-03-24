@@ -12,7 +12,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
     if (!skill) return null;
 
     let iconSize = mini ? 24 : 32;
-    let coinSize = mini ? "18px" : "24px";
+    let coinSize = mini ? 18 : 24;
     let coinStyle = { width: `${coinSize}px`, height: `${coinSize}px` };
     let iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
@@ -22,7 +22,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
         border: `1px ${affinityColorMapping[skill.affinity]} solid`, borderRadius: "0.5rem",
         padding: "0.5rem", boxSizing: "border-box", fontSize: mini ? "0.8rem" : "1rem",
-        backgroundColor: (skill && !preskill) ? "rgba(46, 160, 67, 0.35)" : null
+        backgroundColor: (preskill && Object.keys(preskill) === 0) ? "rgba(46, 160, 67, 0.35)" : null
     }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "0.25rem" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: mini ? "0.1rem" : "0.25rem", alignItems: "center" }}>
@@ -52,7 +52,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                         `${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`
                     }
                 </span>
-                <span style={{ gap: "0" }}>
+                <span style={{ display: "flex", gap: "0" }}>
                     {skill.coins.map((coin, i) =>
                         <Icon key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} style={coinStyle} />
                     )}

@@ -1,6 +1,9 @@
-import dynamic from "next/dynamic";
+"use client";
+
+// import dynamic from "next/dynamic";
+// const Select = dynamic(() => import("react-select"), { ssr: false });
 import { useMemo } from "react";
-const Select = dynamic(() => import("react-select"), { ssr: false });
+import Select from "react-select";
 
 export default function DropdownSelectorWithExclusion({ options, optionsMapped, selected, setSelected, placeholder, filterFunction, isMulti, styles, excludeMode }) {
     const value = useMemo(() => {
@@ -25,6 +28,8 @@ export default function DropdownSelectorWithExclusion({ options, optionsMapped, 
             setSelected(items ? items.value : items);
         }
     }
+
+    if(Object.keys(optionsMapped).length === 0) return <div/>;
 
     return <Select
         isMulti={isMulti}

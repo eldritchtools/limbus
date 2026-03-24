@@ -6,20 +6,21 @@ import MdPlan from "../contentCards/MdPlan";
 import TeamBuild from "../contentCards/TeamBuild";
 
 const TOOLTIP_ID = "markdown-renderer-tooltip";
+const style = { };
 
 function MarkdownTooltipContent({ type, content }) {
     if (type === "build")
-        return <div style={{ width: "auto" }}>
+        return <div style={{ ...style, width: "auto" }}>
             <TeamBuild build={content} size={"M"} complete={false} />
         </div>
 
     if (type === "collection")
-        return <div style={{ width: isTouchDevice() ? "350px" : "750px" }}>
+        return <div style={{ ...style, width: isTouchDevice() ? "350px" : "750px" }}>
             <Collection collection={content} complete={false} />
         </div>
 
     if (type === "md_plan")
-        return <div style={{ width: "auto" }}>
+        return <div style={{ ...style, width: "auto" }}>
             <MdPlan plan={content} complete={false} />
         </div>
 

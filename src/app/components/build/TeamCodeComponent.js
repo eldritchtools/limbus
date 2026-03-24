@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 
+import BuildDisplayMenuCard from "./BuildDisplayMenuCard";
 import styles from "./TeamCodeComponent.module.css";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
-export default function TeamCodeComponent({ teamCode }) {
+export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
     const teamCodeRef = useRef(null);
     const [copySuccess, setCopySuccess] = useState('');
 
@@ -21,12 +22,19 @@ export default function TeamCodeComponent({ teamCode }) {
         }
     };
 
-    return <div style={{ display: "flex", flexDirection: "column", width: "300px", alignItems: "center", border: "1px #777 solid", borderRadius: "1rem" }}>
+    return <BuildDisplayMenuCard>
         <div>
             <span style={{ fontSize: "1.2rem", borderBottom: "1px #ddd dotted" }} {...getGeneralTooltipProps("teamcode")}>Team Code</span>
         </div>
         <div style={{ position: "relative", width: "100%" }}>
-            <textarea value={teamCode} ref={teamCodeRef} readOnly={true} style={{ width: "100%", height: "3rem", cursor: "pointer" }} onClick={handleTeamCodeCopy} />
+            <textarea
+                ref={teamCodeRef}
+                value={teamCode}
+                readOnly={!editable}
+                style={{ width: "200px", height: "3.5rem", cursor: "pointer" }}
+                onClick={editable ? undefined : handleTeamCodeCopy}
+                onChange={editable ? e => setTeamCode(e.target.value) : undefined}
+            />
             {copySuccess !== '' ?
                 <div className={styles.copyPopup}>
                     <div className={styles.copyPopupBox}>
@@ -36,5 +44,5 @@ export default function TeamCodeComponent({ teamCode }) {
                 null
             }
         </div>
-    </div>
+    </BuildDisplayMenuCard>
 }

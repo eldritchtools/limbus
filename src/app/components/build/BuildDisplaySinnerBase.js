@@ -1,3 +1,4 @@
+import DeploymentComponent from "./DeploymentComponent";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import RarityIcon from "../icons/RarityIcon";
@@ -6,10 +7,12 @@ import LinkWithTooltip from "../LinkWithTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
+import { egoRanks } from "@/app/lib/constants";
+
 function Identity({ identity, displayType, sinnerId, uptie, level }) {
     if (!identity)
         return <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <SinnerIcon num={sinnerId} style={{ width: "75%" }} />
+            <SinnerIcon num={sinnerId} style={{ width: "75%", height: "75%" }} />
         </div>
 
     const props = { displayName: displayType === "names", displayRarity: true };
@@ -30,18 +33,10 @@ function Identity({ identity, displayType, sinnerId, uptie, level }) {
         <div style={{ width: "100%", aspectRatio: "1/1", boxSizing: "border-box" }} />
 }
 
-const egoRankReverseMapping = {
-    0: "zayin",
-    1: "teth",
-    2: "he",
-    3: "waw",
-    4: "aleph"
-}
-
 function Ego({ ego, displayType, rank, threadspin }) {
     if (!ego)
         return <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
-            <RarityIcon rarity={egoRankReverseMapping[rank]} alt={true} style={{ width: "18%", height: "auto" }} />
+            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "18%", height: "auto" }} />
         </div>
 
     const props = { banner: true, type: "awaken", displayName: displayType === "names", displayRarity: false };
@@ -60,31 +55,6 @@ function Ego({ ego, displayType, rank, threadspin }) {
         <div style={{ width: "100%", aspectRatio: "4/1", boxSizing: "border-box" }} />
 }
 
-const deploymentComponentStyle = {
-    flex: 1,
-    textAlign: "center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    containerType: "size",
-    fontSize: "clamp(0.6rem, 20cqw, 1.5rem)"
-}
-
-function DeploymentComponent({ order, activeSinners, sinnerId }) {
-    const index = order.findIndex(x => x === sinnerId);
-    if (index === -1) {
-        return <div style={deploymentComponentStyle} />
-    } else if (index < activeSinners) {
-        return <div style={deploymentComponentStyle}>
-            <span style={{ color: "#fefe3d" }}>Active {index + 1}</span>
-        </div>
-    } else {
-        return <div style={deploymentComponentStyle}>
-            <span style={{ color: "#29fee9" }}>Backup {index + 1}</span>
-        </div>
-    }
-}
-
 export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity, egos, uptie, level, threadspins, deploymentOrder, activeSinners }) {
     return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", border: "1px #444 solid" }}>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
@@ -101,10 +71,10 @@ export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity
             {Array.from({ length: 5 }, (_, rank) =>
                 <Ego
                     key={rank}
-                    ego={egos}
+                    ego={egos[rank]}
                     displayType={displayType}
                     rank={rank}
-                    threadspin={threadspins}
+                    threadspin={threadspins?.[rank]}
                 />)}
         </div>
     </div>

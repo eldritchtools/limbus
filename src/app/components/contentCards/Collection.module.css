@@ -19,7 +19,7 @@
     z-index: 1;
 }
 
-.collectionContents {
+.collectionContent {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
+import { useState } from "react";
 
 import NoPrefetchLink from "../NoPrefetchLink";
 import styles from "./MdPlan.module.css";
@@ -43,7 +44,7 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
                     }
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon path={"starlight"} />
+                    <Icon path={"starlight"} style={{ width: "25px", height: "25px" }} />
                     {plan.cost}
                 </div>
             </div>

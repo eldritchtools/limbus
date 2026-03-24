@@ -1,11 +1,11 @@
-import Icon from "../icons/Icon";
+import KeywordIcon from "../icons/KeywordIcon";
 import DiffedText from "../texts/DiffedText";
 import ProcessedText from "../texts/ProcessedText";
 
 export function PassiveCost({ condition, iconSize, vertical = false }) {
     const costs = condition.requirement.map((cost, i) => {
         return <div key={i} style={{ display: "flex", alignItems: "center" }} >
-            <Icon key={`${i}-icon`} path={cost.type} style={{ width: iconSize, height: iconSize }} />
+            <KeywordIcon key={`${i}-icon`} id={cost.type} style={{ width: iconSize, height: iconSize }} />
             <span key={`${i}-num`}> x{cost.value}</span>
         </div>
     }).flat();
@@ -16,7 +16,7 @@ export function PassiveCost({ condition, iconSize, vertical = false }) {
     </div>
 }
 
-export default function PassiveCard({ passive, mini = false, type, pre, background }) {
+export default function PassiveCard({ passive, mini = false, label, pre, background }) {
     let iconSize = mini ? "24px" : "32px";
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
     let nameStyleOverride = mini ? { fontSize: "0.8rem" } : {};
@@ -32,9 +32,9 @@ export default function PassiveCard({ passive, mini = false, type, pre, backgrou
                 <div style={{ borderRadius: "5px", backgroundColor: "grey", padding: "5px", color: "#ddd", textShadow: "black 1px 1px 5px", fontWeight: "bold" }}>{passive.name}</div>
                 {"condition" in passive ? <PassiveCost condition={passive.condition} iconSize={iconSize} /> : null}
             </div>
-            {type ?
+            {label ?
                 <div style={{ flex: "0 0 auto", color: "#aaa", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
-                    {type}
+                    {label}
                 </div> : null
             }
         </div>

@@ -47,7 +47,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
     }, [content]);
 
     const constructAction = (action) => {
-        if (action === "like") return <LikeButton key={"like"} targetType={targetType} targetId={targetId} likeCount={content.likeCount} />;
+        if (action === "like") return <LikeButton key={"like"} targetType={targetType} targetId={targetId} likeCount={content.like_count} />;
         if (action === "save") return <SaveButton key={"save"} targetType={targetType} targetId={targetId} />;
         if (action === "edit")
             return (user && user.id === content.user_id) || isLocalId(targetId) ?
@@ -113,7 +113,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
 
         {content.is_published ?
             <div id="comments" style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
-                <CommentSection targetType={targetType} targetId={targetId} ownerId={content.user_id} commentCount={content.commentCount} pinnedComment={content.pinned_comment} />
+                <CommentSection targetType={targetType} targetId={targetId} ownerId={content.user_id} commentCount={content.comment_count} pinnedComment={content.pinned_comment} />
             </div> :
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>No comments while not published.</p>
         }

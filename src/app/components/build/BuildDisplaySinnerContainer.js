@@ -62,9 +62,9 @@ function SkillTypes({ skillType, uptie }) {
     const showAffinity = !uptie || !("affinityUptie" in skillType) || uptie >= skillType.affinityUptie;
 
     return <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.2rem", width: "100%", height: "100%", justifyContent: "center" }}>
-        {showAffinity ? <KeywordIcon id={skillType.affinity} style={{ width: "25%", height: "25%" }} /> : null}
-        <KeywordIcon id={skillType.type} style={{ width: "25%", height: "25%" }} />
-        {skillType.type === "counter" ? <KeywordIcon path={skillType.atkType} style={{ width: "25%", height: "25%" }} /> : null}
+        {showAffinity ? <KeywordIcon id={skillType.affinity} style={{ width: "25%", height: "100%" }} /> : null}
+        <KeywordIcon id={skillType.type} style={{ width: "25%", height: "100%" }} />
+        {skillType.type === "counter" ? <KeywordIcon id={skillType.atkType} style={{ width: "25%", height: "100%" }} /> : null}
     </div>
 }
 
@@ -97,7 +97,7 @@ function EgoStatsOverlay({ egos, displayType }) {
 
     return <div style={{ display: "grid", gridTemplateRows: "repeat(5, 1fr)", width: "100%", height: "20%", containerType: "size" }}>
         {egos.map((ego, i) => {
-            if (!ego) return null;
+            if (!ego) return <div key={i} style={{ height: "100cqh" }} />;
 
             if (displayType === "egocosts")
                 return <div key={i} style={{
@@ -123,7 +123,7 @@ function EgoStatsOverlay({ egos, displayType }) {
                         </div>)}
                 </div>
 
-            return null;
+            return <div key={i} style={{ height: "100cqh" }} />;
         }
         )}
     </div>
@@ -171,7 +171,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
 
         return <OverlayBase
             behind={baseComponent}
-            content={egos ? <EgoSkillSummary egos={egos} type={displayType} threadspins={egoThreadspins} num={num} /> : null}
+            content={egos ? <EgoSkillSummary egos={egos} type={"ego"} threadspins={egoThreadspins} num={num} /> : null}
             blockAccess={true}
         />
     }
@@ -187,7 +187,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
     if (displayType === "egocosts" || displayType === "egoresists") {
         return <OverlayBase
             behind={baseComponent}
-            content={egos ? <EgoStatsOverlay egos={egos} type={displayType} /> : null}
+            content={egos ? <EgoStatsOverlay egos={egos} displayType={displayType} /> : null}
         />
     }
 

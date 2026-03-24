@@ -14,6 +14,7 @@
 .cardButton:hover:not(.cardButton.disabled) {
     background: #3a3a3a;
     cursor: pointer;
+    color: #ddd;
 }
 
 .cardButton.left {
@@ -27,4 +28,8 @@
 .cardButton.middle {
     border-left: 2px #7c6a55 dashed;
     border-right: 2px #7c6a55 dashed;
+}
+
+.cardButton:visited {
+    color: #ddd;
 }

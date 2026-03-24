@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import BuildsSearchDisplay from "@/app/components/contentCardDisplays/BuildsSearchDisplay";
 import BuildsSearchComponent, { prepareBuildFilters } from "@/app/components/search/BuildsSearchComponent";
@@ -24,6 +24,7 @@ export default function SearchBuildsPage() {
     useEffect(() => {
         const fetchBuilds = async () => {
             try {
+                console.log(filters);
                 setLoading(true);
                 const params = prepareBuildFilters(filters, { published: true, ignoreBlockDiscovery: true });
                 const data = await searchBuilds(params, page);

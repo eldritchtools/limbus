@@ -1,13 +1,14 @@
 import { useData } from "../DataProvider";
-import Icon from "../icons/Icon";
+import BuildDisplayMenuCard from "./BuildDisplayMenuCard";
+import KeywordIcon from "../icons/KeywordIcon";
 import DropdownButton from "../objects/DropdownButton";
 
 import useLocalState from "@/app/lib/useLocalState";
 
 const affinities = ["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"];
 
-export default function SinDistribution({ identityIds, deploymentOrder, activeSinners, alignment = "center" }) {
-    const [mode, setMode] = useLocalState("buildSinDistributionType", "all-a");
+export default function SinDistribution({ identityIds, deploymentOrder, activeSinners }) {
+    const [mode, setMode] = useLocalState("buildSinDistributionType", "act-a");
     const [identities, identitiesLoading] = useData("identities");
 
     if (identitiesLoading) return null;
@@ -39,7 +40,7 @@ export default function SinDistribution({ identityIds, deploymentOrder, activeSi
         return acc;
     }, Object.fromEntries(affinities.map(x => [x, 0])));
 
-    return <div style={{ display: "flex", flexDirection: "column", width: "300px", alignItems: alignment, border: "1px #777 solid", borderRadius: "1rem" }}>
+    return <BuildDisplayMenuCard>
         <span>Sin Distribution:</span>
         <DropdownButton
             value={mode ?? "all-a"}
@@ -56,11 +57,11 @@ export default function SinDistribution({ identityIds, deploymentOrder, activeSi
         <div style={{ display: "flex", flexWrap: "wrap" }}>
             {affinities.map(affinity =>
                 <div key={affinity} style={{ display: "grid", gridTemplateRows: "repeat(2, auto)", justifyItems: "center" }}>
-                    <Icon path={affinity} style={{ height: "32px", width: "32px" }} />
+                    <KeywordIcon id={affinity} />
                     <div style={{ fontWeight: "bold", "color": values[affinity] ? "#ddd" : "#aaa" }}>
                         {values[affinity]}
                     </div>
                 </div>)}
         </div>
-    </div>;
+    </BuildDisplayMenuCard>;
 }
