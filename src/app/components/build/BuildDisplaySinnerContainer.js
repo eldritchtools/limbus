@@ -1,3 +1,5 @@
+"use client";
+
 import { useBreakpoint } from "@eldritchtools/shared-components";
 
 import BuildDisplaySinnerBase from "./BuildDisplaySinnerBase";

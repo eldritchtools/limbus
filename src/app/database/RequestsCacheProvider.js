@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useRef } from "react";
-import { getSupabase } from './connection';
+
 import { useAuth } from "./authProvider";
+import { getSupabase } from './connection';
 
 const RequestsCacheContext = createContext(null);
 

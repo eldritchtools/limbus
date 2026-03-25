@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { DATA_ROOT, PUBLIC_ROOT } from "../paths";

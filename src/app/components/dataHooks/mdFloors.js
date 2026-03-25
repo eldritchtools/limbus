@@ -1,4 +1,7 @@
+"use client";
+
 import { useMemo } from "react";
+
 import { useData } from "../DataProvider";
 
 function useFloorsPerPack() {

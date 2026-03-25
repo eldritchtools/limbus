@@ -1,3 +1,5 @@
+"use client";
+
 import DeploymentComponent from "./DeploymentComponent";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";

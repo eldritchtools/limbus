@@ -1,3 +1,5 @@
+"use client";
+
 export default function HoverBlocker({ setBlockHover, children }) {
     return <div
         style={{ display: "contents" }}

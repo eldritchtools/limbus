@@ -1,3 +1,5 @@
+"use client";
+
 import { useDataMultiple } from "../DataProvider";
 
 function getPath(type, id) {

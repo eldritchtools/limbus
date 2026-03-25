@@ -1,3 +1,5 @@
+"use client";
+
 import IdentityIcon from "../icons/IdentityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 
