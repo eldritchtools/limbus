@@ -1,22 +1,24 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter } from "next/navigation";
-import SelectBuildModal from "@/app/components/SelectBuildModal";
-import MarkdownRenderer from "@/app/components/Markdown/MarkdownRenderer";
-import ReactTimeAgo from "react-time-ago";
-import { isLocalId } from "@/app/utils";
-import MarkdownEditorWrapper from "@/app/components/Markdown/MarkdownEditorWrapper";
-import Username from "@/app/components/Username";
+import React, { useState, useEffect, useMemo } from "react";
+
+import MdPlan from "@/app/components/contentCards/MdPlan";
+import TeamBuild from "@/app/components/contentCards/TeamBuild";
+import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
+import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import { useModal } from "@/app/components/modals/ModalProvider";
+import { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
+import UsernameWithTime from "@/app/components/user/UsernameWithTime";
 import { useAuth } from "@/app/database/authProvider";
 import { getCollection, submitCollectionContribution } from "@/app/database/collections";
-import { useBreakpoint } from "@eldritchtools/shared-components";
-import BuildEntry from "@/app/components/BuildEntry";
-import MdPlan from "@/app/components/MdPlan";
-import SelectMdPlanModal from "@/app/components/SelectMdPlanModal";
+import { isLocalId } from "@/app/database/localDB";
 
 export default function ContributeCollectionPage({ params }) {
     const { id } = React.use(params);
+    const { user } = useAuth();
+    const router = useRouter();
     const [collection, setCollection] = useState(null);
     const [targetType, setTargetType] = useState(null);
     const [targetData, setTargetData] = useState(null);
@@ -25,11 +27,8 @@ export default function ContributeCollectionPage({ params }) {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    const { user } = useAuth();
-    const router = useRouter();
-    const [selectBuildOpen, setSelectBuildOpen] = useState(false);
-    const [selectMdPlanOpen, setSelectMdPlanOpen] = useState(false);
     const { isMobile } = useBreakpoint();
+    const { openSelectBuildModal, openSelectMdPlanModal, closeModal } = useModal();
 
     useEffect(() => {
         if (isLocalId(id) || !user) router.back();
@@ -68,9 +67,16 @@ export default function ContributeCollectionPage({ params }) {
         return collection.items.find(x => x.data.id === targetData.id) !== undefined;
     }, [collection, targetData]);
 
-    return loading ? <div style={{ display: "flex", flexDirection: "column", alignItems: "center", fontSize: "1.5rem", fontWeight: "bold" }}>
-        Loading...
-    </div> : <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
+    const onSelectContent = (type, content) => {
+        setTargetType(type);
+        setTargetData(content);
+        setMessage("");
+        closeModal();
+    }
+
+    if (loading) return <LoadingContentPageTemplate />
+
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <h2 style={{ fontSize: "1.2rem", margin: 0 }}>
                 Contributing to Collection
@@ -78,15 +84,7 @@ export default function ContributeCollectionPage({ params }) {
             <h2 style={{ display: "flex", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center" }}>
                 {collection.title}
             </h2>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "#ddd" }}>
-                    <span>by <Username username={collection.username} flair={collection.user_flair} /> • </span>
-                    <ReactTimeAgo date={collection.published_at ?? collection.created_at} locale="en-US" timeStyle="mini" />
-                    {collection.updated_at !== (collection.published_at ?? collection.created_at) ?
-                        <span> • Last edited <ReactTimeAgo date={collection.updated_at} locale="en-US" timeStyle="mini" /></span> :
-                        null}
-                </div>
-            </div>
+            <UsernameWithTime data={collection} scale={.9} includeUpdatedAt={true} />
         </div>
 
         <div style={{ height: "0.5rem" }} />
@@ -103,13 +101,13 @@ export default function ContributeCollectionPage({ params }) {
             <div style={{ border: "1px #777 solid" }} />
 
             <div style={{ display: "flex", gap: "0.25rem" }} >
-                <button onClick={() => setSelectBuildOpen(true)}>Select a build to contribute</button>
-                <button onClick={() => setSelectMdPlanOpen(true)}>Select an md plan to contribute</button>
+                <button onClick={() => openSelectBuildModal({ onSelectBuild: x => onSelectContent("build", x) })}>Select a build to contribute</button>
+                <button onClick={() => openSelectMdPlanModal({ onSelectMdPlan: x => onSelectContent("md_plan", x) })}>Select an md plan to contribute</button>
             </div>
 
             {targetType && targetData ?
                 targetType === "build" ?
-                    <BuildEntry build={targetData} size={"M"} complete={false} clickable={false} /> :
+                    <TeamBuild build={targetData} size={"M"} complete={false} clickable={false} /> :
                     targetType === "md_plan" ?
                         <MdPlan plan={targetData} complete={false} clickable={false} /> :
                         null
@@ -143,27 +141,5 @@ export default function ContributeCollectionPage({ params }) {
             <button style={{ padding: "0.5rem", fontSize: "1.2rem" }} onClick={() => router.back()} disabled={submitting}>Cancel</button>
             <span>{message}</span>
         </div>
-
-        <SelectBuildModal
-            isOpen={selectBuildOpen}
-            onClose={() => setSelectBuildOpen(false)}
-            onSelectBuild={build => {
-                setTargetType("build");
-                setTargetData(build);
-                setMessage("");
-                setSelectBuildOpen(false);
-            }}
-        />
-        
-        <SelectMdPlanModal
-            isOpen={selectMdPlanOpen}
-            onClose={() => setSelectMdPlanOpen(false)}
-            onSelectMdPlan={plan => {
-                setTargetType("md_plan");
-                setTargetData(plan);
-                setMessage("");
-                setSelectMdPlanOpen(false);
-            }}
-        />
     </div>
 }

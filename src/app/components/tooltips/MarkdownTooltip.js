@@ -1,3 +1,5 @@
+"use client";
+
 import { isTouchDevice } from "@eldritchtools/shared-components";
 
 import TooltipTemplate from "./TooltipTemplate";

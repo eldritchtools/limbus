@@ -62,10 +62,10 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
 
         // For collections only
         if (action === "contribute" && targetType === "collection")
-            return content.submission_mode === "open" ? <ContributeButton collectionId={targetId} /> : null;
+            return content.submission_mode === "open" ? <ContributeButton key={"contribute"} collectionId={targetId} /> : null;
 
         if (action === "review" && targetType === "collection")
-            return user && user.id === content.user_id ? <ReviewButton collectionId={targetId} /> : null;
+            return user && user.id === content.user_id ? <ReviewButton key={"review"} collectionId={targetId} /> : null;
     }
 
     if (!content)

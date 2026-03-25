@@ -1,3 +1,5 @@
+"use client";
+
 import { sinnerIdMapping } from "@/app/lib/constants";
 
 function createAutocompleteLabel(entry, type) {

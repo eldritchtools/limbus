@@ -1,3 +1,5 @@
+"use client";
+
 import { RangeSetBuilder } from '@codemirror/state';
 import { Decoration, ViewPlugin } from '@codemirror/view';
 

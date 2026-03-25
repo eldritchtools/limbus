@@ -1,19 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter } from "next/navigation";
-import MarkdownRenderer from "@/app/components/Markdown/MarkdownRenderer";
-import ReactTimeAgo from "react-time-ago";
-import { isLocalId } from "@/app/utils";
-import MarkdownEditorWrapper from "@/app/components/Markdown/MarkdownEditorWrapper";
-import Username from "@/app/components/Username";
+import React, { useState, useEffect, useMemo } from "react";
+
+import styles from "./Submission.module.css";
+
+import MdPlan from "@/app/components/contentCards/MdPlan";
+import TeamBuild from "@/app/components/contentCards/TeamBuild";
+import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
+import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import NoPrefetchLink from "@/app/components/NoPrefetchLink";
+import Username from "@/app/components/user/Username";
+import UsernameWithTime from "@/app/components/user/UsernameWithTime";
 import { useAuth } from "@/app/database/authProvider";
 import { approveCollectionSubmission, getCollection, getCollectionSubmissions, rejectCollectionSubmission, rejectCollectionSubmissionsForTarget } from "@/app/database/collections";
-import { useBreakpoint } from "@eldritchtools/shared-components";
-import BuildEntry from "@/app/components/BuildEntry";
-import "./Submission.css";
-import NoPrefetchLink from "@/app/NoPrefetchLink";
-import MdPlan from "@/app/components/MdPlan";
+import { isLocalId } from "@/app/database/localDB";
 
 function Submission({ submission, submissionIds, inList, handleApprove, handleReject, approved, rejected, submitting }) {
     const [editing, setEditing] = useState(false);
@@ -26,7 +28,7 @@ function Submission({ submission, submissionIds, inList, handleApprove, handleRe
     }, [approved, rejected]);
 
     if (editing) {
-        return <div className="submission-editing" style={style}>
+        return <div className={styles.submissionEditing} style={style}>
             <div>
                 Submitted by <Username username={submission.submitter.username} flair={submission.submitter.flair} clickable={false} />
             </div>
@@ -45,7 +47,7 @@ function Submission({ submission, submissionIds, inList, handleApprove, handleRe
             </div>
         </div>
     } else {
-        return <div className="submission" style={style} onClick={() => { if (!inList && !approved && !rejected) setEditing(true) }}>
+        return <div className={styles.submission} style={style} onClick={() => { if (!inList && !approved && !rejected) setEditing(true) }}>
             <div>
                 Submitted by <Username username={submission.submitter.username} flair={submission.submitter.flair} clickable={false} />
             </div>
@@ -72,7 +74,7 @@ function SubmissionSet({ type, data, submissions, inList, handleApprove, handleR
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", width: "100%" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
             {type === "build" ?
-                <BuildEntry build={data} size={"M"} complete={false} clickable={false}/> :
+                <TeamBuild build={data} size={"M"} complete={false} clickable={false}/> :
                 type === "md_plan" ?
                     <MdPlan plan={data} complete={false} clickable={false}/> :
                     null
@@ -201,15 +203,7 @@ export default function ReviewCollectionPage({ params }) {
                 <h2 style={{ display: "flex", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center" }}>
                     {collection.title}
                 </h2>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "#ddd" }}>
-                        <span>by <Username username={collection.username} flair={collection.user_flair} /> • </span>
-                        <ReactTimeAgo date={collection.published_at ?? collection.created_at} locale="en-US" timeStyle="mini" />
-                        {collection.updated_at !== (collection.published_at ?? collection.created_at) ?
-                            <span> • Last edited <ReactTimeAgo date={collection.updated_at} locale="en-US" timeStyle="mini" /></span> :
-                            null}
-                    </div>
-                </div>
+                <UsernameWithTime data={collection} scale={.9} includeUpdatedAt={true} />
             </div>
 
             <div style={{ height: "0.5rem" }} />

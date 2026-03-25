@@ -1,3 +1,5 @@
+"use client";
+
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import GiftIcon from "../icons/GiftIcon";

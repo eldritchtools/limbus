@@ -1,3 +1,5 @@
+"use client";
+
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import StatusIcon from "../icons/StatusIcon";

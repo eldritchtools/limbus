@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { getSupabase } from './connection';
 import { useRouter } from 'next/navigation';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+
+import { getSupabase } from './connection';
 
 const AuthContext = createContext({ user: null, profile: null, loading: true, refreshProfile: () => { }, updateUsername: () => { }, logout: () => { } });
 

@@ -1,4 +1,5 @@
-import { useBreakpoint } from "@eldritchtools/shared-components";
+"use client";
+
 import { useEffect, useState } from "react";
 
 import MdPlansSearchDisplay from "../contentCardDisplays/MdPlansSearchDisplay";

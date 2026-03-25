@@ -1,3 +1,5 @@
+"use client";
+
 import { isTouchDevice } from "@eldritchtools/shared-components";
 import * as Select from "@radix-ui/react-select";
 import { useMemo, useRef, useState } from "react";

@@ -1,3 +1,5 @@
+"use client";
+
 import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
 import { getIdentityImgSrc } from "../icons/IdentityIcon";

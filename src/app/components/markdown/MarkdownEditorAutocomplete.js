@@ -1,3 +1,5 @@
+"use client";
+
 import { autocompletion, startCompletion, completionStatus, acceptCompletion } from "@codemirror/autocomplete";
 import { Facet } from "@codemirror/state";
 import { keymap } from "@codemirror/view";
@@ -153,6 +155,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
     }), [setRequestedTypes]);
 
     const facetExtension = useMemo(
+        // eslint-disable-next-line react-hooks/refs
         () => autocompleteDataFacet.of(provider),
         [provider]
     );

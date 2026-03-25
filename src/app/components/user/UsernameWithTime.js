@@ -1,3 +1,5 @@
+"use client";
+
 import ReactTimeAgo from "react-time-ago";
 
 import Username from "./Username";

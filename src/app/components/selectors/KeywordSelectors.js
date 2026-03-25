@@ -1,3 +1,5 @@
+"use client";
+
 import DropdownSelectorWithExclusion from "./DropdownSelectorWithExclusion";
 import KeywordIcon from "../icons/KeywordIcon";
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 import BuildsSearchDisplay from "../contentCardDisplays/BuildsSearchDisplay";

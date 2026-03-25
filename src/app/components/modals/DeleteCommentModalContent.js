@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 import MarkdownRenderer from "../markdown/MarkdownRenderer";

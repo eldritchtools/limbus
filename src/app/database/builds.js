@@ -57,7 +57,8 @@ export async function insertBuild(params) {
 }
 
 export async function updateBuild(params) {
-    return callRPC("update_build_v4", convertParams(params, createParams));
+    await callRPC("update_build_v4", convertParams(params, createParams));
+    return params.buildId;
 }
 
 export async function deleteBuild(build_id) {

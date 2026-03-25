@@ -1,12 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import { useAuth } from '@/app/database/authProvider';
-import { localStores } from '@/app/database/localDB';
-import { useRequestsCache } from '@/app/database/RequestsCacheProvider';
 import { insertBuild } from '@/app/database/builds';
-import { createMdPlan } from '@/app/database/mdPlans';
 import { insertCollection } from '@/app/database/collections';
+import { localStores } from '@/app/database/localDB';
+import { createMdPlan } from '@/app/database/mdPlans';
+import { useRequestsCache } from '@/app/database/RequestsCacheProvider';
 
 export default function UsernameSetup() {
     const router = useRouter();
@@ -113,7 +114,7 @@ export default function UsernameSetup() {
                             title: build.title,
                             body: build.body,
                             identityIds: build.identity_ids,
-                            egoIds: build.egoIds,
+                            egoIds: build.ego_ids,
                             keywordIds: build.keyword_ids,
                             deploymentOrder: build.deployment_order,
                             activeSinners: build.active_sinners,
@@ -157,6 +158,7 @@ export default function UsernameSetup() {
                             return result;
                         });
                         const data = await insertCollection({
+                            userId: user.id,
                             title: collection.title,
                             body: collection.body,
                             shortDesc: collection.short_desc,
@@ -166,7 +168,7 @@ export default function UsernameSetup() {
                             items: trimmedItems,
                             tags: collection.tags
                         });
-                        if (data) await localStores["collection"].remove(collection.id);
+                        if (data) await localStores["collections"].remove(collection.id);
                     } catch (err) {
                         setError("Failed to sync a collection, try again or cancel syncing.");
                         setSyncing(false);
@@ -194,6 +196,7 @@ export default function UsernameSetup() {
                 for (const plan of localData["mdPlans"]) {
                     try {
                         const data = await createMdPlan({
+                            userId: user.id,
                             title: plan.title,
                             body: plan.body,
                             recommendationMode: plan.recommendation_mode,
