@@ -32,7 +32,7 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
                 <UsernameWithTime data={plan} scale={.8} includeUpdatedAt={false} />
             </HoverBlocker>
             <div>
-                Difficulty: {mdDiffculties[plan.difficulty]}
+                Difficulty: {mdDiffculties[plan.difficulty].name}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Keyword</div>

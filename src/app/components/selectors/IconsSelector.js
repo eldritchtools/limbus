@@ -4,6 +4,7 @@ import styles from "./IconsSelector.module.css";
 import KeywordIcon from "../icons/KeywordIcon";
 import RarityIcon from "../icons/RarityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
+import TierIcon from "../icons/TierIcon";
 
 const categoryItems = {
     "identityTier": ["0", "00", "000"],
@@ -11,7 +12,9 @@ const categoryItems = {
     "sinner": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     "status": ["Burn", "Bleed", "Tremor", "Rupture", "Sinking", "Poise", "Charge"],
     "affinity": ["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"],
-    "skillType": ["Slash", "Pierce", "Blunt", "Guard", "Evade", "Counter"]
+    "skillType": ["Slash", "Pierce", "Blunt", "Guard", "Evade", "Counter"],
+    "giftTier": ["1", "2", "3", "4", "5", "EX"],
+    "keywordless": ["Keywordless"]
 }
 
 const additionalCategories = {
@@ -20,7 +23,7 @@ const additionalCategories = {
 }
 
 export const filterCategories = Object.entries(categoryItems).reduce((acc, [type, list]) => {
-    list.forEach(filter => {acc[filter] = type;});
+    list.forEach(filter => { acc[filter] = type; });
     return acc;
 }, {});
 
@@ -28,7 +31,7 @@ function getCategoryItems(category) {
     return categoryItems[category] ?? additionalCategories[category];
 }
 
-export default function IconsSelector({ type, categories, values, setValues, borderless=false }) {
+export default function IconsSelector({ type, categories, values, setValues, borderless = false }) {
     const handleToggle = (filter, selected, excluded) => {
         if (selected)
             setValues(values.map(x => x === filter ? `-${x}` : x));
@@ -47,19 +50,26 @@ export default function IconsSelector({ type, categories, values, setValues, bor
         const excluded = !selected && values.includes(`-${filter}`);
 
         let icon = null;
-        switch(category) {
-            case "identityTier": 
-                icon = <RarityIcon rarity={filter} style={{height: "32px"}} />
+        switch (category) {
+            case "identityTier":
+                icon = <RarityIcon rarity={filter} style={{ height: "32px" }} />
                 break;
             case "egoTier":
-                icon = <RarityIcon rarity={filter} style={{height: "24px"}} />
+                icon = <RarityIcon rarity={filter} style={{ height: "24px" }} />
                 break;
             case "sinner":
-                icon = <SinnerIcon num={filter} style={{height: "32px", width: "32px"}} />
+                icon = <SinnerIcon num={filter} style={{ height: "32px", width: "32px" }} />
                 break;
             case "status": case "affinity": case "skillType": case "atkType": case "defType":
                 icon = <KeywordIcon id={filter} />
                 break;
+            case "giftTier":
+                icon = <div style={{ width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <TierIcon tier={filter} scaleY={1.2} />
+                </div>
+                break;
+            case "keywordless":
+                icon = <span>Keywordless</span>
             default:
                 break;
         }
@@ -73,14 +83,14 @@ export default function IconsSelector({ type, categories, values, setValues, bor
     }
 
     const pieces = [];
-    if(type === "column") {
+    if (type === "column") {
         categories.forEach(category => {
-            if(category === "sinner") {
-                pieces.push(<div key={category} style={{display: "grid", gridTemplateColumns: "repeat(6, 1fr)", padding: "0.2rem", borderBottom: "1px #777 dotted"}}>
+            if (category === "sinner") {
+                pieces.push(<div key={category} style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", padding: "0.2rem", borderBottom: "1px #777 dotted" }}>
                     {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             } else {
-                pieces.push(<div key={category} style={{display: "flex", justifyContent: "center", padding: "0.2rem", borderBottom: "1px #777 dotted"}}>
+                pieces.push(<div key={category} style={{ display: "flex", justifyContent: "center", padding: "0.2rem", borderBottom: "1px #777 dotted" }}>
                     {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             }

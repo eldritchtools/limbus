@@ -60,7 +60,8 @@
 }
 
 .identityMenuSelectorItem:focus,
-.identityMenuSelectorItem:hover {
+.identityMenuSelectorItem:hover,
+.identityMenuSelectorItem:active {
     background: #555;
     filter: brightness(1.3);
     transition: all 0.2s ease;

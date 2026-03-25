@@ -3,16 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { deleteBuild } from "@/app/database/builds";
-import { deleteCollection } from "@/app/database/collections";
-import { isLocalId, localStores } from "@/app/database/localDB";
-import { deleteMdPlan } from "@/app/database/mdPlans";
-import { typePageMapping } from "@/app/lib/constants";
+import { isLocalId } from "@/app/database/localDB";
+import { contentConfig } from "@/app/lib/contentConfig";
 
 const targetMapping = {
-    "build": { store: localStores["builds"], dbFunc: deleteBuild },
-    "collection": { store: localStores["collections"], dbFunc: deleteCollection },
-    "md_plan": { store: localStores["mdPlans"], dbFunc: deleteMdPlan }
+    "build": contentConfig.builds,
+    "collection": contentConfig.collections,
+    "md_plan": contentConfig.md_plans
 }
 
 export default function DeleteContentModalContent({ targetType, targetId, title, onClose }) {
@@ -22,14 +19,14 @@ export default function DeleteContentModalContent({ targetType, targetId, title,
     const handleDelete = async () => {
         setDeleting(true);
         if (isLocalId(targetId)) {
-            await targetMapping[targetType].store.remove(Number(targetId));
+            await targetMapping[targetType].local.remove(Number(targetId));
             onClose();
             router.push(`/my-profile`);
         } else {
-            const data = await targetMapping[targetType].dbFunc(targetId);
+            const data = await targetMapping[targetType].delete(targetId);
             if (data && data.deleted) {
                 onClose();
-                router.push(`/${typePageMapping[targetType]}`);
+                router.push(`/${contentConfig[targetType].path}`);
             }
         }
         setDeleting(false);

@@ -13,7 +13,7 @@ import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 import { egoRankMapping } from "@/app/lib/constants";
 import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 
-export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions }) {
+export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, includeSelectedFirst = false }) {
     const [mode, setMode] = useState("id");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
@@ -36,23 +36,33 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
 
         result = result.sort((a, b) => a.sinnerId === b.sinnerId ? b.id.localeCompare(a.id) : a.sinnerId - b.sinnerId);
         if (mode === "id") {
-            return result.map(data =>
-                <div key={data.id} className={identityStyles.identityMenuSelectorItem} onClick={() => setIdentityId(data.id, data.sinnerId - 1)}>
-                    <div className={identityStyles.identityMenuItemInner} {...getIdentityTooltipProps(data.id)}>
-                        <IdentityIcon identity={data} uptie={4} displayName={true} displayRarity={true} />
+            if(includeSelectedFirst)
+                result = [...identityIds.map(id => [identityOptions[id], true]), ...result.map(x => [x, false])];
+            else 
+                result = [...result.map(x => [x, false])];
+
+            return result.map(([data, active]) =>
+                    <div key={data.id} className={`${identityStyles.identityMenuSelectorItem} ${active ? identityStyles.active : null}`} onClick={() => setIdentityId(data.id, data.sinnerId - 1)}>
+                        <div className={identityStyles.identityMenuItemInner} {...getIdentityTooltipProps(data.id)}>
+                            <IdentityIcon identity={data} uptie={4} displayName={true} displayRarity={true} />
+                        </div>
                     </div>
-                </div>
-            )
+                )
         } else {
-            return result.map(data =>
-                <div key={data.id} className={egoStyles.egoMenuSelectorItem} onClick={() => setEgoId(data.id, data.sinnerId - 1, egoRankMapping[data.rank])}>
+            if(includeSelectedFirst)
+                result = [...egoIds.map(id => [egoOptions[id], true]), ...result.map(x => [x, false])];
+            else 
+                result = [...result.map(x => [x, false])];
+
+            return result.map(([data, active]) =>
+                <div key={data.id} className={`${egoStyles.egoMenuSelectorItem} ${active ? egoStyles.active : null}`} onClick={() => setEgoId(data.id, data.sinnerId - 1, egoRankMapping[data.rank])}>
                     <div className={egoStyles.egoMenuItemInner} {...getEgoTooltipProps(data.id)}>
                         <EgoIcon ego={data} type={"awaken"} displayName={true} displayRarity={true} />
                     </div>
                 </div>
             )
         }
-    }, [mode, identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, searchString, filters]);
+    }, [mode, identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, searchString, filters, includeSelectedFirst]);
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "98%", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", paddingLeft: "1rem" }}>

@@ -11,7 +11,18 @@ export async function GET(req) {
     if (!fileName) return new Response("File not specified", { status: 400 });
 
     const filePath = path.join(process.env.ASSETS_PATH, fileName);
-    const file = await fs.readFile(filePath);
 
-    return new Response(file, { headers: { "Content-Type": "image/png" } });
+    try {
+        const file = await fs.readFile(filePath);
+
+        return new Response(file, { headers: { "Content-Type": "image/png", } });
+    } catch (err) {
+        if (err.code === "ENOENT") {
+            return new Response("Not Found", { status: 404 });
+        }
+
+        console.error("File read error:", err);
+        return new Response("Internal Server Error", { status: 500 });
+    }
+
 }

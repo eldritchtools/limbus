@@ -1,0 +1,67 @@
+.floor-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 350px;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.floor-select-trigger:hover {
+    background-color: #555;
+    border-radius: 4px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.floor-select-value {
+    display: flex;
+    align-items: center;
+}
+
+.floor-select-content {
+    background: #1f1f1f;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 650px;
+    height: 80%;
+    max-height: 500px;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.floor-select-fade-bottom {
+  position: sticky;
+  bottom: 0;
+  height: 24px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, black);
+}
+
+.floor-select-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.floor-select-item {
+    position: relative;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.floor-select-item:focus,
+.floor-select-item:hover {
+    background: #555;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.floor-item-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

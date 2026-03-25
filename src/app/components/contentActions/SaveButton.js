@@ -6,8 +6,9 @@ import ActionTemplate from "./ActionTemplate";
 import { SaveOutline, SaveSolid } from "./Symbols";
 
 import { useAuth } from "@/app/database/authProvider";
-import { isLocalId, localStores } from "@/app/database/localDB";
+import { isLocalId } from "@/app/database/localDB";
 import { useRequestsCache } from "@/app/database/RequestsCacheProvider";
+import { contentConfig } from "@/app/lib/contentConfig";
 
 function NormalSaveButton({ targetType, targetId, type = "button", iconSize, shortText = false }) {
     const { checkSaved, toggleSave, fetchUserData } = useRequestsCache();
@@ -33,31 +34,22 @@ function LocalSaveButton({ targetType, targetId, type = "button", iconSize, shor
     const [loading, setLoading] = useState(false);
     const text = shortText ? "" : (saved ? "Saved" : "Save");
 
-    const store = useMemo(() => {
-        switch (targetType) {
-            case "build": return localStores["savedBuilds"];
-            case "collection": return localStores["savedCollections"];
-            case "md_plan": return localStores["savedMdPlans"];
-            default: return null;
-        }
-    }, [targetType]);
-
     useEffect(() => {
         const fetchSaved = async () => {
-            setSaved(await store.get(targetId) !== undefined);
+            setSaved(await contentConfig[targetType].localSaved.get(targetId) !== undefined);
         }
         fetchSaved();
-    }, [store, targetId]);
+    }, [targetType, targetId]);
 
     if (isLocalId(targetId)) return null;
 
     const handleClick = async () => {
         setLoading(true);
         if (saved) {
-            await store.remove(targetId);
+            await contentConfig[targetType].localSaved.remove(targetId);
             setSaved(false);
         } else {
-            await store.save({ id: targetId });
+            await contentConfig[targetType].localSaved.save({ id: targetId });
             setSaved(true);
         }
         setLoading(false);

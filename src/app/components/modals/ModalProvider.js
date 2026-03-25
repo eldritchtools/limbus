@@ -7,7 +7,9 @@ import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
 import ModalContainer from "./ModalContainer";
 import SelectBuildModalContent from "./SelectBuildModalContent";
+import SelectGiftModalContent from "./SelectGiftModalContent";
 import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
+import SelectThemePackModalContent from "./SelectThemePackModalContent";
 
 const ModalContext = createContext();
 
@@ -15,8 +17,10 @@ const MODAL_COMPONENTS = {
     "gift": GiftModalContent,
     "selectBuild": SelectBuildModalContent,
     "selectMdPlan": SelectMdPlanModalContent,
+    "selectGift": SelectGiftModalContent,
+    "selectThemePack": SelectThemePackModalContent,
     "deleteContent": DeleteContentModalContent,
-    "deleteComment": DeleteCommentModalContent
+    "deleteComment": DeleteCommentModalContent,
 };
 
 export function ModalProvider({ children }) {
@@ -38,6 +42,14 @@ export function ModalProvider({ children }) {
         openModal("selectMdPlan", { onSelectMdPlan, allowDrafts });
     }
 
+    const openSelectGiftModal = ({ title, getChoiceList, showSearch = false, onSelectGift, forcedFilter }) => {
+        openModal("selectGift", { title, getChoiceList, showSearch, onSelectGift, forcedFilter });
+    }
+
+    const openSelectThemePackModal = ({ getOptions, onSelectPack }) => {
+        openModal("selectThemePack", { getOptions, onSelectPack });
+    }
+
     const openDeleteContentModal = ({ targetType, targetId, title }) => {
         openModal("deleteContent", { targetType, targetId, title });
     }
@@ -54,6 +66,8 @@ export function ModalProvider({ children }) {
         openGiftModal,
         openSelectBuildModal,
         openSelectMdPlanModal,
+        openSelectGiftModal,
+        openSelectThemePackModal,
         openDeleteContentModal,
         openDeleteCommentModal,
         closeModal

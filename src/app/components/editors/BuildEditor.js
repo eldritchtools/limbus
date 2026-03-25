@@ -24,11 +24,13 @@ import UptieSelector from "../selectors/UptieSelector";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
+import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
-import { isLocalId, localStores } from "@/app/database/localDB";
+import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { egoRankMapping, egoRanks, LEVEL_CAP } from "@/app/lib/constants";
+import { contentConfig } from "@/app/lib/contentConfig";
 import { constructTeamCode, parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -101,7 +103,7 @@ export default function BuildEditor({ mode, buildId }) {
                     router.push(`/builds/${buildId}`);
                 });
             else
-                localStores["builds"].get(Number(buildId)).then(handleBuild).catch(_err => {
+                contentConfig.builds.local.get(Number(buildId)).then(handleBuild).catch(_err => {
                     router.push(`/builds/${buildId}`);
                 });
         }
@@ -202,7 +204,7 @@ export default function BuildEditor({ mode, buildId }) {
 
             if (mode === "edit") buildData.id = Number(buildId);
 
-            const data = await localStores["builds"].save(buildData)
+            const data = await contentConfig.builds.local.save(buildData)
             router.push(`/builds/${data}`);
         }
     }

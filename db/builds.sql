@@ -576,6 +576,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE OR REPLACE FUNCTION public.get_saved_builds_v4(
   p_user_id UUID,
+  p_sort_by text DEFAULT NULL,
   p_limit INTEGER DEFAULT 20,
   p_offset INTEGER DEFAULT 0
 )
@@ -602,54 +603,27 @@ RETURNS TABLE (
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
+DECLARE
+  saved_ids UUID[];
 BEGIN
+  SELECT COALESCE(ARRAY_AGG(target_id), ARRAY[]::UUID[])
+  INTO saved_ids
+  FROM public.saves s
+  WHERE s.user_id = p_user_id
+    AND target_type = 'build';
+
+  IF saved_ids = '{}' THEN
+    RETURN;
+  END IF;
+
   RETURN QUERY
-
-  WITH saved AS (
-    SELECT
-      s.target_id AS id,
-      s.created_at AS saved_at
-    FROM public.saves s
-    WHERE s.user_id = p_user_id
-      AND s.target_type = 'build'
-    ORDER BY s.created_at DESC
-    LIMIT p_limit OFFSET p_offset
-  ),
-
-  builds AS (
     SELECT *
     FROM public.search_builds_v9(
-      build_id_filter := ARRAY(SELECT id FROM saved),
-      p_limit := 1000,
-      p_offset := 0,
+      build_id_filter := saved_ids,
+      p_limit := p_limit,
+      p_offset := p_offset,
+      p_published := TRUE,
       p_ignore_block_discovery := TRUE
-    )
-  )
-
-  SELECT
-    b.id,
-    b.title,
-    b.created_at,
-    b.updated_at,
-    b.published_at,
-    b.like_count,
-    b.comment_count,
-    b.deployment_order,
-    b.active_sinners,
-    b.score,
-    b.is_published,
-    b.username,
-    b.user_flair,
-    b.tags,
-    b.extra_opts,
-    b.identity_ids,
-    b.keyword_ids,
-    b.ego_ids
-
-  FROM saved s
-  JOIN builds b ON b.id = s.id
-
-  ORDER BY s.saved_at DESC;
-
+    );
 END;
 $$;

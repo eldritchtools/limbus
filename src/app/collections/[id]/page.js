@@ -10,7 +10,8 @@ import DropdownButton from "@/app/components/objects/DropdownButton";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import Username from "@/app/components/user/Username";
 import { getCollection } from "@/app/database/collections";
-import { isLocalId, localStores } from "@/app/database/localDB";
+import { isLocalId } from "@/app/database/localDB";
+import { contentConfig } from "@/app/lib/contentConfig";
 import useLocalState from "@/app/lib/useLocalState";
 
 function ItemList({ items, viewMode, isMobile }) {
@@ -92,7 +93,7 @@ export default function CollectionPage({ params }) {
             }
 
             if (isLocalId(id)) {
-                localStores["collections"].get(Number(id)).then(handleCollection);
+                contentConfig.collections.local.get(Number(id)).then(handleCollection);
             } else {
                 getCollection(id).then(handleCollection);
             }

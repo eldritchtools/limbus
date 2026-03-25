@@ -12,7 +12,7 @@ import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import { getBuild } from "@/app/database/builds";
 import { keywordIdMapping } from "@/app/database/keywordIds";
-import { isLocalId, localStores } from "@/app/database/localDB";
+import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import useLocalState from "@/app/lib/useLocalState";
@@ -43,7 +43,7 @@ export default function BuildPage({ params }) {
             }
 
             if (isLocalId(id)) {
-                localStores["builds"].get(Number(id)).then(handleBuild);
+                contentConfig.builds.local.get(Number(id)).then(handleBuild);
             } else {
                 getBuild(id).then(handleBuild);
             }

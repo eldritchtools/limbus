@@ -13,8 +13,9 @@ import Username from "../user/Username";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getCollection, insertCollection, updateCollection } from "@/app/database/collections";
-import { isLocalId, localStores } from "@/app/database/localDB";
+import { isLocalId } from "@/app/database/localDB";
 import { uiColors } from "@/app/lib/colors";
+import { contentConfig } from "@/app/lib/contentConfig";
 import { uiStrings } from "@/app/lib/uiStrings";
 
 function Item({ type, data, note, index, isFirst, isLast, swapItems, removeItem, setItemNote, username, flair }) {
@@ -141,7 +142,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                     router.push(`/collections/${collectionId}`);
                 });
             else
-                localStores["collections"].get(Number(collectionId)).then(handleCollection).catch(_err => {
+                contentConfig.collections.local.get(Number(collectionId)).then(handleCollection).catch(_err => {
                     router.push(`/collections/${collectionId}`);
                 });
         }
@@ -202,7 +203,7 @@ export default function CollectionEditor({ mode, collectionId }) {
 
             if (mode === "edit") collectionData.id = Number(collectionId);
 
-            const data = await localStores["collections"].save(collectionData)
+            const data = await contentConfig.collections.local.save(collectionData)
             router.push(`/collections/${data}`);
         }
     }

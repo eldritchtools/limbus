@@ -67,7 +67,7 @@ function GiftIconContainer({ scale = 1, children }) {
 }
 
 function GiftIconMain({ gift, enhanceRank = 0, scale = 1, tagStrips }) {
-    return <GiftIconContainer>
+    return <GiftIconContainer scale={scale}>
         <GiftImg gift={gift} style={scaleStyle(giftStyle, scale * 0.75)} />
         <span style={giftTierStyle}><TierIcon tier={gift.tier} scale={scale} scaleY={1.4} /></span>
         {enhanceRank > 0 ? <span style={giftEnhanceStyle}><TierIcon tier={"+".repeat(enhanceRank)} scale={scale*1.2} /></span> : null}

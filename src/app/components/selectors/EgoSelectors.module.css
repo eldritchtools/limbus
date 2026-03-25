@@ -60,7 +60,8 @@
 }
 
 .egoMenuSelectorItem:focus,
-.egoMenuSelectorItem:hover {
+.egoMenuSelectorItem:hover,
+.egoMenuSelectorItem:active {
     background: #555;
     filter: brightness(1.3);
     transition: all 0.2s ease;

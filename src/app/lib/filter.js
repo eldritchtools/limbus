@@ -30,7 +30,7 @@ const identityFilterMatchFunctions = {
     "skillType": (filter, item) => item.skillTypes.some(s => s.type.type === filter.toLowerCase()) || item.defenseSkillTypes.some(s => s.type.type === filter.toLowerCase()),
     "status": (filter, item) => (item.skillKeywordList || []).includes(filter),
     "sinner": (filter, item) => filter === item.sinnerId
-}
+};
 
 const egoFilterMatchFunctions = {
     "egoTier": (filter, item) => filter === item.rank.toLowerCase(),
@@ -38,13 +38,20 @@ const egoFilterMatchFunctions = {
     "skillType": (filter, item) => item.awakeningType.type === filter.toLowerCase() || item.corrosionType?.type === filter.toLowerCase(),
     "status": (filter, item) => item.statuses.includes(keywordStatusMapping[filter]),
     "sinner": (filter, item) => filter === item.sinnerId
-}
+};
+
+const giftFilterMatchFunctions = {
+    "giftTier": item => item.tier,
+    "status": item => item.keyword,
+    "keywordless": item => item.keyword,
+    "affinity": item => item.affinity
+};
 
 export function filterByFilters(type, items, filters, additionalFilter) {
     const [f, fe] = filters.reduce(([f, fe], filter) => {
         const exc = filter[0] === "-";
         let realFilter = exc ? filter.slice(1) : filter;
-        if (Number.isInteger(Number(realFilter)) && Number(realFilter) > 0) realFilter = Number(realFilter);
+        if (filterCategories[realFilter] === "sinner") realFilter = Number(realFilter);
 
         if (exc) {
             if (filterCategories[realFilter] in fe) fe[filterCategories[realFilter]].push(realFilter);
@@ -65,6 +72,9 @@ export function filterByFilters(type, items, filters, additionalFilter) {
                 if (!f[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
             } else if (type === "ego") {
                 if (!f[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
+            } else if (type === "gift") {
+                console.log(f[filterType], item)
+                if (!f[filterType].includes(giftFilterMatchFunctions[filterType](item))) return false;
             }
         }
 
@@ -73,6 +83,8 @@ export function filterByFilters(type, items, filters, additionalFilter) {
                 if (fe[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
             } else if (type === "ego") {
                 if (fe[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
+            } else if (type === "gift") {
+                if (fe[filterType].includes(giftFilterMatchFunctions[filterType](item))) return false;
             }
         }
         return true;

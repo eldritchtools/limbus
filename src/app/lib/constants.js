@@ -38,9 +38,3 @@ export function getSeasonString(season) {
     if (season > 9100) return `Walpurgisnacht ${season - 9100}`;
     else return seasonMapping[season];
 }
-
-export const typePageMapping = {
-    "build": "builds",
-    "collection": "collections",
-    "md_plan": "md-plans"
-}
