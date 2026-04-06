@@ -1,4 +1,5 @@
 export const keywords = ["Burn", "Bleed", "Tremor", "Rupture", "Sinking", "Poise", "Charge", "Slash", "Pierce", "Blunt", "Keywordless"];
+export const affinities = ["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"];
 
 export const romanMapping = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X" };
 

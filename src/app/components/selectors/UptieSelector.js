@@ -19,7 +19,7 @@ function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, 
     return <Select.Root value={value} onValueChange={handleUpdateValue} open={isOpen} onOpenChange={setIsOpen}>
         <Select.Trigger className={styles.uptieSelectorTrigger} ref={triggerRef}>
             {value || !emptyIcon ?
-                <TierIcon tier={value} /> :
+                <TierIcon tier={value} scaleY={1.2} /> :
                 emptyIcon
             }
         </Select.Trigger>
@@ -32,7 +32,7 @@ function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, 
                             {[1, 2, 3, 4].map((option) =>
                                 <Select.Item key={option} value={option} className={styles.uptieSelectorItem}>
                                     <div className={styles.uptieItemInner}>
-                                        <TierIcon tier={option} />
+                                        <TierIcon tier={option} scaleY={1.2} />
                                     </div>
                                 </Select.Item>
                             )}

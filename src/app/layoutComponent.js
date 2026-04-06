@@ -31,7 +31,7 @@ const paths = [
     { path: "/egos", title: "E.G.Os" },
     {
         title: "Mirror Dungeons", subpaths: [
-            { path: "/achievements", title: "Achievements" },
+            { path: "/achievements", title: "Achievements Tracker" },
             { path: "/gifts", title: "Gifts" },
             { path: "/fusions", title: "Fusion Recipes" },
             { path: "/themepacks", title: "Theme Packs" },

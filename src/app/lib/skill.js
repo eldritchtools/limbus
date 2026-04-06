@@ -5,10 +5,16 @@ export function constructSkillLabel(type, tier, index) {
             else return `Skill ${tier}-${index + 1}`;
         case "defense":
             return "Defense";
+        case "combat":
+            return "Combat";
+        case "support":
+            return "Support";
         case "awakening":
             return "Awakening";
         case "corrosion":
             return "Corrosion";
+        case "passive":
+            return "Passive";
         default:
             return type;
     }

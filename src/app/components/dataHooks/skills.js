@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { useDataMultiple } from "../DataProvider";
 
 function getPath(type, id) {
@@ -17,11 +19,11 @@ function compileSkillData(data, uptie) {
 function compileCombatPassives(skillData, uptie) {
     const passives = skillData.combatPassives.findLast(p => p.uptie <= uptie)?.passives ?? [];
     return passives.map(p => {
-        const passive = skillData.passiveData[p];
+        const passive = { ...skillData.passiveData[p] };
         if (passive.condition) return passive;
-        Object.values(skillData.passiveData).forEach(p => {
-            if ("conditon" in p && p.name === passive.name)
-                passive["condition"] = p.condition;
+        Object.values(skillData.passiveData).forEach(p2 => {
+            if ("condition" in p2 && p2.name === passive.name)
+                passive["condition"] = p2.condition;
         })
         return passive;
     })
@@ -42,10 +44,10 @@ export function useSkillData(type, ids, tiers) {
     const [skillData, skillDataLoading] = useDataMultiple(list.map(id => getPath(type, id)));
 
     const result = useMemo(() => {
-        const tierMapping = list.reduce((acc, id, i) => { 
-            if(Array.isArray(tiers)) acc[id] = tiers[i]; 
+        const tierMapping = list.reduce((acc, id, i) => {
+            if (Array.isArray(tiers)) acc[id] = tiers[i];
             else acc[id] = tiers;
-            return acc; 
+            return acc;
         }, {});
 
         return list.reduce((acc, id) => {
@@ -59,7 +61,8 @@ export function useSkillData(type, ids, tiers) {
                         .filter(([, x]) => x.data)
                     ),
                     combatPassives: compileCombatPassives(skillData[path], tier),
-                    supportPassives: compileSupportPassives(skillData[path], tier)
+                    supportPassives: compileSupportPassives(skillData[path], tier),
+                    notes: skillData[path]?.notes ?? {}
                 };
             } else if (type === "ego") {
                 const path = getPath(type, id);
@@ -67,7 +70,8 @@ export function useSkillData(type, ids, tiers) {
                 else acc[id] = {
                     awakeningSkills: skillData[path].awakeningSkills.map(x => ({ ...x, data: compileSkillData(x.data, tier) })),
                     corrosionSkills: skillData[path].corrosionSkills?.map(x => ({ ...x, data: compileSkillData(x.data, tier) })) ?? [],
-                    passives: compileEgoPassives(skillData[path], tier)
+                    passives: compileEgoPassives(skillData[path], tier),
+                    notes: skillData[path]?.notes ?? {}
                 }
             }
             return acc;

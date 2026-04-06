@@ -22,9 +22,9 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
     const optionsMapped = useMemo(() => loading ? {} : Object.entries(identities).reduce((acc, [id, identity]) => {
         acc[id] = {
             value: identity.id,
-            label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", maxWidth: "65vw" }}>
+            label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                 <IdentityIcon id={identity.id} uptie={4} displayName={false} scale={0.125} />
-                <span>[{sinnerIdMapping[identity.sinnerId]}] {identity.name}</span>
+                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[identity.sinnerId]}] {identity.name}</span>
             </div>,
             searchStrings: [identity.name, sinnerIdMapping[identity.sinnerId]]
         };

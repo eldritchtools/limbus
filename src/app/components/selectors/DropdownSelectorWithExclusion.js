@@ -6,18 +6,23 @@ import { useMemo } from "react";
 import Select from "react-select";
 
 export default function DropdownSelectorWithExclusion({ options, optionsMapped, selected, setSelected, placeholder, filterFunction, isMulti, styles, excludeMode }) {
+    const mapped = useMemo(() => {
+        if (optionsMapped) return optionsMapped;
+        return options.reduce((acc, x) => { acc[x.value] = x; return acc }, {});
+    }, [options, optionsMapped]);
+
     const value = useMemo(() => {
         if (isMulti) {
             return selected.map((id) => {
                 const exclude = id[0] === '-';
-                const val = { ...optionsMapped[exclude ? id.slice(1) : id] };
+                const val = { ...mapped[exclude ? id.slice(1) : id] };
                 if (exclude) val.exclude = true;
                 return val;
             })
         } else {
-            return selected ? optionsMapped[selected] : [selected];
+            return selected ? mapped[selected] : [selected];
         }
-    }, [isMulti, selected, optionsMapped]);
+    }, [isMulti, selected, mapped]);
 
     const onChangeFunction = items => {
         if (isMulti) {
@@ -29,12 +34,12 @@ export default function DropdownSelectorWithExclusion({ options, optionsMapped, 
         }
     }
 
-    if(Object.keys(optionsMapped).length === 0) return <div/>;
+    if (Object.keys(mapped).length === 0) return <div />;
 
     return <Select
         isMulti={isMulti}
         isClearable={true}
-        options={options || Object.values(optionsMapped)}
+        options={options || Object.values(mapped)}
         value={value}
         onChange={onChangeFunction}
         placeholder={placeholder}

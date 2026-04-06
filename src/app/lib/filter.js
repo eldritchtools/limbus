@@ -29,7 +29,10 @@ const identityFilterMatchFunctions = {
     "affinity": (filter, item) => item.skillTypes.some(s => s.type.affinity === filter) || item.defenseSkillTypes.some(s => s.type.affinity === filter),
     "skillType": (filter, item) => item.skillTypes.some(s => s.type.type === filter.toLowerCase()) || item.defenseSkillTypes.some(s => s.type.type === filter.toLowerCase()),
     "status": (filter, item) => (item.skillKeywordList || []).includes(filter),
-    "sinner": (filter, item) => filter === item.sinnerId
+    "sinner": (filter, item) => filter === item.sinnerId,
+    "statusFull": (filter, item) => (item.statuses || []).includes(filter),
+    "tag": (filter, item) => (item.tags || []).includes(filter),
+    "season": (filter, item) => filter === item.season || (filter === 9100 && item.season > 9100)
 };
 
 const egoFilterMatchFunctions = {
@@ -37,7 +40,9 @@ const egoFilterMatchFunctions = {
     "affinity": (filter, item) => item.awakeningType.affinity === filter || item.corrosionType?.affinity === filter,
     "skillType": (filter, item) => item.awakeningType.type === filter.toLowerCase() || item.corrosionType?.type === filter.toLowerCase(),
     "status": (filter, item) => item.statuses.includes(keywordStatusMapping[filter]),
-    "sinner": (filter, item) => filter === item.sinnerId
+    "sinner": (filter, item) => filter === item.sinnerId,
+    "statusFull": (filter, item) => (item.statuses || []).includes(filter),
+    "season": (filter, item) => filter === item.season || (filter === 9100 && item.season > 9100)
 };
 
 const giftFilterMatchFunctions = {
@@ -47,18 +52,29 @@ const giftFilterMatchFunctions = {
     "affinity": item => item.affinity
 };
 
-export function filterByFilters(type, items, filters, additionalFilter) {
+export function filterByFilters(type, items, filters, additionalFilter, strictFiltering = false) {
     const [f, fe] = filters.reduce(([f, fe], filter) => {
-        const exc = filter[0] === "-";
-        let realFilter = exc ? filter.slice(1) : filter;
-        if (filterCategories[realFilter] === "sinner") realFilter = Number(realFilter);
+        let exc, realFilter, category;
+
+        if (Array.isArray(filter)) {
+            exc = filter[1][0] === "-";
+            realFilter = exc ? filter[1].slice(1) : filter[1];
+            category = filter[0];
+            if (category === "season") realFilter = Number(realFilter);
+        } else {
+            exc = filter[0] === "-";
+            realFilter = exc ? filter.slice(1) : filter;
+            category = filterCategories[realFilter];
+            if (type !== "gift" && category === "giftTier") category = "sinner";
+            if (category === "sinner") realFilter = Number(realFilter);
+        }
 
         if (exc) {
-            if (filterCategories[realFilter] in fe) fe[filterCategories[realFilter]].push(realFilter);
-            else fe[filterCategories[realFilter]] = [realFilter];
+            if (category in fe) fe[category].push(realFilter);
+            else fe[category] = [realFilter];
         } else {
-            if (filterCategories[realFilter] in f) f[filterCategories[realFilter]].push(realFilter);
-            else f[filterCategories[realFilter]] = [realFilter];
+            if (category in f) f[category].push(realFilter);
+            else f[category] = [realFilter];
         }
 
         return [f, fe];
@@ -69,11 +85,18 @@ export function filterByFilters(type, items, filters, additionalFilter) {
 
         for (const filterType in f) {
             if (type === "identity") {
-                if (!f[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
+                if (strictFiltering) {
+                    if (!f[filterType].every(x => identityFilterMatchFunctions[filterType](x, item))) return false;
+                } else {
+                    if (!f[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
+                }
             } else if (type === "ego") {
-                if (!f[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
+                if (strictFiltering) {
+                    if (!f[filterType].every(x => egoFilterMatchFunctions[filterType](x, item))) return false;
+                } else {
+                    if (!f[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
+                }
             } else if (type === "gift") {
-                console.log(f[filterType], item)
                 if (!f[filterType].includes(giftFilterMatchFunctions[filterType](item))) return false;
             }
         }

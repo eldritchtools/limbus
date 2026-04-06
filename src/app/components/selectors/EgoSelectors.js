@@ -24,7 +24,7 @@ export function EgoDropdownSelector({ selected, setSelected, isMulti = false, st
             value: ego.id,
             label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", maxWidth: "65vw" }}>
                 <EgoIcon id={ego.id} type={"awaken"} displayName={false} scale={0.125} />
-                <span>[{sinnerIdMapping[ego.sinnerId]}] {ego.name}</span>
+                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[ego.sinnerId]}] {ego.name}</span>
             </div>,
             searchStrings: [ego.name, sinnerIdMapping[ego.sinnerId]]
         };

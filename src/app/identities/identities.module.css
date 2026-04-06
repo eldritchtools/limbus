@@ -1,0 +1,25 @@
+.clickableId {
+    transition: all 0.2s ease;
+}
+
+.clickableId:hover {
+    filter: brightness(1.3);
+}
+
+.clickableIdCard {
+    background: #1f1f1f;
+    transition: all 0.2s ease;
+}
+
+.clickableIdCard:hover {
+    filter: brightness(1.3);
+}
+
+.clickableTableRow {
+    background: #1f1f1f;
+    transition: all 0.2s ease;
+}
+
+.clickableTableRow:hover {
+    filter: brightness(1.3);
+}

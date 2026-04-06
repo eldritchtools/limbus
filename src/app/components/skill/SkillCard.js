@@ -8,7 +8,7 @@ import ProcessedText from "../texts/ProcessedText";
 import { affinityColorMapping } from "@/app/lib/colors";
 import { constructOffDefLevel } from "@/app/lib/skill";
 
-export default function SkillCard({ skill, label = "", count = 0, level, mini = false, preskill }) {
+export default function SkillCard({ skill, label = "", count = 0, level, mini = false, pre }) {
     if (!skill) return null;
 
     let iconSize = mini ? 24 : 32;
@@ -18,16 +18,19 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
     let nameStyleOverride = mini ? { fontSize: "0.8rem" } : {};
 
+    let diff = pre && Object.keys(pre).length > 0;
+    let diffNew = pre && Object.keys(pre).length === 0;
+
     return <div style={{
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
         border: `1px ${affinityColorMapping[skill.affinity]} solid`, borderRadius: "0.5rem",
         padding: "0.5rem", boxSizing: "border-box", fontSize: mini ? "0.8rem" : "1rem",
-        backgroundColor: (preskill && Object.keys(preskill) === 0) ? "rgba(46, 160, 67, 0.35)" : null
+        backgroundColor: diffNew ? "rgba(46, 160, 67, 0.35)" : null
     }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "0.25rem" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: mini ? "0.1rem" : "0.25rem", alignItems: "center" }}>
                 {skill.affinity !== "none" ?
-                    (preskill?.affinity === "none" ?
+                    (pre?.affinity === "none" ?
                         <KeywordIcon id={skill.affinity} size={iconSize} style={{ backgroundColor: "rgba(46, 160, 67, 0.35)", padding: "0 2px", borderRadius: "3px" }} /> :
                         <KeywordIcon id={skill.affinity} size={iconSize} />) :
                     null}
@@ -45,8 +48,8 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.1rem", marginBottom: "0.25rem", alignItems: "center" }}>
             <span style={{ display: "flex", height: iconSize, gap: "0.25rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem" }}>
                 <span>
-                    Power: {preskill ? <DiffedText
-                        before={`${preskill.baseValue} ${preskill.coinValue < 0 ? preskill.coinValue : `+${preskill.coinValue}`}`}
+                    Power: {diff ? <DiffedText
+                        before={`${pre.baseValue} ${pre.coinValue < 0 ? pre.coinValue : `+${pre.coinValue}`}`}
                         after={`${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`}
                     /> :
                         `${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`
@@ -73,16 +76,16 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
             }
             <span style={{ display: "flex", minHeight: iconSize, alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem", gap: "0.2rem" }}>
                 Atk Weight:
-                {preskill ?
-                    <DiffedAtkWeight preSkillData={preskill} postSkillData={skill} /> :
+                {diff > 0 ?
+                    <DiffedAtkWeight preSkillData={pre} postSkillData={skill} /> :
                     <AtkWeight skillData={skill} />
                 }
             </span>
         </div>
         <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.2", marginBottom: "0.25rem" }}>
             {skill.desc ?
-                (preskill ?
-                    <DiffedText before={preskill.desc.split("\n")} after={skill.desc.split("\n")} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} /> :
+                (diff > 0 ?
+                    <DiffedText before={pre.desc.split("\n")} after={skill.desc.split("\n")} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} /> :
                     <ProcessedText text={skill.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
                 ) :
                 null
@@ -93,9 +96,9 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                 <div key={index} style={{ display: "flex", flexDirection: "row", gap: "0.5rem" }}>
                     <Coin num={index + 1} mini={mini} />
                     <div style={{ display: "flex", flex: 1, flexDirection: "column", whiteSpace: "pre-wrap", gap: "0.1rem" }}>
-                        {preskill ?
+                        {diff > 0 ?
                             <DiffedText
-                                before={preskill.coins[index]["descs"] ?? []}
+                                before={pre.coins[index]["descs"] ?? []}
                                 after={coin["descs"]}
                                 iconStyleOverride={iconStyleOverride}
                                 nameStyleOverride={nameStyleOverride}

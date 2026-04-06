@@ -86,21 +86,22 @@ export default function IconsSelector({ type, categories, values, setValues, bor
     if (type === "column") {
         categories.forEach(category => {
             if (category === "sinner") {
-                pieces.push(<div key={category} style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", padding: "0.2rem", borderBottom: "1px #777 dotted" }}>
+                pieces.push(<div key={category} style={{ display: "grid", gridTemplateColumns: "repeat(6, max-content)", padding: "0.2rem", width: "100%", borderBottom: "1px #777 dotted", justifyContent: "center" }}>
                     {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             } else {
-                pieces.push(<div key={category} style={{ display: "flex", justifyContent: "center", padding: "0.2rem", borderBottom: "1px #777 dotted" }}>
+                pieces.push(<div key={category} style={{ display: "flex", justifyContent: "center", padding: "0.2rem", width: "100%", borderBottom: "1px #777 dotted" }}>
                     {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             }
         })
+        pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", marginTop: "0.2rem" }} onClick={clearAll}>Clear All</div>)
     } else {
         categories.forEach(category => {
             getCategoryItems(category).forEach(filter => pieces.push(toggleComponent(category, filter)))
         })
+        pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={clearAll}>Clear All</div>)
     }
-    pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={clearAll}>Clear All</div>)
 
     return <div className={`${styles.iconSelectorContainer} ${type === "row" ? styles.wrappingRow : null} ${type === "column" ? styles.column : null} ${borderless ? styles.borderless : null}`}>
         {pieces}
