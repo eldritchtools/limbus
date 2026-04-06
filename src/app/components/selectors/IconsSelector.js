@@ -19,6 +19,7 @@ const categoryItems = {
 
 const additionalCategories = {
     "atkType": ["Slash", "Pierce", "Blunt"],
+    "atkTypeKwless": ["Slash", "Pierce", "Blunt", "Keywordless"],
     "defType": ["Guard", "Evade", "Counter"],
 }
 
@@ -49,8 +50,12 @@ export default function IconsSelector({ type, categories, values, setValues, bor
         const selected = values.includes(filter);
         const excluded = !selected && values.includes(`-${filter}`);
 
+        let cat = category;
+        if(cat === "atkType" || cat === "defType") cat = "skillType";
+        if(cat === "atkTypeKwless") cat = filterCategories[filter];
+
         let icon = null;
-        switch (category) {
+        switch (cat) {
             case "identityTier":
                 icon = <RarityIcon rarity={filter} style={{ height: "32px" }} />
                 break;

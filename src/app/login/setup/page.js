@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { updateAchievementsProgress } from '@/app/database/achievements';
 import { useAuth } from '@/app/database/authProvider';
 import { insertBuild } from '@/app/database/builds';
 import { insertCollection } from '@/app/database/collections';
@@ -240,6 +241,11 @@ export default function UsernameSetup() {
                 }
             }
 
+            if (syncs.includes("achievements")) {
+                updateAchievementsProgress(user, localData["achievements"][0]);
+                localStores["achievements"].remove("main");
+            }
+
             setSyncing(false);
             if (failed) await fetchLocal();
             else setSyncDone(true);
@@ -251,7 +257,8 @@ export default function UsernameSetup() {
             "collections": "Collections",
             "savedCollections": "Saved Collections",
             "mdPlans": "MD Plans",
-            "savedMdPlans": "Saved MD Plans"
+            "savedMdPlans": "Saved MD Plans",
+            "achievements": "Achievements"
         }
 
         return <main style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", textAlign: 'center', marginTop: '3rem' }}>

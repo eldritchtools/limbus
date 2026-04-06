@@ -46,10 +46,27 @@ const egoFilterMatchFunctions = {
 };
 
 const giftFilterMatchFunctions = {
-    "giftTier": item => item.tier,
-    "status": item => item.keyword,
-    "keywordless": item => item.keyword,
-    "affinity": item => item.affinity
+    "giftTier": (filter, item) => filter === item.tier,
+    "status": (filter, item) => filter === item.keyword,
+    "skillType": (filter, item) => filter === item.keyword,
+    "keywordless": (filter, item) => filter === item.keyword,
+    "affinity": (filter, item) => filter === item.affinity,
+    "tag": (filter, item) => {
+        if (filter === "Enhanceable") {
+            if (item.enhanceable) return true;
+        } else if (filter === "Ingredient") {
+            if (item.ingredientOf) return true;
+        } else if (filter === "Fusion Only") {
+            if (item.fusion) return true;
+        } else if (filter === "Hard Only") {
+            if (item.hardonly) return true;
+        } else if (filter === "Cursed") {
+            if (item.cursedPair) return true;
+        } else if (filter === "Blessed") {
+            if (item.blessedPair) return true;
+        }
+        return false;
+    }
 };
 
 export function filterByFilters(type, items, filters, additionalFilter, strictFiltering = false) {
@@ -97,7 +114,7 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
                     if (!f[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
                 }
             } else if (type === "gift") {
-                if (!f[filterType].includes(giftFilterMatchFunctions[filterType](item))) return false;
+                if (!f[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
 
@@ -107,7 +124,7 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
             } else if (type === "ego") {
                 if (fe[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
             } else if (type === "gift") {
-                if (fe[filterType].includes(giftFilterMatchFunctions[filterType](item))) return false;
+                if (fe[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
         return true;

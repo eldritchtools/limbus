@@ -7,14 +7,17 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
         setLocal(value.toString())
     }, [value]);
 
-    const parse = (str) => {
-        if (str === "" || str === "-") return null;
+    const parse = (str, force) => {
+        if (str === "" || str === "-") {
+            if(min !== null && force) return min;
+            return null;
+        }
         const n = Number(str);
         return Number.isNaN(n) ? null : n;
     }
 
     const validate = (str) => {
-        const num = parse(str);
+        const num = parse(str, false);
 
         if (num !== null && (min === null || num >= min) && (max === null || num <= max)) {
             onChange(num);
@@ -28,7 +31,7 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
 
     const commit = () => {
         if (allowEmpty && local === "") onChange("");
-        let num = parse(local);
+        let num = parse(local, true);
         if (num === null) {
             setLocal(String(value));
             return;
@@ -44,9 +47,9 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
         <input
             type="number"
             value={local}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={e => handleChange(e.target.value)}
             onBlur={commit}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
                 if (e.key === "Enter") {
                     e.preventDefault();
                     commit();

@@ -1,0 +1,33 @@
+.giftCard {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    width: min(400px, 95%);
+    border: 1px #aaa solid;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #1f1f1f;
+}
+
+.giftCard:hover {
+    filter: brightness(1.3);
+}
+
+.giftDesc {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    width: 100%;
+    height: fit-content;
+    border: 1px #aaa solid;
+    border-radius: 1rem;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #1f1f1f;
+}
+
+.giftDesc:hover {
+    filter: brightness(1.3);
+}

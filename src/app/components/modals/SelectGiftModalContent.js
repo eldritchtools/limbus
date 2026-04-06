@@ -1,5 +1,5 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Select from "react-select";
 
 import { useData } from "../DataProvider";
