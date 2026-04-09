@@ -26,18 +26,29 @@ const paths = [
     { path: "/builds", title: "Team Builds" },
     { path: "/md-plans", title: "MD Plans" },
     { path: "/collections", title: "Collections" },
-    { path: "/my-profile", title: "My Profile" },
     { path: "/identities", title: "Identities" },
     { path: "/egos", title: "E.G.Os" },
+    {
+        title: "My Profile", subpaths: [
+            { path: "/my-posts", title: "My Posts" },
+            { path: "/edit-profile", title: "Edit Profile" },
+        ]
+    },
     {
         title: "Mirror Dungeons", subpaths: [
             { path: "/achievements", title: "Achievements Tracker" },
             { path: "/gifts", title: "Gifts" },
             { path: "/fusions", title: "Fusion Recipes" },
-            { path: "/themepacks", title: "Theme Packs" },
+            { path: "/theme-packs", title: "Theme Packs" },
             { path: "/universal", title: "Universal Gifts/Gift Combos" },
         ]
     },
+    {
+        title: "Site / Contact", subpaths: [
+            { path: "update-history", title: "Update History"},
+            { path: "feedback", title: "Feedback / Contact"}
+        ]
+    }
 ]
 
 const description = <span>

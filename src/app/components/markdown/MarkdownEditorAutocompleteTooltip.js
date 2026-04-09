@@ -18,29 +18,27 @@ function constructWrapper(maxWidth) {
     return wrapper;
 }
 
-function constructImageElement(path, size, fallback=null) {
+function constructImageElement(path, size) {
+    if(!path) return null;
     const img = document.createElement("img");
     img.style.width = `${size}px`;
     img.style.height = `${size}px`;
     img.style.objectFit = "contain";
     img.style.borderRadius = "4px";
     img.addEventListener("error", () => {
-        img.src = fallback;
-        img.addEventListener("error", () => {
-            img.style.display = "none";
-        });
+        img.style.display = "none";
     });
     img.src = path;
     return img;
 }
 
-function constructTitleElement(name, withIcon = null, iconFallback = null) {
+function constructTitleElement(name, left = false, withIcon = null) {
     const title = document.createElement("div");
     title.textContent = name;
     title.style.fontSize = "1.1rem";
     title.style.fontWeight = "600";
 
-    if (withIcon) {
+    if (left) {
         const row = document.createElement("div");
         row.style.display = "flex";
         row.style.flexDirection = "row";
@@ -49,7 +47,7 @@ function constructTitleElement(name, withIcon = null, iconFallback = null) {
         row.style.marginBottom = "8px";
 
         title.style.flexGrow = "1";
-        row.appendChild(constructImageElement(withIcon, 32, iconFallback))
+        if(withIcon) row.appendChild(constructImageElement(withIcon, 32))
         row.appendChild(title);
         return row;
     } else {
@@ -111,7 +109,7 @@ function constructEgoAutocompleteTooltip(entry) {
 function constructStatusAutocompleteTooltip(entry) {
     const wrapper = constructWrapper(320);
 
-    wrapper.appendChild(constructTitleElement(entry.name, getStatusImgSrc(entry), getStatusImgSrc(null, entry.id)));
+    wrapper.appendChild(constructTitleElement(entry.name, true, getStatusImgSrc(entry)));
     wrapper.appendChild(constructTextElement(entry.desc));
 
     return wrapper;
@@ -120,7 +118,7 @@ function constructStatusAutocompleteTooltip(entry) {
 function constructGiftAutocompleteTooltip(entry, otherData) {
     const wrapper = constructWrapper(320);
 
-    wrapper.appendChild(constructTitleElement(entry.names[0], getGiftImgSrc(entry), getGiftImgSrc(null, entry.id)));
+    wrapper.appendChild(constructTitleElement(entry.names[0], true, getGiftImgSrc(entry)));
     wrapper.appendChild(constructTextElement(replaceStatusesInString(entry.descs[0], otherData, {})));
 
     return wrapper;
@@ -129,7 +127,7 @@ function constructGiftAutocompleteTooltip(entry, otherData) {
 export default function constructMarkdownEditorAutocompleteTooltip(entry, type, otherData = null) {
     if (type === "identity") return constructIdentityAutocompleteTooltip(entry);
     if (type === "ego") return constructEgoAutocompleteTooltip(entry);
-    if (type === "status") return constructStatusAutocompleteTooltip(entry);
+    if (type === "status" || type === "statusicon") return constructStatusAutocompleteTooltip(entry);
     if (type === "giftname" || type === "gifticons") return constructGiftAutocompleteTooltip(entry, otherData);
     return null;
 }

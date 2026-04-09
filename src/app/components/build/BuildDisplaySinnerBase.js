@@ -9,7 +9,9 @@ import LinkWithTooltip from "../LinkWithTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
+import { deploymentColors } from "@/app/lib/colors";
 import { egoRanks } from "@/app/lib/constants";
+import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
 
 function Identity({ identity, displayType, sinnerId, uptie, level }) {
     if (!identity)
@@ -58,7 +60,9 @@ function Ego({ ego, displayType, rank, threadspin }) {
 }
 
 export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity, egos, uptie, level, threadspins, deploymentOrder, activeSinners }) {
-    return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", border: "1px #444 solid" }}>
+    const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
+
+    return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", border: `1px ${deploymentColors[depType]} solid` }}>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
             <Identity
                 identity={identity}
@@ -67,7 +71,7 @@ export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity
                 uptie={uptie}
                 level={level}
             />
-            <DeploymentComponent order={deploymentOrder} activeSinners={activeSinners} sinnerId={sinnerId} />
+            <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
             {Array.from({ length: 5 }, (_, rank) =>

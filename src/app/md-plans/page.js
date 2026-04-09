@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import MdPlansSearchDisplay from "../components/contentCardDisplays/MdPlansSearchDisplay";
@@ -12,6 +13,14 @@ export default function MdPlansPage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("mdPlanActiveTab", "popular");
     const [refreshCounter, setRefreshCounter] = useState(0);
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const mode = searchParams.get('mode');
+        if (["popular", "new", "random"].includes(mode)) {
+            setActiveTab(mode);
+        }
+    }, [searchParams, setActiveTab]);
 
     useEffect(() => {
         if (!activeTab || !activeTabInitialized) return;
@@ -23,7 +32,7 @@ export default function MdPlansPage() {
                 setLoading(true);
                 const data = activeTab === "popular" ?
                     await searchMdPlans({ published: true, sortBy: "popular" }, 1) :
-                    activeTab === "recent" ?
+                    activeTab === "new" ?
                         await searchMdPlans({ published: true, sortBy: "new" }, 1) :
                         await searchMdPlans({ published: true, sortBy: "random" }, 1)
                 if (!canceled) {

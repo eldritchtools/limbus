@@ -397,26 +397,28 @@ export default function AchievementsPage() {
             <button className={`toggle-button ${sortClearedToBottom ? 'active' : ''}`} onClick={toggleSortClearedToBottom}>Sort Cleared to Bottom</button>
         </div>
 
-        <h2 style={{ display: "flex", margin: "0 0 10px", padding: 0, gap: "1rem", alignItems: "center" }}>
-            {Object.entries(achievements).map(([category]) =>
+        <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+            <h2 style={{ display: "flex", margin: "0 0 10px", padding: 0, gap: "1rem", alignItems: "center", justifyContent: "center", width: "max-content" }}>
+                {Object.entries(achievements).map(([category]) =>
+                    <div
+                        key={category}
+                        className={`tab-header ${activeTab === category ? "active" : ""}`}
+                        style={{ fontSize: "1rem" }}
+                        onClick={() => setActiveTab(category)}
+                    >
+                        {category}
+                    </div>
+                )}
                 <div
-                    key={category}
-                    className={`tab-header ${activeTab === category ? "active" : ""}`}
+                    key={"rewards"}
+                    className={`tab-header ${activeTab === "rewards" ? "active" : ""}`}
                     style={{ fontSize: "1rem" }}
-                    onClick={() => setActiveTab(category)}
+                    onClick={() => setActiveTab("rewards")}
                 >
-                    {category}
+                    Rewards
                 </div>
-            )}
-            <div
-                key={"rewards"}
-                className={`tab-header ${activeTab === "rewards" ? "active" : ""}`}
-                style={{ fontSize: "1rem" }}
-                onClick={() => setActiveTab("rewards")}
-            >
-                Rewards
-            </div>
-        </h2>
+            </h2>
+        </div>
 
         {
             activeTab === "rewards" ?

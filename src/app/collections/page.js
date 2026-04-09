@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import CollectionsSearchDisplay from "../components/contentCardDisplays/CollectionsSearchDisplay";
@@ -12,6 +13,14 @@ export default function CollectionsPage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("collectionsActiveTab", "popular");
     const [refreshCounter, setRefreshCounter] = useState(0);
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const mode = searchParams.get('mode');
+        if (["popular", "new", "random"].includes(mode)) {
+            setActiveTab(mode);
+        }
+    }, [searchParams, setActiveTab]);
 
     useEffect(() => {
         if (!activeTab || !activeTabInitialized) return;

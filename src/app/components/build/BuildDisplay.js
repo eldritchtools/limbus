@@ -6,8 +6,9 @@ import styles from "./BuildDisplay.module.css";
 import BuildDisplayCalcMenu from "./BuildDisplayCalcMenu";
 import BuildDisplaySinnerContainer from "./BuildDisplaySinnerContainer";
 import { useData } from "../DataProvider";
+import MarkdownRenderer from "../markdown/MarkdownRenderer";
 
-export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, deploymentOrder, activeSinners, displayType }) {
+export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, sinnerNotes, deploymentOrder, activeSinners, displayType }) {
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");
 
@@ -15,6 +16,7 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
     const upties = useMemo(() => identityUpties ? identityUpties.map(x => x === "" ? null : x) : null, [identityUpties]);
     const levels = useMemo(() => identityLevels ? identityLevels.map(x => x === "" ? null : x) : null, [identityLevels]);
     const threadspins = useMemo(() => egoThreadspins ? egoThreadspins.map(x => x.map(y => y === "" ? null : y)) : null, [egoThreadspins]);
+    const notes = useMemo(() => sinnerNotes ? sinnerNotes.map(x => x === "" ? null : x) : null, [sinnerNotes]);
 
     const [otherOpts, setOtherOpts] = useState({});
 
@@ -28,19 +30,21 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
 
         <div className={styles.buildDisplay} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
             {Array.from({ length: 12 }, (_, index) =>
-                <BuildDisplaySinnerContainer
-                    key={index}
-                    displayType={displayType}
-                    sinnerId={index + 1}
-                    identity={identities[identityIds[index]] || null}
-                    egos={egoIds[index].map(id => egos[id] || null)}
-                    identityUptie={upties ? upties[index] : null}
-                    identityLevel={levels ? levels[index] : null}
-                    egoThreadspins={threadspins ? threadspins[index] : null}
-                    deploymentOrder={deploymentOrder}
-                    activeSinners={activeSinners}
-                    otherOpts={otherOpts}
-                />
+                <div key={index} style={{ display: "flex", flexDirection: "column" }}>
+                    <BuildDisplaySinnerContainer
+                        displayType={displayType}
+                        sinnerId={index + 1}
+                        identity={identities[identityIds[index]] || null}
+                        egos={egoIds[index].map(id => egos[id] || null)}
+                        identityUptie={upties ? upties[index] : null}
+                        identityLevel={levels ? levels[index] : null}
+                        egoThreadspins={threadspins ? threadspins[index] : null}
+                        deploymentOrder={deploymentOrder}
+                        activeSinners={activeSinners}
+                        otherOpts={otherOpts}
+                    />
+                    {notes && notes[index] ? <MarkdownRenderer content={notes[index]} /> : null}
+                </div>
             )}
         </div>
     </div>

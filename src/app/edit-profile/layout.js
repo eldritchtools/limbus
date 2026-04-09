@@ -2,9 +2,9 @@ import { Suspense } from "react";
 
 export const metadata = {
     title: "My Profile | Limbus Company Tools",
-    description: "View the user's content or edit their profile details"
+    description: "Edit the user's profile details"
 };
 
-export default function ProfileLayout({ children }) {
+export default function MyProfileLayout({ children }) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }

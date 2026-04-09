@@ -24,27 +24,16 @@ function scaleStyle(style, scale) {
     return { ...style, width: `${scaleSize(scale)}px`, height: `${scaleSize(scale)}px` };
 }
 
-export function getGiftImgSrc(gift, fallback = null) {
-    const src = fallback ?? ("imageOverride" in gift ? gift["imageOverride"] : gift.names[0]);
-    return `${ASSETS_ROOT}/gifts/${src}.png`;
+export function getGiftImgSrc(gift) {
+    if ("srcPath" in gift) return `${ASSETS_ROOT}/gifts/${gift.srcPath}.png`;
+    return null;
 }
 
 function GiftImg({ gift, style }) {
-    const [fallback, setFallback] = useState(false);
-    const [iconVisible, setIconVisible] = useState(true);
+    const src = getGiftImgSrc(gift);
+    if(!src) return null;
 
-    if (!iconVisible) return null;
-    const src = getGiftImgSrc(gift, fallback ? gift.id : null);
-
-    const handleError = () => {
-        if (!fallback) {
-            setFallback(true);
-        } else {
-            setIconVisible(false);
-        }
-    }
-
-    return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} onError={handleError} />
+    return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} />
 }
 
 function TagStrips({ gift, scale }) {

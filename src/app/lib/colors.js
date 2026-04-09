@@ -19,6 +19,12 @@ export const giftTagColors = {
     // #14b8a6, #0d9488
 }
 
+export const deploymentColors = {
+    none: "#444",
+    active: "#fefe3d",
+    backup: "#29fee9"
+}
+
 export const uiColors = {
     red: "rgba(255, 99, 71, 0.85)"
 }

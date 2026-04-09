@@ -1,9 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import styles from "./page.module.css";
-import { getSupabase } from '../database/connection';
 import NoPrefetchLink from '../components/NoPrefetchLink';
+import { getSupabase } from '../database/connection';
 
 function AuthForm() {
     const router = useRouter();
@@ -81,10 +82,10 @@ function AuthForm() {
                 maxWidth: '24rem',
                 margin: '0 auto',
                 padding: '1.25rem',
-                backgroundColor: '#2a2a2a',
-                borderRadius: '10px',
-                border: '1px solid #555',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+                background: "#111",
+                borderRadius: "0.75rem",
+                border: "1px solid #333",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
                 color: '#ddd',
             }}
         >

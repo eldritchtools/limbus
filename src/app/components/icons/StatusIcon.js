@@ -1,33 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 
 import { useData } from "../DataProvider";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
-export function getStatusImgSrc(status, fallback = null) {
-    const src = fallback ?? ("imageOverride" in status ? status.imageOverride : status.name);
-    return `${ASSETS_ROOT}/statuses/${src}.png`;
+export function getStatusImgSrc(status) {
+    if("srcPath" in status) return `${ASSETS_ROOT}/statuses/${status.srcPath}.png`;
+    return null;
 }
 
-function StatusIconMain({ id, status, style }) {
-    const [fallback, setFallback] = useState(false);
-    const [iconVisible, setIconVisible] = useState(true);
-
-    if (!iconVisible) return null;
-    const src = getStatusImgSrc(status, fallback ? (id ?? status.id) : null);
-
-    const handleError = () => {
-        if (!fallback) {
-            setFallback(true);
-        } else {
-            setIconVisible(false);
-        }
-    }
-
-    return <Image src={src} alt={status.name} width={32} height={32} style={style} onError={handleError} />
+function StatusIconMain({ status, style }) {
+    const src = getStatusImgSrc(status);
+    if(!src) return null;
+    if(src.includes("?")) return null;
+    return <Image src={src} alt={status.name} width={32} height={32} style={style} />
 }
 
 function StatusIconFetch({id, style}) {

@@ -28,9 +28,10 @@ import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
-import { uiColors } from "@/app/lib/colors";
+import { deploymentColors, uiColors } from "@/app/lib/colors";
 import { egoRankMapping, egoRanks, LEVEL_CAP } from "@/app/lib/constants";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
 import { constructTeamCode, parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -47,11 +48,12 @@ export default function BuildEditor({ mode, buildId }) {
     const [teamCode, setTeamCode] = useState('');
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
-    const [uptieLevelToggle, setUptieLevelToggle] = useState(false);
+    const [additionalToggle, setAdditionalToggle] = useState(false);
     const [allIdEgoToggle, setAllIdEgoToggle] = useState(false);
     const [identityUpties, setIdentityUpties] = useState(Array.from({ length: 12 }, () => ""));
     const [identityLevels, setIdentityLevels] = useState(Array.from({ length: 12 }, () => ""));
     const [egoThreadspins, setEgoThreadspins] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => "")));
+    const [sinnerNotes, setSinnerNotes] = useState(Array.from({ length: 12 }, () => ""));
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
     const [blockDiscovery, setBlockDiscovery] = useState(false);
@@ -88,10 +90,11 @@ export default function BuildEditor({ mode, buildId }) {
 
                     if (build.extra_opts) {
                         const extraOpts = decodeBuildExtraOpts(build.extra_opts);
-                        if (Object.keys(extraOpts).length > 0) setUptieLevelToggle(true);
+                        if (Object.keys(extraOpts).length > 0) setAdditionalToggle(true);
                         if ("identityLevels" in extraOpts) setIdentityLevels(extraOpts.identityLevels);
                         if ("identityUpties" in extraOpts) setIdentityUpties(extraOpts.identityUpties);
                         if ("egoThreadspins" in extraOpts) setEgoThreadspins(extraOpts.egoThreadspins);
+                        if ("sinnerNotes" in extraOpts) setSinnerNotes(extraOpts.sinnerNotes);
                     }
 
                     if (build.created_at) setCreatedAt(build.created_at);
@@ -124,6 +127,7 @@ export default function BuildEditor({ mode, buildId }) {
     const setIdentityLevel = (level, index) => setIdentityLevels(prev => prev.map((x, i) => i === index ? level : x));
     const setIdentityUptie = (uptie, index) => setIdentityUpties(prev => prev.map((x, i) => i === index ? uptie : x));
     const setEgoThreadspin = (uptie, index, rank) => setEgoThreadspins(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? uptie : y) : x));
+    const setSinnerNote = (note, index) => setSinnerNotes(prev => prev.map((x, i) => i === index ? note : x));
 
     const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
         if (id) {
@@ -157,7 +161,7 @@ export default function BuildEditor({ mode, buildId }) {
             return;
         }
 
-        const extraOpts = encodeBuildExtraOpts(identityUpties, identityLevels, egoThreadspins);
+        const extraOpts = encodeBuildExtraOpts(identityUpties, identityLevels, egoThreadspins, sinnerNotes);
 
         setSaving(true);
         if (user) {
@@ -242,12 +246,13 @@ export default function BuildEditor({ mode, buildId }) {
                 displayType === "edit" ?
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <div className={styles.buildDisplay} style={{ alignSelf: "center", width: "98%", paddingBottom: "1rem" }}>
-                            {Array.from({ length: 12 }, (_, index) =>
-                                <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", boxSizing: "border-box" }}>
+                            {Array.from({ length: 12 }, (_, index) => {
+                                const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, index + 1);
+                                return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid` }}>
                                         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
                                             <IdentityMenuSelector value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} options={identityOptions[index + 1]} num={index + 1} />
-                                            <DeploymentComponent order={deploymentOrder} setOrder={setDeploymentOrder} activeSinners={activeSinners} sinnerId={index + 1} />
+                                            <DeploymentComponent depType={depType} depIndex={depIndex} setOrder={setDeploymentOrder} sinnerId={index + 1} />
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
                                             {Array.from({ length: 5 }, (_, rank) =>
@@ -255,7 +260,7 @@ export default function BuildEditor({ mode, buildId }) {
                                             )}
                                         </div>
                                     </div>
-                                    {uptieLevelToggle ? <>
+                                    {additionalToggle ? <>
                                         <div style={{ display: "flex" }}>
                                             <NumberInputWithButtons value={identityLevels[index]} setValue={v => setIdentityLevel(v, index)} max={LEVEL_CAP} allowEmpty={true} />
                                             <UptieSelector value={identityUpties[index]} setValue={v => setIdentityUptie(v, index)} allowEmpty={true} />
@@ -270,9 +275,17 @@ export default function BuildEditor({ mode, buildId }) {
                                                     emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
                                                 />)}
                                         </div>
+                                        <div style={{ width: "100%" }}>
+                                            <MarkdownEditorWrapper
+                                                value={sinnerNotes[index]}
+                                                onChange={v => setSinnerNote(v, index)}
+                                                placeholder={"Additional notes for this sinner..."}
+                                                mini={true} short={true}
+                                            />
+                                        </div>
                                     </> : null}
                                 </div>
-                            )}
+                            })}
                         </div>
                         {
                             allIdEgoToggle ?
@@ -292,6 +305,7 @@ export default function BuildEditor({ mode, buildId }) {
                         identityUpties={identityUpties}
                         identityLevels={identityLevels}
                         egoThreadspins={egoThreadspins}
+                        sinnerNotes={sinnerNotes}
                         deploymentOrder={deploymentOrder}
                         activeSinners={activeSinners}
                         displayType={displayType}
@@ -300,17 +314,17 @@ export default function BuildEditor({ mode, buildId }) {
             )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", justifyContent: "center" }}>
             <BuildDisplayMenuCard>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                    <div>Display Type</div>
-                    <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
-                </div>
+                <div>Display Type</div>
+                <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
+            </BuildDisplayMenuCard>
+            <BuildDisplayMenuCard>
                 <button
-                    className={`toggle-button ${uptieLevelToggle ? "active" : ""}`}
-                    onClick={() => setUptieLevelToggle(p => !p)}
-                    {...getGeneralTooltipProps("optionaluptieorlevel")}
+                    className={`toggle-button ${additionalToggle ? "active" : ""}`}
+                    onClick={() => setAdditionalToggle(p => !p)}
+                    {...getGeneralTooltipProps("additionalDetails")}
                     style={{ fontSize: "0.95rem" }}
                 >
-                    Toggle Uptie and Level Inputs
+                    Toggle Additional Details
                 </button>
                 <button
                     className={`toggle-button ${allIdEgoToggle ? "active" : ""}`}
@@ -321,13 +335,13 @@ export default function BuildEditor({ mode, buildId }) {
                     Toggle All Ids & E.G.Os Menu
                 </button>
             </BuildDisplayMenuCard>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
+            <BuildDisplayMenuCard>
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <span style={{ fontSize: "1.2rem" }}>Active Sinners</span>
+                    <span style={{ textAlign: "center" }}>Active Sinners</span>
                     <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
                 </div>
-                <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1.2rem" }}>Reset Deployment Order</button>
-            </div>
+                <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1rem" }}>Reset Deployment Order</button>
+            </BuildDisplayMenuCard>
             <SinDistribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} />
             <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} editable={true} />
         </div>

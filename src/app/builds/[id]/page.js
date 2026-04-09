@@ -14,6 +14,7 @@ import { getBuild } from "@/app/database/builds";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
+import { contentConfig } from "@/app/lib/contentConfig";
 import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import useLocalState from "@/app/lib/useLocalState";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
@@ -26,6 +27,7 @@ export default function BuildPage({ params }) {
     const [identityLevels, setIdentityLevels] = useState(null);
     const [identityUpties, setIdentityUpties] = useState(null);
     const [egoThreadspins, setEgoThreadspins] = useState(null);
+    const [sinnerNotes, setSinnerNotes] = useState(null);
 
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
 
@@ -38,6 +40,7 @@ export default function BuildPage({ params }) {
                     if (extraOpts.identityLevels) setIdentityLevels(extraOpts.identityLevels);
                     if (extraOpts.identityUpties) setIdentityUpties(extraOpts.identityUpties);
                     if (extraOpts.egoThreadspins) setEgoThreadspins(extraOpts.egoThreadspins);
+                    if (extraOpts.sinnerNotes) setSinnerNotes(extraOpts.sinnerNotes);
                 }
                 setLoading(false);
             }
@@ -65,6 +68,7 @@ export default function BuildPage({ params }) {
             identityUpties={identityUpties}
             identityLevels={identityLevels}
             egoThreadspins={egoThreadspins}
+            sinnerNotes={sinnerNotes}
             deploymentOrder={build.deployment_order}
             activeSinners={build.active_sinners}
             displayType={displayType}

@@ -52,7 +52,7 @@ export default function Collection({ collection, complete = true }) {
                     No builds found...
                 </div>
             }
-            {collection.tags.length > 0 ?
+            {collection.tags.length > 0 && complete ?
                 <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                     Tags: {collection.tags.map((t, i) => t ?
                         <HoverBlocker key={i} setBlockHover={setBlockHover}>

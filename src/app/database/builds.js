@@ -77,10 +77,6 @@ export async function getSavedBuilds(user_id, page = 1, pageSize = null) {
     return callRPC("get_saved_builds_v4", paginateParams({p_user_id: user_id}, page, pageSize ?? DEFAULT_PAGE_SIZE))
 }
 
-export async function getHomepageBuilds() {
-    return callRPC("get_homepage_builds_v3", { popular_limit: 5, newest_limit: 5, showcase_limit: 5 });
-}
-
 export async function getBuildsForSitemap(page, count) {
     const offset = (page - 1) * count;
     const { data, error } = await getSupabase()

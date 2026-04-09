@@ -113,6 +113,18 @@ function StatusItem({ id }) {
     }
 }
 
+function StatusIconItem({ id }) {
+    const [statuses, statusesLoading] = useData("statuses");
+    if (statusesLoading) {
+        return <span>{"{Loading...}"}</span>
+    } else {
+        if (id in statuses)
+            return <Status id={id} status={statuses[id]} includeName={false} includeTooltip={true} />;
+        else
+            return <span>{`{statusicon:${id}}`}</span>;
+    }
+}
+
 function GiftNameItem({ val }) {
     const [gifts, giftsLoading] = useData("gifts");
     const split = val.split("|");
@@ -256,6 +268,8 @@ export default function MarkdownRenderer({ content }) {
                             return <EgoItem id={tokenValues[0]} />;
                         case "status":
                             return <StatusItem id={tokenValues[0]} />;
+                        case "statusicon":
+                            return <StatusIconItem id={tokenValues[0]} />;
                         case "keyword":
                             if (isValidKeywordId(tokenValues[0]))
                                 return <KeywordIcon id={tokenValues[0]} style={{ display: "inline-block", width: "2rem", height: "2rem", verticalAlign: "middle" }} />;

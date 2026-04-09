@@ -10,6 +10,7 @@ import SelectBuildModalContent from "./SelectBuildModalContent";
 import SelectGiftModalContent from "./SelectGiftModalContent";
 import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
 import SelectThemePackModalContent from "./SelectThemePackModalContent";
+import UpdateHistoryContent from "./UpdateHistoryContent";
 
 const ModalContext = createContext();
 
@@ -21,6 +22,7 @@ const MODAL_COMPONENTS = {
     "selectThemePack": SelectThemePackModalContent,
     "deleteContent": DeleteContentModalContent,
     "deleteComment": DeleteCommentModalContent,
+    "updateHistory": UpdateHistoryContent
 };
 
 export function ModalProvider({ children }) {
@@ -58,6 +60,10 @@ export function ModalProvider({ children }) {
         openModal("deleteComment", { targetType, commentId, commentBody, onDelete });
     }
 
+    const openUpdateHistoryModal = ({ date, title, content }) => {
+        openModal("updateHistory", { date, title, content });
+    }
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
@@ -70,6 +76,7 @@ export function ModalProvider({ children }) {
         openSelectThemePackModal,
         openDeleteContentModal,
         openDeleteCommentModal,
+        openUpdateHistoryModal,
         closeModal
     }
 

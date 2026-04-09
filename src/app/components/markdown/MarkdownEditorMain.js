@@ -202,6 +202,7 @@ export default function MarkdownEditorMain({
     onChange,
     placeholder = 'Write here...',
     short = false,
+    mini = false
 }) {
     const editorRef = useRef(null);
     const viewRef = useRef();
@@ -264,20 +265,22 @@ export default function MarkdownEditorMain({
     return (
         <div style={{ position: 'relative' }}>
             {/* Toolbar */}
-            <div style={{ marginBottom: 4 }}>
-                <button onClick={() => toggleWrap(viewRef.current, "**")}><FaBold /></button>
-                <button onClick={() => toggleWrap(viewRef.current, "*")}><FaItalic /></button>
-                <button onClick={() => toggleWrap(viewRef.current, "`")}><FaCode /></button>
-                <button onClick={() => insertOrCycleHeading(viewRef.current)}><FaHeading /></button>
-                <button onClick={() => insertQuote(viewRef.current)}><FaQuoteRight /></button>
-                <button onClick={() => insertBullet(viewRef.current)}><FaListUl /></button>
-                <button onClick={() => insertNumbered(viewRef.current)}><FaListOl /></button>
-                <button onClick={() => insertLink(viewRef.current)}><FaLink /></button>
-                <button onClick={() => insertImage(viewRef.current)}><FaImage /></button>
-                <button onClick={() => insertInlineLaTeX(viewRef.current)}>$</button>
-                <button onClick={() => insertBlockLaTeX(viewRef.current)}>$$</button>
-                <button onClick={guideClick}><FaQuestionCircle /></button>
-            </div>
+            {mini ? null :
+                <div style={{ marginBottom: 4 }}>
+                    <button onClick={() => toggleWrap(viewRef.current, "**")}><FaBold /></button>
+                    <button onClick={() => toggleWrap(viewRef.current, "*")}><FaItalic /></button>
+                    <button onClick={() => toggleWrap(viewRef.current, "`")}><FaCode /></button>
+                    <button onClick={() => insertOrCycleHeading(viewRef.current)}><FaHeading /></button>
+                    <button onClick={() => insertQuote(viewRef.current)}><FaQuoteRight /></button>
+                    <button onClick={() => insertBullet(viewRef.current)}><FaListUl /></button>
+                    <button onClick={() => insertNumbered(viewRef.current)}><FaListOl /></button>
+                    <button onClick={() => insertLink(viewRef.current)}><FaLink /></button>
+                    <button onClick={() => insertImage(viewRef.current)}><FaImage /></button>
+                    <button onClick={() => insertInlineLaTeX(viewRef.current)}>$</button>
+                    <button onClick={() => insertBlockLaTeX(viewRef.current)}>$$</button>
+                    <button onClick={guideClick}><FaQuestionCircle /></button>
+                </div>
+            }
 
             {/* Editor container */}
             <div
@@ -288,7 +291,7 @@ export default function MarkdownEditorMain({
                     '--placeholder': `"${placeholder}"`,
                     border: '1px solid #444',
                     borderRadius: 4,
-                    minHeight: short ? 150 : 300,
+                    minHeight: short ? 100 : 200,
                     height: 'auto',
                     fontFamily: "'Fira Code', monospace",
                     fontSize: 16,

@@ -16,6 +16,7 @@ const options = {
     "identity": "identity",
     "ego": "ego",
     "status": "status",
+    "statusicon": "statusicon",
     "keyword": "keyword",
     "giftname": "giftname",
     "gifticons": "gifticons",
@@ -30,6 +31,7 @@ const desc = {
     "identity": "Reference an identity with {identity:id} or {id:id}. This will show a link to its page and a tooltip with its keywords and skill types on hover.",
     "ego": "Reference an E.G.O with {ego:id}. This will show a link to its page and a tooltip with its attack types, statuses, and cost on hover.",
     "status": "Reference a status with {status:id} or {st:id}. This will show a tooltip with its description on hover.",
+    "statusicon": "Reference a status with {statusicon:id} or {sti:id}. This will show a tooltip with its description on hover. This will only show the icon of the status.",
     "keyword": "Reference a keyword with {keyword:id} or {kw:id}. This will show an icon corresponding to that keyword.",
     "giftname": "Reference an E.G.O Gift with {giftname:id} or {gn:id}. This will show the name of the gift and a tooltip with its description on hover. Clicking on the gift name will show a modal with more details on the gift. Gifts can be assigned enhancement levels by attaching it to the end of the id after a pipe e.g. {giftname:9001|2}. The token will fail to parse if the gift does not have that enhancement level.",
     "gifticons": "Reference E.G.O Gifts with {gifticons:id} or {gi:id}. This will show an icon of the gift centered in its own row and a tooltip with its description on hover. Clicking on the gift icon will show a modal with more details on the gift. This token supports multiple gifts by inputting {gifticons:id1:id2:...} (Insert to text will not automatically handle this). Gifts can be assigned enhancement levels by attaching it to the end of the id after a pipe e.g. {giftname:9001|2}. The token will fail to parse if the gift does not have that enhancement level.",
@@ -93,6 +95,7 @@ function SelectorGuide({ type, editorRef, onChange, guideValue, setGuideValue })
         "identity": IdentityDropdownSelector,
         "ego": EgoDropdownSelector,
         "status": StatusDropdownSelector,
+        "statusicon": StatusDropdownSelector,
         "keyword": KeywordDropdownSelector,
         "giftname": GiftDropdownSelector,
         "gifticons": GiftDropdownSelector,
@@ -168,7 +171,7 @@ function InputGuide({ type, editorRef, onChange, guideValue, setGuideValue }) {
 }
 
 function GuideAssembler({ guideTab, editorRef, onChange, guideValue, setGuideValue }) {
-    if (["identity", "ego", "status", "keyword", "giftname", "gifticons", "sinner"].includes(guideTab))
+    if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "sinner"].includes(guideTab))
         return <SelectorGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
     if (["build", "mdplan", "collection", "user"].includes(guideTab))

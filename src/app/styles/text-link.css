@@ -4,6 +4,7 @@
     text-decoration: none;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 .text-link:hover,

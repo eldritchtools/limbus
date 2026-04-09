@@ -91,6 +91,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 case "ego":
                     return !egosLoading && egos;
                 case "status":
+                case "statusicon":
                     return !statusesLoading && statuses;
                 case "giftname":
                 case "gifticons":
@@ -121,6 +122,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 case "ego":
                     return { entries: Object.entries(egos).map(([id, ego]) => ({ id: id, label: ego.name, item: ego })) || [], multi: false };
                 case "status":
+                case "statusicon":
                     return { entries: Object.entries(statuses).map(([id, status]) => ({ id: id, label: status.name, item: status })) || [], multi: false };
                 case "giftname":
                     return { entries: Object.entries(gifts).map(([id, gift]) => ({ id: id, label: gift.names[0], item: gift })) || [], multi: false };
@@ -146,9 +148,12 @@ function useAutocompleteDataFacetExtension(viewRef) {
             switch (convertMarkdownAlias(type)) {
                 case "identity": return identities;
                 case "ego": return egos;
-                case "status": return statuses;
-                case "giftname": return gifts;
-                case "gifticons": return gifts;
+                case "status":
+                case "statusicon":
+                    return statuses;
+                case "giftname":
+                case "gifticons":
+                    return gifts;
                 default: return {};
             }
         }
@@ -172,7 +177,7 @@ async function tokenCompletionSource(context) {
 
     const type = convertMarkdownAlias(parts[0]);
     if (!type) return null;
-    if (!["identity", "ego", "status", "giftname", "gifticons", "keyword", "sinner"].includes(type)) return null;
+    if (!["identity", "ego", "status", "statusicon", "giftname", "gifticons", "keyword", "sinner"].includes(type)) return null;
 
     const rest = parts.slice(1);
     const query = rest.length ? rest[rest.length - 1] : "";
@@ -261,15 +266,15 @@ const backspaceTriggersCompletion = keymap.of([
 ]);
 
 const tabAcceptsCompletion = keymap.of([
-  {
-    key: "Tab",
-    run(view) {
-      if (completionStatus(view.state) === "active") {
-        return acceptCompletion(view);
-      }
-      return false;
+    {
+        key: "Tab",
+        run(view) {
+            if (completionStatus(view.state) === "active") {
+                return acceptCompletion(view);
+            }
+            return false;
+        }
     }
-  }
 ]);
 
 export { useAutocompleteDataFacetExtension, backspaceTriggersCompletion, tokenAutocomplete, tabAcceptsCompletion };
