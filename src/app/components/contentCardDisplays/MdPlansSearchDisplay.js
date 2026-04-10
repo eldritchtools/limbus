@@ -6,7 +6,7 @@ export default function MdPlansSearchDisplay({ plans, complete = true, clickOver
     const { isMobile } = useBreakpoint();
 
     return <div style={{
-        display: "grid", gridTemplateColumns: `repeat(auto-fill, ${isMobile ? 175 : 250}px)`,
+        display: "grid", gridTemplateColumns: `repeat(auto-fill, 300px)`,
         gap: isMobile ? "0.2rem" : "0.5rem", justifyContent: "center"
     }}>
         {plans.map(plan => <div key={plan.id} onClick={clickOverride ? () => clickOverride(plan) : undefined}>

@@ -16,9 +16,11 @@ import UsernameWithTime from "../user/UsernameWithTime";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
+import useLocalState from "@/app/lib/useLocalState";
 
 export default function RecommendedBuildsDisplay({ builds, setBuilds, editable = false }) {
     const [index, setIndex] = useState(null);
+    const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
     const { openSelectBuildModal } = useModal();
     const router = useRouter();
     const [build, extraOpts] = useMemo(
@@ -27,9 +29,9 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
             [null, null],
         [builds, index]
     );
-    const teamCode = useMemo(() => build ? "" : constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order), [build]);
+    const teamCode = useMemo(() => build ? constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order) : build, [build]);
 
-    const handleSelectBuild = x => {
+    const handleSelectBuild = build => {
         const index = builds.findIndex(x => x.id === build.id);
         if (index === -1) {
             setBuilds(p => [...p, build]);
@@ -60,7 +62,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                 sinnerNotes={extraOpts.sinnerNotes}
                 deploymentOrder={build.deployment_order}
                 activeSinners={build.active_sinners}
-                displayType={"names"}
+                displayType={displayType}
             />
 
             <div style={{ display: "flex", gap: "0.2rem", alignSelf: builds.length > 0 ? "center" : "start", justifyContent: "center", flexWrap: "wrap" }}>

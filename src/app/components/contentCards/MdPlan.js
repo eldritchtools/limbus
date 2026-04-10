@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import NoPrefetchLink from "../NoPrefetchLink";
 import styles from "./MdPlan.module.css";
@@ -9,7 +9,9 @@ import CommentButton from "../contentActions/CommentButton";
 import LikeButton from "../contentActions/LikeButton";
 import SaveButton from "../contentActions/SaveButton";
 import HoverBlocker from "../HoverBlocker";
+import EgoIcon from "../icons/EgoIcon";
 import Icon from "../icons/Icon";
+import IdentityIcon from "../icons/IdentityIcon";
 import KeywordIcon from "../icons/KeywordIcon";
 import Tag from "../objects/Tag";
 import UsernameWithTime from "../user/UsernameWithTime";
@@ -17,11 +19,49 @@ import UsernameWithTime from "../user/UsernameWithTime";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
+function IconGrid({ identityIds, egoIds, scale }) {
+    const size = scale * 256;
+    const display = useMemo(() => {
+        const list = [];
+
+        identityIds.forEach(id => {
+            if (list.length >= 12) return;
+            list.push(<div key={id} style={{ width: "100%", height: "100%" }}>
+                <IdentityIcon id={id} scale={scale} style={{ borderRadius: "4px" }} />
+            </div>)
+        });
+
+        egoIds.forEach(id => {
+            if (list.length >= 12) return;
+            list.push(<div key={id} style={{ width: "100%", height: "100%" }}>
+            <EgoIcon id={id} type={"awaken"} scale={scale} style={{ borderRadius: "4px" }} />
+        </div>)
+        });
+
+        return list;
+    }, [identityIds, egoIds, scale]);
+
+    return <div style={{
+        display: "grid", gridTemplateColumns: `repeat(6, ${size}px)`, gridTemplateRows: `repeat(2, ${size}px)`,
+        width: `${size * 6 + 10}px`, alignItems: "center", justifyItems: "center", gap: "2px"
+    }}>
+        {display}
+    </div>
+}
+
+
 export default function MdPlan({ plan, complete = true, clickable = true }) {
     const [blockHover, setBlockHover] = useState(false);
 
-    const { isMobile } = useBreakpoint();
-    const width = isMobile ? "175px" : "250px";
+    // const { isMobile } = useBreakpoint();
+    const width = "300px";
+    const scale = 0.175;
+
+    const displayComponent = useMemo(() => {
+        if (plan.recommendation_mode === "list" || plan.recommendation_mode === "build")
+            return <IconGrid identityIds={plan.identity_ids} egoIds={plan.ego_ids} scale={scale} />;
+        return null;
+    }, [plan, scale]);
 
     return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={{ width: width }}>
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
@@ -48,6 +88,7 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
                     {plan.cost}
                 </div>
             </div>
+            {displayComponent}
             <div style={{ marginBottom: "0.2rem", alignSelf: "start" }}>
                 {complete ? <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                     {plan.tags.map((t, i) => t ?

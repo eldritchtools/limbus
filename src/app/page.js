@@ -1,7 +1,7 @@
 'use client';
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import Collection from "./components/contentCards/Collection";
 import MdPlan from "./components/contentCards/MdPlan";
@@ -98,14 +98,14 @@ export default function Home() {
                     {updatesLoading ?
                         "Loading..." :
                         <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", width: "100%", gap: ".2rem" }}>
-                            {updates.slice(0, 5).map((update, i) => <>
-                                <span key={`date-${i}`} style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
-                                <span key={`title-${i}`} className="text-link"
+                            {updates.slice(0, 5).map((update, i) => <React.Fragment key={i}>
+                                <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
+                                <span className="text-link"
                                     style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
                                     onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, content: update.body })} >
                                     {update.title}
                                 </span>
-                            </>)}
+                            </React.Fragment>)}
                         </div>
                     }
                 </div>

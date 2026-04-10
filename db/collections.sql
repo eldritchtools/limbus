@@ -268,7 +268,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v1(
+    FROM public.search_md_plans_v2(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_limit := 1000,
       p_ignore_block_discovery := true
@@ -644,7 +644,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v1(
+    FROM public.search_md_plans_v2(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_published := true,
       p_limit := 1000,
@@ -892,17 +892,17 @@ all_md_plan_ids AS (
 
 builds AS (
   SELECT *
-  FROM public.get_filtered_builds_v8(
+  FROM public.search_builds_v9(
     build_id_filter := ARRAY(SELECT abi.id FROM all_build_ids abi),
     p_published := TRUE,
-    limit_count := 1000,
-    ignore_block_discovery := TRUE
+    p_limit := 1000,
+    p_ignore_block_discovery := TRUE
   )
 ),
 
 md_plans AS (
   SELECT *
-  FROM public.search_md_plans_v1(
+  FROM public.search_md_plans_v2(
     plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
     p_published := TRUE,
     p_limit := 1000,

@@ -61,7 +61,7 @@
 
 .identityMenuSelectorItem:focus,
 .identityMenuSelectorItem:hover,
-.identityMenuSelectorItem:active {
+.identityMenuSelectorItem.active {
     background: #555;
     filter: brightness(1.3);
     transition: all 0.2s ease;

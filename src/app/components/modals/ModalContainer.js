@@ -71,10 +71,10 @@ export default function ModalContainer({ isOpen, onClose, index = 0, children })
 
     return createPortal(
         <div style={overlayStyle} onClick={onClose}>
+            <button style={closeStyle} onClick={onClose}>
+                ✕
+            </button>
             <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
-                <button style={closeStyle} onClick={onClose}>
-                    ✕
-                </button>
                 {children}
             </div>
         </div>,

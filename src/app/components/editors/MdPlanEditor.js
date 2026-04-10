@@ -53,10 +53,10 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
     const plannedGiftsRef = useRef(plannedGifts);
     const floorsRef = useRef(floors);
 
-    useEffect(() => {startGiftsRef.current = startGifts}, [startGifts]);
-    useEffect(() => {observeGiftsRef.current = observeGifts}, [observeGifts]);
-    useEffect(() => {plannedGiftsRef.current = plannedGifts}, [plannedGifts]);
-    useEffect(() => {floorsRef.current = floors}, [floors]);
+    useEffect(() => { startGiftsRef.current = startGifts }, [startGifts]);
+    useEffect(() => { observeGiftsRef.current = observeGifts }, [observeGifts]);
+    useEffect(() => { plannedGiftsRef.current = plannedGifts }, [plannedGifts]);
+    useEffect(() => { floorsRef.current = floors }, [floors]);
 
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
@@ -144,12 +144,42 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
 
         const cost = mdData.grace.reduce((acc, grace) => acc + grace.cost * graceLevels[grace.index - 1], 0) + observeCost[observeGifts.length];
 
+        let planIdentityIds = [];
+        let planEgoIds = [];
+        let planBuilds = [];
+
+        if (recommendationMode === "list") {
+            planIdentityIds = identityIds;
+            planEgoIds = egoIds;
+        } else if (recommendationMode === "build") {
+            const idMap = {};
+            const egoMap = {};
+            builds.forEach(build => {
+                build.identity_ids.forEach(id => {
+                    if (!id) return;
+                    if (id in idMap) idMap[id]++;
+                    else idMap[id] = 1;
+                });
+                build.ego_ids.flat().forEach(id => {
+                    if (!id) return;
+                    if (id in egoMap) egoMap[id]++;
+                    else egoMap[id] = 1;
+                });
+            });
+
+            planIdentityIds = Object.entries(idMap).sort(([, anum], [, bnum]) => bnum - anum).map(([id]) => id).slice(0, 12);
+            planEgoIds = Object.entries(egoMap).sort(([, anum], [, bnum]) => bnum - anum).map(([id]) => id).slice(0, Math.max(12 - planIdentityIds.length, 0));
+            planBuilds = builds;
+        }
 
         setSaving(true);
         if (user) {
             const planData = {
                 title, body, recommendationMode, difficulty,
-                identityIds, egoIds, graceLevels, cost,
+                identityIds: planIdentityIds,
+                egoIds: planEgoIds,
+                graceLevels, cost,
+                extraOpts: null,
                 keywordId: keywordToIdMapping[keyword] ?? null,
                 startGiftIds: startGifts,
                 observeGiftIds: observeGifts,
@@ -157,9 +187,10 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 floors, youtubeVideoId,
                 published: isPublished,
                 blockDiscovery,
-                buildIds: builds.map(build => build.id),
+                buildIds: planBuilds.map(build => build.id),
                 tags: tagsConverted
             }
+
             if (mode === "edit") {
                 planData.planId = mdPlanId;
                 const data = await updateMdPlan(planData);
@@ -174,8 +205,9 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 body: body,
                 recommendation_mode: recommendationMode,
                 difficulty: difficulty,
-                identity_ids: identityIds,
-                ego_ids: egoIds,
+                identity_ids: planIdentityIds,
+                ego_ids: planEgoIds,
+                extra_opts: null,
                 grace_levels: graceLevels,
                 cost: cost,
                 keyword_id: keywordToIdMapping[keyword] ?? null,
@@ -187,7 +219,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 is_published: isPublished,
                 block_discovery: blockDiscovery,
                 tags: tagsConverted,
-                builds: builds,
+                builds: planBuilds,
                 created_at: createdAt ?? Date.now(),
                 updated_at: Date.now(),
                 like_count: 0,
@@ -289,7 +321,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
     );
 
     const addThemePacks = useCallback(index => {
-        if(floorPacksLoading) return;
+        if (floorPacksLoading) return;
 
         const floor = floorsRef.current[index];
         const options = difficulty === "M" ?
@@ -346,7 +378,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 <option value="build">Build</option>
             </select>
         </div>
-        <span style={{ color: "#aaa" }}>Select a mode if you want to recommend what to bring for this run plan. List mode lets you display a list of identities and E.G.Os. Build mode lets you select builds available in the Team Building Hub.</span>
+        <span style={{ color: "#aaa" }}>Select a mode if you want to recommend what to bring for this run plan. List mode lets you display a list of identities and E.G.Os. Build mode lets you select builds available on the site.</span>
 
         {recommendationMode === "list" ? <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Identities and E.G.Os</span>

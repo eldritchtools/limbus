@@ -1,5 +1,6 @@
 import "./globals.css";
 import Script from "next/script";
+
 import LayoutComponent from "./layoutComponent";
 
 export const metadata = {
@@ -15,16 +16,16 @@ export default function RootLayout({ children }) {
             <head>
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="icon" href="/favicon.ico" />
-                {/* <Script async src="https://www.googletagmanager.com/gtag/js?id=G-XZJ5KQTJJ9" />
+                <Script async src="https://www.googletagmanager.com/gtag/js?id=G-HJ0SH2TDC8" />
                 <Script id="google-analytics">
                     {`
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
 
-                    gtag('config', 'G-XZJ5KQTJJ9', {page_path: window.location.pathname});
+                    gtag('config', 'G-HJ0SH2TDC8', {page_path: window.location.pathname});
                     `}
-                </Script> */}
+                </Script>
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
                 <LayoutComponent>{children}</LayoutComponent>

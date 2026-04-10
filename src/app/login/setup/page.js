@@ -204,6 +204,7 @@ export default function UsernameSetup() {
                             difficulty: plan.difficulty,
                             identityIds: plan.identity_ids,
                             egoIds: plan.ego_ids,
+                            extraOpts: plan.extra_opts,
                             graceLevels: plan.grace_levels,
                             cost: plan.cost,
                             keywordId: plan.keyword_id,

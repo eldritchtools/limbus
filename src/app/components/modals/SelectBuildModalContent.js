@@ -23,13 +23,13 @@ export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = f
                 setLoading(true);
 
                 if (searchMode === "search") {
-                    const params = prepareBuildFilters(filters, { published: true, ignoreBlockDiscovery: true });
+                    const params = prepareBuildFilters(filters, { includeEgos: true, published: true, ignoreBlockDiscovery: true });
                     const data = await searchBuilds(params, page);
 
                     setBuilds(data || []);
                 } else if (searchMode === "user") {
                     if (user) {
-                        const params = { userId: user.id, ignoreBlockDiscovery: true, published: true, sortBy: "new" };
+                        const params = { userId: user.id, includeEgos: true, ignoreBlockDiscovery: true, published: true, sortBy: "new" };
                         const data = await searchBuilds(params, page);
                         setBuilds(data || []);
                     } else {
@@ -37,7 +37,7 @@ export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = f
                     }
                 } else if (searchMode === "draft") {
                     if (user) {
-                        const params = { userId: user.id, ignoreBlockDiscovery: true, published: false, sortBy: "new" };
+                        const params = { userId: user.id, includeEgos: true, ignoreBlockDiscovery: true, published: false, sortBy: "new" };
                         const data = await searchBuilds(params, page);
                         setBuilds(data || []);
                     } else {

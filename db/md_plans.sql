@@ -15,6 +15,7 @@ CREATE TABLE public.md_plans (
   target_gift_ids INT[] DEFAULT '{}',
   floors JSONB,
   youtube_video_id TEXT,
+  extra_opts TEXT DEFAULT NULL,
   is_published BOOLEAN DEFAULT FALSE,
   block_discovery BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -123,7 +124,7 @@ with check (
   )
 );
 
-create or replace function public.search_md_plans_v1(
+create or replace function public.search_md_plans_v2(
   p_query text default null,
   plan_id_filter uuid[] default null,
   username_exact_filter text default null,
@@ -145,6 +146,10 @@ returns table (
   difficulty text,
   cost int,
   keyword_id int,
+  recommendation_mode text,
+  identity_ids int[],
+  ego_ids int[],
+  extra_opts text,
   created_at timestamptz,
   published_at timestamptz,
   tags text[],
@@ -184,6 +189,10 @@ begin
       p.difficulty,
       p.cost,
       p.keyword_id,
+      p.recommendation_mode,
+      p.identity_ids,
+      p.ego_ids,
+      p.extra_opts,
       p.created_at,
       p.published_at,
       p.search_vector,
@@ -240,6 +249,10 @@ begin
     p.difficulty,
     p.cost,
     p.keyword_id,
+    p.recommendation_mode,
+    p.identity_ids,
+    p.ego_ids,
+    p.extra_opts,
     p.created_at,
     p.published_at,
     coalesce(pt.tags, array[]::text[]) AS tags,
@@ -258,6 +271,10 @@ begin
     p.difficulty,
     p.cost,
     p.keyword_id,
+    p.recommendation_mode,
+    p.identity_ids,
+    p.ego_ids,
+    p.extra_opts,
     p.created_at,
     p.published_at,
     pt.tags,
@@ -270,13 +287,14 @@ begin
 end;
 $$;
 
-create or replace function public.create_md_plan_v1(
+create or replace function public.create_md_plan_v2(
   p_title text,
   p_body text,
   p_recommendation_mode text,
   p_difficulty text,
   p_identity_ids int[],
   p_ego_ids int[],
+  p_extra_opts text,
   p_grace_levels int[],
   p_cost int,
   p_keyword_id int,
@@ -317,6 +335,7 @@ begin
     difficulty,
     identity_ids,
     ego_ids,
+    extra_opts,
     grace_levels,
     cost,
     keyword_id,
@@ -338,6 +357,7 @@ begin
     p_difficulty,
     p_identity_ids,
     p_ego_ids,
+    p_extra_opts,
     p_grace_levels,
     p_cost,
     p_keyword_id,
@@ -393,7 +413,7 @@ begin
 end;
 $$;
 
-create or replace function public.update_md_plan_v1(
+create or replace function public.update_md_plan_v2(
   p_plan_id uuid,
   p_title text,
   p_body text,
@@ -401,6 +421,7 @@ create or replace function public.update_md_plan_v1(
   p_difficulty text,
   p_identity_ids int[],
   p_ego_ids int[],
+  p_extra_opts text,
   p_grace_levels int[],
   p_cost int,
   p_keyword_id int,
@@ -450,6 +471,7 @@ begin
     difficulty = p_difficulty,
     identity_ids = p_identity_ids,
     ego_ids = p_ego_ids,
+    extra_opts = p_extra_opts,
     grace_levels = p_grace_levels,
     cost = p_cost,
     keyword_id = p_keyword_id,
@@ -610,6 +632,7 @@ begin
     'difficulty', p.difficulty,
     'identity_ids', p.identity_ids,
     'ego_ids', p.ego_ids,
+    'extra_opts', p.extra_opts,
     'grace_levels', p.grace_levels,
     'cost', p.cost,
     'keyword_id', p.keyword_id,
@@ -658,7 +681,7 @@ begin
 end;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_saved_md_plans(
+CREATE OR REPLACE FUNCTION public.get_saved_md_plans_v2(
   p_user_id UUID,
   p_sort_by text DEFAULT NULL,
   p_limit int DEFAULT 20,
@@ -674,6 +697,10 @@ returns table (
   difficulty text,
   cost int,
   keyword_id int,
+  recommendation_mode text,
+  identity_ids int[],
+  ego_ids int[],
+  extra_opts text,
   created_at timestamptz,
   published_at timestamptz,
   tags text[],
@@ -700,7 +727,7 @@ BEGIN
   -- call search_md_plans with the filter
   RETURN QUERY
     SELECT *
-    FROM public.search_md_plans_v1(
+    FROM public.search_md_plans_v2(
       p_query := NULL,
       plan_id_filter := saved_ids,
       username_exact_filter := NULL,
