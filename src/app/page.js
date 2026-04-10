@@ -61,7 +61,7 @@ export default function Home() {
             <p>
                 Limbus Company Tools is a site for managers to create, share, and discover various builds and strategies for use in their gameplay. It also hosts a variety of tools for the same purpose.
                 <br /> <br />
-                This site is a combination of two other sites (<NoPrefetchLink className="text-link" href={"https://limbus-teams.eldritchtools.com"}>Team Building Hub</NoPrefetchLink> and <NoPrefetchLink className="text-link" href={"https://limbus-md.eldritchtools.com"}>Mirror Dungeon Site</NoPrefetchLink>) and is currently in an initial launch version, so some features may not have been properly migrated from the old sites. Any bugs can be reported in the Discord or through the feedback page.
+                This site is a combination of two other sites (<NoPrefetchLink className="text-link" href={"https://limbus-teams.eldritchtools.com"}>Team Building Hub</NoPrefetchLink> and <NoPrefetchLink className="text-link" href={"https://limbus-md.eldritchtools.com"}>Mirror Dungeon Site</NoPrefetchLink>) and is currently in an initial launch version, so some features may not have been properly migrated from the old sites. Please report any bugs in the Discord or through the feedback page.
                 <br /> <br />
                 Use the sidebar or click on the links below to get started.
             </p>
