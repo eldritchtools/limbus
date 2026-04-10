@@ -205,19 +205,6 @@ export default function Home() {
                             </div> : "Loading..."
                         }
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <h3 style={{ margin: 0 }}>Newest Collection</h3>
-                            <NoPrefetchLink className="text-link" href={"/collections?mode=new"}>view more new collections ➔</NoPrefetchLink>
-                        </div>
-                        <div style={{ color: "#aaa", fontSize: "0.8rem", alignSelf: "start", textAlign: "start" }}>
-                            The newest collections submitted by managers.
-                        </div>
-                        {collections.length > 0 ?
-                            collections.map(collection => <Collection key={collection.id} collection={collection} complete={false} />) :
-                            "Loading..."
-                        }
-                    </div>
                 </div>
             </div>
         </div>
