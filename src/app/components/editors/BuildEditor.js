@@ -93,7 +93,7 @@ export default function BuildEditor({ mode, buildId }) {
 
 
     const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
-        if (id) {
+        if (id && id in identitiesMini) {
             [...identitiesMini[id].types, ...identitiesMini[id].affinities, ...(identitiesMini[id].skillKeywordList ?? [])].forEach(x => {
                 if (x in acc)
                     acc[x] += 1;

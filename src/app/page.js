@@ -3,9 +3,9 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import React, { useEffect, useMemo, useState } from "react";
 
-import Collection from "./components/contentCards/Collection";
 import MdPlan from "./components/contentCards/MdPlan";
 import TeamBuild from "./components/contentCards/TeamBuild";
+import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "./components/dataHooks/upcoming";
 import { useData } from "./components/DataProvider";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
@@ -14,25 +14,23 @@ import NoPrefetchLink from "./components/NoPrefetchLink";
 import { getHomepagePosts } from "./database/homepage";
 
 export default function Home() {
-    const [identities, identitiesLoading] = useData("identities");
-    const [egos, egosLoading] = useData("egos");
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
+    const [egos, egosLoading] = useEgosWithUpcoming();
     const [updates, updatesLoading] = useData("updates");
     const { openUpdateHistoryModal } = useModal();
     const [popular, setPopular] = useState([]);
     const [newest, setNewest] = useState([]);
     const [showcase, setShowcase] = useState([]);
     const [mdplans, setMdplans] = useState([]);
-    const [collections, setCollections] = useState([]);
     const { isDesktop } = useBreakpoint();
 
     useEffect(() => {
         const getBuilds = async () => {
-            const { popular, newest, showcase, mdplans, collections } = await getHomepagePosts();
+            const { popular, newest, showcase, mdplans } = await getHomepagePosts();
             setPopular(popular);
             setNewest(newest);
             setShowcase(showcase);
             setMdplans(mdplans);
-            setCollections(collections);
         }
 
         getBuilds();
@@ -51,8 +49,11 @@ export default function Home() {
             else dates[x.date].push(x);
         });
 
-        const latest = Object.keys(dates).sort((a, b) => b.localeCompare(a)).slice(0, 10);
-        return Object.fromEntries(latest.map(x => [x, dates[x]]));
+        return Object.keys(dates).sort((a, b) => {
+            if(a.includes("?")) return -1;
+            if(b.includes("?")) return 1;
+            return b.localeCompare(a);
+        }).slice(0, 10).map(x => [x, dates[x], false]);
     }, [identities, identitiesLoading, egos, egosLoading]);
 
     return <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", width: "100%", height: "100%" }}>
@@ -116,24 +117,39 @@ export default function Home() {
                     {identitiesLoading || egosLoading ? "Loading..." :
                         <div style={{ maxWidth: "100%", overflowX: "auto", overflowY: "hidden", scrollbarWidth: "thin" }}>
                             <div style={{ display: "flex", gap: "0.5rem" }}>
-                                {Object.entries(latest).map(([date, list]) =>
-                                    <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
-                                        <div>{date}</div>
-                                        <div style={{ display: "flex" }}>
-                                            {list.map(obj => obj.id[0] === "1" ?
-                                                <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
-                                                    <div style={{ width: "128px", height: "128px" }}>
-                                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} />
+                                {latest.map(([date, list, upcoming]) =>
+                                    upcoming ?
+                                        <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
+                                            <div>{date}</div>
+                                            <div style={{ display: "flex" }}>
+                                                {list.map(obj => obj.id[0] === "1" ?
+                                                    <div key={obj.id} style={{ width: "128px", height: "128px" }}>
+                                                        <IdentityIcon identity={obj} displayName={true} />
+                                                    </div> :
+                                                    <div key={obj.id} style={{ width: "128px", height: "128px" }}>
+                                                        <EgoIcon ego={obj} displayName={true} />
                                                     </div>
-                                                </NoPrefetchLink> :
-                                                <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
-                                                    <div style={{ width: "128px", height: "128px" }}>
-                                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} />
-                                                    </div>
-                                                </NoPrefetchLink>
-                                            )}
+                                                )}
+                                            </div>
+                                        </div> :
+                                        <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
+                                            <div>{date}</div>
+                                            <div style={{ display: "flex" }}>
+                                                {list.map(obj => obj.id[0] === "1" ?
+                                                    <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
+                                                        <div style={{ width: "128px", height: "128px" }}>
+                                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} />
+                                                        </div>
+                                                    </NoPrefetchLink> :
+                                                    <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
+                                                        <div style={{ width: "128px", height: "128px" }}>
+                                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} />
+                                                        </div>
+                                                    </NoPrefetchLink>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>)}
+                                )}
                             </div>
                         </div>
                     }

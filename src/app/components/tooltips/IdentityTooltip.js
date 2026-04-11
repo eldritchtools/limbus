@@ -34,7 +34,7 @@ function IdentityTooltipContent({ identity }) {
 
 function TooltipLoader({ id }) {
     const [identities, identitiesLoading] = useData("identities_mini");
-    if (!id || identitiesLoading) return null;
+    if (!id || identitiesLoading || !(id in identities)) return null;
 
     return <IdentityTooltipContent identity={identities[id]} />
 }

@@ -1,13 +1,13 @@
 "use client";
 
-import { useData } from "../DataProvider";
+import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import AllIdEgoSelector from "../selectors/AllIdEgoSelector";
 
 export default function RecommendedListDisplay({ identityIds, setIdentityIds, egoIds, setEgoIds, editable = false }) {
-    const [identities, identitiesLoading] = useData("identities_mini");
-    const [egos, egosLoading] = useData("egos_mini");
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming(true);
+    const [egos, egosLoading] = useEgosWithUpcoming(true);
 
     const handleSetIdentityId = id => {
         if(identityIds.includes(id)) setIdentityIds(p => p.filter(x => x !== id))

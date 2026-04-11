@@ -10,6 +10,8 @@ import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getIdentityImgSrc(identity, uptie = 4) {
+    if (identity.upcoming) return `${ASSETS_ROOT}/${identity.src}.png`;
+
     const type = (uptie > 2 || identity.tags.includes("Base Identity")) ? "gacksung" : "normal";
     return `${ASSETS_ROOT}/identities/${identity.id}_${type}_profile.png`;
 }
@@ -17,13 +19,22 @@ export function getIdentityImgSrc(identity, uptie = 4) {
 function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null }) {
     const img = <Image src={getIdentityImgSrc(identity, uptie)} alt={identity.name} title={identity.name} width={192} height={192} style={{ ...style, objectFit: "cover" }} />
 
-    return <div 
-        style={{ position: "relative", width: style.width, aspectRatio: "1/1", containerType: "size" }} 
+    return <div
+        style={{ position: "relative", width: style.width, aspectRatio: "1/1", containerType: "size" }}
         {...(includeTooltip ? getIdentityTooltipProps(identity.id) : {})}
     >
         {img}
         {displayRarity ?
-            <RarityIcon rarity={identity.rank} style={{ position: "absolute", top: "4px", left: "4px", height: "2rem", objectFit: "contain", pointerEvents: "none" }} /> :
+            (
+                identity.upcoming ?
+                    <div style={{
+                        position: "absolute", top: "4px", left: "4px", display: "block", textAlign: "left", color: "#ddd", fontWeight: "600",
+                        textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000", fontSize: "0.9rem", overflow: "hidden"
+                    }}>
+                        UPCOMING
+                    </div> :
+                    <RarityIcon rarity={identity.rank} style={{ position: "absolute", top: "4px", left: "4px", height: "2rem", objectFit: "contain", pointerEvents: "none" }} />
+            ) :
             null}
         {displayName ? <div style={{
             position: "absolute", bottom: "4px", right: "4px", maxWidth: "100%", maxHeight: "70%", overflow: "hidden",
@@ -43,16 +54,28 @@ function IdentityIconMain({ identity, style, uptie, displayName = false, display
     </div>
 }
 
-function IdentityIconFetch({ id, style, ...props }) {
+function IdentityUpcomingFetch({ id, ...props }) {
+    const [upcoming, upcomingLoading] = useData("upcoming");
+
+    if (upcomingLoading) {
+        return null;
+    } else if (!(id in upcoming?.identities)) {
+        return null;
+    } else {
+        return <IdentityIconMain identity={upcoming.identities[id]} {...props} />
+    }
+}
+
+function IdentityIconFetch({ id, ...props }) {
     const [identities, identitiesLoading] = useData("identities_mini");
 
     if (identitiesLoading) {
         return null;
     } else if (!(id in identities)) {
         console.warn(`Identity ${id} not found.`);
-        return null;
+        return <IdentityUpcomingFetch id={id} {...props} />;
     } else {
-        return <IdentityIconMain identity={identities[id]} style={style} {...props} />
+        return <IdentityIconMain identity={identities[id]} {...props} />
     }
 }
 

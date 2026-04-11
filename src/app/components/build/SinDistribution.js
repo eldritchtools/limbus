@@ -16,6 +16,7 @@ export default function SinDistribution({ identityIds, deploymentOrder, activeSi
     const values = identityIds.reduce((acc, id, i) => {
         if (!id) return acc;
         const identity = identities[id];
+        if(!identity) return acc;
 
         const [modeType, modeSkill] = (mode ?? "all-a").split("-");
 

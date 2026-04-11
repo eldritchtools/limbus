@@ -7,7 +7,7 @@ import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DisplayTypeButton from "../build/DisplayTypeButton";
 import SinDistribution from "../build/SinDistribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
-import { useData } from "../DataProvider";
+import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import BuildEditingComponent from "../editors/BuildEditingComponent";
 
 import { egoRankMapping } from "@/app/lib/constants";
@@ -16,8 +16,8 @@ import useLocalState from "@/app/lib/useLocalState";
 
 
 export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityIds, egoIds, setEgoIds, extraOpts, setExtraOpts, editable = false }) {
-    const [identities, identitiesLoading] = useData("identities");
-    const [egos, egosLoading] = useData("egos");
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
+    const [egos, egosLoading] = useEgosWithUpcoming();
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
     const [dataConverted, setDataConverted] = useState(false);
     const [additionalToggle, setAdditionalToggle] = useState(false);

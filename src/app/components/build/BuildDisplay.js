@@ -5,12 +5,14 @@ import { useMemo, useState } from "react";
 import styles from "./BuildDisplay.module.css";
 import BuildDisplayCalcMenu from "./BuildDisplayCalcMenu";
 import BuildDisplaySinnerContainer from "./BuildDisplaySinnerContainer";
+import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import { useData } from "../DataProvider";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 
 export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, sinnerNotes, deploymentOrder, activeSinners, displayType }) {
-    const [identities, identitiesLoading] = useData("identities");
-    const [egos, egosLoading] = useData("egos");
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
+    const [egos, egosLoading] = useEgosWithUpcoming();
+    const [upcoming, upcomingLoading] = useData("upcoming");
 
     // Convert empty strings (if editing) to nulls
     const upties = useMemo(() => identityUpties ? identityUpties.map(x => x === "" ? null : x) : null, [identityUpties]);

@@ -26,7 +26,7 @@ export default function DeleteContentModalContent({ targetType, targetId, title,
             const data = await targetMapping[targetType].delete(targetId);
             if (data && data.deleted) {
                 onClose();
-                router.push(`/${contentConfig[targetType].path}`);
+                router.push(`/my-posts`);
             }
         }
         setDeleting(false);

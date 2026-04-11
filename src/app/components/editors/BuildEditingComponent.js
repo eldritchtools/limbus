@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import BuildDisplay from "../build/BuildDisplay";
 import styles from "../build/BuildDisplay.module.css";
@@ -9,7 +9,7 @@ import DeploymentComponent from "../build/DeploymentComponent";
 import DisplayTypeButton from "../build/DisplayTypeButton";
 import SinDistribution from "../build/SinDistribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
-import { useData } from "../DataProvider";
+import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import RarityIcon from "../icons/RarityIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import NumberInputWithButtons from "../objects/NumberInputWithButtons";
@@ -35,23 +35,30 @@ export default function BuildEditingComponent({
     sinnerNotes, setSinnerNotes,
     defaultAdditionalToggle = false
 }) {
-    const [identities, identitiesLoading] = useData("identities");
-    const [egos, egosLoading] = useData("egos");
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
+    const [egos, egosLoading] = useEgosWithUpcoming();
 
     const [teamCode, setTeamCode] = useState('');
     const [additionalToggle, setAdditionalToggle] = useState(defaultAdditionalToggle);
     const [allIdEgoToggle, setAllIdEgoToggle] = useState(false);
     const [displayType, setDisplayType] = useState("edit");
 
-    const identityOptions = useMemo(() => identitiesLoading ? null : Object.entries(identities).reverse().reduce((acc, [_, identity]) => {
-        acc[identity.sinnerId].push(identity); return acc;
-    }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, []]))), [identities, identitiesLoading]);
+    const identityOptions = useMemo(() => {
+        if (identitiesLoading) return [];
+        return Object.entries(identities).reverse().reduce((acc, [_, identity]) => {
+            acc[identity.sinnerId].push(identity); return acc;
+        }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, []])));
+    }, [identities, identitiesLoading]);
 
     const setIdentityId = (identityId, index) => setIdentityIds(prev => prev.map((x, i) => i === index ? identityId : x));
 
-    const egoOptions = useMemo(() => egosLoading ? null : Object.entries(egos).reverse().reduce((acc, [_, ego]) => {
-        acc[ego.sinnerId][egoRankMapping[ego.rank]].push(ego); return acc;
-    }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, Array.from({ length: 5 }, () => [])]))), [egos, egosLoading]);
+    const egoOptions = useMemo(() => {
+        if (egosLoading) return [];
+        return Object.entries(egos).reverse().reduce((acc, [_, ego]) => {
+            if(ego.rank) acc[ego.sinnerId][egoRankMapping[ego.rank]].push(ego); 
+            return acc;
+        }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, Array.from({ length: 5 }, () => [])])));
+    }, [egos, egosLoading]);
 
     const setEgoId = (egoId, index, rank) => setEgoIds(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? egoId : y) : x));
 
@@ -75,12 +82,12 @@ export default function BuildEditingComponent({
         setEgoIds(parseResult.egos.map(egos => [...egos]));
     }
 
-    return <div style={{ display: "flex", flexDirection: "column" }}>
+    return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {identitiesLoading || egosLoading ? null :
             (
                 displayType === "edit" ?
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div className={styles.buildDisplay} style={{ alignSelf: "center", width: "98%", paddingBottom: "1rem" }}>
+                        <div className={styles.buildDisplay} style={{ alignSelf: "center" }}>
                             {Array.from({ length: 12 }, (_, index) => {
                                 const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, index + 1);
                                 return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>

@@ -67,7 +67,7 @@ function EgoTooltipContent({ id, ego, uptie = 4 }) {
 
 function TooltipLoader({ id, uptie }) {
     const [egos, egosLoading] = useData("egos");
-    if (!id || egosLoading) return null;
+    if (!id || egosLoading || !(id in egos)) return null;
 
     if (uptie) return <EgoTooltipContent id={id} ego={egos[id]} uptie={uptie} />
     return <EgoTooltipContent id={id} ego={egos[id]} />

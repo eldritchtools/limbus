@@ -29,11 +29,17 @@ function Identity({ identity, displayType, sinnerId, uptie, level }) {
     if (level) props.level = level;
 
     return displayType !== null ?
-        <LinkWithTooltip href={`/identities/${identity.id}`} tooltipProps={getIdentityTooltipProps(identity.id)}>
-            <div style={{ position: "relative", width: "100%" }}>
-                <IdentityIcon identity={identity} {...props} />
-            </div>
-        </LinkWithTooltip> :
+        (
+            identity.upcoming ?
+                <div style={{ position: "relative", width: "100%" }}>
+                    <IdentityIcon identity={identity} {...props} />
+                </div> :
+                <LinkWithTooltip href={`/identities/${identity.id}`} tooltipProps={getIdentityTooltipProps(identity.id)}>
+                    <div style={{ position: "relative", width: "100%" }}>
+                        <IdentityIcon identity={identity} {...props} />
+                    </div>
+                </LinkWithTooltip>
+        ) :
         <div style={{ width: "100%", aspectRatio: "1/1", boxSizing: "border-box" }} />
 }
 
@@ -51,11 +57,17 @@ function Ego({ ego, displayType, rank, threadspin }) {
     }
 
     return displayType !== null ?
-        <LinkWithTooltip href={`/egos/${ego.id}`} tooltipProps={getEgoTooltipProps(tooltipId)}>
-            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
-                <EgoIcon ego={ego} {...props} />
-            </div>
-        </LinkWithTooltip> :
+        (
+            ego.upcoming ?
+                <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
+                    <EgoIcon ego={ego} {...props} />
+                </div> :
+                <LinkWithTooltip href={`/egos/${ego.id}`} tooltipProps={getEgoTooltipProps(tooltipId)}>
+                    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
+                        <EgoIcon ego={ego} {...props} />
+                    </div>
+                </LinkWithTooltip>
+        ) :
         <div style={{ width: "100%", aspectRatio: "4/1", boxSizing: "border-box" }} />
 }
 
