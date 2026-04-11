@@ -57,7 +57,10 @@ export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = f
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1rem", maxHeight: "min(1200px, 90vh)", overflowY: "auto", width: "980px", maxWidth: "80vw" }}>
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
             <div className={`tab-header ${searchMode === "search" ? "active" : ""}`} onClick={() => setSearchMode("search")}>Search Builds</div>
-            <div className={`tab-header ${searchMode === "user" ? "active" : ""}`} onClick={() => setSearchMode("user")}>My Published Builds</div>
+            {user ?
+                <div className={`tab-header ${searchMode === "user" ? "active" : ""}`} onClick={() => setSearchMode("user")}>My Published Builds</div> :
+                null
+            }
             {allowDrafts ?
                 <div className={`tab-header ${searchMode === "draft" ? "active" : ""}`} onClick={() => setSearchMode("draft")}>My Drafts</div> :
                 null

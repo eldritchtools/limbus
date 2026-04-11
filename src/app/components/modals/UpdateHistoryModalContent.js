@@ -1,3 +1,4 @@
+import { useData } from "../DataProvider"
 import MarkdownRenderer from "../markdown/MarkdownRenderer"
 
 function UpdateItem({ item }) {
@@ -10,10 +11,15 @@ function UpdateItem({ item }) {
     }
 }
 
-export default function UpdateHistoryContent({ date, title, content }) {
+export default function UpdateHistoryModalContent({ date, title, path }) {
+    const [update, updateLoading] = useData(`updates/${path}`);
+
     return <div style={{ display: "flex", flexDirection: "column", gap: ".5rem", padding: "1rem", maxHeight: "90vh", overflowY: "auto", maxWidth: "min(80vw, 1000px)" }}>
         <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{date}</span>
         <h3 style={{ margin: 0 }}>{title}</h3>
-        {content.map((item, i) => <UpdateItem key={i} item={item} />)}
+        {updateLoading ? 
+            <span>Loading...</span> :
+            update.body.map((item, i) => <UpdateItem key={i} item={item} />)
+        }
     </div>
 }

@@ -16,7 +16,7 @@ import { getHomepagePosts } from "./database/homepage";
 export default function Home() {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
-    const [updates, updatesLoading] = useData("updates");
+    const [updates, updatesLoading] = useData("updates_index");
     const { openUpdateHistoryModal } = useModal();
     const [popular, setPopular] = useState([]);
     const [newest, setNewest] = useState([]);
@@ -103,7 +103,7 @@ export default function Home() {
                                 <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
                                 <span className="text-link"
                                     style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
-                                    onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, content: update.body })} >
+                                    onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, path: update.path })} >
                                     {update.title}
                                 </span>
                             </React.Fragment>)}
