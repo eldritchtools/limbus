@@ -186,6 +186,7 @@ export default function BuildEditor({ mode, buildId }) {
             ? <div style={{ color: uiColors.red }}>{uiStrings.contentNoUser("builds")}</div>
             : null
         }
+        <span style={{fontSize: "0.9rem"}}>{uiStrings.upcomingInContent("builds")}</span>
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <span style={{ fontSize: "1.2rem" }}>Team Build</span>

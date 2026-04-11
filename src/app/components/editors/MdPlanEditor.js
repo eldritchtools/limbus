@@ -379,6 +379,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
             <div style={{ color: uiColors.red }}>{uiStrings.contentNoUser("md plans")}</div>
             : null
         }
+        <span style={{fontSize: "0.9rem"}}>{uiStrings.upcomingInContent("md plans")}</span>
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>

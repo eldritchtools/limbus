@@ -13,5 +13,6 @@ export const uiStrings = {
     noSavedContent: type => `No saved ${type} yet`,
     noMoreContent: type => `No more ${type}`,
     noLocalContent: type => `Locally saved ${type} are not supported.`,
-    drafts: "Drafts can still be shared through the link, but aren't searchable and don't allow comments."
+    drafts: "Drafts can still be shared through the link, but aren't searchable and don't allow comments.",
+    upcomingInContent: type => `Any upcoming identities or E.G.Os are subject to change. Please double check any ${type} that use them when they are released.`
 }
