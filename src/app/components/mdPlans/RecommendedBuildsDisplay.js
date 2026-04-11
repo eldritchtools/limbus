@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import EventRolls from "./EventRolls";
 import BuildDisplay from "../build/BuildDisplay";
 import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DisplayTypeButton from "../build/DisplayTypeButton";
@@ -30,12 +31,15 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
         [builds, index]
     );
     const teamCode = useMemo(() => build ? constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order) : build, [build]);
+    
+    const buildsRef = useRef(builds);
+    useEffect(() => { buildsRef.current = builds }, [builds]);
 
     const handleSelectBuild = build => {
-        const index = builds.findIndex(x => x.id === build.id);
+        const index = buildsRef.current.findIndex(x => x.id === build.id);
         if (index === -1) {
             setBuilds(p => [...p, build]);
-            setIndex(builds.length);
+            setIndex(buildsRef.current.length);
         } else {
             setIndex(index);
         }
@@ -94,6 +98,12 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                     <DisplayTypeButton value={displayType} setValue={setDisplayType} />
                 </BuildDisplayMenuCard>
                 <SinDistribution
+                    identityIds={build.identity_ids}
+                    identityUpties={extraOpts.identityUpties}
+                    deploymentOrder={build.deployment_order}
+                    activeSinners={build.active_sinners}
+                />
+                <EventRolls
                     identityIds={build.identity_ids}
                     identityUpties={extraOpts.identityUpties}
                     deploymentOrder={build.deployment_order}

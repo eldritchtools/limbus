@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import EventRolls from "./EventRolls";
 import BuildDisplay from "../build/BuildDisplay";
 import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DisplayTypeButton from "../build/DisplayTypeButton";
@@ -83,10 +84,10 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         identityUpties={extraOpts.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
         egoThreadspins={extraOpts.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
         sinnerNotes={extraOpts.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
-        defaultAdditionalToggle={additionalToggle}
+        defaultAdditionalToggle={additionalToggle} includeEventRolls={true}
     />
 
-    return <div style={{ display: "flex", flexDirection: "column" }}>
+    return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <BuildDisplay
             identityIds={identityIds}
             egoIds={egoIds}
@@ -108,7 +109,13 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
                 identityIds={identityIds}
                 identityUpties={extraOpts.identityUpties}
                 deploymentOrder={extraOpts.deploymentOrder}
-                activeSinners={extraOpts.active_sinners}
+                activeSinners={extraOpts.activeSinners}
+            />
+            <EventRolls
+                identityIds={identityIds}
+                identityUpties={extraOpts.identityUpties}
+                deploymentOrder={extraOpts.deploymentOrder}
+                activeSinners={extraOpts.activeSinners}
             />
             <TeamCodeComponent teamCode={teamCode} />
         </div>

@@ -176,8 +176,8 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
             planEgoIds = Object.entries(egoMap).sort(([, anum], [, bnum]) => bnum - anum).map(([id]) => id).slice(0, Math.max(12 - planIdentityIds.length, 0));
             planBuilds = builds;
         } else if (recommendationMode === "specbuild") {
-            planIdentityIds = identityIds.filter(x => x !== "");
-            planEgoIds = egoIds.flat().filter(x => x !== "");
+            planIdentityIds = identityIds.filter(x => x && x !== "");
+            planEgoIds = egoIds.flat().filter(x => x && x !== "");
             planExtraOpts = encodeBuildExtraOpts(extraOpts);
         }
 

@@ -12,6 +12,7 @@ import TeamCodeComponent from "../build/TeamCodeComponent";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import RarityIcon from "../icons/RarityIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
+import EventRolls from "../mdPlans/EventRolls";
 import NumberInputWithButtons from "../objects/NumberInputWithButtons";
 import AllIdEgoSelector from "../selectors/AllIdEgoSelector";
 import { EgoMenuSelector } from "../selectors/EgoSelectors";
@@ -33,7 +34,7 @@ export default function BuildEditingComponent({
     identityUpties, setIdentityUpties,
     egoThreadspins, setEgoThreadspins,
     sinnerNotes, setSinnerNotes,
-    defaultAdditionalToggle = false
+    defaultAdditionalToggle = false, includeEventRolls = false
 }) {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
@@ -86,7 +87,7 @@ export default function BuildEditingComponent({
         {identitiesLoading || egosLoading ? null :
             (
                 displayType === "edit" ?
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                         <div className={styles.buildDisplay} style={{ alignSelf: "center" }}>
                             {Array.from({ length: 12 }, (_, index) => {
                                 const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, index + 1);
@@ -185,6 +186,10 @@ export default function BuildEditingComponent({
                 <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1rem" }}>Reset Deployment Order</button>
             </BuildDisplayMenuCard>
             <SinDistribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} />
+            {includeEventRolls ? 
+                <EventRolls identityIds={identityIds} identityUpties={identityUpties} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> : 
+                null
+            }
             <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} editable={true} />
         </div>
     </div>
