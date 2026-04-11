@@ -21,7 +21,7 @@ export default function DeleteContentModalContent({ targetType, targetId, title,
         if (isLocalId(targetId)) {
             await targetMapping[targetType].local.remove(Number(targetId));
             onClose();
-            router.push(`/my-profile`);
+            router.push(`/my-posts`);
         } else {
             const data = await targetMapping[targetType].delete(targetId);
             if (data && data.deleted) {

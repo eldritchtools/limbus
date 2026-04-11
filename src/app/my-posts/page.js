@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import NoPrefetchLink from "../components/NoPrefetchLink";
@@ -8,21 +7,16 @@ import { useAuth } from "../database/authProvider";
 import { uiColors } from "../lib/colors";
 import { contentConfig } from "../lib/contentConfig";
 import { uiStrings } from "../lib/uiStrings";
+import useLocalState from "../lib/useLocalState";
 
 export default function MyPostsPage() {
     const { user, loading } = useAuth();
     const [content, setContent] = useState([]);
     const [contentLoading, setContentLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const searchParams = useSearchParams();
 
-    const searchTab = searchParams.get('tab') ?? "published";
-    const [mainActiveTab, setMainActiveTab] = useState("builds");
-    const [activeTab, setActiveTab] = useState(searchTab);
-
-    useEffect(() => {
-        setActiveTab(searchTab);
-    }, [searchTab]);
+    const [mainActiveTab, setMainActiveTab] = useLocalState("myPostsMainTab", "builds");
+    const [activeTab, setActiveTab] = useLocalState("myPostsSubTab", "published");
 
     useEffect(() => {
         const cfg = contentConfig[mainActiveTab];

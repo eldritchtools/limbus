@@ -1,31 +1,48 @@
-export function encodeBuildExtraOpts(identityUpties, identityLevels, egoThreadspins, sinnerNotes) {
-    const iu = identityUpties.reduce((acc, uptie, index) => {
-        if (uptie !== "") acc.push(`${index}=${uptie}`);
-        return acc;
-    }, []).join(",");
-
-    const il = identityLevels.reduce((acc, level, index) => {
-        if (level !== "") acc.push(`${index}=${level}`);
-        return acc;
-    }, []).join(",");
-
-    const et = egoThreadspins.reduce((accOuter, list, indexOuter) => {
-        return list.reduce((acc, uptie, index) => {
-            if (uptie !== "") acc.push(`${indexOuter * 5 + index}=${uptie}`);
-            return acc;
-        }, accOuter);
-    }, []).join(",");
-
-    const sn = sinnerNotes.reduce((acc, note, index) => {
-        if (note !== "") acc.push(`${index}=${encodeURIComponent(note)}`);
-        return acc;
-    }, []).join(",");
-
+export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityUpties, identityLevels, egoThreadspins, sinnerNotes }) {
     let encoded = [];
-    if (iu.length > 0) encoded.push(`iu:${iu}`);
-    if (il.length > 0) encoded.push(`il:${il}`);
-    if (et.length > 0) encoded.push(`et:${et}`);
-    if (sn.length > 0) encoded.push(`sn:${sn}`);
+    if (deploymentOrder) {
+        const deo = deploymentOrder.join(",");
+        if (deo.length > 0) encoded.push(`do:${deo}`);
+    }
+
+    if (activeSinners) {
+        encoded.push(`as:${activeSinners}`);
+    }
+
+    if (identityUpties) {
+        const iu = identityUpties.reduce((acc, uptie, index) => {
+            if (uptie !== "") acc.push(`${index}=${uptie}`);
+            return acc;
+        }, []).join(",");
+        if (iu.length > 0) encoded.push(`iu:${iu}`);
+    }
+
+    if (identityLevels) {
+        const il = identityLevels.reduce((acc, level, index) => {
+            if (level !== "") acc.push(`${index}=${level}`);
+            return acc;
+        }, []).join(",");
+        if (il.length > 0) encoded.push(`il:${il}`);
+    }
+
+    if (egoThreadspins) {
+        const et = egoThreadspins.reduce((accOuter, list, indexOuter) => {
+            return list.reduce((acc, uptie, index) => {
+                if (uptie !== "") acc.push(`${indexOuter * 5 + index}=${uptie}`);
+                return acc;
+            }, accOuter);
+        }, []).join(",");
+        if (et.length > 0) encoded.push(`et:${et}`);
+    }
+
+    if (sinnerNotes) {
+        const sn = sinnerNotes.reduce((acc, note, index) => {
+            if (note !== "") acc.push(`${index}=${encodeURIComponent(note)}`);
+            return acc;
+        }, []).join(",");
+        if (sn.length > 0) encoded.push(`sn:${sn}`);
+    }
+
     return encoded.join("|");
 }
 
@@ -54,21 +71,24 @@ export function decodeBuildExtraOpts(string, parts = null) {
 
     return string.split("|").reduce((acc, part) => {
         const [type, vals] = part.split(":");
+        if (parts && !parts.includes(type)) return acc;
         switch (type) {
+            case "do":
+                acc.deploymentOrder = vals.split(",").map(x => Number(x));
+                return acc;
+            case "as":
+                acc.activeSinners = Number(vals);
+                return acc;
             case "iu":
-                if (parts && !parts.includes("iu")) return acc;
                 acc.identityUpties = decodePart(vals, 12);
                 return acc;
             case "il":
-                if (parts && !parts.includes("il")) return acc;
                 acc.identityLevels = decodePart(vals, 12);
                 return acc;
             case "et":
-                if (parts && !parts.includes("et")) return acc;
                 acc.egoThreadspins = decodePart2(vals, 12, 5);
                 return acc;
             case "sn":
-                if (parts && !parts.includes("sn")) return acc;
                 acc.sinnerNotes = decodePart(vals, 12, true);
                 return acc;
         }

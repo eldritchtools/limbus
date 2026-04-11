@@ -13,6 +13,7 @@ import FloorPlan from "../mdPlans/FloorPlan";
 import GracesDisplay from "../mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "../mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "../mdPlans/RecommendedListDisplay";
+import RecommendedSpecBuildDisplay from "../mdPlans/RecommendedSpecBuildDisplay";
 import { useModal } from "../modals/ModalProvider";
 import Gift from "../objects/Gift";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
@@ -22,6 +23,7 @@ import { useAuth } from "@/app/database/authProvider";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { createMdPlan, getMdPlan, updateMdPlan } from "@/app/database/mdPlans";
+import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
@@ -41,6 +43,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
     const [builds, setBuilds] = useState([]);
     const [identityIds, setIdentityIds] = useState([]);
     const [egoIds, setEgoIds] = useState([]);
+    const [extraOpts, setExtraOpts] = useState("");
     const [difficulty, setDifficulty] = useState("N");
     const [graceLevels, setGraceLevels] = useState(Array.from({ length: 10 }, () => 0));
     const [keyword, setKeyword] = useState(null);
@@ -82,6 +85,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                     setRecommendationMode(mdPlan.recommendation_mode);
                     setIdentityIds(mdPlan.identity_ids);
                     setEgoIds(mdPlan.ego_ids);
+                    setExtraOpts(mdPlan.extra_opts ? decodeBuildExtraOpts(mdPlan.extra_opts) : "");
                     setBuilds(mdPlan.builds);
                     setDifficulty(mdPlan.difficulty);
                     setGraceLevels(mdPlan.grace_levels);
@@ -147,6 +151,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         let planIdentityIds = [];
         let planEgoIds = [];
         let planBuilds = [];
+        let planExtraOpts = null;
 
         if (recommendationMode === "list") {
             planIdentityIds = identityIds;
@@ -170,6 +175,10 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
             planIdentityIds = Object.entries(idMap).sort(([, anum], [, bnum]) => bnum - anum).map(([id]) => id).slice(0, 12);
             planEgoIds = Object.entries(egoMap).sort(([, anum], [, bnum]) => bnum - anum).map(([id]) => id).slice(0, Math.max(12 - planIdentityIds.length, 0));
             planBuilds = builds;
+        } else if (recommendationMode === "specbuild") {
+            planIdentityIds = identityIds.filter(x => x !== "");
+            planEgoIds = egoIds.flat().filter(x => x !== "");
+            planExtraOpts = encodeBuildExtraOpts(extraOpts);
         }
 
         setSaving(true);
@@ -178,8 +187,8 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 title, body, recommendationMode, difficulty,
                 identityIds: planIdentityIds,
                 egoIds: planEgoIds,
+                extraOpts: planExtraOpts,
                 graceLevels, cost,
-                extraOpts: null,
                 keywordId: keywordToIdMapping[keyword] ?? null,
                 startGiftIds: startGifts,
                 observeGiftIds: observeGifts,
@@ -207,7 +216,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 difficulty: difficulty,
                 identity_ids: planIdentityIds,
                 ego_ids: planEgoIds,
-                extra_opts: null,
+                extra_opts: planExtraOpts,
                 grace_levels: graceLevels,
                 cost: cost,
                 keyword_id: keywordToIdMapping[keyword] ?? null,
@@ -352,6 +361,14 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         [openSelectThemePackModal]
     );
 
+    const handleSetRecommendationMode = mode => {
+        setRecommendationMode(mode);
+        setBuilds([]);
+        setIdentityIds([]);
+        setEgoIds([]);
+        setExtraOpts("");
+    }
+
     if (loading || themePacksLoading || mdDataLoading || floorPacksLoading) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
@@ -372,13 +389,15 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
             <span style={{ fontSize: "1.2rem" }}>Select Team Recommendation Mode:</span>
-            <select name="recommend" id="recommend" value={recommendationMode} onChange={e => setRecommendationMode(e.target.value)}>
+            <select name="recommend" id="recommend" value={recommendationMode} onChange={e => handleSetRecommendationMode(e.target.value)}>
                 <option value="none">None</option>
                 <option value="list">List</option>
                 <option value="build">Build</option>
+                <option value="specbuild">Spec Build</option>
             </select>
         </div>
-        <span style={{ color: "#aaa" }}>Select a mode if you want to recommend what to bring for this run plan. List mode lets you display a list of identities and E.G.Os. Build mode lets you select builds available on the site.</span>
+        <span style={{ color: "#aaa" }}>Select a mode if you want to recommend what to bring for this run plan. List mode lets you display a list of identities and E.G.Os. Build mode lets you select builds available on the site. Use Spec Build if you want to make an entirely new build specifically for this MD Plan.</span>
+        <span style={{ color: uiColors.red }}>Warning: Changing recommendation mode WILL reset anything currently in recommended.</span>
 
         {recommendationMode === "list" ? <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Identities and E.G.Os</span>
@@ -392,6 +411,19 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Builds</span>
             <span style={{ color: "#aaa" }}>Select team builds to recommend. You may select as many as you want.</span>
             <RecommendedBuildsDisplay builds={builds} setBuilds={setBuilds} editable={true} />
+        </> :
+            null
+        }
+
+        {recommendationMode === "specbuild" ? <>
+            <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
+            <span style={{ color: "#aaa" }}>Create the recommended team build.</span>
+            <RecommendedSpecBuildDisplay 
+                identityIds={identityIds} setIdentityIds={setIdentityIds} 
+                egoIds={egoIds} setEgoIds={setEgoIds} 
+                extraOpts={extraOpts} setExtraOpts={setExtraOpts} 
+                editable={true} 
+            />
         </> :
             null
         }

@@ -10,5 +10,5 @@ alter table feedback enable row level security;
 create policy "Allow inserts"
 on feedback
 for insert
-to anon
+to anon, authenticated
 with check (true);

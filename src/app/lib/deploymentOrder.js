@@ -1,4 +1,5 @@
 export function getDeploymentPosition(order, activeSinners, sinnerId) {
+    if(!order) return ["none", -1]; 
     const index = order.findIndex(x => x === sinnerId);
     if (index === -1) {
         return ["none", -1];
