@@ -54,25 +54,29 @@ export function useSkillData(type, ids, tiers) {
             const tier = tierMapping[id];
             if (type === "identity") {
                 const path = getPath(type, id);
-                if (skillDataLoading) acc[id] = { skills: [], combatPassives: [], supportPassives: [] };
-                else acc[id] = {
-                    skills: Object.fromEntries(Object.entries(skillData[path].skills)
-                        .map(([id, x]) => ([id, { ...x, data: compileSkillData(x.data, tier) }]))
-                        .filter(([, x]) => x.data)
-                    ),
-                    combatPassives: compileCombatPassives(skillData[path], tier),
-                    supportPassives: compileSupportPassives(skillData[path], tier),
-                    notes: skillData[path]?.notes ?? {}
-                };
+                if (skillDataLoading || Object.keys(skillData[path]).length === 0)
+                    acc[id] = { skills: [], combatPassives: [], supportPassives: [] };
+                else
+                    acc[id] = {
+                        skills: Object.fromEntries(Object.entries(skillData[path].skills)
+                            .map(([id, x]) => ([id, { ...x, data: compileSkillData(x.data, tier) }]))
+                            .filter(([, x]) => x.data)
+                        ),
+                        combatPassives: compileCombatPassives(skillData[path], tier),
+                        supportPassives: compileSupportPassives(skillData[path], tier),
+                        notes: skillData[path]?.notes ?? {}
+                    };
             } else if (type === "ego") {
                 const path = getPath(type, id);
-                if (skillDataLoading) acc[id] = { awakeningSkills: [], corrosionSkills: [], passives: [] };
-                else acc[id] = {
-                    awakeningSkills: skillData[path].awakeningSkills.map(x => ({ ...x, data: compileSkillData(x.data, tier) })),
-                    corrosionSkills: skillData[path].corrosionSkills?.map(x => ({ ...x, data: compileSkillData(x.data, tier) })) ?? [],
-                    passives: compileEgoPassives(skillData[path], tier),
-                    notes: skillData[path]?.notes ?? {}
-                }
+                if (skillDataLoading || Object.keys(skillData[path]).length === 0)
+                    acc[id] = { awakeningSkills: [], corrosionSkills: [], passives: [] };
+                else
+                    acc[id] = {
+                        awakeningSkills: skillData[path].awakeningSkills.map(x => ({ ...x, data: compileSkillData(x.data, tier) })),
+                        corrosionSkills: skillData[path].corrosionSkills?.map(x => ({ ...x, data: compileSkillData(x.data, tier) })) ?? [],
+                        passives: compileEgoPassives(skillData[path], tier),
+                        notes: skillData[path]?.notes ?? {}
+                    }
             }
             return acc;
         }, {});

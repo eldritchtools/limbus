@@ -146,24 +146,27 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
 
     if (["names", "icons"].includes(displayType)) return baseComponent;
 
+    const identityData = identity?.upcoming ? null : identity;
+    const egosData = egos.map(x => x?.upcoming ? null : x);
+
     if (displayType === "stats") {
         return <OverlayBase
             behind={baseComponent}
-            content={identity ? <StatsOverlay identity={identity} uptie={identityUptie} level={identityLevel} /> : null}
+            content={identityData ? <StatsOverlay identity={identityData} uptie={identityUptie} level={identityLevel} /> : null}
         />
     }
 
     if (displayType === "types") {
         return <OverlayBase
             behind={baseComponent}
-            content={identity ? <TypesOverlay identity={identity} egos={egos} uptie={identityUptie} /> : null}
+            content={identityData ? <TypesOverlay identity={identityData} egos={egosData} uptie={identityUptie} /> : null}
         />
     }
 
     if (["s1", "s2", "s3", "def", "skills", "passives1", "passives2"].includes(displayType)) {
         return <OverlayBase
             behind={baseComponent}
-            content={identity ? <IdentitySkillSummary identity={identity} type={displayType} uptie={identityUptie ?? undefined} level={identityLevel ?? undefined} /> : null}
+            content={identityData ? <IdentitySkillSummary identity={identityData} type={displayType} uptie={identityUptie ?? undefined} level={identityLevel ?? undefined} /> : null}
             blockAccess={true}
         />
     }
@@ -173,7 +176,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
 
         return <OverlayBase
             behind={baseComponent}
-            content={egos ? <EgoSkillSummary egos={egos} type={"ego"} threadspins={egoThreadspins} num={num} /> : null}
+            content={egosData ? <EgoSkillSummary egos={egosData} type={"ego"} threadspins={egoThreadspins} num={num} /> : null}
             blockAccess={true}
         />
     }
@@ -181,7 +184,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
     if (["egoa", "egob", "egopassives"].includes(displayType)) {
         return <OverlayBase
             behind={baseComponent}
-            content={egos ? <EgoSkillSummary egos={egos} type={displayType} threadspins={egoThreadspins} /> : null}
+            content={egosData ? <EgoSkillSummary egos={egosData} type={displayType} threadspins={egoThreadspins} /> : null}
             blockAccess={true}
         />
     }
@@ -189,7 +192,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
     if (displayType === "egocosts" || displayType === "egoresists") {
         return <OverlayBase
             behind={baseComponent}
-            content={egos ? <EgoStatsOverlay egos={egos} displayType={displayType} /> : null}
+            content={egosData ? <EgoStatsOverlay egos={egosData} displayType={displayType} /> : null}
         />
     }
 
@@ -199,7 +202,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
         if (otherOpts.source === "identity") {
             return <OverlayBase
                 behind={baseComponent}
-                content={identity ? <IdentitySkillCalc identity={identity} uptie={identityUptie ?? undefined} level={identityLevel ?? undefined} opts={otherOpts} /> : null}
+                content={identityData ? <IdentitySkillCalc identity={identityData} uptie={identityUptie ?? undefined} level={identityLevel ?? undefined} opts={otherOpts} /> : null}
                 blockAccess={true}
             />
         }
@@ -207,7 +210,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
         if (otherOpts.source === "ego") {
             return <OverlayBase
                 behind={baseComponent}
-                content={egos ? <EgoSkillCalc egos={egos} threadspins={egoThreadspins ?? undefined} level={identityLevel ?? undefined} opts={otherOpts} /> : null}
+                content={egosData ? <EgoSkillCalc egos={egosData} threadspins={egoThreadspins ?? undefined} level={identityLevel ?? undefined} opts={otherOpts} /> : null}
                 blockAccess={true}
             />
         }

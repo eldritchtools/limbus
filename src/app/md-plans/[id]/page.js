@@ -10,11 +10,13 @@ import FloorPlan from "@/app/components/mdPlans/FloorPlan";
 import GracesDisplay from "@/app/components/mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "@/app/components/mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisplay";
+import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
 import Gift from "@/app/components/objects/Gift";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { getMdPlan } from "@/app/database/mdPlans";
+import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { contentConfig } from "@/app/lib/contentConfig";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
@@ -22,6 +24,9 @@ import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 export default function MdPlanPage({ params }) {
     const { id } = React.use(params);
     const [plan, setPlan] = useState(null);
+    const [identityIds, setIdentityIds] = useState([]);
+    const [egoIds, setEgoIds] = useState([]);
+    const [extraOpts, setExtraOpts] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const { isMobile } = useBreakpoint();
@@ -30,6 +35,11 @@ export default function MdPlanPage({ params }) {
         if (loading) {
             const handlePlan = x => {
                 setPlan(x);
+                if(x.recommendation_mode === "specbuild") {
+                    setIdentityIds(x.identity_ids);
+                    setEgoIds(x.ego_ids);
+                    setExtraOpts(decodeBuildExtraOpts(x.extra_opts));
+                }
                 setLoading(false);
             }
 
@@ -61,6 +71,18 @@ export default function MdPlanPage({ params }) {
             {plan.recommendation_mode === "build" ? <>
                 <span style={{ fontSize: "1.2rem" }}>Recommended Team Builds</span>
                 <RecommendedBuildsDisplay builds={plan.builds} editable={false} />
+            </> :
+                null
+            }
+
+            {plan.recommendation_mode === "specbuild" ? <>
+                <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
+                <RecommendedSpecBuildDisplay 
+                    identityIds={identityIds} setIdentityIds={setIdentityIds}
+                    egoIds={egoIds} setEgoIds={setEgoIds}
+                    extraOpts={extraOpts} setExtraOpts={setExtraOpts} 
+                    editable={false} 
+                />
             </> :
                 null
             }

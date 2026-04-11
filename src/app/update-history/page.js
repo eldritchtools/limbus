@@ -5,7 +5,7 @@ import { useModal } from "../components/modals/ModalProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 
 export default function UpdateHistoryPage() {
-    const [updates, updatesLoading] = useData("updates");
+    const [updates, updatesLoading] = useData("updates_index");
     const { openUpdateHistoryModal } = useModal();
 
     if (updatesLoading) return <LoadingContentPageTemplate />
@@ -20,7 +20,7 @@ export default function UpdateHistoryPage() {
                 <span key={`date-${i}`} style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
                 <span key={`title-${i}`} className="text-link"
                     style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
-                    onClick={() => openUpdateHistoryModal({date: update.date, title: update.title, content: update.body})} >
+                    onClick={() => openUpdateHistoryModal({date: update.date, title: update.title, path: update.path})} >
                     {update.title}
                 </span>
             </>)}

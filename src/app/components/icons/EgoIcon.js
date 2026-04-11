@@ -12,6 +12,7 @@ import { ASSETS_ROOT } from "@/app/paths";
 
 
 export function getEgoImgSrc(ego, type) {
+    if (ego.upcoming) return `${ASSETS_ROOT}/${ego.src}.png`;
     return `${ASSETS_ROOT}/egos/${ego.id}_${type}_profile.png`;
 }
 
@@ -34,7 +35,15 @@ function EgoIconMain({ ego, style, type, banner = false, displayName = false, di
     >
         {img}
         {displayRarity ?
-            <RarityIcon rarity={ego.rank.toLowerCase()} style={rarityStyle} /> :
+            (
+                ego.upcoming ?
+                    <div style={{
+                        ...nameStyle, left: "4px", top: "4px", display: "block", textAlign: "left", color: "#ddd", fontSize: "0.9rem", overflow: "hidden"
+                    }}>
+                        UPCOMING
+                    </div> :
+                    <RarityIcon rarity={ego.rank.toLowerCase()} style={rarityStyle} />
+            ) :
             null
         }
         {threadspin ? (
@@ -48,7 +57,7 @@ function EgoIconMain({ ego, style, type, banner = false, displayName = false, di
         {displayName ? (
             banner ? <div style={{
                 ...nameStyle, fontSize: "0.75rem", maxHeight: "100%", textAlign: "center",
-                color: affinityColorMapping[ego.affinity || ego.awakeningType.affinity]
+                color: affinityColorMapping[ego?.affinity || ego?.awakeningType?.affinity || "none"]
             }}>
                 {ego.name}
             </div> : <div style={{
@@ -62,15 +71,27 @@ function EgoIconMain({ ego, style, type, banner = false, displayName = false, di
     </div>
 }
 
-function EgoIconFetch({ id, style, ...props }) {
+function EgoUpcomingFetch({ id, ...props }) {
+    const [upcoming, upcomingLoading] = useData("upcoming");
+
+    if (upcomingLoading) {
+        return null;
+    } else if (!(id in upcoming?.egos)) {
+        return null;
+    } else {
+        return <EgoIconMain ego={upcoming.egos[id]} {...props} />
+    }
+}
+
+function EgoIconFetch({ id, ...props }) {
     const [egos, egosLoading] = useData("egos_mini");
     if (egosLoading) {
         return null;
     } else if (!(id in egos)) {
         console.warn(`Ego ${id} not found.`);
-        return null;
+        return <EgoUpcomingFetch id={id} {...props} />;
     } else {
-        return <EgoIconMain ego={egos[id]} style={style} {...props} />
+        return <EgoIconMain ego={egos[id]} {...props} />
     }
 
 }

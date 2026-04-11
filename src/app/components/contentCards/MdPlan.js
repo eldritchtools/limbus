@@ -1,10 +1,10 @@
 "use client";
 
-import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useMemo, useState } from "react";
 
 import NoPrefetchLink from "../NoPrefetchLink";
 import styles from "./MdPlan.module.css";
+import BuildIdentitiesGrid from "../build/BuildIdentitiesGrid";
 import CommentButton from "../contentActions/CommentButton";
 import LikeButton from "../contentActions/LikeButton";
 import SaveButton from "../contentActions/SaveButton";
@@ -17,6 +17,7 @@ import Tag from "../objects/Tag";
 import UsernameWithTime from "../user/UsernameWithTime";
 
 import { keywordIdMapping } from "@/app/database/keywordIds";
+import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
 function IconGrid({ identityIds, egoIds, scale }) {
@@ -34,8 +35,8 @@ function IconGrid({ identityIds, egoIds, scale }) {
         egoIds.forEach(id => {
             if (list.length >= 12) return;
             list.push(<div key={id} style={{ width: "100%", height: "100%" }}>
-            <EgoIcon id={id} type={"awaken"} scale={scale} style={{ borderRadius: "4px" }} />
-        </div>)
+                <EgoIcon id={id} type={"awaken"} scale={scale} style={{ borderRadius: "4px" }} />
+            </div>)
         });
 
         return list;
@@ -60,6 +61,20 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
     const displayComponent = useMemo(() => {
         if (plan.recommendation_mode === "list" || plan.recommendation_mode === "build")
             return <IconGrid identityIds={plan.identity_ids} egoIds={plan.ego_ids} scale={scale} />;
+        if (plan.recommendation_mode === "specbuild") {
+            const extraProps = {};
+            const extraOpts = decodeBuildExtraOpts(plan.extra_opts, ["do", "as", "iu"])
+            extraProps.deploymentOrder = extraOpts.deploymentOrder ?? [];
+            extraProps.activeSinners = extraOpts.activeSinners ?? 7;
+            if (extraOpts.identityUpties) extraProps.identityUpties = extraOpts.identityUpties.map(uptie => uptie === "" ? 4 : uptie);
+            const identityIds = Array.from({ length: 12 }, () => "");
+            plan.identity_ids.forEach(id => {
+                if (!id) return;
+                identityIds[Math.floor(id / 100) % 100 - 1] = id;
+            })
+            return <BuildIdentitiesGrid identityIds={identityIds} scale={scale} {...extraProps} />
+        }
+
         return null;
     }, [plan, scale]);
 

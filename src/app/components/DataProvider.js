@@ -28,7 +28,7 @@ export function DataProvider({ children }) {
         const promise = (async () => {
             const res = await fetch(`${DATA_ROOT}/${path}.json`);
             const json = await res.json();
-            const data = preprocess_data(path, json);
+            const data = json.error ? {} : preprocess_data(path, json);
 
             setDataStore(prev => ({ ...prev, [path]: data }));
             delete inFlight.current[path];
