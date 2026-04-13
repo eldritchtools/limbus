@@ -7,6 +7,7 @@ import Gift from "@/app/components/gifts/Gift";
 import Icon from "@/app/components/icons/Icon";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import AdversitiesDisplay, { AdversitiesPointTotal } from "@/app/components/mdPlans/AdversitiesDisplay";
 import FloorPlan from "@/app/components/mdPlans/FloorPlan";
 import GracesDisplay from "@/app/components/mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "@/app/components/mdPlans/RecommendedBuildsDisplay";
@@ -35,7 +36,7 @@ export default function MdPlanPage({ params }) {
         if (loading) {
             const handlePlan = x => {
                 setPlan(x);
-                if(x.recommendation_mode === "specbuild") {
+                if (x.recommendation_mode === "specbuild") {
                     setIdentityIds(x.identity_ids);
                     setEgoIds(x.ego_ids);
                     setExtraOpts(decodeBuildExtraOpts(x.extra_opts));
@@ -77,11 +78,11 @@ export default function MdPlanPage({ params }) {
 
             {plan.recommendation_mode === "specbuild" ? <>
                 <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
-                <RecommendedSpecBuildDisplay 
+                <RecommendedSpecBuildDisplay
                     identityIds={identityIds} setIdentityIds={setIdentityIds}
                     egoIds={egoIds} setEgoIds={setEgoIds}
-                    extraOpts={extraOpts} setExtraOpts={setExtraOpts} 
-                    editable={false} 
+                    extraOpts={extraOpts} setExtraOpts={setExtraOpts}
+                    editable={false}
                 />
             </> :
                 null
@@ -105,6 +106,16 @@ export default function MdPlanPage({ params }) {
                     <GracesDisplay graceLevels={plan.grace_levels} />
                 </> :
                 null
+            }
+
+            {
+                plan.difficulty === "E" && plan.adversities && Object.keys(plan.adversities).length > 0 ?
+                    <>
+                        <span style={{ fontSize: "1.2rem" }}>Adversities: <AdversitiesPointTotal adversities={plan.adversities} /></span>
+                        <span style={{ color: "#aaa" }}>Adversities to take in the Extreme floors</span>
+                        <AdversitiesDisplay adversities={plan.adversities} />
+                    </> :
+                    null
             }
 
             {plan.start_gift_ids.length > 0 || plan.observe_gift_ids.length > 0 ?

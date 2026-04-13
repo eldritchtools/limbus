@@ -144,7 +144,7 @@ with check (
   )
 );
 
-create or replace function public.search_collections_v2(
+create or replace function public.search_collections_v3(
   p_query text default null,
   collection_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -268,7 +268,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v2(
+    FROM public.search_md_plans_v3(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_limit := 1000,
       p_ignore_block_discovery := true
@@ -550,7 +550,7 @@ begin
 end;
 $$;
 
-create or replace function public.get_collection_v2(
+create or replace function public.get_collection_v3(
   p_collection_id uuid
 )
 returns jsonb
@@ -644,7 +644,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v2(
+    FROM public.search_md_plans_v3(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_published := true,
       p_limit := 1000,
@@ -854,7 +854,7 @@ USING (
   )
 );
 
-CREATE OR REPLACE FUNCTION public.get_collection_submissions(
+CREATE OR REPLACE FUNCTION public.get_collection_submissions_v2(
   p_collection_id uuid
 )
 RETURNS TABLE (
@@ -902,7 +902,7 @@ builds AS (
 
 md_plans AS (
   SELECT *
-  FROM public.search_md_plans_v2(
+  FROM public.search_md_plans_v3(
     plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
     p_published := TRUE,
     p_limit := 1000,

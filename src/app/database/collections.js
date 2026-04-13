@@ -27,11 +27,11 @@ const createParams = {
 const DEFAULT_PAGE_SIZE = 10;
 
 export async function searchCollections(params, page = 1, pageSize = null) {
-    return callRPC("search_collections_v2", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_collections_v3", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
 }
 
 export async function getCollection(id) {
-    return callRPC("get_collection_v2", { p_collection_id: id })
+    return callRPC("get_collection_v3", { p_collection_id: id })
 }
 
 export async function insertCollection(params) {
@@ -85,7 +85,7 @@ export async function submitCollectionContribution(user_id, collection_id, targe
 }
 
 export async function getCollectionSubmissions(id) {
-    return callRPC("get_collection_submissions", { p_collection_id: id });
+    return callRPC("get_collection_submissions_v2", { p_collection_id: id });
 }
 
 export async function approveCollectionSubmission(id, note) {

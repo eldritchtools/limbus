@@ -21,6 +21,7 @@ const createParams = {
     egoIds: "p_ego_ids",
     extraOpts: "p_extra_opts",
     graceLevels: "p_grace_levels",
+    adversities: "p_adversities",
     cost: "p_cost",
     keywordId: "p_keyword_id",
     startGiftIds: "p_start_gift_ids",
@@ -37,19 +38,19 @@ const createParams = {
 const DEFAULT_PAGE_SIZE = 20;
 
 export async function searchMdPlans(params, page, pageSize = null) {
-    return callRPC("search_md_plans_v2", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_md_plans_v3", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
 }
 
 export async function getMdPlan(planId) {
-    return callRPC("get_md_plan_v2", { p_plan_id: planId });
+    return callRPC("get_md_plan_v3", { p_plan_id: planId });
 }
 
 export async function createMdPlan(params) {
-    return callRPC("create_md_plan_v2", convertParams(params, createParams));
+    return callRPC("create_md_plan_v3", convertParams(params, createParams));
 }
 
 export async function updateMdPlan(params) {
-    await callRPC("update_md_plan_v2", convertParams(params, createParams));
+    await callRPC("update_md_plan_v3", convertParams(params, createParams));
     return params.planId;
 }
 
@@ -66,5 +67,5 @@ export async function unpinMdPlanComment(planId) {
 }
 
 export async function getSavedMdPlans(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_md_plans_v2", paginateParams({ p_user_id: user_id }, page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("get_saved_md_plans_v3", paginateParams({ p_user_id: user_id }, page, pageSize ?? DEFAULT_PAGE_SIZE));
 }

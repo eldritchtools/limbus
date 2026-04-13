@@ -13,6 +13,7 @@ import EgoIcon from "../icons/EgoIcon";
 import Icon from "../icons/Icon";
 import IdentityIcon from "../icons/IdentityIcon";
 import KeywordIcon from "../icons/KeywordIcon";
+import { AdversitiesPointTotal } from "../mdPlans/AdversitiesDisplay";
 import Tag from "../objects/Tag";
 import UsernameWithTime from "../user/UsernameWithTime";
 
@@ -78,6 +79,8 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
         return null;
     }, [plan, scale]);
 
+    console.log(plan.keyword_id);
+
     return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={{ width: width }}>
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 
@@ -89,19 +92,32 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
             <div>
                 Difficulty: {mdDiffculties[plan.difficulty].name}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Keyword</div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Min Starlight</div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {plan.keyword_id ?
-                        <KeywordIcon id={keywordIdMapping[plan.keyword_id]} size={24} /> :
-                        <div />
-                    }
+            <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Keyword</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {plan.keyword_id ?
+                            <KeywordIcon id={keywordIdMapping[plan.keyword_id]} size={24} /> :
+                            <div />
+                        }
+                    </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon path={"starlight"} style={{ width: "25px", height: "25px" }} />
-                    {plan.cost}
+                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Min Starlight</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Icon path={"starlight"} style={{ width: "25px", height: "25px" }} />
+                        {plan.cost}
+                    </div>
                 </div>
+                {plan.difficulty === "E" && plan.adversities ?
+                    <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Adversity</div>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <AdversitiesPointTotal adversities={plan.adversities} />
+                        </div>
+                    </div> :
+                    null
+                }
             </div>
             {displayComponent}
             <div style={{ marginBottom: "0.2rem", alignSelf: "start" }}>

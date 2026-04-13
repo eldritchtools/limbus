@@ -208,6 +208,7 @@ export default function UsernameSetup() {
                             graceLevels: plan.grace_levels,
                             cost: plan.cost,
                             keywordId: plan.keyword_id,
+                            adversities: plan.adversities,
                             startGiftIds: plan.start_gift_ids,
                             observeGiftIds: plan.observe_gift_ids,
                             targetGiftIds: plan.target_gift_ids,
