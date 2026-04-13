@@ -15,6 +15,7 @@ import { localStores } from "../database/localDB";
 import useLocalState from "../lib/useLocalState";
 
 function Achievement({ achievement, tracking, setAchievementTracking, isSmall }) {
+    const [isOpen, setIsOpen] = useState(false);
     const checkboxRef = useRef(null);
 
     const isChecked = Array.isArray(achievement.points) ? tracking[achievement.id] > achievement.points.length - 1 : tracking[achievement.id] > 0;
@@ -62,7 +63,7 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
     const points = Array.isArray(achievement.points) ? achievement.points.reduce((acc, x) => acc + x, 0) : achievement.points;
     const len = Array.isArray(achievement.points) ? achievement.points.length : 1;
 
-    return <details className={styles.details}>
+    return <details className={styles.details} onToggle={e => setIsOpen(e.target.open)}>
         <summary className={styles.summary}>
             <div style={{ display: "flex", gap: "0.1rem", width: "85%", alignItems: "center" }}>
                 <label className={styles.checkboxContainer}>
@@ -85,7 +86,12 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
         </summary>
         <div style={{ padding: "0.5rem 1.5rem 0.1rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {subAchievements ? <div>{subAchievements}</div> : null}
-            <div style={{ width: "100%", textAlign: "start" }}> <AchievementTips achievement={achievement} isSmall={isSmall} /> </div>
+            {isOpen ?
+                <div style={{ width: "100%", textAlign: "start" }}> 
+                    <AchievementTips achievement={achievement} isSmall={isSmall} /> 
+                </div> :
+                null
+            }
         </div>
     </details>
 }

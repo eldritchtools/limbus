@@ -7,6 +7,7 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
+import useLocalState from "../lib/useLocalState";
 
 function TextTip({ tip }) {
     return <span style={{ whiteSpace: "pre-line" }}>{tip.text}</span>;
@@ -48,79 +49,74 @@ function TableTip({ tip, isSmall }) {
 }
 
 function ShowGiftsTip({ tip, isSmall }) {
+    const [mode, setMode] = useLocalState("achievementTipDifficultyMode", "normal");
     const [giftsData, giftsLoading] = useData("gifts");
     const floorsPerPack = useFloorsPerPack()
 
-    const [normal, hard] = Object.entries(giftsLoading ? {} : giftsData).reduce((acc, [_id, gift]) => {
-        if (gift.vestige) return acc;
-        if ("keyword" in tip && gift.keyword !== tip.keyword) return acc;
-        if ("tier" in tip) {
-            if (Array.isArray(tip.tier)) {
-                if (!tip.tier.includes(gift.tier)) return acc;
-            } else {
-                if (tip.tier !== gift.tier) return acc;
+    const { general, exclusive } = useMemo(() =>
+        Object.entries(giftsLoading ? {} : giftsData).reduce((acc, [_id, gift]) => {
+            if (gift.vestige) return acc;
+            if ("keyword" in tip && gift.keyword !== tip.keyword) return acc;
+            if ("tier" in tip) {
+                if (Array.isArray(tip.tier)) {
+                    if (!tip.tier.includes(gift.tier)) return acc;
+                } else {
+                    if (tip.tier !== gift.tier) return acc;
+                }
             }
-        }
-        if ("fusion" in tip) {
-            if (tip.fusion !== "any" && gift.fusion !== tip.fusion) return acc;
-        } else {
-            if (gift.fusion) return acc;
-        }
-        if ("themePack" in tip && tip.themePack && !("exclusiveTo" in gift)) return acc;
-        if ("enhanceable" in tip && tip.enhanceable !== gift.enhanceable) return acc;
+            if ("fusion" in tip) {
+                if (tip.fusion !== "any" && gift.fusion !== tip.fusion) return acc;
+            } else {
+                if (gift.fusion) return acc;
+            }
+            if ("themePack" in tip && tip.themePack && !("exclusiveTo" in gift)) return acc;
+            if ("enhanceable" in tip && tip.enhanceable !== gift.enhanceable) return acc;
+            if (gift.hidden) return acc;
 
-        if ("exclusiveTo" in gift) {
-            gift.exclusiveTo.forEach(source => {
-                if (source in floorsPerPack.normal) floorsPerPack.normal[source].forEach(floor => {
-                    if (!(floor in acc[0].exclusive)) acc[0].exclusive[floor] = {};
-                    if (!(source in acc[0].exclusive[floor])) acc[0].exclusive[floor][source] = [];
-                    acc[0].exclusive[floor][source].push(gift);
-                })
+            if ("exclusiveTo" in gift) {
+                gift.exclusiveTo.forEach(source => {
+                    if (source in floorsPerPack[mode]) floorsPerPack[mode][source].forEach(floor => {
+                        if (!(floor in acc.exclusive)) acc.exclusive[floor] = {};
+                        if (!(source in acc.exclusive[floor])) acc.exclusive[floor][source] = [];
+                        acc.exclusive[floor][source].push(gift);
+                    })
+                });
+            } else {
+                if (gift.hardonly) {
+                    if (mode === "hard") acc.general.push(gift);
+                } else {
+                    acc.general.push(gift)
+                }
+            }
 
-                if (source in floorsPerPack.hard) floorsPerPack.hard[source].forEach(floor => {
-                    if (!(floor in acc[1].exclusive)) acc[1].exclusive[floor] = {};
-                    if (!(source in acc[1].exclusive[floor])) acc[1].exclusive[floor][source] = [];
-                    acc[1].exclusive[floor][source].push(gift);
-                })
-            });
-        } else {
-            if (gift.hardonly) acc[1].general.push(gift);
-            else acc[0].general.push(gift)
-        }
-
-        return acc;
-    }, [{ general: [], exclusive: {} }, { general: [], exclusive: {} }])
+            return acc;
+        }, { general: [], exclusive: {} }),
+        [giftsData, giftsLoading, floorsPerPack, tip, mode]
+    );
 
     const giftsStyle = { display: "flex", flexDirection: "row", height: "fit-content", flexWrap: "wrap", padding: "0.5rem" };
-    const centerStyle = { display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", border: "1px #666 dotted" };
+    const centerStyle = { display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", border: "1px #666 dotted", padding: "0.5rem" };
     const constructGift = gift => <Gift key={gift.id} gift={gift} scale={isSmall ? 0.5 : 1} />
 
     const gridComponents = [];
-    // Headers
-    if (tip.keyword)
-        gridComponents.push(isSmall ?
-            <div key={gridComponents.length} style={centerStyle}>
-                <KeywordIcon id={tip.keyword} size={24} />
-            </div> :
-            <div key={gridComponents.length} style={{ ...centerStyle, gap: "0.2rem" }}>
-                <KeywordIcon id={tip.keyword} size={isSmall ? 24 : 32} /> {tip.keyword} Gifts
-            </div>
-        );
-    else gridComponents.push(<div key={gridComponents.length} style={centerStyle}>Gifts</div>);
-    gridComponents.push(<div key={gridComponents.length} style={{ ...centerStyle, color: "#4ade80" }}>Normal</div>);
-    gridComponents.push(<div key={gridComponents.length} style={{ ...centerStyle, color: "#f87171" }}>Hard</div>);
 
     // General
-    if (normal.general.length + hard.general.length > 0) {
+    if (general.length > 0) {
         gridComponents.push(<div key={gridComponents.length} style={centerStyle}>{isSmall ? "Any" : "General"}</div>);
-        gridComponents.push(<div key={gridComponents.length} style={{ border: "1px #666 dotted" }}><div style={giftsStyle}>{normal.general.map(constructGift)}</div></div>);
-        gridComponents.push(<div key={gridComponents.length} style={{ border: "1px #666 dotted" }}><div style={giftsStyle}>{hard.general.map(constructGift)}</div></div>);
+        gridComponents.push(<div key={gridComponents.length} style={{ border: "1px #666 dotted" }}>
+            <div style={giftsStyle}>{general.map(constructGift)}</div>
+        </div>);
     }
 
     function constructPackGiftsComponent(packGiftMapping) {
-        return <div key={gridComponents.length} style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", alignItems: "center", alignContent: "flex-start", padding: "0.25rem", border: "1px #666 dotted", gap: "0.5rem" }}>
+        return <div key={gridComponents.length}
+            style={{
+                display: "flex", flexDirection: "row", flexWrap: "wrap", alignItems: "center", alignContent: "flex-start",
+                padding: "0.25rem", border: "1px #666 dotted", gap: "0.5rem"
+            }}>
             {Object.entries(packGiftMapping).map(([pack, gifts], i) =>
-                <div key={i} style={{ display: "flex", flexDirection: "column", textAlign: "center", border: "1px #777 dotted", borderRadius: "1rem", padding: "0.2rem" }}>
+                <div key={i} style={{ 
+                    display: "flex", flexDirection: "column", textAlign: "center", border: "1px #777 dotted", borderRadius: "1rem", padding: "0.2rem" }}>
                     <div><ThemePackNameWithTooltip id={pack} /></div>
                     <div style={{ ...giftsStyle, justifyContent: "center" }}>{gifts.map(constructGift)}</div>
                 </div>
@@ -128,27 +124,34 @@ function ShowGiftsTip({ tip, isSmall }) {
         </div>
     }
 
-    function insertFloorRow(floor, normal, hard) {
+    function insertFloorRow(floor, gifts) {
         gridComponents.push(<div key={gridComponents.length} style={centerStyle}>{isSmall ? `F${floor}` : `Floor ${floor}`}</div>);
-        if (normal) gridComponents.push(constructPackGiftsComponent(normal));
-        else gridComponents.push(<div key={gridComponents.length} />);
-        if (hard) gridComponents.push(constructPackGiftsComponent(hard));
-        else gridComponents.push(<div key={gridComponents.length} />);
+        gridComponents.push(constructPackGiftsComponent(gifts));
     }
 
     // Floors 1-5
     ["1", "2", "3", "4", "5"].forEach(floor => {
-        if (!(floor in normal.exclusive) && !(floor in hard.exclusive)) return;
-        insertFloorRow(floor, floor in normal.exclusive ? normal.exclusive[floor] : null, floor in hard.exclusive ? hard.exclusive[floor] : null);
+        if (!(floor in exclusive)) return;
+        insertFloorRow(floor, exclusive[floor]);
     })
 
     // Floor 6-10
-    if ("6-10" in hard.exclusive) {
-        insertFloorRow("6-10", null, "6-10" in hard.exclusive ? hard.exclusive["6-10"] : null);
+    if ("6-10" in exclusive) {
+        insertFloorRow("6-10", exclusive["6-10"]);
     }
 
-    return <div style={{ display: "grid", width: "100%", gridTemplateColumns: "1fr 5fr 5fr", border: "1px #666 dotted" }}>
-        {gridComponents}
+    return <div style={{ display: "flex", flexDirection: "column" }}>
+        {tip.keyword ? 
+            <span style={{display: "flex", alignItems: "center", fontSize: "1.1rem"}}><KeywordIcon id={tip.keyword} /> {tip.keyword} Gifts</span> : 
+            null
+        }
+        <div style={{display: "flex", gap: "1rem", paddingLeft: "0.5rem", margin: "0.5rem 0"}}>
+            <span className="tab-header" style={{color: mode === "normal" ? "#4ade80" : "#166534"}} onClick={() => setMode("normal")}>Normal</span>
+            <span className="tab-header" style={{color: mode === "hard" ? "#f87171" : "#7f1d1d"}} onClick={() => setMode("hard")}>Hard</span>
+        </div>
+        <div style={{ display: "grid", width: "100%", gridTemplateColumns: "auto 1fr", border: "1px #666 dotted" }}>
+            {gridComponents}
+        </div>
     </div>
 }
 
