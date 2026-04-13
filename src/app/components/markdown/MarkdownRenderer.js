@@ -13,10 +13,10 @@ import { visit } from "unist-util-visit";
 
 import { convertMarkdownAlias } from "./MarkdownAliases";
 import { useData } from "../DataProvider";
+import Gift from "../gifts/Gift";
 import KeywordIcon, { isValidKeywordId } from "../icons/KeywordIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
 import NoPrefetchLink from "../NoPrefetchLink";
-import Gift from "../objects/Gift";
 import Status from "../objects/Status";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";

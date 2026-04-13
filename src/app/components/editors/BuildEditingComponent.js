@@ -18,6 +18,7 @@ import AllIdEgoSelector from "../selectors/AllIdEgoSelector";
 import { EgoMenuSelector } from "../selectors/EgoSelectors";
 import { IdentityMenuSelector } from "../selectors/IdentitySelectors";
 import UptieSelector from "../selectors/UptieSelector";
+import SkillReplace from "../skill/SkillReplace";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { deploymentColors } from "@/app/lib/colors";
@@ -34,6 +35,7 @@ export default function BuildEditingComponent({
     identityUpties, setIdentityUpties,
     egoThreadspins, setEgoThreadspins,
     sinnerNotes, setSinnerNotes,
+    skillReplaces, setSkillReplaces,
     defaultAdditionalToggle = false, includeEventRolls = false
 }) {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
@@ -67,6 +69,7 @@ export default function BuildEditingComponent({
     const setIdentityUptie = (uptie, index) => setIdentityUpties(prev => prev.map((x, i) => i === index ? uptie : x));
     const setEgoThreadspin = (uptie, index, rank) => setEgoThreadspins(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? uptie : y) : x));
     const setSinnerNote = (note, index) => setSinnerNotes(prev => prev.map((x, i) => i === index ? note : x));
+    const setSkillReplace = (rep, index) => setSkillReplaces(prev => ({...prev, [index]: rep}));
 
     useEffect(() => {
         const teamCode = constructTeamCode(identityIds, egoIds, deploymentOrder);
@@ -118,6 +121,12 @@ export default function BuildEditingComponent({
                                                     emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
                                                 />)}
                                         </div>
+                                        {skillReplaces ?
+                                            <div style={{display: "flex", alignItems: "center", gap: "0.2rem"}}>
+                                                Skills: <SkillReplace counts={skillReplaces[index+1] ?? "321"} setCounts={x => setSkillReplace(x, index+1)} editable={true}/>
+                                            </div> :
+                                            null
+                                        }
                                         <div style={{ width: "100%" }}>
                                             <MarkdownEditorWrapper
                                                 value={sinnerNotes[index]}

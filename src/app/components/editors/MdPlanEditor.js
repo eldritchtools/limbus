@@ -2,22 +2,25 @@
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter } from "next/navigation";
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Select from "react-select";
 
 import { useData } from "../DataProvider";
+import Gift from "../gifts/Gift";
 import Icon from "../icons/Icon";
+import IdentityIcon from "../icons/IdentityIcon";
 import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
+import AdversitiesDisplay, { AdversitiesPointTotal } from "../mdPlans/AdversitiesDisplay";
 import FloorPlan from "../mdPlans/FloorPlan";
 import GracesDisplay from "../mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "../mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "../mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "../mdPlans/RecommendedSpecBuildDisplay";
 import { useModal } from "../modals/ModalProvider";
-import Gift from "../objects/Gift";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
+import SkillReplace from "../skill/SkillReplace";
 
 import { useAuth } from "@/app/database/authProvider";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
@@ -43,9 +46,10 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
     const [builds, setBuilds] = useState([]);
     const [identityIds, setIdentityIds] = useState([]);
     const [egoIds, setEgoIds] = useState([]);
-    const [extraOpts, setExtraOpts] = useState("");
+    const [extraOpts, setExtraOpts] = useState({});
     const [difficulty, setDifficulty] = useState("N");
     const [graceLevels, setGraceLevels] = useState(Array.from({ length: 10 }, () => 0));
+    const [adversities, setAdversities] = useState({});
     const [keyword, setKeyword] = useState(null);
     const [startGifts, setStartGifts] = useState([]);
     const [observeGifts, setObserveGifts] = useState([]);
@@ -85,10 +89,11 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                     setRecommendationMode(mdPlan.recommendation_mode);
                     setIdentityIds(mdPlan.identity_ids);
                     setEgoIds(mdPlan.ego_ids);
-                    setExtraOpts(mdPlan.extra_opts ? decodeBuildExtraOpts(mdPlan.extra_opts) : "");
+                    setExtraOpts(mdPlan.extra_opts ? decodeBuildExtraOpts(mdPlan.extra_opts) : {});
                     setBuilds(mdPlan.builds);
                     setDifficulty(mdPlan.difficulty);
                     setGraceLevels(mdPlan.grace_levels);
+                    setAdversities(mdPlan.adversities ?? {});
                     setKeyword(keywordIdMapping[mdPlan.keyword_id]);
                     setStartGifts(mdPlan.start_gift_ids);
                     setObserveGifts(mdPlan.observe_gift_ids);
@@ -151,7 +156,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         let planIdentityIds = [];
         let planEgoIds = [];
         let planBuilds = [];
-        let planExtraOpts = null;
+        let planExtraOpts = Object.keys(extraOpts).length === 0 ? null : encodeBuildExtraOpts(extraOpts);
 
         if (recommendationMode === "list") {
             planIdentityIds = identityIds;
@@ -178,7 +183,6 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         } else if (recommendationMode === "specbuild") {
             planIdentityIds = identityIds.filter(x => x && x !== "");
             planEgoIds = egoIds.flat().filter(x => x && x !== "");
-            planExtraOpts = encodeBuildExtraOpts(extraOpts);
         }
 
         setSaving(true);
@@ -189,7 +193,8 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 egoIds: planEgoIds,
                 extraOpts: planExtraOpts,
                 graceLevels, cost,
-                keywordId: keywordToIdMapping[keyword] ?? null,
+                adversities: difficulty === "E" ? adversities : null,
+                keywordId: keywordToIdMapping[keyword] ?? keywordToIdMapping[keyword?.toLowerCase()] ?? null,
                 startGiftIds: startGifts,
                 observeGiftIds: observeGifts,
                 targetGiftIds: plannedGifts,
@@ -219,7 +224,8 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
                 extra_opts: planExtraOpts,
                 grace_levels: graceLevels,
                 cost: cost,
-                keyword_id: keywordToIdMapping[keyword] ?? null,
+                adversities: difficulty === "E" ? adversities : null,
+                keyword_id: keywordToIdMapping[keyword] ?? keywordToIdMapping[keyword?.toLowerCase()] ?? null,
                 start_gift_ids: startGifts,
                 observe_gift_ids: observeGifts,
                 target_gift_ids: plannedGifts,
@@ -366,8 +372,18 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         setBuilds([]);
         setIdentityIds([]);
         setEgoIds([]);
-        setExtraOpts("");
+        setExtraOpts({});
     }
+
+    const recommendedIdentitiesForSkillReplacement = useMemo(() => {
+        if (recommendationMode === "list") return identityIds;
+        if (recommendationMode === "build")
+            return [...builds.reduce((acc, build) => {
+                build.identity_ids.forEach(id => { if (id) acc.add(id) });
+                return acc;
+            }, new Set())].sort();
+        return [];
+    }, [recommendationMode, identityIds, builds])
 
     if (loading || themePacksLoading || mdDataLoading || floorPacksLoading) return <LoadingContentPageTemplate />
 
@@ -379,7 +395,7 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
             <div style={{ color: uiColors.red }}>{uiStrings.contentNoUser("md plans")}</div>
             : null
         }
-        <span style={{fontSize: "0.9rem"}}>{uiStrings.upcomingInContent("md plans")}</span>
+        <span style={{ fontSize: "0.9rem" }}>{uiStrings.upcomingInContent("md plans")}</span>
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
@@ -419,11 +435,11 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         {recommendationMode === "specbuild" ? <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
             <span style={{ color: "#aaa" }}>Create the recommended team build.</span>
-            <RecommendedSpecBuildDisplay 
-                identityIds={identityIds} setIdentityIds={setIdentityIds} 
-                egoIds={egoIds} setEgoIds={setEgoIds} 
-                extraOpts={extraOpts} setExtraOpts={setExtraOpts} 
-                editable={true} 
+            <RecommendedSpecBuildDisplay
+                identityIds={identityIds} setIdentityIds={setIdentityIds}
+                egoIds={egoIds} setEgoIds={setEgoIds}
+                extraOpts={extraOpts} setExtraOpts={setExtraOpts}
+                editable={true}
             />
         </> :
             null
@@ -433,9 +449,35 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
         <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your run plan here..."} />
         </div>
+        <span style={{ fontSize: "1.2rem" }}>Skill Replacements</span>
+        <span style={{ color: "#aaa" }}>Skills to replace on recommended identities. Only identities with changed skills will be shown.</span>
+        {recommendationMode === "specbuild" ?
+            <span>For the Spec Build recommendation mode, skill replacements can be found under additional details for each sinner. The toggle for this can be found on one of the panels below the team build.</span> :
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxWidth: "100%" }}>
+                {recommendedIdentitiesForSkillReplacement.map(id =>
+                    <div key={id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                        <IdentityIcon id={id} size={128} displayName={true} displayRarity={true} />
+                        <SkillReplace
+                            counts={extraOpts.skillReplaces?.[id] ?? "321"}
+                            setCounts={v => {
+                                setExtraOpts(p => ({ ...p, skillReplaces: { ...(p.skillReplaces ?? {}), [id]: v } }))
+                            }}
+                            editable={true}
+                        />
+                    </div>)}
+            </div>
+        }
+
         <span style={{ fontSize: "1.2rem" }}>Grace of the Stars</span>
         <span style={{ color: "#aaa" }}>Starting buffs bought with starlight</span>
         <GracesDisplay graceLevels={graceLevels} setGraceLevels={setGraceLevels} editable={true} />
+        {
+            difficulty === "E" ? <React.Fragment>
+                <span style={{ fontSize: "1.2rem" }}>Adversities: <AdversitiesPointTotal adversities={adversities} /></span>
+                <span style={{ color: "#aaa" }}>Adversities to take in the Extreme floors</span>
+                <AdversitiesDisplay adversities={adversities} setAdversities={setAdversities} editable={true} />
+            </React.Fragment> : null
+        }
         <span style={{ fontSize: "1.2rem" }}>Gifts Setup</span>
         <span style={{ color: "#aaa" }}>Gifts to start the run with. The corresponding graces need to be turned on to select multiple starting gifts.</span>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>

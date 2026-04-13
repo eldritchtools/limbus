@@ -83,11 +83,12 @@ export default function Home() {
                         <NoPrefetchLink className="text-link" href={"/egos"}>E.G.Os</NoPrefetchLink>
                     </div>
                     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Mirror Dungeon</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", width: "100%", gap: ".5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
                         <NoPrefetchLink className="text-link" href={"/achievements"}>Achievements Tracker</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/gifts"}>E.G.O Gifts</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/fusions"}>Fusion Recipes</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/theme-packs"}>Theme Packs</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/md-events"}>Choice Events</NoPrefetchLink>
                     </div>
                 </div>
                 <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>

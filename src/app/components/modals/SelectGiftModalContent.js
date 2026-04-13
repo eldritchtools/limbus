@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import Select from "react-select";
 
 import { useData } from "../DataProvider";
-import Gift from "../objects/Gift";
+import Gift from "../gifts/Gift";
 import IconsSelector from "../selectors/IconsSelector";
 
 import { giftTagColors } from "@/app/lib/colors";

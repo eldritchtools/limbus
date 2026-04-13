@@ -7,7 +7,7 @@ import { DATA_ROOT, PUBLIC_ROOT } from "../paths";
 const DataContext = createContext();
 
 function preprocess_data(path, data) {
-    if (["egos_mini", "egos", "identities_mini", "identities", "gifts", "statuses"].includes(path)) {
+    if (["egos_mini", "egos", "identities_mini", "identities", "gifts", "statuses", "md_choice_events"].includes(path)) {
         return Object.entries(data).reduce((acc, [k, v]) => {
             acc[k] = { id: k, ...v }
             return acc;

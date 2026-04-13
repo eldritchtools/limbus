@@ -1,0 +1,21 @@
+.themePackCard {
+    display: flex; 
+    align-items: center;
+    height: 400px;
+    gap: 0.2rem;
+    border: 1px #aaa solid;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-sizing: border-box; 
+    background: #1f1f1f;
+    transition: all 0.2s ease;
+}
+
+.themePackCard.canHover {
+    cursor: pointer;
+}
+
+.themePackCard.canHover:hover {
+    /* background: #3f3f3f; */
+    filter: brightness(1.3);
+}

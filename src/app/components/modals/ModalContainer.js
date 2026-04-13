@@ -48,7 +48,7 @@ export default function ModalContainer({ isOpen, onClose, index = 0, children })
         padding: "0.5rem",
         borderRadius: "0.5rem",
         minWidth: "300px",
-        maxWidth: "90%",
+        maxWidth: "min(1600px, 90%)",
         border: "1px #aaa solid",
         boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
 

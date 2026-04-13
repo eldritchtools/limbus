@@ -8,6 +8,7 @@ CREATE TABLE public.md_plans (
   identity_ids INT[] DEFAULT '{}',
   ego_ids INT[] DEFAULT '{}',
   grace_levels INT[] DEFAULT '{}',
+  adversities JSONB DEFAULT NULL,
   cost INT,
   keyword_id INT,
   start_gift_ids INT[] DEFAULT '{}',
@@ -124,7 +125,7 @@ with check (
   )
 );
 
-create or replace function public.search_md_plans_v2(
+create or replace function public.search_md_plans_v3(
   p_query text default null,
   plan_id_filter uuid[] default null,
   username_exact_filter text default null,
@@ -146,6 +147,7 @@ returns table (
   difficulty text,
   cost int,
   keyword_id int,
+  adversities jsonb,
   recommendation_mode text,
   identity_ids int[],
   ego_ids int[],
@@ -189,6 +191,7 @@ begin
       p.difficulty,
       p.cost,
       p.keyword_id,
+      p.adversities,
       p.recommendation_mode,
       p.identity_ids,
       p.ego_ids,
@@ -249,6 +252,7 @@ begin
     p.difficulty,
     p.cost,
     p.keyword_id,
+    p.adversities,
     p.recommendation_mode,
     p.identity_ids,
     p.ego_ids,
@@ -271,6 +275,7 @@ begin
     p.difficulty,
     p.cost,
     p.keyword_id,
+    p.adversities,
     p.recommendation_mode,
     p.identity_ids,
     p.ego_ids,
@@ -287,7 +292,7 @@ begin
 end;
 $$;
 
-create or replace function public.create_md_plan_v2(
+create or replace function public.create_md_plan_v3(
   p_title text,
   p_body text,
   p_recommendation_mode text,
@@ -296,6 +301,7 @@ create or replace function public.create_md_plan_v2(
   p_ego_ids int[],
   p_extra_opts text,
   p_grace_levels int[],
+  p_adversities jsonb,
   p_cost int,
   p_keyword_id int,
   p_start_gift_ids int[],
@@ -337,6 +343,7 @@ begin
     ego_ids,
     extra_opts,
     grace_levels,
+    adversities,
     cost,
     keyword_id,
     start_gift_ids,
@@ -359,6 +366,7 @@ begin
     p_ego_ids,
     p_extra_opts,
     p_grace_levels,
+    p_adversities,
     p_cost,
     p_keyword_id,
     p_start_gift_ids,
@@ -413,7 +421,7 @@ begin
 end;
 $$;
 
-create or replace function public.update_md_plan_v2(
+create or replace function public.update_md_plan_v3(
   p_plan_id uuid,
   p_title text,
   p_body text,
@@ -423,6 +431,7 @@ create or replace function public.update_md_plan_v2(
   p_ego_ids int[],
   p_extra_opts text,
   p_grace_levels int[],
+  p_adversities jsonb,
   p_cost int,
   p_keyword_id int,
   p_start_gift_ids int[],
@@ -473,6 +482,7 @@ begin
     ego_ids = p_ego_ids,
     extra_opts = p_extra_opts,
     grace_levels = p_grace_levels,
+    adversities = p_adversities,
     cost = p_cost,
     keyword_id = p_keyword_id,
     start_gift_ids = p_start_gift_ids,
@@ -537,7 +547,7 @@ begin
 end;
 $$;
 
-create or replace function public.get_md_plan_v2(
+create or replace function public.get_md_plan_v3(
   p_plan_id uuid
 )
 returns jsonb
@@ -634,6 +644,7 @@ begin
     'ego_ids', p.ego_ids,
     'extra_opts', p.extra_opts,
     'grace_levels', p.grace_levels,
+    'adversities', p.adversities,
     'cost', p.cost,
     'keyword_id', p.keyword_id,
     'start_gift_ids', p.start_gift_ids,
@@ -681,7 +692,7 @@ begin
 end;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_saved_md_plans_v2(
+CREATE OR REPLACE FUNCTION public.get_saved_md_plans_v3(
   p_user_id UUID,
   p_sort_by text DEFAULT NULL,
   p_limit int DEFAULT 20,
@@ -697,6 +708,7 @@ returns table (
   difficulty text,
   cost int,
   keyword_id int,
+  adversities jsonb,
   recommendation_mode text,
   identity_ids int[],
   ego_ids int[],
@@ -727,7 +739,7 @@ BEGIN
   -- call search_md_plans with the filter
   RETURN QUERY
     SELECT *
-    FROM public.search_md_plans_v2(
+    FROM public.search_md_plans_v3(
       p_query := NULL,
       plan_id_filter := saved_ids,
       username_exact_filter := NULL,

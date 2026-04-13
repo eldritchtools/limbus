@@ -2,10 +2,11 @@
 
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
+import { GiftTagLabels } from "../gifts/GiftTags";
 import GiftIcon from "../icons/GiftIcon";
 import ProcessedText from "../texts/ProcessedText";
 
-import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
+import { affinityColorMapping } from "@/app/lib/colors";
 
 const tooltipDescStyle = { display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap" };
 const TOOLTIP_ID = "gift-tooltip";
@@ -27,12 +28,7 @@ function GiftTooltipContent({ gift, enhanceRank = 0, expandable = true }) {
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
                 <GiftIcon gift={gift} enhanceRank={enhanceRank} />
-                {gift.enhanceable ? <span style={{ color: giftTagColors.enhanceable }}>Enhanceable</span> : null}
-                {gift.ingredientOf ? <span style={{ color: giftTagColors.ingredient }}>Ingredient</span> : null}
-                {gift.fusion ? <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> : null}
-                {gift.hardonly ? <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> : null}
-                {gift.cursedPair ? <span style={{ color: giftTagColors.cursed }}>Cursed</span> : null}
-                {gift.blessedPair ? <span style={{ color: giftTagColors.blessed }}>Blessed</span> : null}
+                <GiftTagLabels gift={gift} />
             </div>
             <div style={{ ...tooltipDescStyle, display: "flex", flexDirection: "column", textAlign: "left" }}>
                 <ProcessedText text={gift.descs[enhanceRank]} />

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 
+import ChoiceEventModalContent from "./ChoiceEventModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
@@ -22,7 +23,8 @@ const MODAL_COMPONENTS = {
     "selectThemePack": SelectThemePackModalContent,
     "deleteContent": DeleteContentModalContent,
     "deleteComment": DeleteCommentModalContent,
-    "updateHistory": UpdateHistoryModalContent
+    "updateHistory": UpdateHistoryModalContent,
+    "choiceEvent": ChoiceEventModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -64,6 +66,10 @@ export function ModalProvider({ children }) {
         openModal("updateHistory", { date, title, path });
     }
 
+    const openChoiceEventModal = ({ choiceEvent }) => {
+        openModal("choiceEvent", { choiceEvent });
+    }
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
@@ -77,6 +83,7 @@ export function ModalProvider({ children }) {
         openDeleteContentModal,
         openDeleteCommentModal,
         openUpdateHistoryModal,
+        openChoiceEventModal,
         closeModal
     }
 

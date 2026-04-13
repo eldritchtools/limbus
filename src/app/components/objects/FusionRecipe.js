@@ -1,4 +1,4 @@
-import Gift from "./Gift";
+import Gift from "../gifts/Gift";
 
 export default function FusionRecipe({ recipe, scale = 1, includeProduct = true }) {
     const fontStyle = { color: "#ECCDA3", fontSize: `${2.5 * scale}em` };

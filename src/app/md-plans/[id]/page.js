@@ -3,16 +3,19 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import React, { useEffect, useState } from "react";
 
+import Gift from "@/app/components/gifts/Gift";
 import Icon from "@/app/components/icons/Icon";
+import IdentityIcon from "@/app/components/icons/IdentityIcon";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import AdversitiesDisplay, { AdversitiesPointTotal } from "@/app/components/mdPlans/AdversitiesDisplay";
 import FloorPlan from "@/app/components/mdPlans/FloorPlan";
 import GracesDisplay from "@/app/components/mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "@/app/components/mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
-import Gift from "@/app/components/objects/Gift";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
+import SkillReplace from "@/app/components/skill/SkillReplace";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { getMdPlan } from "@/app/database/mdPlans";
@@ -35,10 +38,10 @@ export default function MdPlanPage({ params }) {
         if (loading) {
             const handlePlan = x => {
                 setPlan(x);
-                if(x.recommendation_mode === "specbuild") {
+                setExtraOpts(decodeBuildExtraOpts(x.extra_opts));
+                if (x.recommendation_mode === "specbuild") {
                     setIdentityIds(x.identity_ids);
                     setEgoIds(x.ego_ids);
-                    setExtraOpts(decodeBuildExtraOpts(x.extra_opts));
                 }
                 setLoading(false);
             }
@@ -63,7 +66,7 @@ export default function MdPlanPage({ params }) {
         <div style={{ display: "flex", flexDirection: "column", width: isMobile ? "100%" : "95%", alignSelf: "center", marginBottom: "1rem", gap: "1rem" }}>
             {plan.recommendation_mode === "list" ? <>
                 <span style={{ fontSize: "1.2rem" }}>Recommended Identities and E.G.Os</span>
-                <RecommendedListDisplay identityIds={plan.identity_ids} egoIds={plan.ego_ids} editable={false} />
+                <RecommendedListDisplay identityIds={plan.identity_ids} egoIds={plan.ego_ids} skillReplaces={extraOpts?.skillReplaces} editable={false} />
             </> :
                 null
             }
@@ -77,11 +80,11 @@ export default function MdPlanPage({ params }) {
 
             {plan.recommendation_mode === "specbuild" ? <>
                 <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
-                <RecommendedSpecBuildDisplay 
+                <RecommendedSpecBuildDisplay
                     identityIds={identityIds} setIdentityIds={setIdentityIds}
                     egoIds={egoIds} setEgoIds={setEgoIds}
-                    extraOpts={extraOpts} setExtraOpts={setExtraOpts} 
-                    editable={false} 
+                    extraOpts={extraOpts} setExtraOpts={setExtraOpts}
+                    editable={false}
                 />
             </> :
                 null
@@ -98,6 +101,20 @@ export default function MdPlanPage({ params }) {
 
             <div style={{ border: "1px #777 solid" }} />
 
+            {plan.recommendation_mode === "build" && extraOpts?.skillReplaces ? <>
+                <span style={{ fontSize: "1.2rem" }}>Skill Replacements</span>
+                <span style={{ color: "#aaa" }}>Skills to replace on recommended identities.</span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxWidth: "100%" }}>
+                    {Object.entries(extraOpts.skillReplaces).map(([id, counts]) =>
+                        <div key={id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                            <IdentityIcon id={id} size={128} displayName={true} displayRarity={true} />
+                            <SkillReplace counts={counts} />
+                        </div>)}
+                </div>
+            </> :
+                null
+            }
+
             {plan.grace_levels.some(x => x > 0) ?
                 <>
                     <span style={{ fontSize: "1.2rem" }}>Grace of the Stars</span>
@@ -105,6 +122,16 @@ export default function MdPlanPage({ params }) {
                     <GracesDisplay graceLevels={plan.grace_levels} />
                 </> :
                 null
+            }
+
+            {
+                plan.difficulty === "E" && plan.adversities && Object.keys(plan.adversities).length > 0 ?
+                    <>
+                        <span style={{ fontSize: "1.2rem" }}>Adversities: <AdversitiesPointTotal adversities={plan.adversities} /></span>
+                        <span style={{ color: "#aaa" }}>Adversities to take in the Extreme floors</span>
+                        <AdversitiesDisplay adversities={plan.adversities} />
+                    </> :
+                    null
             }
 
             {plan.start_gift_ids.length > 0 || plan.observe_gift_ids.length > 0 ?

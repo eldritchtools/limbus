@@ -15,8 +15,9 @@ export const giftTagColors = {
     fusion: "#facc15",
     hardonly: "#f87171",
     cursed: "#a78bfa",
-    blessed: "#38bdf8"
-    // #14b8a6, #0d9488
+    blessed: "#38bdf8",
+    eventreward: "#14b8a6",
+    hidden: "#9ca3af"
 }
 
 export const deploymentColors = {
@@ -26,7 +27,9 @@ export const deploymentColors = {
 }
 
 export const uiColors = {
-    red: "rgba(255, 99, 71, 0.85)"
+    red: "rgba(255, 99, 71, 0.85)",
+    green: "rgba(50, 205, 50, 0.85)"
+    //green: "rgba(60, 179, 113, 0.85)"
 }
 
 export function ColoredResistance({ resist }) {

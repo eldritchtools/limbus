@@ -1,0 +1,19 @@
+.choiceEventCard {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    gap: 0.2rem;
+    border: 1px #aaa solid;
+    border-radius: 1rem;
+    padding: 0.5rem ;
+    box-sizing: border-box; 
+    min-width: 375px;
+    cursor: pointer;
+    background: #1f1f1f;
+    transition: all 0.2s ease;
+}
+
+.choiceEventCard.canHover:hover {
+    /* background: #3f3f3f; */
+    filter: brightness(1.3);
+}

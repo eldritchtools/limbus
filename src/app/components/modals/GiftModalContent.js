@@ -2,29 +2,14 @@
 
 import { useState } from "react";
 
-import { useFloorsForPack } from "../dataHooks/mdFloors";
-import ThemePackIcon from "../icons/ThemePackIcon";
+import Gift from "../gifts/Gift";
+import { GiftTagLabels } from "../gifts/GiftTags";
+import ChoiceEventIcon from "../icons/ChoiceEventIcon";
 import FusionRecipe from "../objects/FusionRecipe";
-import Gift from "../objects/Gift";
+import ThemePackWithFloors from "../objects/ThemePackWithFloors";
 import ProcessedText from "../texts/ProcessedText";
 
-import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
-
-const buttonStyle = { border: "1px #aaa solid", padding: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transiton: "background-color 0.2s, border-color 0.2s" };
-const iconTextStyle = { fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "20px", color: "#ffd84d" };
-
-function ThemePackWithFloors({ id }) {
-    const { normal, hard } = useFloorsForPack(id);
-    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
-        <ThemePackIcon id={id} displayName={true} scale={0.5} />
-        <div style={{ display: "grid", width: "190px", gridTemplateColumns: "1fr 1fr" }} >
-            <div style={{ color: "#4ade80" }}>Normal</div>
-            <div style={{ color: "#f87171" }}>Hard</div>
-            <div>{normal.length ? normal.map(f => `F${f}`).join(", ") : "None"}</div>
-            <div>{hard.length ? hard.map(f => `F${f}`).join(", ") : "None"}</div>
-        </div>
-    </div>
-}
+import { affinityColorMapping } from "@/app/lib/colors";
 
 export default function GiftModalContent({ gift, enhanceRank }) {
     const [enhanceLevel, setEnhanceLevel] = useState(enhanceRank);
@@ -39,30 +24,7 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                 <div>
                     <Gift gift={gift} includeTooltip={false} enhanceRank={enhanceLevel} expandable={false} />
                 </div>
-                {gift.enhanceable ? <div style={{ display: "grid", gridTemplateColumns: `repeat(${gift.names.length}, 2rem)` }}>
-                    {Array.from({ length: gift.names.length }, (_, index) =>
-                        <div key={index}
-                            style={{ ...buttonStyle, backgroundColor: enhanceLevel === index ? "#3f3f3f" : "#1f1f1f" }}
-                            onClick={() => setEnhanceLevel(index)}
-                        >
-                            {index === 0 ? "-" : <span style={iconTextStyle}>{"+".repeat(index)}</span>}
-                        </div>
-                    )}
-                </div> : null
-                }
-                {gift.ingredientOf ? <span style={{ color: giftTagColors.ingredient }}>Ingredient</span> : null}
-                {gift.fusion ? <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> : null}
-                {gift.hardonly ? <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> : null}
-                {gift.cursedPair ?
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                        <span><span style={{ color: giftTagColors.blessed }}>Blessed</span> Pair</span>
-                        <Gift id={gift.cursedPair} includeTooltip={true} expandable={true} />
-                    </div> : null}
-                {gift.blessedPair ?
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                        <span><span style={{ color: giftTagColors.cursed }}>Cursed</span> Pair</span>
-                        <Gift id={gift.blessedPair} includeTooltip={true} expandable={true} />
-                    </div> : null}
+                <GiftTagLabels gift={gift} full={true} enhanceLevel={enhanceLevel} setEnhanceLevel={setEnhanceLevel} />
             </div>
             <div style={{ flex: "1 1 0", minHeight: 0, overflowY: "auto" }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
@@ -77,6 +39,13 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", maxWidth: "calc(100vw - 100px)", overflowX: "auto" }}>
                                         {gift.exclusiveTo.map(packId => <ThemePackWithFloors key={packId} id={packId} />)}
                                     </div>
+                                </div> : null
+                        }
+                        {
+                            gift.events ?
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Events</span>
+                                    {gift.events.map(eventId => <ChoiceEventIcon key={eventId} id={eventId} scale={0.5} displayName={true} />)}
                                 </div> : null
                         }
                         {

@@ -51,7 +51,7 @@ SELECT cron.schedule(
   $$SELECT public.add_homepage_showcase_build();$$
 );
 
-CREATE OR REPLACE FUNCTION public.get_homepage_posts_v2(
+CREATE OR REPLACE FUNCTION public.get_homepage_posts_v3(
   popular_limit INTEGER DEFAULT 3,
   newest_limit INTEGER DEFAULT 3,
   showcase_limit INTEGER DEFAULT 3,
@@ -107,7 +107,7 @@ BEGIN
       SELECT json_agg(m)
       FROM (
         SELECT *
-        FROM public.search_md_plans_v2(
+        FROM public.search_md_plans_v3(
           p_sort_by := 'new',
           p_limit := mdplans_limit,
           p_offset := 0

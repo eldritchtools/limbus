@@ -1,6 +1,6 @@
 export const metadata = {
     title: "Theme Packs | Limbus Company Tools",
-    description: "Theme Packs"
+    description: "View theme packs that show up in Mirror Dungeons"
 };
 
 export default function ThemePacksLayout({ children }) {
