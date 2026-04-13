@@ -7,16 +7,15 @@ import { useData } from "../DataProvider";
 import { ASSETS_ROOT } from "@/app/paths";
 
 function rescaleChoiceEvent(scale) {
-    return { width: `${600 * scale}px`, height: `${400 * scale}px` };
+    return { width: `${Math.round(600 * scale)}px`, height: `${Math.round(400 * scale)}px` };
 }
 
 function ChoiceEventIconMain({ id, choiceEvent = null, displayName = false, scale = 1 }) {
     const scaledStyle = rescaleChoiceEvent(scale);
-    return <div style={{ ...scaledStyle, position: "relative", left: 0, top: 0 }}>
+    return <div style={{ ...scaledStyle, position: "relative" }}>
         <Image src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
             alt={choiceEvent.name} title={choiceEvent.name}
-            width={600 * scale} height={400 * scale}
-            style={{ ...scaledStyle }}
+            fill style={{ objectFit: "cover" }}
         />
         {displayName ?
             <div style={{

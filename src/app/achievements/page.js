@@ -438,7 +438,7 @@ export default function AchievementsPage() {
                         setAchievementTracking={setAchievementTracking}
                         isSmall={!isDesktop}
                     /> :
-                    null
+                    <span>Select a category above to get started.</span>
         }
     </div>
 }
