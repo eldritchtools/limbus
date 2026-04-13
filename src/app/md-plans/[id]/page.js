@@ -3,6 +3,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import React, { useEffect, useState } from "react";
 
+import Gift from "@/app/components/gifts/Gift";
 import Icon from "@/app/components/icons/Icon";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
@@ -11,7 +12,6 @@ import GracesDisplay from "@/app/components/mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "@/app/components/mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
-import Gift from "@/app/components/objects/Gift";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";

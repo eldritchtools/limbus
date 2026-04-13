@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 
 import styles from "./mdEvents.module.css";
 import { useData } from "../components/DataProvider";
+import Gift from "../components/gifts/Gift";
 import HoverBlocker from "../components/HoverBlocker";
 import ChoiceEventIcon from "../components/icons/ChoiceEventIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { useModal } from "../components/modals/ModalProvider";
-import Gift from "../components/objects/Gift";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { affinities } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";

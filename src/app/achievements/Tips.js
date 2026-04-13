@@ -1,11 +1,11 @@
 import { useFloorsPerPack } from "../components/dataHooks/mdFloors";
 import { useData } from "../components/DataProvider";
+import Gift from "../components/gifts/Gift";
 import EgoIcon from "../components/icons/EgoIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
-import Gift from "../components/objects/Gift";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
 
 function TextTip({ tip }) {

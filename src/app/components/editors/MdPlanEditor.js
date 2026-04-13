@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Select from "react-select";
 
 import { useData } from "../DataProvider";
+import Gift from "../gifts/Gift";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
@@ -15,7 +16,6 @@ import RecommendedBuildsDisplay from "../mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "../mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "../mdPlans/RecommendedSpecBuildDisplay";
 import { useModal } from "../modals/ModalProvider";
-import Gift from "../objects/Gift";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
 

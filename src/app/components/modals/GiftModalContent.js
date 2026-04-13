@@ -3,15 +3,13 @@
 import { useState } from "react";
 
 import { useFloorsForPack } from "../dataHooks/mdFloors";
+import Gift from "../gifts/Gift";
+import { GiftTagLabels } from "../gifts/GiftTags";
 import ThemePackIcon from "../icons/ThemePackIcon";
 import FusionRecipe from "../objects/FusionRecipe";
-import Gift from "../objects/Gift";
 import ProcessedText from "../texts/ProcessedText";
 
-import { affinityColorMapping, giftTagColors } from "@/app/lib/colors";
-
-const buttonStyle = { border: "1px #aaa solid", padding: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transiton: "background-color 0.2s, border-color 0.2s" };
-const iconTextStyle = { fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "20px", color: "#ffd84d" };
+import { affinityColorMapping } from "@/app/lib/colors";
 
 function ThemePackWithFloors({ id }) {
     const { normal, hard } = useFloorsForPack(id);
@@ -39,30 +37,7 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                 <div>
                     <Gift gift={gift} includeTooltip={false} enhanceRank={enhanceLevel} expandable={false} />
                 </div>
-                {gift.enhanceable ? <div style={{ display: "grid", gridTemplateColumns: `repeat(${gift.names.length}, 2rem)` }}>
-                    {Array.from({ length: gift.names.length }, (_, index) =>
-                        <div key={index}
-                            style={{ ...buttonStyle, backgroundColor: enhanceLevel === index ? "#3f3f3f" : "#1f1f1f" }}
-                            onClick={() => setEnhanceLevel(index)}
-                        >
-                            {index === 0 ? "-" : <span style={iconTextStyle}>{"+".repeat(index)}</span>}
-                        </div>
-                    )}
-                </div> : null
-                }
-                {gift.ingredientOf ? <span style={{ color: giftTagColors.ingredient }}>Ingredient</span> : null}
-                {gift.fusion ? <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> : null}
-                {gift.hardonly ? <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> : null}
-                {gift.cursedPair ?
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                        <span><span style={{ color: giftTagColors.blessed }}>Blessed</span> Pair</span>
-                        <Gift id={gift.cursedPair} includeTooltip={true} expandable={true} />
-                    </div> : null}
-                {gift.blessedPair ?
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                        <span><span style={{ color: giftTagColors.cursed }}>Cursed</span> Pair</span>
-                        <Gift id={gift.blessedPair} includeTooltip={true} expandable={true} />
-                    </div> : null}
+                <GiftTagLabels gift={gift} full={true} enhanceLevel={enhanceLevel} setEnhanceLevel={setEnhanceLevel} />
             </div>
             <div style={{ flex: "1 1 0", minHeight: 0, overflowY: "auto" }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>

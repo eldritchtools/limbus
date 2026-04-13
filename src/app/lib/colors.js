@@ -15,8 +15,9 @@ export const giftTagColors = {
     fusion: "#facc15",
     hardonly: "#f87171",
     cursed: "#a78bfa",
-    blessed: "#38bdf8"
-    // #14b8a6, #0d9488
+    blessed: "#38bdf8",
+    eventreward: "#14b8a6",
+    hidden: "#9ca3af"
 }
 
 export const deploymentColors = {

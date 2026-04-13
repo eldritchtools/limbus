@@ -6,8 +6,8 @@ import Select from "react-select";
 
 import { useFloorsPerPack } from "../components/dataHooks/mdFloors";
 import { useData } from "../components/DataProvider";
+import Gift from "../components/gifts/Gift";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
-import Gift from "../components/objects/Gift";
 import { checkFilterMatch } from "../lib/filter";
 import { selectStyle } from "../styles/selectStyle";
 

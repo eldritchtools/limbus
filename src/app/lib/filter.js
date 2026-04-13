@@ -60,6 +60,10 @@ const giftFilterMatchFunctions = {
             if (item.fusion) return true;
         } else if (filter === "Hard Only") {
             if (item.hardonly) return true;
+        } else if (filter === "Event Reward") {
+            if (item.events) return true;
+        } else if (filter === "Hidden") {
+            if (item.hidden) return true;
         } else if (filter === "Cursed") {
             if (item.cursedPair) return true;
         } else if (filter === "Blessed") {

@@ -2,19 +2,18 @@
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useMemo, useState } from "react";
-import Select from "react-select";
 
 import styles from "./gifts.module.css";
 import { useData } from "../components/DataProvider";
+import Gift from "../components/gifts/Gift";
+import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import { useModal } from "../components/modals/ModalProvider";
-import Gift from "../components/objects/Gift";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
-import { affinityColorMapping, giftTagColors } from "../lib/colors";
+import { affinityColorMapping } from "../lib/colors";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
 import { TextWithStatuses } from "../lib/statusReplacement";
 import useLocalState from "../lib/useLocalState";
-import { selectStyleVariable } from "../styles/selectStyle";
 
 function GiftDesc({ gift, tagStrips }) {
     const { openGiftModal } = useModal();
@@ -111,25 +110,6 @@ function GiftList({ searchString, filters, tagFilter, tagFilterExcluding, includ
     </div>
 }
 
-function TagFilterSelector({ tagFilter, setTagFilter }) {
-    const options = [
-        { value: "Enhanceable", label: <span style={{ color: giftTagColors.enhanceable }}>Enhanceable</span> },
-        { value: "Ingredient", label: <span style={{ color: giftTagColors.ingredient }}>Ingredient</span> },
-        { value: "Fusion Only", label: <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> },
-        { value: "Hard Only", label: <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> },
-        { value: "Cursed", label: <span style={{ color: giftTagColors.cursed }}>Cursed</span> },
-        { value: "Blessed", label: <span style={{ color: giftTagColors.blessed }}>Blessed</span> },
-    ]
-
-    return <Select
-        isClearable={true}
-        options={options}
-        value={tagFilter ? options.find(x => x.value === tagFilter) : null}
-        onChange={x => setTagFilter(x ? x.value : null)}
-        styles={selectStyleVariable}
-    />
-}
-
 export default function GiftsPage() {
     const [giftsData, giftsLoading] = useData("gifts");
     const [searchString, setSearchString] = useState("");
@@ -167,7 +147,7 @@ export default function GiftsPage() {
                     </div>
                 </div>
                 <div style={{ textAlign: "start" }}>
-                    <TagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
+                    <GiftTagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
                 </div>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Display Type</span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>

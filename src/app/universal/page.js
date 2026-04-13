@@ -3,8 +3,8 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 
 import { useData } from "../components/DataProvider";
+import Gift from "../components/gifts/Gift";
 import KeywordIcon from "../components/icons/KeywordIcon";
-import Gift from "../components/objects/Gift";
 
 function GiftRow({ list = null, dict = null, isSmall }) {
     return <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isSmall ? 60 : 100}px, 1fr))`, width: "100%", justifyContent: "center" }}>

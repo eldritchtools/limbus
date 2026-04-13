@@ -3,10 +3,10 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useState } from "react";
 
+import Gift from "../gifts/Gift";
 import ThemePackIcon from "../icons/ThemePackIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
-import Gift from "../objects/Gift";
 
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
