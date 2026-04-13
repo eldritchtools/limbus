@@ -79,8 +79,6 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
         return null;
     }, [plan, scale]);
 
-    console.log(plan.keyword_id);
-
     return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={{ width: width }}>
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 

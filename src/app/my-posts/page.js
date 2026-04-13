@@ -15,10 +15,11 @@ export default function MyPostsPage() {
     const [contentLoading, setContentLoading] = useState(false);
     const [page, setPage] = useState(1);
 
-    const [mainActiveTab, setMainActiveTab] = useLocalState("myPostsMainTab", "builds");
-    const [activeTab, setActiveTab] = useLocalState("myPostsSubTab", "published");
+    const [mainActiveTab, setMainActiveTab, mainActiveTabInitialized] = useLocalState("myPostsMainTab", "builds");
+    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("myPostsSubTab", "published");
 
     useEffect(() => {
+        if(!mainActiveTabInitialized || !activeTabInitialized) return;
         const cfg = contentConfig[mainActiveTab];
         if (!cfg) return;
         const baseParams = { ignoreBlockDiscovery: true, sortBy: "new" };
@@ -56,7 +57,7 @@ export default function MyPostsPage() {
         }
 
         handleContent();
-    }, [user, activeTab, page, mainActiveTab]);
+    }, [user, activeTab, page, mainActiveTab, mainActiveTabInitialized, activeTabInitialized]);
 
     if (loading)
         return <div>

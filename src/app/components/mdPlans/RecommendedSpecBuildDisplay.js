@@ -24,18 +24,21 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     const [additionalToggle, setAdditionalToggle] = useState(false);
 
     const teamCode = useMemo(
-        () => dataConverted ? constructTeamCode(identityIds, egoIds, extraOpts.deploymentOrder ?? []) : null,
+        // additional guard in case react resets the data
+        () => dataConverted && identityIds.length === 12 ? 
+            constructTeamCode(identityIds, egoIds, extraOpts.deploymentOrder ?? []) : 
+            null,
         [identityIds, egoIds, extraOpts, dataConverted]
     );
 
     useEffect(() => {
-        if(identitiesLoading || egosLoading) return;
+        if (identitiesLoading || egosLoading) return;
         const newIdentityIds = Array.from({ length: 12 }, () => "");
-        identityIds.forEach(id => {newIdentityIds[identities[id].sinnerId - 1] = id;});
+        identityIds.forEach(id => { newIdentityIds[identities[id].sinnerId - 1] = id; });
         setIdentityIds(newIdentityIds);
 
         const newEgoIds = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
-        egoIds.forEach(id => {newEgoIds[egos[id].sinnerId - 1][egoRankMapping[egos[id].rank]] = id;})
+        egoIds.forEach(id => { newEgoIds[egos[id].sinnerId - 1][egoRankMapping[egos[id].rank]] = id; })
         setEgoIds(newEgoIds);
 
         const newExtraOpts = { ...extraOpts };
@@ -65,13 +68,17 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             newExtraOpts.sinnerNotes = Array.from({ length: 12 }, () => "");
             setNew = true;
         } else setAdditionalToggle(true);
+        if (newExtraOpts.skillReplaces === undefined) {
+            newExtraOpts.skillReplaces = {};
+            setNew = true;
+        } else setAdditionalToggle(true);
 
         if (setNew) setExtraOpts(newExtraOpts);
         setDataConverted(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [identitiesLoading, egosLoading, editable]);
 
-    if (!dataConverted) return null;
+    if (!dataConverted || identityIds.length < 12) return null;
 
     const handleOptsFunction = (func, key) => setExtraOpts(p => ({ ...p, [key]: func(p[key]) }));
 
@@ -84,6 +91,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         identityUpties={extraOpts.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
         egoThreadspins={extraOpts.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
         sinnerNotes={extraOpts.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
+        skillReplaces={extraOpts.skillReplaces} setSkillReplaces={f => handleOptsFunction(f, "skillReplaces")}
         defaultAdditionalToggle={additionalToggle} includeEventRolls={true}
     />
 
@@ -95,6 +103,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             identityLevels={extraOpts.identityLevels}
             egoThreadspins={extraOpts.egoThreadspins}
             sinnerNotes={extraOpts.sinnerNotes}
+            skillReplaces={extraOpts.skillReplaces}
             deploymentOrder={extraOpts.deploymentOrder}
             activeSinners={extraOpts.activeSinners}
             displayType={displayType}

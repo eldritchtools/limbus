@@ -6,13 +6,12 @@ import styles from "./BuildDisplay.module.css";
 import BuildDisplayCalcMenu from "./BuildDisplayCalcMenu";
 import BuildDisplaySinnerContainer from "./BuildDisplaySinnerContainer";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
-import { useData } from "../DataProvider";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
+import SkillReplace from "../skill/SkillReplace";
 
-export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, sinnerNotes, deploymentOrder, activeSinners, displayType }) {
+export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, sinnerNotes, deploymentOrder, skillReplaces, activeSinners, displayType }) {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
-    const [upcoming, upcomingLoading] = useData("upcoming");
 
     // Convert empty strings (if editing) to nulls
     const upties = useMemo(() => identityUpties ? identityUpties.map(x => x === "" ? null : x) : null, [identityUpties]);
@@ -45,6 +44,10 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
                         activeSinners={activeSinners}
                         otherOpts={otherOpts}
                     />
+                    {skillReplaces?.[index + 1] ?
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", alignSelf: "center" }}>
+                            Skills: <SkillReplace counts={skillReplaces[index + 1] ?? "321"} />
+                        </div> : null}
                     {notes && notes[index] ? <MarkdownRenderer content={notes[index]} /> : null}
                 </div>
             )}

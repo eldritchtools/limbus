@@ -1,4 +1,4 @@
-export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityUpties, identityLevels, egoThreadspins, sinnerNotes }) {
+export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityUpties, identityLevels, egoThreadspins, sinnerNotes, skillReplaces }) {
     let encoded = [];
     if (deploymentOrder) {
         const deo = deploymentOrder.join(",");
@@ -43,6 +43,14 @@ export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityU
         if (sn.length > 0) encoded.push(`sn:${sn}`);
     }
 
+    if (skillReplaces) {
+        const sr = Object.entries(skillReplaces).reduce((acc, [id, v]) => {
+            if (v !== "321") acc.push(`${id}=${v}`);
+            return acc;
+        }, []).join(",");
+        if (sr.length > 0) encoded.push(`sr:${sr}`);
+    }
+
     return encoded.join("|");
 }
 
@@ -69,6 +77,16 @@ export function decodeBuildExtraOpts(string, parts = null) {
         }, Array.from({ length: size1 }, () => Array.from({ length: size2 }, () => "")))
     }
 
+    const decodePart3 = (part) => {
+        return part.split(",").reduce((acc, val) => {
+            const idx = val.indexOf("=");
+            const id = val.slice(0, idx);
+            const v = val.slice(idx + 1);
+            acc[id] = v;
+            return acc;
+        }, {});
+    }
+
     return string.split("|").reduce((acc, part) => {
         const [type, vals] = part.split(":");
         if (parts && !parts.includes(type)) return acc;
@@ -90,6 +108,9 @@ export function decodeBuildExtraOpts(string, parts = null) {
                 return acc;
             case "sn":
                 acc.sinnerNotes = decodePart(vals, 12, true);
+                return acc;
+            case "sr":
+                acc.skillReplaces = decodePart3(vals);
                 return acc;
         }
     }, {});
