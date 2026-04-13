@@ -5,7 +5,7 @@ import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 
 import { affinityColorMapping, uiColors } from "@/app/lib/colors";
-import { affinities } from "@/app/lib/constants";
+import { affinities, sinnerIdMapping } from "@/app/lib/constants";
 
 function cardStyle(borderColor) {
     return {
@@ -45,7 +45,11 @@ function constructTarget(target) {
             singular = false;
         }
     } else if (target.target === "chosen") {
-        pieces.push("Selected ally");
+        return { component: <span>Selected ally</span>, singular: true }
+    } else if (target.target === "notChosen") {
+        return { component: <span>All other allies</span>, singular: false }
+    } else if (target.target === "sinner") {
+        return { component: <span>{sinnerIdMapping[target.sinnerId]}</span>, singular: true }
     }
 
     if (target.condition) {
@@ -222,6 +226,17 @@ function Option({ option }) {
     </div>
 }
 
+function RollBonusTarget({target}) {
+    if(target.type === "identity")
+        return <MarkdownRenderer content={target.ids.map(id => `{id:${id}}`).join(", ")} />
+    if(target.type === "sinner")
+        return sinnerIdMapping[target.sinnerId]
+    if(target.type === "tag")
+        return `${target.tags.join(", ")} identities`
+
+    return null;
+}
+
 function Event({ event }) {
     if (event.type === "Choice")
         return <div style={{ ...cardStyle("transparent") }}>
@@ -239,6 +254,16 @@ function Event({ event }) {
                 {event.rollType === "min" ? "≥ " : "≤ "}
                 {event.value}
             </div>
+            {event.bonuses ?
+                <div style={{display: "flex", flexDirection: "column", gap: "0.1rem"}}>
+                    {event.bonuses.map((bonus, i) => 
+                        <span key={i} style={{ display: "inline-flex", fontSize: "0.8rem", color: "#aaa" }}>
+                            {bonus.value > 0 ? `+${bonus.value}` : bonus.value}:&nbsp;<RollBonusTarget target={bonus.target} />
+                        </span>
+                    )}
+                </div> :
+                null
+            }
             <div style={{ display: "flex", flexDirection: "column", paddingLeft: "1.5rem" }}>
                 {event.successResults.map((res, i) => <Result key={`s-${i}`} result={res} successCondition={true} />)}
                 {event.failureResults.map((res, i) => <Result key={`f-${i}`} result={res} failureCondition={true} />)}

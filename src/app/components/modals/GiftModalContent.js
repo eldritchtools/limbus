@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useFloorsForPack } from "../dataHooks/mdFloors";
 import Gift from "../gifts/Gift";
 import { GiftTagLabels } from "../gifts/GiftTags";
+import ChoiceEventIcon from "../icons/ChoiceEventIcon";
 import ThemePackIcon from "../icons/ThemePackIcon";
 import FusionRecipe from "../objects/FusionRecipe";
 import ProcessedText from "../texts/ProcessedText";
@@ -52,6 +53,13 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", maxWidth: "calc(100vw - 100px)", overflowX: "auto" }}>
                                         {gift.exclusiveTo.map(packId => <ThemePackWithFloors key={packId} id={packId} />)}
                                     </div>
+                                </div> : null
+                        }
+                        {
+                            gift.events ?
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Events</span>
+                                    {gift.events.map(eventId => <ChoiceEventIcon key={eventId} id={eventId} scale={0.5} displayName={true} />)}
                                 </div> : null
                         }
                         {

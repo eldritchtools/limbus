@@ -10,14 +10,24 @@ function rescaleChoiceEvent(scale) {
     return { width: `${600 * scale}px`, height: `${400 * scale}px` };
 }
 
-function ChoiceEventIconMain({ id, choiceEvent = null, scale = 1 }) {
+function ChoiceEventIconMain({ id, choiceEvent = null, displayName = false, scale = 1 }) {
     const scaledStyle = rescaleChoiceEvent(scale);
     return <div style={{ ...scaledStyle, position: "relative", left: 0, top: 0 }}>
         <Image src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
             alt={choiceEvent.name} title={choiceEvent.name}
-            width={600*scale} height={400*scale}
+            width={600 * scale} height={400 * scale}
             style={{ ...scaledStyle }}
         />
+        {displayName ?
+            <div style={{
+                position: "absolute", bottom: "4px", left: "50%", transform: "translateX(-50%)", width: "95%", maxHeight: "70%", overflow: "hidden",
+                display: "block", textAlign: "center", color: "#ddd", fontWeight: "600", lineHeight: "1.1", textWrap: "balance",
+                textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000", fontSize: "1rem"
+            }}>
+                {choiceEvent.name.length === 0 ? "[Unnamed Event]" : choiceEvent.name}
+            </div> :
+            null
+        }
     </div>
 }
 
