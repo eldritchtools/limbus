@@ -1,0 +1,43 @@
+"use client";
+
+import Image from "next/image";
+
+import { useData } from "../DataProvider";
+
+import { ASSETS_ROOT } from "@/app/paths";
+
+function rescaleChoiceEvent(scale) {
+    return { width: `${600 * scale}px`, height: `${400 * scale}px` };
+}
+
+function ChoiceEventIconMain({ id, choiceEvent = null, scale = 1 }) {
+    const scaledStyle = rescaleChoiceEvent(scale);
+    return <div style={{ ...scaledStyle, position: "relative", left: 0, top: 0 }}>
+        <Image src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
+            alt={choiceEvent.name} title={choiceEvent.name}
+            width={600*scale} height={400*scale}
+            style={{ ...scaledStyle }}
+        />
+    </div>
+}
+
+function ChoiceEventIconFetch({ id, ...params }) {
+    const [choiceEvents, choiceEventsLoading] = useData("md_choice_events");
+
+    if (choiceEventsLoading) {
+        return null;
+    } else if (!(id in choiceEvents)) {
+        console.warn(`Choice Event ${id} not found.`);
+        return null;
+    } else {
+        return <ChoiceEventIconMain id={id} choiceEvent={choiceEvents[id]} {...params} />
+    }
+}
+
+export default function ChoiceEventIcon({ id, choiceEvent = null, ...params }) {
+    if (choiceEvent) {
+        return <ChoiceEventIconMain id={id ?? choiceEvent?.id} choiceEvent={choiceEvent} {...params} />
+    } else {
+        return <ChoiceEventIconFetch id={id} {...params} />
+    }
+}

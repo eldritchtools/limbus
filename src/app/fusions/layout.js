@@ -1,6 +1,6 @@
 export const metadata = {
     title: "Fusions | Limbus Company Tools",
-    description: "Fusion gift recipes"
+    description: "View fusion recipes for E.G.O gifts in Mirror Dungeons"
 };
 
 export default function FusionsLayout({ children }) {
