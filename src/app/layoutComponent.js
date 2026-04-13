@@ -40,6 +40,7 @@ const paths = [
             { path: "/gifts", title: "Gifts" },
             { path: "/fusions", title: "Fusion Recipes" },
             { path: "/theme-packs", title: "Theme Packs" },
+            { path: "/md-events", title: "Choice Events" },
             { path: "/universal", title: "Universal Gifts/Gift Combos" },
         ]
     },
