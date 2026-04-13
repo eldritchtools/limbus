@@ -5,6 +5,7 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import KeywordIcon from "../components/icons/KeywordIcon";
+import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 
 function GiftRow({ list = null, dict = null, isSmall }) {
     return <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isSmall ? 60 : 100}px, 1fr))`, width: "100%", justifyContent: "center" }}>
@@ -51,7 +52,7 @@ export default function UniversalGiftsPage() {
     const [universalGifts, universalGiftsLoading] = useData("md/universal_gifts");
     const isSmall = !isDesktop;
 
-    if (universalGiftsLoading) return <div>Loading...</div>
+    if (universalGiftsLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
         These are gifts or gift combos that have benefits for all or most team compositions. The combos especially are useful when running MD Extreme or for challenge runs. They can still be useful but are not necessary for MD Infinity.

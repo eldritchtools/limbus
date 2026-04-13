@@ -8,6 +8,7 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
 import FusionRecipe from "../components/objects/FusionRecipe";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
+import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -205,6 +206,8 @@ export default function FusionsPage() {
             /> : null,
         [searchString, includeDescription, includeIngredients, selectedKeywords, selectedThemePacks, giftsData, giftsLoading, isDesktop]
     );
+
+    if (giftsLoading || themePacksLoading) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", justifyContent: "center" }}>
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>

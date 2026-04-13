@@ -4,48 +4,44 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useMemo, useState } from "react";
 import Select from "react-select";
 
-import { useFloorsPerPack } from "../components/dataHooks/mdFloors";
+import styles from "./themePacks.module.css";
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
-import ThemePackIcon from "../components/icons/ThemePackIcon";
+import HoverBlocker from "../components/HoverBlocker";
+import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
+import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { checkFilterMatch } from "../lib/filter";
+import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
+function ThemePack({ id, themePack, isSmall, openOverride = false }) {
+    const [open, setOpen] = useState(false);
+    const [blockHover, setBlockHover] = useState(false);
 
-const formatExclusiveGifts = (exclusiveGifts, isSmall) => {
-    return <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-        {exclusiveGifts.map((gift, i) => <Gift key={i} id={gift} scale={isSmall ? .5 : 1} />)}
-    </div>
-}
-
-function ThemePack({ themePack, normal, hard, isSmall }) {
-    return <div style={{
-        display: "grid", gridTemplateColumns: `${isSmall ? 120 : 200}px 1fr`, gridAutoRows: "auto",
-        alignItems: "start", height: "auto", minWidth: isSmall ? "320px" : "640px", padding: "3px",
-        boxSizing: "border-box", border: "1px grey dotted"
-    }}>
+    return <div
+        className={`${styles.themePackCard} ${!blockHover && !openOverride ? styles.canHover : null}`}
+        onClick={() => { if (!blockHover && !openOverride) setOpen(p => !p) }}
+    >
         <div style={{ height: "fit-content", boxSizing: "border-box" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "3px" }}>
-                <ThemePackIcon themePack={themePack} displayName={true} scale={isSmall ? .3 : .5} />
+                <ThemePackWithFloors id={id} />
             </div>
         </div>
 
-        <div style={{ display: "grid", height: "100%", gridTemplateRows: "4fr 1fr", boxSizing: "border-box" }}>
-            <div style={{ flex: "3", borderBottom: "1px grey dotted", alignItems: "start", padding: "5px" }}>
-                {"exclusive_gifts" in themePack ? formatExclusiveGifts(themePack["exclusive_gifts"], isSmall) : null}
-            </div>
-            <div style={{ flex: "1", display: "flex", flexDirection: "column", alignItems: "start", padding: "5px" }}>
-                <div>Floors</div>
-                <div>
-                    <span style={{ color: "#4ade80" }}>Normal: </span>
-                    <span>{normal ? normal.join(", ") : "None"}</span>
-                </div>
-                <div>
-                    <span style={{ color: "#f87171" }}>Hard: </span>
-                    <span>{hard ? hard.join(", ") : "None"}</span>
-                </div>
-            </div>
-        </div>
+        {open || openOverride ?
+            <div style={{ display: "grid", gridAutoFlow: "column", gridTemplateRows: "repeat(4, 1fr)" }}>
+                {themePack["exclusive_gifts"] ?
+                    themePack["exclusive_gifts"].map((gift, i) =>
+                        <HoverBlocker key={gift} setBlockHover={setBlockHover}>
+                            <Gift key={i} id={gift} scale={isSmall ? .5 : 1} />
+                        </HoverBlocker>
+                    ) :
+                    "No exclusive gifts"
+                }
+            </div> :
+            null
+        }
     </div>
 }
 
@@ -84,44 +80,83 @@ function CategorySelector({ selected, setSelected, categories }) {
 
 export default function ThemePacksPage() {
     const [themePacksData, themePacksLoading] = useData("md_theme_packs");
+    const [giftsData, giftsLoading] = useData("gifts");
     const { isDesktop } = useBreakpoint();
 
-    const floorsPerPack = useFloorsPerPack();
-
+    const [searchString, setSearchString] = useState("");
+    const [includeGifts, setIncludeGifts] = useLocalState("themePacksIncludeGifts", true);
     const [selectedCategories, setSelectedCategories] = useState([]);
 
-    const components = [];
+    const [forceOpen, setForceOpen] = useState(false);
 
-    Object.entries(themePacksLoading ? {} : themePacksData).forEach(([id, themePack]) => {
-        if (selectedCategories.length !== 0 && !selectedCategories.some(selectedCategory => themePack.category.includes(selectedCategory))) return;
+    const filterStrings = useMemo(() => {
+        if (themePacksLoading || giftsLoading) return;
+        return Object.entries(themePacksData).reduce((acc, [id, themePack]) => {
+            acc[id] = [themePack.name];
+            if (themePack.exclusive_gifts) acc[id].push(...themePack.exclusive_gifts.map(x => giftsData[x].names[0]))
+            return acc;
+        }, {});
+    }, [themePacksData, themePacksLoading, giftsData, giftsLoading]);
 
-        components.push(<ThemePack key={id} themePack={themePack} normal={floorsPerPack.normal[id]} hard={floorsPerPack.hard[id]} isSmall={!isDesktop} />);
-    })
+    const categories = useMemo(() =>
+        Object.values(themePacksLoading ? {} : themePacksData).reduce((acc, themePack) => {
+            if (!(themePack.category[0] in acc))
+                acc[themePack.category[0]] = []
+            if (themePack.category.length === 2 && !acc[themePack.category[0]].includes(themePack.category[1]))
+                acc[themePack.category[0]].push(themePack.category[1])
+            return acc;
+        }, {}),
+        [themePacksData, themePacksLoading]
+    )
 
-    const categories = {};
-    Object.values(themePacksLoading ? {} : themePacksData).forEach(themePack => {
-        if (!(themePack.category[0] in categories))
-            categories[themePack.category[0]] = []
-        if (themePack.category.length === 2 && !categories[themePack.category[0]].includes(themePack.category[1]))
-            categories[themePack.category[0]].push(themePack.category[1])
-    });
+    const components = useMemo(() =>
+        themePacksLoading ? [] :
+            Object.entries(themePacksData).filter(([id, themePack]) => {
+                if (selectedCategories.length !== 0 && !selectedCategories.some(selectedCategory => themePack.category.includes(selectedCategory))) return false;
+                if (searchString.length !== 0 && !checkFilterMatch(searchString, includeGifts ? filterStrings[id] : themePack.name)) return false;
+                return true;
+            }).map(([id, themePack]) => <ThemePack key={id} id={id} themePack={themePack} isSmall={!isDesktop} openOverride={forceOpen} />)
+        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, includeGifts, isDesktop, forceOpen]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+            <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name..."} />
+                <label>
+                    <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
+                    <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
+                        style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                    >
+                        Include Gifts
+                    </span>
+                </label>
+            </div>
             <span>Filter Categories:</span>
             <CategorySelector
                 selected={selectedCategories}
                 setSelected={setSelectedCategories}
                 categories={categories}
             />
+            <div />
+            <label>
+                <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
+                <span {...getGeneralTooltipProps("Force all theme packs to show their exclusive gifts")}
+                    style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                >
+                    Force Open all Theme Packs
+                </span>
+            </label>
         </div>
-        <div style={{ width: "100%" }}>
-            <div style={{
-                display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isDesktop ? 640 : 320}px, 1fr))`,
-                width: "100%", boxSizing: "border-box"
-            }}>
-                {components}
+        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        {themePacksLoading || giftsLoading ?
+            <div style={{ textAlign: "center", fontSize: "1.5rem" }}>Loading Theme Packs...</div> :
+            <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.25rem" }}>
+                <h3 style={{ margin: 0 }}>Results: {components.length}</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem" }}>
+                    {components}
+                </div>
             </div>
-        </div>
+        }
     </div>;
 }

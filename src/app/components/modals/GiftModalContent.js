@@ -2,28 +2,14 @@
 
 import { useState } from "react";
 
-import { useFloorsForPack } from "../dataHooks/mdFloors";
 import Gift from "../gifts/Gift";
 import { GiftTagLabels } from "../gifts/GiftTags";
 import ChoiceEventIcon from "../icons/ChoiceEventIcon";
-import ThemePackIcon from "../icons/ThemePackIcon";
 import FusionRecipe from "../objects/FusionRecipe";
+import ThemePackWithFloors from "../objects/ThemePackWithFloors";
 import ProcessedText from "../texts/ProcessedText";
 
 import { affinityColorMapping } from "@/app/lib/colors";
-
-function ThemePackWithFloors({ id }) {
-    const { normal, hard } = useFloorsForPack(id);
-    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
-        <ThemePackIcon id={id} displayName={true} scale={0.5} />
-        <div style={{ display: "grid", width: "190px", gridTemplateColumns: "1fr 1fr" }} >
-            <div style={{ color: "#4ade80" }}>Normal</div>
-            <div style={{ color: "#f87171" }}>Hard</div>
-            <div>{normal.length ? normal.map(f => `F${f}`).join(", ") : "None"}</div>
-            <div>{hard.length ? hard.map(f => `F${f}`).join(", ") : "None"}</div>
-        </div>
-    </div>
-}
 
 export default function GiftModalContent({ gift, enhanceRank }) {
     const [enhanceLevel, setEnhanceLevel] = useState(enhanceRank);

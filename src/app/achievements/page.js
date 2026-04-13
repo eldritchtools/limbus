@@ -9,6 +9,7 @@ import { constructAchievementsData, getDefaultMigration, handleMigration } from 
 import AchievementTips from "./Tips";
 import { useData } from "../components/DataProvider";
 import NumberInput from "../components/objects/NumberInput";
+import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { getAchievementsProgress, updateAchievementsProgress } from "../database/achievements";
 import { useAuth } from "../database/authProvider";
 import { localStores } from "../database/localDB";
@@ -374,7 +375,7 @@ export default function AchievementsPage() {
         return null;
     }, [saveStatus, lastSaved]);
 
-    if (achievementsLoading || dataLoading) return <div>Loading...</div>;
+    if (achievementsLoading || dataLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <div>Progress is automatically saved after a few seconds of inactivity.</div>
