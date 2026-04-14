@@ -1,3 +1,4 @@
+import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
 
 const searchParams = {
