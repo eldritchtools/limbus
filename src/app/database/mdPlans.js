@@ -1,3 +1,4 @@
+import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
 
 const searchParams = {
@@ -68,4 +69,27 @@ export async function unpinMdPlanComment(planId) {
 
 export async function getSavedMdPlans(user_id, page = 1, pageSize = null) {
     return callRPC("get_saved_md_plans_v3", paginateParams({ p_user_id: user_id }, page, pageSize ?? DEFAULT_PAGE_SIZE));
+}
+
+export async function getMdPlansForSitemap(page, count) {
+    const offset = (page - 1) * count;
+    const { data, error } = await getSupabase()
+        .from('md_plans')
+        .select('id, created_at, updated_at')
+        .eq('is_published', true)
+        .order('created_at', { ascending: true })
+        .range(offset, offset + count - 1);
+
+    if (error) throw (error);
+    return data;
+}
+
+export async function getMdPlansCountForSitemap() {
+    const { count, error } = await getSupabase()
+        .from('md_plans')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_published', true);
+
+    if (error) throw (error);
+    return count;
 }
