@@ -9,7 +9,6 @@ import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import HoverBlocker from "../components/HoverBlocker";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
-import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
