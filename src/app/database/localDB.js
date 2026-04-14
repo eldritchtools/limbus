@@ -6,13 +6,15 @@ export const db = new Dexie("limbus-company-tools");
 
 const itemStores = ["builds", "collections", "mdPlans"];
 const savedStores = ["savedBuilds", "savedCollections", "savedMdPlans"];
-const singleStores = ["achievements"]
+const singleStores = ["achievements"];
+const unsyncedStores = ["teamRandomizer"];
 
 db.version(1).stores(
     {
         ...Object.fromEntries(itemStores.map(x => [x, "++id"])),
         ...Object.fromEntries(savedStores.map(x => [x, "id"])),
-        ...Object.fromEntries(singleStores.map(x => [x, "id"]))
+        ...Object.fromEntries(singleStores.map(x => [x, "id"])),
+        ...Object.fromEntries(unsyncedStores.map(x => [x, "id"]))
     }
 );
 
@@ -31,6 +33,10 @@ export const localStores = {
     ...Object.fromEntries(itemStores.map(x => [x, makeStore(db[x])])),
     ...Object.fromEntries(savedStores.map(x => [x, makeStore(db[x])])),
     ...Object.fromEntries(singleStores.map(x => [x, makeStore(db[x])]))
+}
+
+export function getLocalStore(store) {
+    return makeStore(db[store]);
 }
 
 export function isLocalId(id) {

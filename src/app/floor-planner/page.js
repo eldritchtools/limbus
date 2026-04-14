@@ -98,7 +98,7 @@ export default function FloorPlannerPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", width: "100%" }}>
         <h3 style={{ margin: 0 }}>Floor Planner</h3>
-        <span>This tool is made to be used as a quick way to view and plan theme pack options per floor. If you want to create and share a floor plan, please create an <NoPrefetchLink className="text-link" href="/md-plans/new">MD Plan</NoPrefetchLink> instead. You can also copy a floor plan you made here into an MD Plan using the button below.</span>
+        <span style={{maxWidth: "1000px", textAlign: "center"}}>This tool is made to be used as a quick way to view and plan theme pack options per floor. If you want to create and share a floor plan, please create an <NoPrefetchLink className="text-link" href="/md-plans/new">MD Plan</NoPrefetchLink> instead. You can also copy a floor plan you made here into an MD Plan using the button below.</span>
         <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
             <label>
                 <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}

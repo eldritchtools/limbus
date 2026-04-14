@@ -36,6 +36,7 @@ export default function BuildEditingComponent({
     egoThreadspins, setEgoThreadspins,
     sinnerNotes, setSinnerNotes,
     skillReplaces, setSkillReplaces,
+    minimalEditor = false, replaceDeployment, insertPanel,
     defaultAdditionalToggle = false, includeEventRolls = false
 }) {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
@@ -58,7 +59,7 @@ export default function BuildEditingComponent({
     const egoOptions = useMemo(() => {
         if (egosLoading) return [];
         return Object.entries(egos).reverse().reduce((acc, [_, ego]) => {
-            if(ego.rank) acc[ego.sinnerId][egoRankMapping[ego.rank]].push(ego); 
+            if (ego.rank) acc[ego.sinnerId][egoRankMapping[ego.rank]].push(ego);
             return acc;
         }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, Array.from({ length: 5 }, () => [])])));
     }, [egos, egosLoading]);
@@ -69,7 +70,7 @@ export default function BuildEditingComponent({
     const setIdentityUptie = (uptie, index) => setIdentityUpties(prev => prev.map((x, i) => i === index ? uptie : x));
     const setEgoThreadspin = (uptie, index, rank) => setEgoThreadspins(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? uptie : y) : x));
     const setSinnerNote = (note, index) => setSinnerNotes(prev => prev.map((x, i) => i === index ? note : x));
-    const setSkillReplace = (rep, index) => setSkillReplaces(prev => ({...prev, [index]: rep}));
+    const setSkillReplace = (rep, index) => setSkillReplaces(prev => ({ ...prev, [index]: rep }));
 
     useEffect(() => {
         const teamCode = constructTeamCode(identityIds, egoIds, deploymentOrder);
@@ -98,7 +99,10 @@ export default function BuildEditingComponent({
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid` }}>
                                         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
                                             <IdentityMenuSelector value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} options={identityOptions[index + 1]} num={index + 1} />
-                                            <DeploymentComponent depType={depType} depIndex={depIndex} setOrder={setDeploymentOrder} sinnerId={index + 1} />
+                                            {!minimalEditor ?
+                                                <DeploymentComponent depType={depType} depIndex={depIndex} setOrder={setDeploymentOrder} sinnerId={index + 1} /> :
+                                                replaceDeployment?.[index]
+                                            }
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
                                             {Array.from({ length: 5 }, (_, rank) =>
@@ -122,8 +126,8 @@ export default function BuildEditingComponent({
                                                 />)}
                                         </div>
                                         {skillReplaces ?
-                                            <div style={{display: "flex", alignItems: "center", gap: "0.2rem"}}>
-                                                Skills: <SkillReplace counts={skillReplaces[index+1] ?? "321"} setCounts={x => setSkillReplace(x, index+1)} editable={true}/>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                                                Skills: <SkillReplace counts={skillReplaces[index + 1] ?? "321"} setCounts={x => setSkillReplace(x, index + 1)} editable={true} />
                                             </div> :
                                             null
                                         }
@@ -165,19 +169,29 @@ export default function BuildEditingComponent({
             )
         }
         <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", justifyContent: "center" }}>
+            {insertPanel ? insertPanel : null}
+            {!minimalEditor ?
+                <BuildDisplayMenuCard>
+                    <div>Display Type</div>
+                    <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
+                </BuildDisplayMenuCard> :
+                null
+            }
             <BuildDisplayMenuCard>
-                <div>Display Type</div>
-                <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
-            </BuildDisplayMenuCard>
-            <BuildDisplayMenuCard>
-                <button
-                    className={`toggle-button ${additionalToggle ? "active" : ""}`}
-                    onClick={() => setAdditionalToggle(p => !p)}
-                    {...getGeneralTooltipProps("additionalDetails")}
-                    style={{ fontSize: "0.95rem" }}
-                >
-                    Toggle Additional Details
-                </button>
+                {!minimalEditor ?
+                    <button
+                        className={`toggle-button ${additionalToggle ? "active" : ""}`}
+                        onClick={() => setAdditionalToggle(p => !p)}
+                        {...getGeneralTooltipProps("additionalDetails")}
+                        style={{ fontSize: "0.95rem" }}
+                    >
+                        Toggle Additional Details
+                    </button> :
+                    <>
+                        <div>Display Type</div>
+                        <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
+                    </>
+                }
                 <button
                     className={`toggle-button ${allIdEgoToggle ? "active" : ""}`}
                     onClick={() => setAllIdEgoToggle(p => !p)}
@@ -187,16 +201,22 @@ export default function BuildEditingComponent({
                     Toggle All Ids & E.G.Os Menu
                 </button>
             </BuildDisplayMenuCard>
-            <BuildDisplayMenuCard>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <span style={{ textAlign: "center" }}>Active Sinners</span>
-                    <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
-                </div>
-                <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1rem" }}>Reset Deployment Order</button>
-            </BuildDisplayMenuCard>
-            <SinDistribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} />
-            {includeEventRolls ? 
-                <EventRolls identityIds={identityIds} identityUpties={identityUpties} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> : 
+            {!minimalEditor ?
+                <BuildDisplayMenuCard>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <span style={{ textAlign: "center" }}>Active Sinners</span>
+                        <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
+                    </div>
+                    <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1rem" }}>Reset Deployment Order</button>
+                </BuildDisplayMenuCard> :
+                null
+            }
+            {!minimalEditor ?
+                <SinDistribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
+                null
+            }
+            {includeEventRolls ?
+                <EventRolls identityIds={identityIds} identityUpties={identityUpties} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
                 null
             }
             <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} editable={true} />

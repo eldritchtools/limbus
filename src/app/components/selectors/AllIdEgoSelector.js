@@ -77,7 +77,10 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
             }
         </div>
         <div style={{ maxHeight: "400px", overflowY: "auto", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}>
+            <div 
+                className={mode === "id" ? identityStyles.identityMenuSelectorGrid : egoStyles.egoMenuSelectorGrid} 
+                style={{ maxWidth: "100%" }}
+            >
                 {list}
             </div>
         </div>
