@@ -55,7 +55,7 @@ export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityU
 }
 
 export function decodeBuildExtraOpts(string, parts = null) {
-    if (string.length === 0) return {};
+    if (!string || string.length === 0) return {};
 
     const decodePart = (part, size, text = false) => {
         return part.split(",").reduce((acc, val) => {

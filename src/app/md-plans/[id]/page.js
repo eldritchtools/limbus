@@ -38,7 +38,7 @@ export default function MdPlanPage({ params }) {
         if (loading) {
             const handlePlan = x => {
                 setPlan(x);
-                setExtraOpts(decodeBuildExtraOpts(x.extra_opts));
+                setExtraOpts(decodeBuildExtraOpts(x.extra_opts) ?? "");
                 if (x.recommendation_mode === "specbuild") {
                     setIdentityIds(x.identity_ids);
                     setEgoIds(x.ego_ids);
