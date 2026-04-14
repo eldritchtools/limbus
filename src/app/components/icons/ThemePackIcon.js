@@ -11,7 +11,7 @@ function rescaleThemePack(scale) {
 }
 
 function rescaleOverlay(scale) {
-    return { width: `${391 * scale}px`, height: `${432 * scale}px` };
+    return { width: `${380 * scale}px`, height: `${432 * scale}px` };
 }
 
 function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 1 }) {
