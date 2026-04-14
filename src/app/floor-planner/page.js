@@ -2,14 +2,17 @@
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import * as Select from "@radix-ui/react-select";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 import styles from "./floorPlanner.module.css";
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import useLocalState from "../lib/useLocalState";
 
 function FloorSelector({ value, setValue, options, isSmall }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -49,13 +52,13 @@ function FloorSelector({ value, setValue, options, isSmall }) {
 }
 
 export default function FloorPlannerPage() {
-    return null;
     const [themePacks, themePacksLoading] = useData("md_theme_packs");
     const [floorPacks, floorPacksLoading] = useData("md_floor_packs");
     const { isDesktop } = useBreakpoint();
 
-    const [selectedFloors, setSelectedFloors] = useState(new Array(15).fill(null));
-    const [difficulty, setDifficulty] = useState("E");
+    const [selectedFloors, setSelectedFloors] = useLocalState("floorPlannerFloors", new Array(15).fill(null));
+    const [difficulty, setDifficulty] = useLocalState("floorPlannerDifficulty", "E");
+    const router = useRouter();
 
     const handleSetDifficulty = v => {
         if (difficulty === "N" || v === "N") setSelectedFloors(new Array(15).fill(null));
@@ -64,7 +67,11 @@ export default function FloorPlannerPage() {
 
     const clear = () => {
         setSelectedFloors(new Array(15).fill(null));
-        setSelectedGifts(new Array(15).fill([]));
+    }
+
+    const copyToMdPlan = () => {
+        const params = new URLSearchParams({ difficulty, floors: selectedFloors });
+        router.push(`/md-plans/new?${params.toString()}`)
     }
 
     const setSelectedFloor = (value, index) => {
@@ -90,6 +97,8 @@ export default function FloorPlannerPage() {
     if (themePacksLoading || floorPacksLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", width: "100%" }}>
+        <h3 style={{ margin: 0 }}>Floor Planner</h3>
+        <span>This tool is made to be used as a quick way to view and plan theme pack options per floor. If you want to create and share a floor plan, please create an <NoPrefetchLink className="text-link" href="/md-plans/new">MD Plan</NoPrefetchLink> instead. You can also copy a floor plan you made here into an MD Plan using the button below.</span>
         <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
             <label>
                 <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
@@ -104,28 +113,31 @@ export default function FloorPlannerPage() {
                 </select>
             </label>
             <button onClick={clear}>Clear</button>
+            <button onClick={copyToMdPlan}>Copy to MD Plan</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${size}, 1fr))`, width: "100%", gap: "0.5rem" }}>
-            {Array.from({ length: floors }).map((_, index) => <div key={index} style={{ display: "grid", gridTemplateColumns: "1fr auto", width: size }}>
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span>Floor {index + 1}</span>
-                    {
-                        selectedFloors[index] && "exclusive_gifts" in themePacks[selectedFloors[index]] ?
-                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                                {themePacks[selectedFloors[index]].exclusive_gifts.map(giftId =>
-                                    <Gift key={giftId} id={giftId} includeTooltip={true} scale={isDesktop ? .66 : .5} />
-                                )}
-                            </div> :
-                            null
-                    }
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${size})`, justifyContent: "center", width: "100%", gap: "0.5rem" }}>
+            {Array.from({ length: floors }).map((_, index) =>
+                <div key={index} style={{ display: "grid", gridTemplateColumns: "1fr auto", width: size }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <span>Floor {index + 1}</span>
+                        {
+                            selectedFloors[index] && "exclusive_gifts" in themePacks[selectedFloors[index]] ?
+                                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+                                    {themePacks[selectedFloors[index]].exclusive_gifts.map(giftId =>
+                                        <Gift key={giftId} id={giftId} includeTooltip={true} scale={isDesktop ? .66 : .5} />
+                                    )}
+                                </div> :
+                                null
+                        }
+                    </div>
+                    <FloorSelector
+                        value={selectedFloors[index]}
+                        setValue={v => setSelectedFloor(v, index)}
+                        options={getOptions(index + 1)}
+                        isSmall={!isDesktop}
+                    />
                 </div>
-                <FloorSelector
-                    value={selectedFloors[index]}
-                    setValue={v => setSelectedFloor(v, index)}
-                    options={getOptions(index + 1 + 1)}
-                    isSmall={!isDesktop}
-                />
-            </div>)}
+            )}
         </div>
     </div>;
 }

@@ -25,7 +25,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;
-    max-width: 650px;
+    max-width: 1040px;
     height: 80%;
     max-height: 500px;
     z-index: 100;
@@ -37,12 +37,13 @@
   bottom: 0;
   height: 24px;
   pointer-events: none;
+  text-align: center;
   background: linear-gradient(to bottom, transparent, black);
 }
 
 .floorSelectGrid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(8, 1fr);
 }
 
 .floorSelectItem {
