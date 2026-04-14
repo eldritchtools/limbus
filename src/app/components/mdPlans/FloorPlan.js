@@ -30,7 +30,10 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
         </div>
 
     const orderComponent = editable ?
-        <div style={{ display: "flex", flexDirection: hideDescriptions ? "row" : "column", gap: hideDescriptions ? "0.2rem" : "2rem", paddingRight: "1rem" }}>
+        <div style={{
+            display: "flex", flexDirection: hideDescriptions ? "row" : "column",
+            gap: hideDescriptions ? "0.2rem" : "2rem", paddingRight: isMobile ? "0.1rem" : "1rem"
+        }}>
             <button onClick={() => swapFloors(index - 1)} disabled={isFirst}>{hideDescriptions ? "<" : "∧"}</button>
             <button onClick={() => removeFloor()}>
                 <div style={{ color: "#ff4848", fontWeight: "bold" }}>
@@ -87,7 +90,7 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
                 placeholder={"Add any notes for this floor here..."}
             />
         </div> :
-        <div style={!isMobile ? { alignSelf: "start", marginTop: "1rem" } : {}}>
+        <div style={!isMobile ? { alignSelf: "start", flex: "1 1 600px", minWidth: "600px" } : {}}>
             <MarkdownRenderer content={floor.note} />
         </div>
 
@@ -97,8 +100,8 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
             {hideDescriptions ? orderComponent : null}
             {labelComponent}
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", width: "100%" }}>
-            {!hideDescriptions ? orderComponent : null}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "0.1rem" : "0.5rem", alignItems: "start", width: "100%" }}>
+            {!hideDescriptions ? <div style={{ alignSelf: "center" }}>{orderComponent}</div> : null}
             {themePacksComponent}
             {giftsComponent}
             {!isMobile && !hideDescriptions ? noteComponent : null}
