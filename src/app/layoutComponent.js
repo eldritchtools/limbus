@@ -45,8 +45,9 @@ const paths = [
         ]
     },
     {
-        title: "Helper Tools", subpaths: [
-            { path: "team-randomizer", title: "Team Randomizer" },
+        title: "Utility Tools", subpaths: [
+            { path: "/keyword-solver", title: "Keyword Solver" },
+            { path: "/team-randomizer", title: "Team Randomizer" },
             { path: "/floor-planner", title: "Floor Planner" }
         ]
     },
