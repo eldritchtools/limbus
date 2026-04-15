@@ -28,10 +28,10 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
 
         if (mode === "id") {
             const prefiltered = Object.entries(identityOptions).filter(([id]) => !identityIds.includes(id)).map(([, data]) => data);
-            result = filterByFilters("identity", prefiltered, filters, data => searchString.length === 0 || checkFilterMatch(data.name, searchString));
+            result = filterByFilters("identity", prefiltered, filters, data => searchString.length === 0 || checkFilterMatch(searchString, data.name));
         } else {
             const prefiltered = Object.entries(egoOptions).filter(([id]) => !egoIds.some(list => list.includes(id))).map(([, data]) => data);
-            result = filterByFilters("ego", prefiltered, filters, data => searchString.length === 0 || checkFilterMatch(data.name, searchString));
+            result = filterByFilters("ego", prefiltered, filters, data => searchString.length === 0 || checkFilterMatch(searchString, data.name));
         }
 
         result = result.sort((a, b) => a.sinnerId === b.sinnerId ? b.id.localeCompare(a.id) : a.sinnerId - b.sinnerId);
