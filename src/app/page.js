@@ -90,6 +90,12 @@ export default function Home() {
                         <NoPrefetchLink className="text-link" href={"/theme-packs"}>Theme Packs</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/md-events"}>Choice Events</NoPrefetchLink>
                     </div>
+                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Utility Tools</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+                        <NoPrefetchLink className="text-link" href={"/keyword-solver"}>Keyword Solver</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/team-randomizer"}>Team Randomizer</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink>
+                    </div>
                 </div>
                 <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
                     {/* <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Announcement</div> */}

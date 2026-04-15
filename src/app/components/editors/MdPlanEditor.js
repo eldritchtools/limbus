@@ -34,7 +34,15 @@ import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
 import { selectStyle } from "@/app/styles/selectStyle";
 
-export default function MdPlanEditor({ mode, mdPlanId }) {
+function handleInitFloors(initFloors) {
+    return initFloors.map((f, i) => {
+        if (f === "") return null;
+        const floorSet = i >= 10 ? "11-15": (i >= 5 ? "6-10" : `${i+1}`);
+        return {floorSet: floorSet, label: `${i+1}`, themePacks: [f], "gifts": [], "note": ""}
+    }).filter(x => x).map((x, i) => ({...x, key: i}));
+}
+
+export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloors }) {
     const [mdData, mdDataLoading] = useData("md/details");
     const [themePacks, themePacksLoading] = useData("md_theme_packs");
     const [floorPacks, floorPacksLoading] = useData("md_floor_packs");
@@ -47,14 +55,14 @@ export default function MdPlanEditor({ mode, mdPlanId }) {
     const [identityIds, setIdentityIds] = useState([]);
     const [egoIds, setEgoIds] = useState([]);
     const [extraOpts, setExtraOpts] = useState({});
-    const [difficulty, setDifficulty] = useState("N");
+    const [difficulty, setDifficulty] = useState(initDifficulty ?? "N");
     const [graceLevels, setGraceLevels] = useState(Array.from({ length: 10 }, () => 0));
     const [adversities, setAdversities] = useState({});
     const [keyword, setKeyword] = useState(null);
     const [startGifts, setStartGifts] = useState([]);
     const [observeGifts, setObserveGifts] = useState([]);
     const [plannedGifts, setPlannedGifts] = useState([]);
-    const [floors, setFloors] = useState([]);
+    const [floors, setFloors] = useState(initFloors ? handleInitFloors(initFloors) : []);
     const startGiftsRef = useRef(startGifts);
     const observeGiftsRef = useRef(observeGifts);
     const plannedGiftsRef = useRef(plannedGifts);

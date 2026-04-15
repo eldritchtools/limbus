@@ -17,14 +17,15 @@ import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
 
 
-export default function BuildEditor({ mode, buildId }) {
+export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
-    const [identityIds, setIdentityIds] = useState(Array.from({ length: 12 }, () => null));
+    const [identityIds, setIdentityIds] = useState(initIdentityIds ?? Array.from({ length: 12 }, () => null));
     const [egoIds, setEgoIds] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => null)));
     const [keywordIds, setKeywordIds] = useState([]);
     const [deploymentOrder, setDeploymentOrder] = useState([]);
@@ -91,6 +92,15 @@ export default function BuildEditor({ mode, buildId }) {
         }
     }, [mode, buildId, router, user]);
 
+    useEffect(() => {
+        if(!initTeamCode) return;
+        const parseResult = parseTeamCode(initTeamCode);
+        if (!parseResult) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setDeploymentOrder([...parseResult.deploymentOrder]);
+        setIdentityIds([...parseResult.identities]);
+        setEgoIds(parseResult.egos.map(egos => [...egos]));
+    }, [initTeamCode]);
 
     const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
         if (id && id in identitiesMini) {

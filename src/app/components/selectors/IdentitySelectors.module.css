@@ -30,7 +30,7 @@
     max-height: 400px;
     z-index: 1000;
     overflow-y: auto;
-    max-width: clamp(300px, 80vw, 900px);
+    max-width: clamp(330px, 85vw, 900px);
 }
 
 .identityMenuSelectorFadeBottom {
@@ -46,7 +46,7 @@
 .identityMenuSelectorGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    max-width: clamp(300px, 80vw, 900px);
+    max-width: clamp(330px, 85vw, 900px);
 }
 
 .identityMenuSelectorItem {
@@ -72,4 +72,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+@media (max-width: 767px) {
+  .identityMenuSelectorGrid {
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  }
+  .identityMenuSelectorItem {
+    max-width: 96px;
+  }
 }

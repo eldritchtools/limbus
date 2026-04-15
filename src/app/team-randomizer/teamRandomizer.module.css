@@ -1,0 +1,10 @@
+.wbComponent {
+    width: 96px;
+    height: 96px;
+    cursor: pointer;
+    transition: all ease 0.2s;
+}
+
+.wbComponent:hover {
+    filter: brightness(1.3);
+}

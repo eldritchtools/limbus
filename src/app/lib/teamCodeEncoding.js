@@ -96,13 +96,13 @@ function stripId(id) {
 
 export function constructTeamCode(identityIds, egoIds, deploymentOrder) {
     const deployment = new Array(12).fill(0);
-    deploymentOrder.forEach((sinnerId, index) => deployment[sinnerId - 1] = index + 1);
+    deploymentOrder?.forEach((sinnerId, index) => deployment[sinnerId - 1] = index + 1);
     let str = "0";
     for (let i = 0; i < 12; i++) {
-        str += intToBinary(identityIds[i] ? stripId(identityIds[i]) : 1, 7);
+        str += intToBinary(identityIds?.[i] ? stripId(identityIds?.[i]) : 1, 7);
         str += intToBinary(deployment[i], 4);
         for (let j = 0; j < 5; j++) {
-            if (egoIds[i][j])
+            if (egoIds?.[i]?.[j])
                 str += intToBinary(stripId(egoIds[i][j]), 7);
             else {
                 if (j === 0) {

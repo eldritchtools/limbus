@@ -14,7 +14,7 @@ import { egoRankMapping } from "@/app/lib/constants";
 import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 
 export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, includeSelectedFirst = false }) {
-    const [mode, setMode] = useState("id");
+    const [mode, setMode] = useState(identityOptions ? "id" : "ego");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
 
@@ -66,8 +66,14 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "98%", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", paddingLeft: "1rem" }}>
-            <div className={`tab-header ${mode === "id" ? "active" : ""}`} onClick={() => handleSetMode("id")}>Identities</div>
-            <div className={`tab-header ${mode === "ego" ? "active" : ""}`} onClick={() => handleSetMode("ego")}>E.G.Os</div>
+            {identityOptions ?
+                <div className={`tab-header ${mode === "id" ? "active" : ""}`} onClick={() => handleSetMode("id")}>Identities</div> :
+                null
+            }
+            {egoOptions ? 
+                <div className={`tab-header ${mode === "ego" ? "active" : ""}`} onClick={() => handleSetMode("ego")}>E.G.Os</div> :
+                null
+            }
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.1rem", alignItems: "center" }}>
             <input type="text" placeholder="Search..." value={searchString} onChange={(e) => setSearchString(e.target.value)} />
@@ -77,7 +83,10 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
             }
         </div>
         <div style={{ maxHeight: "400px", overflowY: "auto", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}>
+            <div 
+                className={mode === "id" ? identityStyles.identityMenuSelectorGrid : egoStyles.egoMenuSelectorGrid} 
+                style={{ maxWidth: "100%" }}
+            >
                 {list}
             </div>
         </div>

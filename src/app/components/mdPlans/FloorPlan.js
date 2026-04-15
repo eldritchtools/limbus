@@ -7,10 +7,11 @@ import Gift from "../gifts/Gift";
 import ThemePackIcon from "../icons/ThemePackIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
-function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFloors, removeFloor, addThemePacks, removeThemePacks, addFloorGifts, removeFloorGifts, editable }) {
+function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFloors, removeFloor, addThemePacks, removeThemePacks, addFloorGifts, removeFloorGifts, hideDescriptions, editable }) {
     const { isMobile } = useBreakpoint();
 
     const packScale = isMobile ? .4 : (floor.themePacks.length === 1 ? .44 : .3)
@@ -29,14 +30,17 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
         </div>
 
     const orderComponent = editable ?
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingRight: "1rem" }}>
-            <button onClick={() => swapFloors(index - 1)} disabled={isFirst}>∧</button>
+        <div style={{
+            display: "flex", flexDirection: hideDescriptions ? "row" : "column",
+            gap: hideDescriptions ? "0.2rem" : "2rem", paddingRight: isMobile ? "0.1rem" : "1rem"
+        }}>
+            <button onClick={() => swapFloors(index - 1)} disabled={isFirst}>{hideDescriptions ? "<" : "∧"}</button>
             <button onClick={() => removeFloor()}>
                 <div style={{ color: "#ff4848", fontWeight: "bold" }}>
                     ✕
                 </div>
             </button>
-            <button onClick={() => swapFloors(index + 1)} disabled={isLast}>∨</button>
+            <button onClick={() => swapFloors(index + 1)} disabled={isLast}>{hideDescriptions ? ">" : "∨"}</button>
         </div> :
         null
 
@@ -86,35 +90,39 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
                 placeholder={"Add any notes for this floor here..."}
             />
         </div> :
-        <div style={!isMobile ? { alignSelf: "start", marginTop: "1rem" } : {}}>
+        <div style={!isMobile ? { alignSelf: "start", flex: "1 1 600px", minWidth: "600px" } : {}}>
             <MarkdownRenderer content={floor.note} />
         </div>
 
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {labelComponent}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", width: "100%" }}>
-            {orderComponent}
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            {hideDescriptions ? orderComponent : null}
+            {labelComponent}
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "0.1rem" : "0.5rem", alignItems: "start", width: "100%" }}>
+            {!hideDescriptions ? <div style={{ alignSelf: "center" }}>{orderComponent}</div> : null}
             {themePacksComponent}
             {giftsComponent}
-            {!isMobile ? noteComponent : null }
+            {!isMobile && !hideDescriptions ? noteComponent : null}
         </div>
-        {isMobile ? noteComponent : null }
+        {isMobile && !hideDescriptions ? noteComponent : null}
     </div>
 }
 
 export default function FloorPlan({ difficulty, floors, setFloors, addThemePacks, removeThemePacks, addFloorGifts, removeFloorGifts, editable = false }) {
     const [nextKey, setNextKey] = useState(0);
+    const [hideDescriptions, setHideDescriptions] = useState(false);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setNextKey(Math.max(0, ...floors.map(x => x.key)) + 1);
     }, [floors]);
 
-    if (!editable)
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {floors.map((floor, i) => <FloorItem key={i} floor={floor} editable={editable} />)}
-        </div>
+    // if (!editable)
+    //     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    //         {floors.map((floor, i) => <FloorItem key={i} floor={floor} editable={editable} />)}
+    //     </div>
 
     const swapFloors = (a, b) => {
         setFloors(p => {
@@ -145,26 +153,37 @@ export default function FloorPlan({ difficulty, floors, setFloors, addThemePacks
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <div>
-            <button onClick={() => addFloor()}>Add Floor</button>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            {editable ? <button onClick={() => addFloor()}>Add Floor</button> : null}
+            <label>
+                <input type="checkbox" checked={hideDescriptions} onChange={e => setHideDescriptions(e.target.checked)} />
+                <span {...getGeneralTooltipProps("This will hide floor descriptions, allowing you to see the floor plan in a more compact manner.")}
+                    style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                >
+                    Hide Floor Descriptions
+                </span>
+            </label>
         </div>
-        {floors.map((floor, i) =>
-            <FloorItem
-                key={floor.key}
-                floor={floor}
-                setFloor={p => setFloor(i, p)}
-                difficulty={difficulty}
-                index={i}
-                isFirst={i === 0}
-                isLast={i === floors.length - 1}
-                swapFloors={x => swapFloors(i, x)}
-                removeFloor={() => removeFloor(i)}
-                addThemePacks={() => addThemePacks(i)}
-                removeThemePacks={() => removeThemePacks(i)}
-                addFloorGifts={() => addFloorGifts(i)}
-                removeFloorGifts={() => removeFloorGifts(i)}
-                editable={editable}
-            />
-        )}
+        <div style={{ display: "flex", flexDirection: hideDescriptions ? "row" : "column", flexWrap: hideDescriptions ? "wrap" : null, gap: "0.5rem" }}>
+            {floors.map((floor, i) =>
+                <FloorItem
+                    key={floor.key}
+                    floor={floor}
+                    setFloor={p => setFloor(i, p)}
+                    difficulty={difficulty}
+                    index={i}
+                    isFirst={i === 0}
+                    isLast={i === floors.length - 1}
+                    swapFloors={x => swapFloors(i, x)}
+                    removeFloor={() => removeFloor(i)}
+                    addThemePacks={() => addThemePacks(i)}
+                    removeThemePacks={() => removeThemePacks(i)}
+                    addFloorGifts={() => addFloorGifts(i)}
+                    removeFloorGifts={() => removeFloorGifts(i)}
+                    hideDescriptions={hideDescriptions}
+                    editable={editable}
+                />
+            )}
+        </div>
     </div>
 }
