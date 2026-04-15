@@ -22,10 +22,10 @@ import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
 
 
-export default function BuildEditor({ mode, buildId, initTeamCode }) {
+export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
-    const [identityIds, setIdentityIds] = useState(Array.from({ length: 12 }, () => null));
+    const [identityIds, setIdentityIds] = useState(initIdentityIds ?? Array.from({ length: 12 }, () => null));
     const [egoIds, setEgoIds] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => null)));
     const [keywordIds, setKeywordIds] = useState([]);
     const [deploymentOrder, setDeploymentOrder] = useState([]);

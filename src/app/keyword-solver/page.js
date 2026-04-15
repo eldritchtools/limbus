@@ -18,7 +18,6 @@ import { IdentityMenuSelector } from "../components/selectors/IdentitySelectors"
 import { getLocalStore } from "../database/localDB";
 import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
-import { constructTeamCode } from "../lib/teamCodeEncoding";
 
 function ResultComponent({ identities, result, keywordTargets, router, isMobile }) {
     const counts = Object.fromEntries(keywords.slice(0, 7).map(kw => [kw, 0]));
@@ -28,7 +27,7 @@ function ResultComponent({ identities, result, keywordTargets, router, isMobile 
     });
 
     const copyToBuild = () => {
-        const params = new URLSearchParams({ teamCode: constructTeamCode(result, [], []) });
+        const params = new URLSearchParams({ identityIds: result.join(",") });
         router.push(`/builds/new?${params.toString()}`)
     }
 
@@ -237,7 +236,7 @@ export default function KeywordSolverPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h3 style={{ margin: 0 }}>Keyword Solver</h3>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool allows you to generate teams with enough deployed identities that include the set keywords. You can fix identities or prevent sinners from being used in the builder below. You can also blacklist or whitelist identities from being selected. When you are done, you can hit solve and let it find teams that fit the conditions provided! If you like a team, Create Build will send you to the create a Team Build page with that team (empty sinners and zayins will be set to their base counterparts). Any settings you change are saved locally, but solved teams are not saved.</span>
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool allows you to generate teams with enough deployed identities that include the set keywords. You can fix identities or prevent sinners from being used in the builder below. You can also blacklist or whitelist identities from being selected. When you are done, you can hit solve and let it find teams that fit the conditions provided! If you like a team, Create Build will send you to the create a Team Build page with that team. Any settings you change are saved locally, but solved teams are not saved.</span>
 
         <h4 style={{ margin: 0 }}>Solver Settings</h4>
         <span>Sinner Settings (fix or disable sinners)</span>
