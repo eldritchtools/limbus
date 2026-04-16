@@ -11,9 +11,10 @@ function useIdentitiesWithUpcoming(mini=false) {
     const identitiesCombined = useMemo(() => {
         if (identitiesLoading || upcomingLoading) return {};
         const result = {...identities};
-        Object.entries(upcoming.identities).forEach(([id, x]) => {
-            result[id] = {...x, upcoming: true, date: upcoming.date};
-        });
+        if(upcoming.identities)
+            Object.entries(upcoming.identities).forEach(([id, x]) => {
+                result[id] = {...x, upcoming: true, date: upcoming.date};
+            });
         return result;
     }, [identities, identitiesLoading, upcoming, upcomingLoading]);
 
@@ -27,9 +28,10 @@ function useEgosWithUpcoming(mini=false) {
     const egosCombined = useMemo(() => {
         if (egosLoading || upcomingLoading) return {};
         const result = {...egos};
-        Object.entries(upcoming.egos).forEach(([id, x]) => {
-            result[id] = {...x, upcoming: true, date: upcoming.date};
-        });
+        if(upcoming.egos)
+            Object.entries(upcoming.egos).forEach(([id, x]) => {
+                result[id] = {...x, upcoming: true, date: upcoming.date};
+            });
         return result;
     }, [egos, egosLoading, upcoming, upcomingLoading]);
 

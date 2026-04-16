@@ -93,8 +93,11 @@ function SingleResult({ result }) {
         return <MarkdownRenderer content={`Get {giftname:${result.id}}.`} />
     if (result.type === "getEgoGiftOnWin")
         return <MarkdownRenderer content={`Get {giftname:${result.id}} on win.`} />
-    if (result.type === "abnoBattle")
-        return <span style={{ color: uiColors.red }}>Combat Encounter: {result.label}</span>
+    if (result.type === "battle"){
+        if (result.label)
+            return <span style={{ color: uiColors.red }}>Combat Encounter: {result.label}</span>
+        return <span style={{ color: uiColors.red }}>Combat Encounter!</span>
+    }
     if (result.type === "healHp")
         return constructTargetedString(result.target, "heals", "heal", `${result.value} HP.`)
     if (result.type === "healHpFull")
