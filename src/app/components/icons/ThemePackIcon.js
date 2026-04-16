@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import { useData } from "../DataProvider";
 
@@ -17,7 +18,7 @@ function rescaleOverlay(scale) {
 function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 1 }) {
     const scaledStyle = rescaleThemePack(scale);
     return <div style={{ ...scaledStyle, position: "relative", left: 0, top: 0 }}>
-        <Image src={`${ASSETS_ROOT}/theme_packs/${themePack.image}.png`}
+        {/* <Image src={`${ASSETS_ROOT}/theme_packs/${themePack.image}.png`}
             alt={themePack.name} title={themePack.name}
             width={380} height={690}
             style={{ ...scaledStyle, position: "absolute", left: 0, top: 0 }}
@@ -26,6 +27,17 @@ function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 
             <Image src={`${ASSETS_ROOT}/theme_packs/${themePack.overlayImage}.png`}
                 alt={themePack.name} title={themePack.name}
                 width={391} height={432}
+                style={{ ...rescaleOverlay(scale), position: "absolute", left: 0, top: 100 * scale }}
+            /> :
+            null
+        } */}
+        <img src={`${ASSETS_ROOT}/theme_packs/${themePack.image}.png`}
+            alt={themePack.name} title={themePack.name}
+            style={{ ...scaledStyle, position: "absolute", left: 0, top: 0 }}
+        />
+        {themePack.overlayImage ?
+            <img src={`${ASSETS_ROOT}/theme_packs/${themePack.overlayImage}.png`}
+                alt={themePack.name} title={themePack.name}
                 style={{ ...rescaleOverlay(scale), position: "absolute", left: 0, top: 100 * scale }}
             /> :
             null

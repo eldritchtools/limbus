@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -32,10 +33,15 @@ export function isValidKeywordId(id) {
 }
 
 export default function KeywordIcon({ id, size = 32, style = {} }) {
-    return <Image
+    // return <Image
+    //     src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
+    //     alt={id} title={id} 
+    //     width={size} height={size} 
+    //     style={{ width: `${size}px`, height: `${size}px`, ...style }}
+    // />;
+    return <img
         src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
         alt={id} title={id} 
-        width={size} height={size} 
         style={{ width: `${size}px`, height: `${size}px`, ...style }}
     />;
 }

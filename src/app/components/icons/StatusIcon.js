@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import { useData } from "../DataProvider";
 
@@ -15,7 +16,8 @@ function StatusIconMain({ status, style }) {
     const src = getStatusImgSrc(status);
     if(!src) return null;
     if(src.includes("?")) return null;
-    return <Image src={src} alt={status.name} width={32} height={32} style={style} />
+    // return <Image src={src} alt={status.name} width={32} height={32} style={style} />
+    return <img src={src} alt={status.name} style={style} />
 }
 
 function StatusIconFetch({id, style}) {

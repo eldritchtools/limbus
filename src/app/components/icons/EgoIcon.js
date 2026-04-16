@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import { useData } from "../DataProvider";
 import RarityIcon from "./RarityIcon";
@@ -22,9 +23,10 @@ const nameStyle = { position: "absolute", overflow: "hidden", textWrap: "balance
 
 function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, includeTooltip = false, threadspin = null }) {
     const src = getEgoImgSrc(ego, type);
-    const { width, height, ...remStyle } = style;
+    const { width, height } = style;
 
-    const img = <Image src={src} alt={ego.name} title={ego.name} fill sizes="auto" style={{ ...remStyle, objectFit: "cover" }} />
+    // const img = <Image src={src} alt={ego.name} title={ego.name} fill sizes="auto" style={{ ...remStyle, objectFit: "cover" }} />
+    const img = <img src={src} alt={ego.name} title={ego.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover"}} />
 
     return <div
         style={{

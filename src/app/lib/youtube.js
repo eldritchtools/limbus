@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import { useState } from "react";
 
@@ -83,12 +84,17 @@ export function YouTubeThumbnailEmbed({ videoId, className }) {
             ) : (
                 // Thumbnail preview
                 <>
-                    <Image
+                    {/* <Image
                         src={thumbnailUrl}
                         alt="YouTube video thumbnail"
                         fill
                         style={{ objectFit: "cover", filter: "brightness(0.85)" }}
                         sizes="(max-width: 768px) 100vw, 800px"
+                    /> */}
+                    <img
+                        src={thumbnailUrl}
+                        alt="YouTube video thumbnail"
+                        style={{ objectFit: "cover", filter: "brightness(0.85)" }}
                     />
 
                     {/* Play button overlay */}
