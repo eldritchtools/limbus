@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import KeywordIcon from "./KeywordIcon";
 import TierIcon from "./TierIcon";
@@ -32,12 +33,14 @@ function GiftImg({ gift, style }) {
     const src = getGiftImgSrc(gift);
     if(!src) return null;
 
-    return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} />
+    // return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} />
+    return <img src={src} alt={gift.names[0]} style={style} />
 }
 
 function GiftIconContainer({ scale = 1, children }) {
     return <div style={scaleStyle(giftContainerStyle, scale)}>
-        <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" width={64} height={64} style={scaleStyle(giftBackgroundStyle, scale)} />
+        {/* <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" width={64} height={64} style={scaleStyle(giftBackgroundStyle, scale)} /> */}
+        <img src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" style={scaleStyle(giftBackgroundStyle, scale)} />
         {children}
     </div>
 }

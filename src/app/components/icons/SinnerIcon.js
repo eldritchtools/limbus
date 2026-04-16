@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import { sinnerIdMapping } from "@/app/lib/constants";
 import { ASSETS_ROOT } from "@/app/paths";
@@ -11,5 +12,6 @@ function getSinnerIconSrc(num) {
 
 export default function SinnerIcon({ num, style = {} }) {
     const name = sinnerIdMapping[num];
-    return <Image src={getSinnerIconSrc(num)} alt={name} title={name} width={128} height={128} style={style} />
+    // return <Image src={getSinnerIconSrc(num)} alt={name} title={name} width={128} height={128} style={style} />
+    return <img src={getSinnerIconSrc(num)} alt={name} title={name} style={style} />
 }

@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import { useData } from "../DataProvider";
 
@@ -12,10 +13,14 @@ function rescaleChoiceEvent(scale) {
 
 function ChoiceEventIconMain({ id, choiceEvent = null, displayName = false, scale = 1 }) {
     const scaledStyle = rescaleChoiceEvent(scale);
-    return <div style={{ ...scaledStyle, position: "relative" }}>
-        <Image src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
+    return <div style={{ ...scaledStyle, position: "relative", display: "flex" }}>
+        {/* <Image src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
             alt={choiceEvent.name} title={choiceEvent.name}
             fill style={{ objectFit: "cover" }}
+        /> */}
+        <img src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
+            alt={choiceEvent.name} title={choiceEvent.name}
+            style={{ ...scaledStyle, objectFit: "cover" }}
         />
         {displayName ?
             <div style={{

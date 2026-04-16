@@ -55,7 +55,7 @@ function EgoTooltipContent({ id, ego, uptie = 4 }) {
                 </div>
                 <div style={{ flex: 1, display: "flex", flexWrap: "wrap" }}>
                     {Object.entries(ego.cost).map(([affinity, cost]) => <div key={affinity} style={{ display: "flex", alignItems: "center" }}>
-                        <Icon path={affinity} style={{ height: "32px", width: "32px" }} />
+                        <KeywordIcon id={affinity} />
                         <span>x{cost}</span>
                     </div>)}
                 </div>
