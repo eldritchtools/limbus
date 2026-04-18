@@ -9,6 +9,10 @@
     font-size: 1rem;
 }
 
+.uptieSelectorTrigger.flex {
+    width: auto;
+}
+
 .uptieSelectorTrigger:hover {
     background-color: #555;
     border-radius: 4px;

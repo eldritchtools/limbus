@@ -46,17 +46,21 @@ export default function TeamRandomizerPage() {
         const handleData = data => {
             setInitializing(false);
             if (!data) return;
-            setFixedIdentityIds(data.fixedIdentityIds);
-            setIdentityIds(data.fixedIdentityIds);
-            setFixedEgoIds(data.fixedEgoIds);
-            setEgoIds(data.fixedEgoIds);
-            setWbMode(data.wbMode);
-            setWbList(data.wbList);
-            setWbListDisplay(data.wbListDisplay);
-            setWbListOpen(data.wbListOpen);
-            setRandomizeIdentities(data.randomizeIdentities);
-            setRandomizeEgos(data.randomizeEgos);
-            setEmptyEgoProb(data.emptyEgoProb);
+            if (data.fixedIdentityIds) {
+                setFixedIdentityIds(data.fixedIdentityIds);
+                setIdentityIds(data.fixedIdentityIds);
+            }
+            if (data.fixedEgoIds) {
+                setFixedEgoIds(data.fixedEgoIds);
+                setEgoIds(data.fixedEgoIds);
+            }
+            if (data.wbMode) setWbMode(data.wbMode);
+            if (data.wbList) setWbList(data.wbList);
+            if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
+            if (data.wbListOpen) setWbListOpen(data.wbListOpen);
+            if (data.randomizeIdentities) setRandomizeIdentities(data.randomizeIdentities);
+            if (data.randomizeEgos) setRandomizeEgos(data.randomizeEgos);
+            if (data.emptyEgoProb) setEmptyEgoProb(data.emptyEgoProb);
         }
 
         getLocalStore("teamRandomizer").get("main").then(handleData);

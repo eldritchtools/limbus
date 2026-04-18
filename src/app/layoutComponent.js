@@ -46,6 +46,8 @@ const paths = [
     },
     {
         title: "Utility Tools", subpaths: [
+            { path: "/daily-random", title: "Daily Randomized Team" },
+            { path: "/training-calc", title: "Dispense and Training Calculator" },
             { path: "/keyword-solver", title: "Keyword Solver" },
             { path: "/team-randomizer", title: "Team Randomizer" },
             { path: "/floor-planner", title: "Floor Planner" }

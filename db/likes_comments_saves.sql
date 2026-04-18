@@ -9,7 +9,7 @@ CREATE TABLE public.likes (
 CREATE TABLE public.comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
-  target_id UUID REFERENCES public.builds(id) ON DELETE CASCADE,
+  target_id UUID,
   target_type target_type_enum,
   body TEXT NOT NULL,
   deleted BOOLEAN DEFAULT FALSE,

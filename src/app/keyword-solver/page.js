@@ -75,15 +75,15 @@ export default function KeywordSolverPage() {
         const handleData = data => {
             setInitializing(false);
             if (!data) return;
-            setFixedIdentityIds(data.fixedIdentityIds);
-            setEnabledSinners(data.enabledSinners);
-            setDeployedSinners(data.deployedSinners);
-            setKeywordTargets(data.keywordTargets);
-            setSolvers(data.solvers);
-            setWbMode(data.wbMode);
-            setWbList(data.wbList);
-            setWbListDisplay(data.wbListDisplay);
-            setWbListOpen(data.wbListOpen);
+            if (data.fixedIdentityIds) setFixedIdentityIds(data.fixedIdentityIds);
+            if (data.enabledSinners) setEnabledSinners(data.enabledSinners);
+            if (data.deployedSinners) setDeployedSinners(data.deployedSinners);
+            if (data.keywordTargets) setKeywordTargets(data.keywordTargets);
+            if (data.solvers) setSolvers(data.solvers);
+            if (data.wbMode) setWbMode(data.wbMode);
+            if (data.wbList) setWbList(data.wbList);
+            if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
+            if (data.wbListOpen) setWbListOpen(data.wbListOpen);
         }
 
         getLocalStore("keywordSolver").get("main").then(handleData);

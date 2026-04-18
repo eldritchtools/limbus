@@ -92,6 +92,8 @@ export default function Home() {
                     </div>
                     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Utility Tools</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+                        <NoPrefetchLink className="text-link" href={"/daily-random"}>Daily Randomized Team</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/training-calc"}>Dispense and Training Calculator</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/keyword-solver"}>Keyword Solver</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/team-randomizer"}>Team Randomizer</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink>
