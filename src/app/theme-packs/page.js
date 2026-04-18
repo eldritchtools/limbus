@@ -21,10 +21,11 @@ function ThemePack({ id, themePack, isSmall, openOverride = false }) {
     return <div
         className={`${styles.themePackCard} ${!blockHover && !openOverride ? styles.canHover : null}`}
         onClick={() => { if (!blockHover && !openOverride) setOpen(p => !p) }}
+        style={{height: isSmall ? "250px" : "400px"}}
     >
         <div style={{ height: "fit-content", boxSizing: "border-box" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "3px" }}>
-                <ThemePackWithFloors id={id} />
+                <ThemePackWithFloors id={id} scale={isSmall ? 0.3 : 0.5} />
             </div>
         </div>
 
