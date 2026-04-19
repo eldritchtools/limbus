@@ -185,7 +185,7 @@ export default function TrainingCalcPage() {
     if (identitiesLoading || egosLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h3 style={{ margin: 0 }}>Dispenser and Training Calculator</h3>
+        <h2 style={{ margin: 0 }}>Dispenser and Training Calculator</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>Compute how many tickets, threads, and shards you need to dispense, level, and uptie everything needed.<br/>Note that the number of runs may not be exact due to excess xp when using training tickets or the randomness of shards from crates.</span>
 
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center" }}>
@@ -198,7 +198,7 @@ export default function TrainingCalcPage() {
             {totalComponent()}
         </div>
 
-        <h4 style={{ margin: 0 }}>Choose Identities or E.G.Os</h4>
+        <h3 style={{ margin: 0 }}>Choose Identities or E.G.Os</h3>
         <AllIdEgoSelector
             identityIds={selected.filter(x => `${x}`[0] === "1")}
             egoIds={selected.filter(x => `${x}`[0] === "2")}

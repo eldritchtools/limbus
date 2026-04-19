@@ -45,6 +45,7 @@ export default function SearchCollectionsPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
+        <h2 style={{ margin: 0 }}>Collections</h2>
         <CollectionsSearchComponent initialValues={filters} createLink={true} searchFunc={triggerSearch} />
         <div style={{ border: "1px #777 solid" }} />
 

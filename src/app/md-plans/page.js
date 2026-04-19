@@ -60,6 +60,7 @@ export default function MdPlansPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
+        <h2 style={{ margin: 0 }}>MD Plans</h2>
         <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
         <div style={{ border: "1px #777 solid" }} />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>

@@ -60,6 +60,7 @@ export default function CollectionsPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
+        <h2 style={{ margin: 0 }}>Collections</h2>
         <div>
             Collections are lists of builds and md plans managed by users. Some collections may be open to contributions from other users.
         </div>

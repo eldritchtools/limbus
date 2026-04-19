@@ -235,11 +235,11 @@ export default function KeywordSolverPage() {
     if (identitiesLoading || initializing) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h3 style={{ margin: 0 }}>Keyword Solver</h3>
+        <h2 style={{ margin: 0 }}>Keyword Solver</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool allows you to generate teams with enough deployed identities that include the set keywords. You can fix identities or prevent sinners from being used in the builder below. You can also blacklist or whitelist identities from being selected. When you are done, you can hit solve and let it find teams that fit the conditions provided! If you like a team, Create Build will send you to the create a Team Build page with that team. Any settings you change are saved locally, but solved teams are not saved.</span>
 
-        <h4 style={{ margin: 0 }}>Solver Settings</h4>
-        <span>Sinner Settings (fix or disable sinners)</span>
+        <h3 style={{ margin: 0 }}>Solver Settings</h3>
+        <h4 style={{ margin: 0 }}>Sinner Settings (fix or disable sinners)</h4>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
             {Array.from({ length: 12 }).map((_, i) => <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <div style={{
@@ -259,7 +259,7 @@ export default function KeywordSolverPage() {
             </div>)}
         </div>
 
-        <span>Solver Settings</span>
+        <h4 style={{ margin: 0 }}>Solver Settings</h4>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
                 <span>Sinners per status</span>

@@ -46,6 +46,7 @@ export default function SearchBuildsPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
+        <h2 style={{ margin: 0 }}>Team Builds</h2>
         <BuildsSearchComponent initialValues={filters} createLink={true} searchFunc={triggerSearch} />
         <div style={{ border: "1px #777 solid" }} />
 

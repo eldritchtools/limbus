@@ -122,6 +122,7 @@ export default function GiftsPage() {
     const { isDesktop } = useBreakpoint();
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
+        <h2 style={{ margin: 0 }}>E.G.O Gifts</h2>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>

@@ -60,7 +60,7 @@ export default function Home() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.5rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
             <h2 style={{ margin: 0 }}>Welcome to Limbus Company Tools, Manager!</h2>
             <p>
-                Limbus Company Tools is a site for managers to create, share, and discover various builds and strategies for use in their gameplay. It also hosts a variety of tools for the same purpose.
+                Limbus Company Tools is a platform for managers to create, share, and discover various builds and strategies for use in their gameplay. Users can also find various tools and database pages for the game.
                 <br /> <br />
                 This site is a combination of two other sites (<NoPrefetchLink className="text-link" href={"https://limbus-teams.eldritchtools.com"}>Team Building Hub</NoPrefetchLink> and <NoPrefetchLink className="text-link" href={"https://limbus-md.eldritchtools.com"}>Mirror Dungeon Site</NoPrefetchLink>) and is currently in an initial launch version, so some features may not have been properly migrated from the old sites. Please report any bugs in the Discord or through the feedback page.
                 <br /> <br />
@@ -78,9 +78,10 @@ export default function Home() {
                         <NoPrefetchLink className="text-link" href={"/collections/new"}>New Collection</NoPrefetchLink>
                     </div>
                     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Database</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", width: "100%", gap: ".5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
                         <NoPrefetchLink className="text-link" href={"/identities"}>Identities</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/egos"}>E.G.Os</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/timers"}>Timers</NoPrefetchLink>
                     </div>
                     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Mirror Dungeon</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
@@ -97,6 +98,12 @@ export default function Home() {
                         <NoPrefetchLink className="text-link" href={"/keyword-solver"}>Keyword Solver</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/team-randomizer"}>Team Randomizer</NoPrefetchLink>
                         <NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink>
+                    </div>
+                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Site</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+                        <NoPrefetchLink className="text-link" href={"/about"}>About</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/supporters"}>Supporters</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback / Contact</NoPrefetchLink>
                     </div>
                 </div>
                 <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>

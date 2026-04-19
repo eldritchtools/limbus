@@ -142,6 +142,7 @@ export default function EditProfilePage() {
     const subHeaderStyle = { fontSize: "0.8rem", color: "#aaa" };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <h2 style={{ margin: 0 }}>Edit Profile</h2>
         {user ?
             (!profileLoading ?
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: "1600px" }}>

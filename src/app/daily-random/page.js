@@ -18,12 +18,12 @@ function getResetDate(offsetDays = 0) {
 
     const SHIFT = 3 * 60 * 60 * 1000; // 6am at UTC+9 = +9-6
 
-    const adjusted = new Date(base.getTime() + SHIFT);
+    const date = new Date(base.getTime() + SHIFT);
 
-    const year = adjusted.getUTCFullYear();
-    const month = adjusted.getUTCMonth() + 1;
-    const day = adjusted.getUTCDate();
-    const dayOfWeek = adjusted.getUTCDay();
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth() + 1;
+    const day = date.getUTCDate();
+    const dayOfWeek = date.getUTCDay();
 
     return [`${year}-${month}-${day}`, dayOfWeek];
 }
@@ -130,21 +130,21 @@ export default function DailyRandomizedPage() {
     if (identitiesLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h3 style={{ margin: 0 }}>Daily Randomized Team</h3>
+        <h2 style={{ margin: 0 }}>Daily Randomized Team</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>A randomized team every day to use in MD or other content. The team changes every day at 6AM KST (the same daily reset as the game).</span>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                <h4 style={{ margin: 0 }}>Today&apos;s Team ({dateStr})</h4>
+                <h3 style={{ margin: 0 }}>Today&apos;s Team ({dateStr})</h3>
                 <BuildIdentitiesGrid identityIds={identityIds} scale={isMobile ? .2 : .33} />
                 <TeamCodeComponent teamCode={constructTeamCode(identityIds, [], [])} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                <h4 style={{ margin: 0 }}>Yesterday&apos;s Team ({prevDateStr})</h4>
+                <h3 style={{ margin: 0 }}>Yesterday&apos;s Team ({prevDateStr})</h3>
                 <BuildIdentitiesGrid identityIds={prevIdentityIds} scale={isMobile ? .2 : .33} />
                 <TeamCodeComponent teamCode={constructTeamCode(prevIdentityIds, [], [])} />
             </div>
         </div>
-        <h4 style={{ margin: 0 }}>How does this randomizer work?</h4>
+        <h3 style={{ margin: 0 }}>How does this randomizer work?</h3>
         <span style={{ maxWidth: "1000px", textAlign: "start", lineHeight: "1.3" }}>
             The type of random team it generates differs depending on the day of the week. These rules may change at any moment if I think of or if people suggest more interesting ones.
             <ul style={{ margin: 0 }}>
