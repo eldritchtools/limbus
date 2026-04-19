@@ -1,13 +1,21 @@
-import NoPrefetchLink from "../components/NoPrefetchLink";
+"use client";
+
+import SocialsDisplay from "../components/user/SocialsDisplay";
 
 const creators = [
-    { name: "Kamui Ever" }
+    {
+        name: "Kamui Ever",
+        socials: [
+            {type: "youtube", value: "@KamuiEver"}
+        ]
+    }
 ]
 
 function Creator({ creator }) {
     return <div style={{ padding: "0.5rem", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
             <span>{creator.name}</span>
+            <SocialsDisplay socials={creator.socials} />
         </div>
     </div>
 }

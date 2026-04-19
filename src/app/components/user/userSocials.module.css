@@ -7,7 +7,7 @@
 .hoverableSocial {
   color: #aaa;
   font-weight: bold;
-  /* text-decoration: none; */
+  text-decoration: none;
   transition: all ease 0.2s;
 }
 

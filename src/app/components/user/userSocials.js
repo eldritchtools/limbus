@@ -129,8 +129,8 @@ export function SocialIcon({ type, value, includeText, iconSize = 1, textSize = 
 
     return <div {...getGeneralTooltipProps(tooltipText)}>
         {link && hrefValue ?
-            <NoPrefetchLink className="hoverable-social" href={hrefValue}>{content}</NoPrefetchLink> :
-            <div className="social">{content}</div>
+            <NoPrefetchLink className={styles.hoverableSocial} href={hrefValue}>{content}</NoPrefetchLink> :
+            <div className={styles.social}>{content}</div>
         }
     </div>
 }
