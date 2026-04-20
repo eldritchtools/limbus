@@ -83,7 +83,9 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 
         <div className={styles.mdPlanContent} style={{ width: width }}>
-            <h2 className={styles.mdPlanTitle}>{plan.title}</h2>
+            <div className={styles.mdPlanTitleContainer}>
+                <h2 className={styles.mdPlanTitle}>{plan.title}</h2>
+            </div>
             <HoverBlocker setBlockHover={setBlockHover}>
                 <UsernameWithTime data={plan} scale={.8} includeUpdatedAt={false} />
             </HoverBlocker>

@@ -46,6 +46,8 @@ const paths = [
     },
     {
         title: "Utility Tools", subpaths: [
+            { path: "/daily-random", title: "Daily Randomized Team" },
+            { path: "/training-calc", title: "Dispense and Training Calculator" },
             { path: "/keyword-solver", title: "Keyword Solver" },
             { path: "/team-randomizer", title: "Team Randomizer" },
             { path: "/floor-planner", title: "Floor Planner" }
@@ -53,15 +55,16 @@ const paths = [
     },
     {
         title: "Site / Contact", subpaths: [
-            { path: "update-history", title: "Update History" },
-            { path: "feedback", title: "Feedback / Contact" }
+            { path: "/about", title: "About"},
+            { path: "/supporters", title: "Supporters"},
+            { path: "/update-history", title: "Update History" },
+            { path: "/feedback", title: "Feedback / Contact" }
         ]
     }
 ]
 
 const description = <span>
-    Limbus Company Tools is a free fan-made website with a variety of tools for players to use.
-    Create and share team builds or Mirror Dungeon plans. Look up useful information on identities, E.G.Os, or Mirror Dungeons.
+    Limbus Company Tools is a community-driven website combining user-submitted content, tools, and reference resources for the game Limbus Company.
 </span>;
 
 export default function LayoutComponent({ children }) {

@@ -127,6 +127,7 @@ export default function MyPostsPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <h2 style={{ margin: 0 }}>My Posts</h2>
         <h2 style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${mainActiveTab === "builds" ? "active" : ""}`} onClick={() => handleSetMainActiveTab("builds")}>Builds</div>
             <div className={`tab-header ${mainActiveTab === "collections" ? "active" : ""}`} onClick={() => handleSetMainActiveTab("collections")}>Collections</div>

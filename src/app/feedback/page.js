@@ -48,7 +48,7 @@ export default function FeedbackPage() {
         }}>
             <h1 style={{ marginTop: "0.25rem", marginBottom: "0.25rem" }}>Feedback</h1>
             <p style={{ marginBottom: "1rem", opacity: 0.7, fontSize: "0.9rem" }}>
-                Found a bug or have a suggestion? Send it here.
+                Found a bug or have a suggestion? Send it here. You can also send an email to contact@eldritchtools.com.
             </p>
 
             {!done ?

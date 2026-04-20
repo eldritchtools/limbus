@@ -164,7 +164,7 @@ export default function CommentSection({ targetType, targetId, ownerId, commentC
     const onPin = (comment) => setPinned(comment);
 
     return <section style={{ display: "flex", flexDirection: "column" }}>
-        <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>Comments ({commentCount})</h3>
+        <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>Comments{commentCount ? ` (${commentCount})` : null}</h3>
 
         {pinned ? <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", paddingBottom: "1rem" }}>
             <span style={{ fontWeight: "bold", paddingLeft: "1rem" }}>📌 Pinned Comment</span>

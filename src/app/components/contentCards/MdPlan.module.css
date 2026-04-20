@@ -33,6 +33,12 @@
     pointer-events: none;
 }
 
+.mdPlanTitleContainer {
+    display: flex;
+    height: 2.4rem;
+    align-items: center;
+}
+
 .mdPlanTitle {
     display: -webkit-box;
     line-clamp: 2;
@@ -41,7 +47,6 @@
     overflow: hidden;
     overflow-wrap: break-word;
     word-break: break-word;
-    height: 2.4rem;
     font-size: 1.2rem; 
     font-weight: bold;
     margin-top: 0;

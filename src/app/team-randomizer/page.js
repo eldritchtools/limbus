@@ -46,17 +46,21 @@ export default function TeamRandomizerPage() {
         const handleData = data => {
             setInitializing(false);
             if (!data) return;
-            setFixedIdentityIds(data.fixedIdentityIds);
-            setIdentityIds(data.fixedIdentityIds);
-            setFixedEgoIds(data.fixedEgoIds);
-            setEgoIds(data.fixedEgoIds);
-            setWbMode(data.wbMode);
-            setWbList(data.wbList);
-            setWbListDisplay(data.wbListDisplay);
-            setWbListOpen(data.wbListOpen);
-            setRandomizeIdentities(data.randomizeIdentities);
-            setRandomizeEgos(data.randomizeEgos);
-            setEmptyEgoProb(data.emptyEgoProb);
+            if (data.fixedIdentityIds) {
+                setFixedIdentityIds(data.fixedIdentityIds);
+                setIdentityIds(data.fixedIdentityIds);
+            }
+            if (data.fixedEgoIds) {
+                setFixedEgoIds(data.fixedEgoIds);
+                setEgoIds(data.fixedEgoIds);
+            }
+            if (data.wbMode) setWbMode(data.wbMode);
+            if (data.wbList) setWbList(data.wbList);
+            if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
+            if (data.wbListOpen) setWbListOpen(data.wbListOpen);
+            if (data.randomizeIdentities) setRandomizeIdentities(data.randomizeIdentities);
+            if (data.randomizeEgos) setRandomizeEgos(data.randomizeEgos);
+            if (data.emptyEgoProb) setEmptyEgoProb(data.emptyEgoProb);
         }
 
         getLocalStore("teamRandomizer").get("main").then(handleData);
@@ -268,7 +272,7 @@ export default function TeamRandomizerPage() {
     if (identitiesLoading || egosLoading || initializing) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h3 style={{ margin: 0 }}>Team Randomizer</h3>
+        <h2 style={{ margin: 0 }}>Team Randomizer</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool allows you to generate a randomized team based on whatever settings you give it. You can fix identities and E.G.Os by selecting them in the builder below. You can also blacklist or whitelist identities and E.G.Os at the bottom of the page. When you are done, you can hit randomize and let it generate a random team! If you like the randomized team, Create Build will send you to the create a Team Build page with that team. Any settings you change are saved locally, but randomized teams are not saved.</span>
         <div style={{ width: "100%" }}>
             <BuildEditingComponent

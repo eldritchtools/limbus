@@ -78,6 +78,7 @@ export default function MDEventsPage() {
     const [includeGifts, setIncludeGifts] = useLocalState("MDEventIncludeGifts", true);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
+        <h2 style={{ margin: 0 }}>Choice Events</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>

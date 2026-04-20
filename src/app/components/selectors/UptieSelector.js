@@ -17,9 +17,12 @@ function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, 
     }
 
     return <Select.Root value={value} onValueChange={handleUpdateValue} open={isOpen} onOpenChange={setIsOpen}>
-        <Select.Trigger className={styles.uptieSelectorTrigger} ref={triggerRef}>
+        <Select.Trigger className={`${styles.uptieSelectorTrigger} ${value === bottomOption ? styles.flex : null}`} ref={triggerRef}>
             {value || !emptyIcon ?
-                <TierIcon tier={value} scaleY={1.2} /> :
+                (value === bottomOption ?
+                    <span>{bottomOption}</span> :
+                    <TierIcon tier={value} scaleY={1.2} />
+                ) :
                 emptyIcon
             }
         </Select.Trigger>

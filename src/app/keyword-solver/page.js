@@ -75,15 +75,15 @@ export default function KeywordSolverPage() {
         const handleData = data => {
             setInitializing(false);
             if (!data) return;
-            setFixedIdentityIds(data.fixedIdentityIds);
-            setEnabledSinners(data.enabledSinners);
-            setDeployedSinners(data.deployedSinners);
-            setKeywordTargets(data.keywordTargets);
-            setSolvers(data.solvers);
-            setWbMode(data.wbMode);
-            setWbList(data.wbList);
-            setWbListDisplay(data.wbListDisplay);
-            setWbListOpen(data.wbListOpen);
+            if (data.fixedIdentityIds) setFixedIdentityIds(data.fixedIdentityIds);
+            if (data.enabledSinners) setEnabledSinners(data.enabledSinners);
+            if (data.deployedSinners) setDeployedSinners(data.deployedSinners);
+            if (data.keywordTargets) setKeywordTargets(data.keywordTargets);
+            if (data.solvers) setSolvers(data.solvers);
+            if (data.wbMode) setWbMode(data.wbMode);
+            if (data.wbList) setWbList(data.wbList);
+            if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
+            if (data.wbListOpen) setWbListOpen(data.wbListOpen);
         }
 
         getLocalStore("keywordSolver").get("main").then(handleData);
@@ -235,11 +235,11 @@ export default function KeywordSolverPage() {
     if (identitiesLoading || initializing) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h3 style={{ margin: 0 }}>Keyword Solver</h3>
+        <h2 style={{ margin: 0 }}>Keyword Solver</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool allows you to generate teams with enough deployed identities that include the set keywords. You can fix identities or prevent sinners from being used in the builder below. You can also blacklist or whitelist identities from being selected. When you are done, you can hit solve and let it find teams that fit the conditions provided! If you like a team, Create Build will send you to the create a Team Build page with that team. Any settings you change are saved locally, but solved teams are not saved.</span>
 
-        <h4 style={{ margin: 0 }}>Solver Settings</h4>
-        <span>Sinner Settings (fix or disable sinners)</span>
+        <h3 style={{ margin: 0 }}>Solver Settings</h3>
+        <h4 style={{ margin: 0 }}>Sinner Settings (fix or disable sinners)</h4>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
             {Array.from({ length: 12 }).map((_, i) => <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <div style={{
@@ -259,7 +259,7 @@ export default function KeywordSolverPage() {
             </div>)}
         </div>
 
-        <span>Solver Settings</span>
+        <h4 style={{ margin: 0 }}>Solver Settings</h4>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
                 <span>Sinners per status</span>

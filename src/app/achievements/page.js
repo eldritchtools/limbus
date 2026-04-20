@@ -378,6 +378,7 @@ export default function AchievementsPage() {
     if (achievementsLoading || dataLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
+        <h2 style={{ margin: 0 }}>MD Achievements</h2>
         <div>Progress is automatically saved after a few seconds of inactivity.</div>
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>

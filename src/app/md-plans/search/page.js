@@ -45,6 +45,7 @@ export default function SearchMdPlansPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
+        <h2 style={{ margin: 0 }}>MD Plans</h2>
         <PlansSearchComponent initialValues={filters} createLink={true} searchFunc={triggerSearch} />
         <div style={{ border: "1px #777 solid" }} />
 

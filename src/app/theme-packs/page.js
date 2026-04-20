@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Select from "react-select";
 
 import styles from "./themePacks.module.css";
@@ -21,10 +21,11 @@ function ThemePack({ id, themePack, isSmall, openOverride = false }) {
     return <div
         className={`${styles.themePackCard} ${!blockHover && !openOverride ? styles.canHover : null}`}
         onClick={() => { if (!blockHover && !openOverride) setOpen(p => !p) }}
+        style={{height: isSmall ? "250px" : "400px"}}
     >
         <div style={{ height: "fit-content", boxSizing: "border-box" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "3px" }}>
-                <ThemePackWithFloors id={id} />
+                <ThemePackWithFloors id={id} scale={isSmall ? 0.3 : 0.5} />
             </div>
         </div>
 
@@ -77,14 +78,45 @@ function CategorySelector({ selected, setSelected, categories }) {
     />;
 }
 
+function FloorSelector({ selected, setSelected, floors }) {
+    const [options, toOption] = useMemo(() => {
+        const list = [];
+        const reverse = {};
+
+        Object.entries(floors).forEach(([d, f]) => {
+            const capD = d.charAt(0).toUpperCase() + d.slice(1);
+            Object.keys(f).forEach(floor => {
+                const obj = { value: `${d}|${floor}`, label: `${capD}: F${floor}`, name: `${capD}: F${floor}` };
+                list.push(obj);
+                reverse[obj.value] = obj;
+            });
+        }, []);
+
+        return [list, reverse];
+    }, [floors])
+
+    return <Select
+        isMulti={true}
+        isClearable={true}
+        options={options}
+        value={selected.map(id => toOption[id])}
+        onChange={v => setSelected(v.map(x => x.value))}
+        placeholder={"Select floors..."}
+        filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+        styles={selectStyle}
+    />;
+}
+
 export default function ThemePacksPage() {
     const [themePacksData, themePacksLoading] = useData("md_theme_packs");
+    const [floorPacksData, floorPacksLoading] = useData("md_floor_packs");
     const [giftsData, giftsLoading] = useData("gifts");
     const { isDesktop } = useBreakpoint();
 
     const [searchString, setSearchString] = useState("");
     const [includeGifts, setIncludeGifts] = useLocalState("themePacksIncludeGifts", true);
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedFloors, setSelectedFloors] = useState([]);
 
     const [forceOpen, setForceOpen] = useState(false);
 
@@ -106,18 +138,26 @@ export default function ThemePacksPage() {
             return acc;
         }, {}),
         [themePacksData, themePacksLoading]
-    )
+    );
+
+    const checkFloorMatch = useCallback((floor, id) => {
+        if (floorPacksLoading) return false;
+        const [d, f] = floor.split("|");
+        return floorPacksData[d][f].includes(id);
+    }, [floorPacksData, floorPacksLoading]);
 
     const components = useMemo(() =>
         themePacksLoading ? [] :
             Object.entries(themePacksData).filter(([id, themePack]) => {
                 if (selectedCategories.length !== 0 && !selectedCategories.some(selectedCategory => themePack.category.includes(selectedCategory))) return false;
+                if (selectedFloors.length !== 0 && !selectedFloors.some(selectedFloor => checkFloorMatch(selectedFloor, id))) return false;
                 if (searchString.length !== 0 && !checkFilterMatch(searchString, includeGifts ? filterStrings[id] : themePack.name)) return false;
                 return true;
             }).map(([id, themePack]) => <ThemePack key={id} id={id} themePack={themePack} isSmall={!isDesktop} openOverride={forceOpen} />)
-        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, includeGifts, isDesktop, forceOpen]);
+        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
+        <h2 style={{ margin: 0 }}>Theme Packs</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
@@ -131,11 +171,17 @@ export default function ThemePacksPage() {
                     </span>
                 </label>
             </div>
-            <span>Filter Categories:</span>
+            <span style={{ textAlign: "end" }}>Filter Categories:</span>
             <CategorySelector
                 selected={selectedCategories}
                 setSelected={setSelectedCategories}
                 categories={categories}
+            />
+            <span style={{ textAlign: "end" }}>Filter Floors:</span>
+            <FloorSelector
+                selected={selectedFloors}
+                setSelected={setSelectedFloors}
+                floors={floorPacksLoading ? {} : floorPacksData}
             />
             <div />
             <label>

@@ -55,6 +55,7 @@ export default function UniversalGiftsPage() {
     if (universalGiftsLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
+        <h2 style={{ margin: 0 }}>Universal Gifts & Gift Combos</h2>
         These are gifts or gift combos that have benefits for all or most team compositions. The combos especially are useful when running MD Extreme or for challenge runs. They can still be useful but are not necessary for MD Infinity.
         <br />
         These are not exhaustive lists. They only include some of the most relevant examples. Gifts that fall under multiple categories may be included in only one of them. This also does not include gifts from hidden bosses and EX gifts since they cannot be obtained by normal means.

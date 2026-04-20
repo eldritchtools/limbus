@@ -48,7 +48,10 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", alignSelf: "center" }}>
                             Skills: <SkillReplace counts={skillReplaces[index + 1] ?? "321"} />
                         </div> : null}
-                    {notes && notes[index] ? <MarkdownRenderer content={notes[index]} /> : null}
+                    {notes && notes[index] ? 
+                        <div style={{margin: "0 0.5rem"}}>
+                            <MarkdownRenderer content={notes[index]} />
+                        </div> : null}
                 </div>
             )}
         </div>
