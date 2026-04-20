@@ -4,8 +4,8 @@ import { FaEllipsisH } from "react-icons/fa";
 import { SocialIcon } from "./userSocials";
 
 
-export default function SocialsDisplay({ socials, expandDirection = "row", align = "center" }) {
-    const [expanded, setExpanded] = useState(false);
+export default function SocialsDisplay({ socials, expandDirection = "row", align = "center", button = false, expandedDefault = false }) {
+    const [expanded, setExpanded] = useState(expandedDefault);
 
     const style = { display: "flex", gap: "0.5rem" };
     if (expanded && expandDirection === "column") {
@@ -19,13 +19,14 @@ export default function SocialsDisplay({ socials, expandDirection = "row", align
 
     return <div style={style}>
         {socials.map((social, i) =>
-            <div key={i} style={{display: "flex"}}>
+            <div key={i} style={{ display: "flex" }}>
                 <SocialIcon
                     type={social.type}
                     value={social.value}
                     includeText={expanded}
                     iconSize={1.25}
                     link={true}
+                    button={button}
                 />
             </div>)
         }

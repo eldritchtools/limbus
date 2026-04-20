@@ -23,4 +23,19 @@
   text-shadow: 0 0 4px rgba(128, 207, 255, 0.6);
 }
 
+.buttonSocial {
+  border: 1px #aaa solid;
+  background-color: #2a2a2a;
+  color: #ddd;
+  border: 1px solid #555;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 2px;
+  transition: background-color 0.2s, border-color 0.2s;
+  font-size: 1rem;
+}
 
+.buttonSocial:hover {
+  background-color: #3a3a3a;
+  cursor: pointer;
+}

@@ -6,17 +6,15 @@ const creators = [
     {
         name: "Kamui Ever",
         socials: [
-            {type: "youtube", value: "@KamuiEver"}
+            { type: "youtube", value: "@KamuiEver" }
         ]
     }
 ]
 
 function Creator({ creator }) {
-    return <div style={{ padding: "0.5rem", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-            <span>{creator.name}</span>
-            <SocialsDisplay socials={creator.socials} />
-        </div>
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
+        <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{creator.name}</span>
+        <SocialsDisplay socials={creator.socials} expandedDefault={true} button={true} />
     </div>
 }
 
@@ -28,8 +26,10 @@ export default function SupportersPage() {
                 A big thank you to everyone who supports the site, whether by sharing, using, or contributing to it.
             </span>
 
+            <div style={{ height: "0.5rem" }} />
+
             <h3 style={{ margin: 0 }}>Creator Friends</h3>
-            <span style={{ fontSize: "0.9rem", color: "#aaa" }}>Creators who support or collaborate with the site.</span>
+            <span style={{ fontSize: "0.9rem", color: "#aaa" }}>Creators who support or collaborate with the site. Check them out if you&apos;re interested!</span>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                 {creators.map((c, i) => <Creator key={i} creator={c} />)}
             </div>

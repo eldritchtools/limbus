@@ -112,16 +112,19 @@ export const socialsData = {
     }
 }
 
-export function SocialIcon({ type, value, includeText, iconSize = 1, textSize = "1rem", link = false }) {
+export function SocialIcon({ type, value, includeText, iconSize = 1, textSize = "1rem", link = false, button = false }) {
     const Icon = socialsData[type].icon;
     const hrefValue = socialsData[type].href && link ? socialsData[type].href(value) : null;
 
-    const content = <div className={link && hrefValue ? styles.hoverableSocial : styles.social} style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+    const content = <div
+        className={link && hrefValue ? (button ? styles.buttonSocial : styles.hoverableSocial) : styles.social}
+        style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+    >
         <span style={{ fontSize: `${iconSize}rem`, color: socialsData[type].iconColor }}>
             <Icon />
         </span>
         {includeText ?
-            <div style={{ fontSize: textSize }}>{value}</div>
+            <div style={{ fontSize: textSize }}>{button ? socialsData[type].label : value}</div>
             : null}
     </div>
 
