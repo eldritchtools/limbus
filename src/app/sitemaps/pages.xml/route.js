@@ -16,6 +16,13 @@ export async function GET() {
         { loc: `${SITE_URL}/theme-packs`, lastmod: today },
         { loc: `${SITE_URL}/md-events`, lastmod: today },
         { loc: `${SITE_URL}/universal`, lastmod: today },
+        { loc: `${SITE_URL}/daily-random`, lastmod: today },
+        { loc: `${SITE_URL}/training-calc`, lastmod: today },
+        { loc: `${SITE_URL}/keyword-solver`, lastmod: today },
+        { loc: `${SITE_URL}/team-randomizer`, lastmod: today },
+        { loc: `${SITE_URL}/floor-planner`, lastmod: today },
+        { loc: `${SITE_URL}/about`, lastmod: today },
+        { loc: `${SITE_URL}/supporters`, lastmod: today }
     ];
 
     return new Response(buildUrlSet(urls), {
