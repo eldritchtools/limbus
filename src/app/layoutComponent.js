@@ -28,6 +28,7 @@ const paths = [
     { path: "/collections", title: "Collections" },
     { path: "/identities", title: "Identities" },
     { path: "/egos", title: "E.G.Os" },
+    { path: "/timers", title: "Timers" },
     {
         title: "My Profile", subpaths: [
             { path: "/my-posts", title: "My Posts" },
