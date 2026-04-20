@@ -22,8 +22,10 @@ export default function SupportersPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "0.5rem" }}>
             <h2 style={{ margin: 0 }}>Supporters</h2>
-            <span>
-                A big thank you to everyone who supports the site, whether by sharing, using, or contributing to it.
+            <span style={{lineHeight: "1.3"}}>
+                A big thank you to everyone who keeps the site alive, whether by sharing, using, or contributing to it.
+                <br/>
+                This page is here to give an extra spotlight to a few members of the community.
             </span>
 
             <div style={{ height: "0.5rem" }} />
