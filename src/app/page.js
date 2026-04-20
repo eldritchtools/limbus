@@ -12,6 +12,74 @@ import IdentityIcon from "./components/icons/IdentityIcon";
 import { useModal } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import { getHomepagePosts } from "./database/homepage";
+import styles from "./homepage.module.css";
+
+const paths = [
+    {
+        category: "General",
+        links: [
+            { href: "/builds", title: "Team Builds", newHref: "/builds/new" },
+            { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new" },
+            { href: "/collections", title: "Collections", newHref: "/collections/new" },
+            { href: "/identities", title: "Identities" },
+            { href: "/egos", title: "E.G.Os" },
+            { href: "/timers", title: "Timers" }
+        ]
+    },
+    {
+        category: "Mirror Dungeon",
+        links: [
+            { href: "/achievements", title: "Achievements Tracker" },
+            { href: "/gifts", title: "E.G.O Gifts" },
+            { href: "/fusions", title: "Fusion Recipes" },
+            { href: "/theme-packs", title: "Theme Packs" },
+            { href: "/md-events", title: "Choice Events" }
+        ]
+    },
+    {
+        category: "Utility Tools",
+        links: [
+            { href: "/daily-random", title: "Daily Randomized Team" },
+            { href: "/training-calc", title: "Dispense and Training Calculator" },
+            { href: "/keyword-solver", title: "Keyword Solver" },
+            { href: "/team-randomizer", title: "Team Randomizer" },
+            { href: "/floor-planner", title: "Floor Planner" }
+        ]
+    },
+    {
+        category: "Others",
+        links: [
+            { href: "/about", title: "About" },
+            { href: "/supporters", title: "Supporters" },
+            { href: "/feedback", title: "Feedback / Contact" }
+        ]
+    }
+]
+
+function LinkComponent({ href, title }) {
+    return <NoPrefetchLink className="text-link" href={href} style={{textDecoration: "none"}}>
+        {/* <div className={styles.LinkComponent}> */}
+            <span style={{width: "100%"}}>{title}</span>
+        {/* </div> */}
+    </NoPrefetchLink>
+}
+
+function LinksMenu() {
+    return <div className={styles.LinksMenu}>
+        {paths.map((section, i) => <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            {section.category ? <span className={styles.LinksCategory}>{section.category}</span> : null}
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                {section.links
+                    .map(link => <div key={link.href} style={{display: "flex", alignItems: "center"}}>
+                        <LinkComponent {...link} />
+                        {link.newHref ? <><span>&nbsp;(</span><LinkComponent href={link.newHref} title={"New"} /><span>)</span></> : null}
+                        </div>)
+                    .reduce((acc, curr, i) => i === 0 ? [curr] : [...acc, <span key={i}>•</span>, curr], [])
+                }
+            </div>
+        </div>)}
+    </div>
+}
 
 export default function Home() {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
@@ -62,73 +130,13 @@ export default function Home() {
             <p>
                 Limbus Company Tools is a platform for managers to create, share, and discover various builds and strategies for use in their gameplay. Users can also find various tools and database pages for the game.
                 <br /> <br />
-                This site is a combination of two other sites (<NoPrefetchLink className="text-link" href={"https://limbus-teams.eldritchtools.com"}>Team Building Hub</NoPrefetchLink> and <NoPrefetchLink className="text-link" href={"https://limbus-md.eldritchtools.com"}>Mirror Dungeon Site</NoPrefetchLink>) and is currently in an initial launch version, so some features may not have been properly migrated from the old sites. Please report any bugs in the Discord or through the feedback page.
+                This site is a combination of two other sites (<NoPrefetchLink className="text-link" href={"https://limbus-teams.eldritchtools.com"}>Team Building Hub</NoPrefetchLink> and <NoPrefetchLink className="text-link" href={"https://limbus-md.eldritchtools.com"}>Mirror Dungeon Site</NoPrefetchLink>) and is currently in an early launch version, so some features may not have been properly migrated from the old sites. Please report any bugs in the Discord or through the feedback page.
                 <br /> <br />
                 Use the sidebar or click on the links below to get started.
             </p>
+            <LinksMenu />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>
-                <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
-                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Manager Posts</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
-                        <NoPrefetchLink className="text-link" href={"/builds"}>Team Builds</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/md-plans"}>MD Plans</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/collections"}>Collections</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/builds/new"}>New Build</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/md-plans/new"}>New Plan</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/collections/new"}>New Collection</NoPrefetchLink>
-                    </div>
-                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Database</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
-                        <NoPrefetchLink className="text-link" href={"/identities"}>Identities</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/egos"}>E.G.Os</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/timers"}>Timers</NoPrefetchLink>
-                    </div>
-                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Mirror Dungeon</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
-                        <NoPrefetchLink className="text-link" href={"/achievements"}>Achievements Tracker</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/gifts"}>E.G.O Gifts</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/fusions"}>Fusion Recipes</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/theme-packs"}>Theme Packs</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/md-events"}>Choice Events</NoPrefetchLink>
-                    </div>
-                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Utility Tools</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
-                        <NoPrefetchLink className="text-link" href={"/daily-random"}>Daily Randomized Team</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/training-calc"}>Dispense and Training Calculator</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/keyword-solver"}>Keyword Solver</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/team-randomizer"}>Team Randomizer</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink>
-                    </div>
-                    <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Site</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
-                        <NoPrefetchLink className="text-link" href={"/about"}>About</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/supporters"}>Supporters</NoPrefetchLink>
-                        <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback / Contact</NoPrefetchLink>
-                    </div>
-                </div>
-                <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
-                    {/* <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Announcement</div> */}
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>
-                        <span>Update History</span>
-                        <NoPrefetchLink className="text-link" href={"/update-history"}>view full update history</NoPrefetchLink>
-                    </div>
-                    {updatesLoading ?
-                        "Loading..." :
-                        <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", width: "100%", gap: ".2rem" }}>
-                            {updates.slice(0, 5).map((update, i) => <React.Fragment key={i}>
-                                <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
-                                <span className="text-link"
-                                    style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
-                                    onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, path: update.path })} >
-                                    {update.title}
-                                </span>
-                            </React.Fragment>)}
-                        </div>
-                    }
-                </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
+                <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
                     <h3 style={{ margin: 0 }}>Latest Additions</h3>
                     {identitiesLoading || egosLoading ? "Loading..." :
                         <div style={{ maxWidth: "100%", overflowX: "auto", overflowY: "hidden", scrollbarWidth: "thin" }}>
@@ -163,6 +171,26 @@ export default function Home() {
                                     </div>
                                 )}
                             </div>
+                        </div>
+                    }
+                </div>
+                <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
+                    {/* <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Announcement</div> */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>
+                        <span>Update History</span>
+                        <NoPrefetchLink className="text-link" href={"/update-history"}>view full update history</NoPrefetchLink>
+                    </div>
+                    {updatesLoading ?
+                        "Loading..." :
+                        <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", width: "100%", gap: ".2rem" }}>
+                            {updates.slice(0, 5).map((update, i) => <React.Fragment key={i}>
+                                <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
+                                <span className="text-link"
+                                    style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
+                                    onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, path: update.path })} >
+                                    {update.title}
+                                </span>
+                            </React.Fragment>)}
                         </div>
                     }
                 </div>
@@ -238,3 +266,45 @@ export default function Home() {
         </div>
     </div>
 }
+
+// Links Old
+// 
+// <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
+//     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Manager Posts</div>
+//     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+//         <NoPrefetchLink className="text-link" href={"/builds"}>Team Builds</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/md-plans"}>MD Plans</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/collections"}>Collections</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/builds/new"}>New Build</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/md-plans/new"}>New Plan</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/collections/new"}>New Collection</NoPrefetchLink>
+//     </div>
+//     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Database</div>
+//     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+//         <NoPrefetchLink className="text-link" href={"/identities"}>Identities</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/egos"}>E.G.Os</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/timers"}>Timers</NoPrefetchLink>
+//     </div>
+//     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Mirror Dungeon</div>
+//     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+//         <NoPrefetchLink className="text-link" href={"/achievements"}>Achievements Tracker</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/gifts"}>E.G.O Gifts</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/fusions"}>Fusion Recipes</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/theme-packs"}>Theme Packs</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/md-events"}>Choice Events</NoPrefetchLink>
+//     </div>
+//     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Utility Tools</div>
+//     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+//         <NoPrefetchLink className="text-link" href={"/daily-random"}>Daily Randomized Team</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/training-calc"}>Dispense and Training Calculator</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/keyword-solver"}>Keyword Solver</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/team-randomizer"}>Team Randomizer</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink>
+//     </div>
+//     <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Site</div>
+//     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", width: "100%", gap: ".5rem" }}>
+//         <NoPrefetchLink className="text-link" href={"/about"}>About</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/supporters"}>Supporters</NoPrefetchLink>
+//         <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback / Contact</NoPrefetchLink>
+//     </div>
+// </div>
