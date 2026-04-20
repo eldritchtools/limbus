@@ -17,8 +17,8 @@ export default function TrainingCalcPage() {
     const [egos, egosLoading] = useData("egos_mini");
 
     const [selected, setSelected] = useState([]);
-    const [starts, setStarts] = useState({ default: { level: 1, uptie: 0 } });
-    const [targets, setTargets] = useState({ default: { level: LEVEL_CAP, uptie: "unowned" } });
+    const [starts, setStarts] = useState({ default: { level: 1, uptie: "unowned" } });
+    const [targets, setTargets] = useState({ default: { level: LEVEL_CAP, uptie: 4 } });
 
     const [xLux, setXLux] = useState(Object.keys(xpLux).at(-1));
     const [xSkip, setXSkip] = useState(false);
