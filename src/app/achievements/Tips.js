@@ -6,11 +6,20 @@ import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
+import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
+import { getEgoTooltipProps } from "../components/tooltips/EgoTooltip";
+import { getIdentityTooltipProps } from "../components/tooltips/IdentityTooltip";
 import useLocalState from "../lib/useLocalState";
 
 function TextTip({ tip }) {
-    return <span style={{ whiteSpace: "pre-line" }}>{tip.text}</span>;
+    return <MarkdownRenderer content={tip.text} />;
+}
+
+function TextListTip({ tip }) {
+    const texts = tip.texts.map(x => "- " + x).join("\n");
+    return <MarkdownRenderer content={texts} />;
 }
 
 function TableTip({ tip, isSmall }) {
@@ -34,12 +43,12 @@ function TableTip({ tip, isSmall }) {
         <table style={{ width: "fit-content", borderCollapse: "collapse" }}>
             <thead>
                 <tr>
-                    {tip.headers.map((header, i) => <th key={i} style={{ border: "1px #666 dotted" }}>{header}</th>)}
+                    {tip.headers.map((header, i) => <th key={i} style={{ padding: "0.1rem 0.2rem", border: "1px #666 dotted" }}>{header}</th>)}
                 </tr>
             </thead>
             <tbody>
                 {tip.cells.map((row, i) => <tr key={i}>
-                    {row.map((cell, i) => <td key={i} style={{ border: "1px #666 dotted" }}>
+                    {row.map((cell, i) => <td key={i} style={{ padding: "0.1rem 0.2rem", border: "1px #666 dotted" }}>
                         {getCellComponent(cell)}
                     </td>)}
                 </tr>)}
@@ -115,8 +124,9 @@ function ShowGiftsTip({ tip, isSmall }) {
                 padding: "0.25rem", border: "1px #666 dotted", gap: "0.5rem"
             }}>
             {Object.entries(packGiftMapping).map(([pack, gifts], i) =>
-                <div key={i} style={{ 
-                    display: "flex", flexDirection: "column", textAlign: "center", border: "1px #777 dotted", borderRadius: "1rem", padding: "0.2rem" }}>
+                <div key={i} style={{
+                    display: "flex", flexDirection: "column", textAlign: "center", border: "1px #777 dotted", borderRadius: "1rem", padding: "0.2rem"
+                }}>
                     <div><ThemePackNameWithTooltip id={pack} /></div>
                     <div style={{ ...giftsStyle, justifyContent: "center" }}>{gifts.map(constructGift)}</div>
                 </div>
@@ -141,13 +151,13 @@ function ShowGiftsTip({ tip, isSmall }) {
     }
 
     return <div style={{ display: "flex", flexDirection: "column" }}>
-        {tip.keyword ? 
-            <span style={{display: "flex", alignItems: "center", fontSize: "1.1rem"}}><KeywordIcon id={tip.keyword} /> {tip.keyword} Gifts</span> : 
+        {tip.keyword ?
+            <span style={{ display: "flex", alignItems: "center", fontSize: "1.1rem" }}><KeywordIcon id={tip.keyword} /> {tip.keyword} Gifts</span> :
             null
         }
-        <div style={{display: "flex", gap: "1rem", paddingLeft: "0.5rem", margin: "0.5rem 0"}}>
-            <span className="tab-header" style={{color: mode === "normal" ? "#4ade80" : "#166534"}} onClick={() => setMode("normal")}>Normal</span>
-            <span className="tab-header" style={{color: mode === "hard" ? "#f87171" : "#7f1d1d"}} onClick={() => setMode("hard")}>Hard</span>
+        <div style={{ display: "flex", gap: "1rem", paddingLeft: "0.5rem", margin: "0.5rem 0" }}>
+            <span className="tab-header" style={{ color: mode === "normal" ? "#4ade80" : "#166534" }} onClick={() => setMode("normal")}>Normal</span>
+            <span className="tab-header" style={{ color: mode === "hard" ? "#f87171" : "#7f1d1d" }} onClick={() => setMode("hard")}>Hard</span>
         </div>
         <div style={{ display: "grid", width: "100%", gridTemplateColumns: "auto 1fr", border: "1px #666 dotted" }}>
             {gridComponents}
@@ -257,7 +267,9 @@ function ShowIdentities({ tip, isSmall }) {
     return <div style={{ overflowX: "auto", overflowY: "hidden", alignSelf: "center", maxWidth: "100%" }}>
         <div style={{ width: "100%", display: "flex" }}>
             {identities.map((identity, i) => <div key={i} style={{ border: "1px #666 dotted" }}>
-                <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} scale={isSmall ? 0.33 : .5} />
+                <NoPrefetchLink href={`/identities/${identity.id}`} {...getIdentityTooltipProps(identity.id)}>
+                    <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} scale={isSmall ? 0.33 : .5} />
+                </NoPrefetchLink>
             </div>)}
         </div>
     </div>
@@ -282,9 +294,11 @@ function ShowIdentitiesBySinner({ tip, isSmall }) {
         <div key={sinnerId} style={{ display: "flex", alignItems: "center", width: isSmall ? "100%" : "480px", border: "1px #777 dotted" }}>
             <SinnerIcon num={sinnerId} style={{ width: "64px", height: "64px" }} />
             <div style={{ display: "flex", overflowX: "auto", overflowY: "hidden" }}>
-                {list.reverse().map(identity => <div key={identity.id}>
-                    <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} scale={isSmall ? 0.33 : .5} />
-                </div>)}
+                {list.reverse().map(identity =>
+                    <NoPrefetchLink key={identity.id} href={`/identities/${identity.id}`} {...getIdentityTooltipProps(identity.id)}>
+                        <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} scale={isSmall ? 0.33 : .5} />
+                    </NoPrefetchLink>
+                )}
             </div>
         </div>
     );
@@ -393,7 +407,9 @@ function ShowEGOsTip({ tip, isSmall }) {
     return <div style={{ overflowX: "auto", overflowY: "hidden", alignSelf: "center", maxWidth: "100%" }}>
         <div style={{ width: "100%", display: "flex" }}>
             {tip.EGOs.map(EGOId => <div key={EGOId} style={{ border: "1px #666 dotted" }}>
-                <EgoIcon id={EGOId} scale={isSmall ? .33 : 0.5} displayName={true} type={"awaken"} />
+                <NoPrefetchLink href={`/egos/${EGOId}`} {...getEgoTooltipProps(EGOId)}>
+                    <EgoIcon id={EGOId} scale={isSmall ? .33 : 0.5} displayName={true} displayRarity={true} type={"awaken"} />
+                </NoPrefetchLink>
             </div>)}
         </div>
     </div>
@@ -406,6 +422,7 @@ function AchievementTips({ achievement, isSmall }) {
     achievement.tips.forEach(tip => {
         switch (tip.type) {
             case "text": components.push(<TextTip key={components.length} tip={tip} />); break;
+            case "textList": components.push(<TextListTip key={components.length} tip={tip} />); break;
             case "table": components.push(<TableTip key={components.length} tip={tip} isSmall={isSmall} />); break;
             case "showGifts": components.push(<ShowGiftsTip key={components.length} tip={tip} isSmall={isSmall} />); break;
             case "showGiftList": components.push(<ShowGiftListTip key={components.length} tip={tip} isSmall={isSmall} />); break;

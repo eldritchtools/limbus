@@ -15,6 +15,16 @@ function rescaleOverlay(scale) {
     return { width: `${380 * scale}px`, height: `${432 * scale}px` };
 }
 
+export function getThemePackImgSrc(themePack) {
+    return `${ASSETS_ROOT}/theme_packs/${themePack.image}.png`;
+}
+
+export function getThemePackOverlayImgSrc(themePack) {
+    if(themePack.overlayImage) return `${ASSETS_ROOT}/theme_packs/${themePack.overlayImage}.png`;
+    return null;
+}
+
+
 function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 1 }) {
     const scaledStyle = rescaleThemePack(scale);
     return <div style={{ ...scaledStyle, position: "relative", left: 0, top: 0 }}>
@@ -31,12 +41,12 @@ function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 
             /> :
             null
         } */}
-        <img src={`${ASSETS_ROOT}/theme_packs/${themePack.image}.png`}
+        <img src={getThemePackImgSrc(themePack)}
             alt={themePack.name} title={themePack.name}
             style={{ ...scaledStyle, position: "absolute", left: 0, top: 0 }}
         />
         {themePack.overlayImage ?
-            <img src={`${ASSETS_ROOT}/theme_packs/${themePack.overlayImage}.png`}
+            <img src={getThemePackOverlayImgSrc(themePack)}
                 alt={themePack.name} title={themePack.name}
                 style={{ ...rescaleOverlay(scale), position: "absolute", left: 0, top: 100 * scale }}
             /> :

@@ -18,6 +18,7 @@ import KeywordIcon, { isValidKeywordId } from "../icons/KeywordIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
 import NoPrefetchLink from "../NoPrefetchLink";
 import Status from "../objects/Status";
+import ThemePackNameWithTooltip from "../objects/ThemePackNameWithTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 import { getMarkdownTooltipProps } from "../tooltips/MarkdownTooltip";
@@ -173,6 +174,18 @@ function GiftIconsItem({ vals }) {
     }
 }
 
+function ThemePackItem({ id }) {
+    const [themePacks, themePacksLoading] = useData("md_theme_packs");
+    if (themePacksLoading) {
+        return <span>{"{Loading...}"}</span>
+    } else {
+        if (id in themePacks)
+            return <ThemePackNameWithTooltip id={id} />;
+        else
+            return <span>{`{themepack:${id}}`}</span>;
+    }
+}
+
 function BuildItem({ id }) {
     const [build, setBuild] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -279,6 +292,8 @@ export default function MarkdownRenderer({ content }) {
                             return <GiftNameItem val={tokenValues[0]} />
                         case "gifticons":
                             return <GiftIconsItem vals={tokenValues} />
+                        case "themepack":
+                            return <ThemePackItem id={tokenValues[0]} />
                         case "build":
                             return <BuildItem id={tokenValues[0]} />;
                         case "collection":
@@ -309,6 +324,9 @@ export default function MarkdownRenderer({ content }) {
                         </a>
                     );
                 },
+                // ul: ({ node, ...props}) => (
+                //     <ul style={{marginBlock: 0}}>{props.children}</ul>
+                // ),
                 blockquote: ({ node, ...props }) => (
                     <blockquote
                         style={{

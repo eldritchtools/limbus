@@ -9,6 +9,8 @@ function createAutocompleteLabel(entry, type) {
         return entry.name;
     if (type === "giftname" || type === "gifticons")
         return entry.names[0];
+    if (type === "themepack")
+        return entry.name;
     if (type === "keyword" || type === "sinner")
         return entry;
     return "";
