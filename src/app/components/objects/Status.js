@@ -2,6 +2,8 @@ import { useData } from "../DataProvider";
 import StatusIcon from "../icons/StatusIcon";
 import { getStatusTooltipProps } from "../tooltips/StatusTooltip";
 
+import { processTextTags } from "@/app/lib/text";
+
 const iconStyle = { display: "inline-block", width: "1.5rem", height: "1.5rem", marginLeft: "-1px", marginRight: "2px", verticalAlign: "middle", transform: "translateY(-0.1rem)" };
 
 const statusTypeColorMapping = {
@@ -17,7 +19,7 @@ function StatusMain({ id, status, includeTooltip = true, includeName = true, ico
 
     return <span style={{ display: "inline" }} role="button" tabIndex={0} {...tooltipProps}>
         <StatusIcon id={id} status={status} style={{ ...iconStyle, ...iconStyleOverride }} />
-        {includeName ? <span style={{ ...nameStyle, ...nameStyleOverride }}>{status.name}</span> : null}
+        {includeName ? <span style={{ ...nameStyle, ...nameStyleOverride }}>{processTextTags(status.name)}</span> : null}
     </span>
 }
 
