@@ -180,7 +180,7 @@ export default function Home() {
                         </div>
                     }
                 </div>
-                <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
+                <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", "gap": "0.2rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
                     {/* <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Announcement</div> */}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textAlign: "start" }}>
                         <h3 style={{ margin: 0 }}>Update History</h3>
@@ -189,7 +189,7 @@ export default function Home() {
                     {updatesLoading ?
                         "Loading..." :
                         <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", width: "100%", gap: ".2rem" }}>
-                            {updates.slice(0, 10).map((update, i) => <React.Fragment key={i}>
+                            {updates.slice(0, 8).map((update, i) => <React.Fragment key={i}>
                                 <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{update.date}</span>
                                 <span className="text-link"
                                     style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}

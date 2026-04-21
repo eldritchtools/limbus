@@ -1,7 +1,7 @@
 import { filterCategories } from "../components/selectors/IconsSelector";
 
 export function normalizeString(str) {
-    return str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+    return str.replace(/<\/?[^>]+>/g, "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 }
 
 export function checkFilterMatch(str, searchStrings = []) {

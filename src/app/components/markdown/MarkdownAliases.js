@@ -4,7 +4,8 @@ const aliases = {
     "sti": "statusicon",
     "gn": "giftname",
     "gi": "gifticons",
-    "kw": "keyword"
+    "kw": "keyword",
+    "tp": "themepack"
 };
 
 export function convertMarkdownAlias(type) {

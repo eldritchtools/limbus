@@ -22,6 +22,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
     const [egos, egosLoading] = useData("egos", requestedTypes.has("ego"));
     const [statuses, statusesLoading] = useData("statuses", requestedTypes.has("status"));
     const [gifts, giftsLoading] = useData("gifts", requestedTypes.has("giftname") || requestedTypes.has("gifticons"));
+    const [themePacks, themePacksLoading] = useData("md_theme_packs", requestedTypes.has("themepack"));
 
     const dataRef = useRef({
         requestedTypes,
@@ -32,7 +33,9 @@ function useAutocompleteDataFacetExtension(viewRef) {
         statuses,
         statusesLoading,
         gifts,
-        giftsLoading
+        giftsLoading,
+        themePacks,
+        themePacksLoading
     });
 
     useEffect(() => {
@@ -45,9 +48,11 @@ function useAutocompleteDataFacetExtension(viewRef) {
             statuses,
             statusesLoading,
             gifts,
-            giftsLoading
+            giftsLoading,
+            themePacks,
+            themePacksLoading
         };
-    }, [requestedTypes, identities, identitiesLoading, egos, egosLoading, statuses, statusesLoading, gifts, giftsLoading]);
+    }, [requestedTypes, identities, identitiesLoading, egos, egosLoading, statuses, statusesLoading, gifts, giftsLoading, themePacks, themePacksLoading]);
 
     useEffect(() => {
         if (!viewRef.current) return;
@@ -67,12 +72,17 @@ function useAutocompleteDataFacetExtension(viewRef) {
         if (!giftsLoading && (requestedTypes.has("giftname") || requestedTypes.has("gifticons"))) {
             startCompletion(viewRef.current);
         }
+
+        if (!themePacksLoading && requestedTypes.has("themepack")) {
+            startCompletion(viewRef.current);
+        }
     }, [
         viewRef,
         identitiesLoading,
         egosLoading,
         statusesLoading,
         giftsLoading,
+        themePacksLoading,
         requestedTypes
     ]);
 
@@ -82,7 +92,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 identities, identitiesLoading,
                 egos, egosLoading,
                 statuses, statusesLoading,
-                gifts, giftsLoading
+                gifts, giftsLoading,
+                themePacks, themePacksLoading
             } = dataRef.current;
 
             switch (convertMarkdownAlias(type)) {
@@ -96,6 +107,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 case "giftname":
                 case "gifticons":
                     return !giftsLoading && gifts;
+                case "themepack":
+                    return !themePacksLoading && themePacks;
                 case "keyword":
                 case "sinner":
                     return true;
@@ -113,7 +126,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 identities,
                 egos,
                 statuses,
-                gifts
+                gifts,
+                themePacks
             } = dataRef.current;
 
             switch (convertMarkdownAlias(type)) {
@@ -128,6 +142,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                     return { entries: Object.entries(gifts).map(([id, gift]) => ({ id: id, label: gift.names[0], item: gift })) || [], multi: false };
                 case "gifticons":
                     return { entries: Object.entries(gifts).map(([id, gift]) => ({ id: id, label: gift.names[0], item: gift })) || [], multi: true };
+                case "themepack":
+                    return { entries: Object.entries(themePacks).map(([id, themePack]) => ({ id: id, label: themePack.name, item: themePack })) || [], multi: false };
                 case "keyword":
                     return { entries: Object.keys(keywordToIdMapping).map(kw => ({ id: kw, label: kw, item: kw })) || [], multi: false };
                 case "sinner":
@@ -142,7 +158,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 identities,
                 egos,
                 statuses,
-                gifts
+                gifts,
+                themePacks
             } = dataRef.current;
 
             switch (convertMarkdownAlias(type)) {
@@ -154,6 +171,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 case "giftname":
                 case "gifticons":
                     return gifts;
+                case "themepack":
+                    return themePacks;
                 default: return {};
             }
         }
@@ -177,7 +196,7 @@ async function tokenCompletionSource(context) {
 
     const type = convertMarkdownAlias(parts[0]);
     if (!type) return null;
-    if (!["identity", "ego", "status", "statusicon", "giftname", "gifticons", "keyword", "sinner"].includes(type)) return null;
+    if (!["identity", "ego", "status", "statusicon", "giftname", "gifticons", "themepack", "keyword", "sinner"].includes(type)) return null;
 
     const rest = parts.slice(1);
     const query = rest.length ? rest[rest.length - 1] : "";

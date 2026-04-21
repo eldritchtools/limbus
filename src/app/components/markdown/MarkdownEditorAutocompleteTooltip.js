@@ -4,6 +4,7 @@ import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
 import { getIdentityImgSrc } from "../icons/IdentityIcon";
 import { getStatusImgSrc } from "../icons/StatusIcon";
+import { getThemePackImgSrc, getThemePackOverlayImgSrc } from "../icons/ThemePackIcon";
 
 import { replaceStatusesInString } from "@/app/lib/statusReplacement";
 
@@ -124,10 +125,47 @@ function constructGiftAutocompleteTooltip(entry, otherData) {
     return wrapper;
 }
 
+function constructThemePackAutocompleteTooltip(entry) {
+    const wrapper = constructWrapper(200);
+
+    wrapper.appendChild(constructTitleElement(entry.name));
+
+    const container = document.createElement("div");
+    container.style.width = "190px";
+    container.style.height = "345px";
+    container.style.position = "relative";
+    container.style.left = 0;
+    container.style.top = 0;
+    
+    const imgMain = document.createElement("img");
+    imgMain.style.width = "190px";
+    imgMain.style.height = "345px";
+    imgMain.style.position = "absolute";
+    imgMain.style.left = 0;
+    imgMain.style.top = 0;
+    imgMain.src = getThemePackImgSrc(entry);
+    container.appendChild(imgMain);
+
+    if(entry.overlayImage) {
+        const imgOverlay = document.createElement("img");
+        imgOverlay.style.width = "190px";
+        imgOverlay.style.height = "216px";
+        imgOverlay.style.position = "absolute";
+        imgOverlay.style.left = 0;
+        imgOverlay.style.top = "50px";
+        imgOverlay.src = getThemePackOverlayImgSrc(entry);
+        container.appendChild(imgOverlay);
+    }
+
+    wrapper.appendChild(container);
+    return wrapper;
+}
+
 export default function constructMarkdownEditorAutocompleteTooltip(entry, type, otherData = null) {
     if (type === "identity") return constructIdentityAutocompleteTooltip(entry);
     if (type === "ego") return constructEgoAutocompleteTooltip(entry);
     if (type === "status" || type === "statusicon") return constructStatusAutocompleteTooltip(entry);
     if (type === "giftname" || type === "gifticons") return constructGiftAutocompleteTooltip(entry, otherData);
+    if (type === "themepack") return constructThemePackAutocompleteTooltip(entry);
     return null;
 }

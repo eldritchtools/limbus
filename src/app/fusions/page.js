@@ -11,6 +11,7 @@ import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithToo
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import IconsSelector from "../components/selectors/IconsSelector";
+import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { keywords } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
@@ -119,44 +120,6 @@ function FusionsDisplay({ searchString, includeDescription, includeIngredients, 
     }
 }
 
-function ThemePackSelector({ selected, setSelected, options, themePacksData }) {
-    const [optionsFinal, optionsMapped] = useMemo(() => {
-        const list = [];
-        const mapped = {};
-        Object.entries(options).forEach(([category, themePacks]) =>
-            themePacks.forEach(id => {
-                list.push({
-                    value: id,
-                    label: <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <ThemePackIcon id={id} scale={.1} />
-                        <span>{category}: {themePacksData[id].name}</span>
-                    </div>,
-                    name: `${category}: ${themePacksData[id].name}`
-                });
-                mapped[id] = {
-                    value: id,
-                    label: <div style={{ display: "flex", alignItems: "center" }}>
-                        <span>{themePacksData[id].category[0]}: {themePacksData[id].name}</span>
-                    </div>
-                }
-            })
-        );
-        return [list, mapped];
-    }, [options, themePacksData]);
-
-    return <DropdownSelectorWithExclusion
-        options={optionsFinal}
-        optionsMapped={optionsMapped}
-        selected={selected}
-        setSelected={setSelected}
-        placeholder={"Select Theme Packs..."}
-        filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
-        isMulti={true}
-        isClearable={true}
-        styles={selectStyle}
-    />;
-}
-
 export default function FusionsPage() {
     const [searchString, setSearchString] = useState("");
     const [selectedKeywords, setSelectedKeywords] = useState([]);
@@ -164,13 +127,12 @@ export default function FusionsPage() {
     const { isDesktop } = useBreakpoint();
 
     const [giftsData, giftsLoading] = useData("gifts");
-    const [themePacksData, themePacksLoading] = useData("md_theme_packs");
 
     const [includeDescription, setIncludeDescription] = useLocalState("fusionsIncludeDescription", false);
     const [includeIngredients, setIncludeIngredients] = useLocalState("fusionsIncludeIngredients", false);
 
     const themePackList = useMemo(() => {
-        if (giftsLoading || themePacksLoading) return {};
+        if (giftsLoading) return {};
 
         const fusionThemePacks = new Set();
         Object.entries(giftsData).forEach(([, gift]) => {
@@ -178,16 +140,8 @@ export default function FusionsPage() {
             gift.exclusiveTo.forEach(source => fusionThemePacks.add(source));
         })
 
-        return Object.entries(themePacksData).reduce((acc, [id, themePack]) => {
-            if (!("exclusive_gifts" in themePack) || !fusionThemePacks.has(id))
-                return acc;
-
-            if (themePack.category[0] in acc) acc[themePack.category[0]].push(id);
-            else acc[themePack.category[0]] = [id];
-
-            return acc;
-        }, {});
-    }, [giftsData, giftsLoading, themePacksData, themePacksLoading]);
+        return [...fusionThemePacks].sort();
+    }, [giftsData, giftsLoading]);
 
     const handleSearchChange = (e) => {
         setSearchString(e.target.value);
@@ -207,7 +161,7 @@ export default function FusionsPage() {
         [searchString, includeDescription, includeIngredients, selectedKeywords, selectedThemePacks, giftsData, giftsLoading, isDesktop]
     );
 
-    if (giftsLoading || themePacksLoading) return <LoadingContentPageTemplate />
+    if (giftsLoading) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", justifyContent: "center" }}>
         <h2 style={{ alignSelf: "center", margin: 0 }}>Fusion Recipes</h2>
@@ -236,11 +190,12 @@ export default function FusionsPage() {
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Filter Keywords</span>
                 <IconsSelector type={"row"} categories={["status", "atkType", "keywordless"]} values={selectedKeywords} setValues={setSelectedKeywords} />
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
-                <ThemePackSelector
+                <ThemePackDropdownSelector
                     selected={selectedThemePacks}
                     setSelected={setSelectedThemePacks}
+                    isMulti={true}
                     options={themePackList}
-                    themePacksData={themePacksData}
+                    prefixCategory={true}
                 />
             </div>
         </div>

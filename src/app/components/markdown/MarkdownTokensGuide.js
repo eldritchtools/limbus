@@ -10,6 +10,7 @@ import { IdentityDropdownSelector } from "../selectors/IdentitySelectors";
 import { KeywordDropdownSelector } from "../selectors/KeywordSelectors";
 import { SinnerDropdownSelector } from "../selectors/SinnerSelectors";
 import { StatusDropdownSelector } from "../selectors/StatusSelectors";
+import { ThemePackDropdownSelector } from "../selectors/ThemePackSelectors";
 
 const options = {
     "none": "Select a type",
@@ -20,6 +21,7 @@ const options = {
     "keyword": "keyword",
     "giftname": "giftname",
     "gifticons": "gifticons",
+    "themepack": "themepack",
     "build": "build",
     "mdplan": "mdplan",
     "collection": "collection",
@@ -35,6 +37,7 @@ const desc = {
     "keyword": "Reference a keyword with {keyword:id} or {kw:id}. This will show an icon corresponding to that keyword.",
     "giftname": "Reference an E.G.O Gift with {giftname:id} or {gn:id}. This will show the name of the gift and a tooltip with its description on hover. Clicking on the gift name will show a modal with more details on the gift. Gifts can be assigned enhancement levels by attaching it to the end of the id after a pipe e.g. {giftname:9001|2}. The token will fail to parse if the gift does not have that enhancement level.",
     "gifticons": "Reference E.G.O Gifts with {gifticons:id} or {gi:id}. This will show an icon of the gift centered in its own row and a tooltip with its description on hover. Clicking on the gift icon will show a modal with more details on the gift. This token supports multiple gifts by inputting {gifticons:id1:id2:...} (Insert to text will not automatically handle this). Gifts can be assigned enhancement levels by attaching it to the end of the id after a pipe e.g. {giftname:9001|2}. The token will fail to parse if the gift does not have that enhancement level.",
+    "themepack": "Reference a theme pack with {themepack:id} or {tp:id}. This will show a tooltip with its description on hover.",
     "build": "Reference a build with {build:id}. This will show the name of the build and a tooltip with its search overview on hover. You can find the id of a build on its url or using the share feature on its page. Copying the full url below will automatically isolate the id.",
     "mdplan": "Reference an md plan with {mdplan:id}. This will show the name of the md plan and a tooltip with its search overview on hover. You can find the id of an md plan on its url. Copying the full url below will automatically isolate the id.",
     "collection": "Reference a collection with {collection:id}. This will show the name of the collection and a tooltip with its search overview on hover. You can find the id of a collection on its url. Copying the full url below will automatically isolate the id.",
@@ -99,6 +102,7 @@ function SelectorGuide({ type, editorRef, onChange, guideValue, setGuideValue })
         "keyword": KeywordDropdownSelector,
         "giftname": GiftDropdownSelector,
         "gifticons": GiftDropdownSelector,
+        "themepack": ThemePackDropdownSelector,
         "sinner": SinnerDropdownSelector
     }[type];
 
@@ -171,7 +175,7 @@ function InputGuide({ type, editorRef, onChange, guideValue, setGuideValue }) {
 }
 
 function GuideAssembler({ guideTab, editorRef, onChange, guideValue, setGuideValue }) {
-    if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "sinner"].includes(guideTab))
+    if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "themepack", "sinner"].includes(guideTab))
         return <SelectorGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
     if (["build", "mdplan", "collection", "user"].includes(guideTab))
