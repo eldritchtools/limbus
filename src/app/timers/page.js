@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { useData } from "../components/DataProvider";
-import { keywords } from "../lib/constants";
-import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+
 import DaysSinceTable from "./DaysSinceTable";
 import TimersTable from "./TimersTable";
+import { useData } from "../components/DataProvider";
+import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import { keywords } from "../lib/constants";
 
 export default function TimersPage() {
     const [identities, identitiesLoading] = useData("identities");

@@ -184,7 +184,7 @@ export default function MarkdownTokensGuide({ editorRef, onChange, guideTab, set
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <div>You can reference things like statuses or keywords with tokens like {"{keyword:Burn}"} to show icons or tooltips when hovering over them.</div>
         <div>Choose a type below to search for tokens you might like to use.</div>
-        <div>An autocomplete system is available for the following token types: identity, ego, status, giftname, gifticons, keyword, sinner. To trigger it, just start typing {"\"{type:\""}.</div>
+        <div>An autocomplete system is available for the following token types: identity, ego, status, statusicon, giftname, gifticons, keyword, sinner. To trigger it, just start typing {"\"{type:\""}.</div>
         <div>Token type: <DropdownButton value={guideTab} setValue={x => { setGuideTab(x); setGuideValue(null); }} options={options} /></div>
         <GuideAssembler guideTab={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
     </div>;
