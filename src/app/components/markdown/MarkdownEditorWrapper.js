@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import MarkdownEditorMain from "./MarkdownEditorMain";
 import MarkdownRenderer from "./MarkdownRenderer";
 import MarkdownTokensGuide from "./MarkdownTokensGuide";
+import Icon from "../icons/Icon";
 
 export default function MarkdownEditorWrapper({ value, onChange, placeholder, initialState = "detailed", short = false, mini = false }) {
     const [mode, setMode] = useState(initialState);
@@ -24,7 +25,10 @@ export default function MarkdownEditorWrapper({ value, onChange, placeholder, in
         </div>
         {mode === "detailed" ?
             <div>
-                <button className="toggle-button" onClick={() => setGuideOpen(p => !p)}>Toggle Tokens Guide (Use tokens for better text)</button>
+                <button className="toggle-button" onClick={() => setGuideOpen(p => !p)} style={{display: "flex", alignItems: "center"}}>
+                    <Icon path={"coin"} style={{ height: "24px", width: "24px" }} />
+                    Toggle Tokens Guide (Use tokens for better text)
+                </button>
             </div> :
             null
         }

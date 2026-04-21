@@ -9,57 +9,62 @@ import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "./components/dat
 import { useData } from "./components/DataProvider";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
+import StatusIcon from "./components/icons/StatusIcon";
 import { useModal } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import { getHomepagePosts } from "./database/homepage";
 import styles from "./homepage.module.css";
+import { HomepageTimers } from "./timers/TimersTable";
 
 const paths = [
     {
         category: "General",
         links: [
-            { href: "/builds", title: "Team Builds", newHref: "/builds/new" },
-            { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new" },
-            { href: "/collections", title: "Collections", newHref: "/collections/new" },
-            { href: "/identities", title: "Identities" },
-            { href: "/egos", title: "E.G.Os" },
-            { href: "/timers", title: "Timers" }
+            { href: "/builds", title: "Team Builds", newHref: "/builds/new", icon: "WideAreaRampage" },
+            { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new", icon: "IndexPrescriptDon_0" },
+            { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
+            { href: "/identities", title: "Identities", icon: "EgoErodeReplica" },
+            { href: "/egos", title: "E.G.Os", icon: "ActivatedEgoPassive" },
+            { href: "/timers", title: "Timers", icon: "TimeAcceleration" }
         ]
     },
     {
         category: "Mirror Dungeon",
         links: [
-            { href: "/achievements", title: "Achievements Tracker" },
-            { href: "/gifts", title: "E.G.O Gifts" },
-            { href: "/fusions", title: "Fusion Recipes" },
-            { href: "/theme-packs", title: "Theme Packs" },
-            { href: "/md-events", title: "Choice Events" }
+            { href: "/achievements", title: "Achievements Tracker", icon: "DistortedDongrangMomentaryGlory" },
+            { href: "/gifts", title: "E.G.O Gifts", icon: "PowerOfLoveAndJustice" },
+            { href: "/fusions", title: "Fusion Recipes", icon: "VibrationNesting" },
+            { href: "/theme-packs", title: "Theme Packs", icon: "VengeanceBookSpider" },
+            { href: "/md-events", title: "Choice Events", icon: "Aggro" }
         ]
     },
     {
         category: "Utility Tools",
         links: [
-            { href: "/daily-random", title: "Daily Randomized Team" },
-            { href: "/training-calc", title: "Dispense and Training Calculator" },
-            { href: "/keyword-solver", title: "Keyword Solver" },
-            { href: "/team-randomizer", title: "Team Randomizer" },
-            { href: "/floor-planner", title: "Floor Planner" }
+            { href: "/daily-random", title: "Daily Randomized Team", icon: "Cycle" },
+            { href: "/training-calc", title: "Dispense and Training Calculator", icon: "ResultEnhancement" },
+            { href: "/keyword-solver", title: "Keyword Solver", icon: "ThreeMirrorpartYiSang" },
+            { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
+            { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" }
         ]
     },
     {
         category: "Others",
         links: [
-            { href: "/about", title: "About" },
-            { href: "/supporters", title: "Supporters" },
-            { href: "/feedback", title: "Feedback / Contact" }
+            { href: "/about", title: "About", icon: "KnowledgeExplored" },
+            { href: "/supporters", title: "Supporters", icon: "MagicalGirlAppear" },
+            { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }
         ]
     }
 ]
 
-function LinkComponent({ href, title }) {
-    return <NoPrefetchLink className="text-link" href={href} style={{textDecoration: "none"}}>
+function LinkComponent({ href, title, icon }) {
+    const { isMobile } = useBreakpoint();
+    const iconStyle = isMobile ? { width: "24px", height: "24px" } : { width: "32px", height: "32px" };
+    return <NoPrefetchLink className="text-link" href={href} style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
         {/* <div className={styles.LinkComponent}> */}
-            <span style={{width: "100%"}}>{title}</span>
+        {icon ? <StatusIcon id={icon} style={iconStyle} /> : null}
+        <span style={{ width: "100%" }}>{title}</span>
         {/* </div> */}
     </NoPrefetchLink>
 }
@@ -70,10 +75,10 @@ function LinksMenu() {
             {section.category ? <span className={styles.LinksCategory}>{section.category}</span> : null}
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                 {section.links
-                    .map(link => <div key={link.href} style={{display: "flex", alignItems: "center"}}>
+                    .map(link => <div key={link.href} style={{ display: "flex", alignItems: "center" }}>
                         <LinkComponent {...link} />
                         {link.newHref ? <><span>&nbsp;(</span><LinkComponent href={link.newHref} title={"New"} /><span>)</span></> : null}
-                        </div>)
+                    </div>)
                     .reduce((acc, curr, i) => i === 0 ? [curr] : [...acc, <span key={i}>•</span>, curr], [])
                 }
             </div>
@@ -135,6 +140,7 @@ export default function Home() {
                 Use the sidebar or click on the links below to get started.
             </p>
             <LinksMenu />
+            <HomepageTimers />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>
                 <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
                     <h3 style={{ margin: 0 }}>Latest Additions</h3>

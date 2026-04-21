@@ -5,6 +5,7 @@ import IdentityTooltip from "./IdentityTooltip";
 import { MarkdownTooltip } from "./MarkdownTooltip";
 import StatusTooltip from "./StatusTooltip";
 import { ThemePackTooltip } from "./ThemePackTooltip";
+import TimerTooltip from "./TimerTooltip";
 
 export default function AllTooltips() {
     return <>
@@ -15,5 +16,6 @@ export default function AllTooltips() {
         <GeneralTooltip />
         <MarkdownTooltip />
         <ThemePackTooltip />
+        <TimerTooltip />
     </>;
 }
