@@ -29,6 +29,7 @@ const paths = [
     { path: "/identities", title: "Identities" },
     { path: "/egos", title: "E.G.Os" },
     { path: "/timers", title: "Timers" },
+    { path: "/encounters", title: "Encounters"},
     {
         title: "My Profile", subpaths: [
             { path: "/my-posts", title: "My Posts" },

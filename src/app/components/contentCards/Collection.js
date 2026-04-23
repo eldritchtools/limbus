@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import styles from "./Collection.module.css";
 import NoPrefetchLink from "../NoPrefetchLink";
@@ -21,6 +21,43 @@ export default function Collection({ collection, complete = true }) {
     const [blockHover, setBlockHover] = useState(false);
     const { user } = useAuth();
 
+    const ref = useRef(null);
+    const isDragging = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
+    const moved = useRef(false);
+
+    const scrollProps = {
+        ref: ref,
+        onMouseDown: (e) => {
+            isDragging.current = true;
+            moved.current = false;
+
+            startX.current = e.pageX - (ref.current?.offsetLeft || 0);
+            scrollLeft.current = ref.current?.scrollLeft || 0;
+        },
+        onMouseLeave: () => isDragging.current = false,
+        onMouseUp: () => isDragging.current = false,
+        onMouseMove: e => {
+            if (!isDragging.current || !ref.current) return;
+
+            const x = e.pageX - (ref.current.offsetLeft || 0);
+            const walk = x - startX.current;
+
+            if (Math.abs(walk) > 5) {
+                moved.current = true; // 👈 mark as drag
+            }
+
+            ref.current.scrollLeft = scrollLeft.current - walk;
+        },
+        onClickCapture: e => {
+            if (moved.current) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+    }
+
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
     return <div className={`${styles.collection} ${!blockHover ? styles.canHover : null}`}>
@@ -33,7 +70,7 @@ export default function Collection({ collection, complete = true }) {
                 {collection.short_desc}
             </div>
             {collection.items.length > 0 ?
-                <div style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin", width: "100%" }}>
+                <div className={styles.scrollContainer} style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin", width: "100%" }} {...scrollProps}>
                     <div style={{ display: "flex", gap: "1rem" }}>
                         {collection.items.map(item =>
                             item.type === "build" ?

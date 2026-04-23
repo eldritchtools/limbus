@@ -1,5 +1,5 @@
 export const metadata = {
-    title: "Quick Floor Planner | Limbus Company Tools",
+    title: "Floor Planner | Limbus Company Tools",
     description: "Quickly select floors to see what theme packs you can still go to."
 };
 

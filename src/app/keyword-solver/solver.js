@@ -79,9 +79,12 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
     })
 
     Object.entries(identitiesPerSinner).forEach(([sinnerId, identities]) => {
-        solverStates[0].identityOrders[sinnerId] = [...identities].sort((a, b) =>
-            kwPerIdentity[b.id].filter(x => x).length - kwPerIdentity[a.id].filter(x => x).length
-        );
+        solverStates[0].identityOrders[sinnerId] = [...identities].sort((a, b) => {
+            const acnt = kwPerIdentity[a.id].filter(x => x).length;
+            const bcnt = kwPerIdentity[b.id].filter(x => x).length
+            if(acnt === bcnt) return b.id.localeCompare(a.id);
+            return bcnt - acnt;
+        });
     });
 
     solverStates[0].solutionsAllowed *= 2;

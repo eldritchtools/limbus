@@ -24,9 +24,13 @@
     flex-direction: column;
     gap: 0.5rem;
     align-items: start;
-    padding: 1rem; 
+    padding: 1rem;
     z-index: 2;
     pointer-events: none;
     width: 100%;
     box-sizing: border-box;
+}
+
+.scrollContainer a {
+    -webkit-user-drag: none;
 }

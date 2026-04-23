@@ -25,7 +25,6 @@ export default function SearchBuildsPage() {
     useEffect(() => {
         const fetchBuilds = async () => {
             try {
-                console.log(filters);
                 setLoading(true);
                 const params = prepareBuildFilters(filters, { published: true, ignoreBlockDiscovery: true });
                 const data = await searchBuilds(params, page);
