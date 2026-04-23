@@ -1,0 +1,15 @@
+.targetIconContainer {
+    width: 75px;
+    height: 150px;
+    border: 1px #aaa solid;
+    transition: all ease 0.2s;
+}
+
+.targetIconContainer.active {
+    filter: brightness(1.3);
+}
+
+.targetIconContainer:hover {
+    filter: brightness(1.3);
+    cursor: pointer;
+}
