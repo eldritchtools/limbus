@@ -60,7 +60,9 @@ const paths = [
             { path: "/about", title: "About"},
             { path: "/supporters", title: "Supporters"},
             { path: "/update-history", title: "Update History" },
-            { path: "/feedback", title: "Feedback / Contact" }
+            { path: "/feedback", title: "Feedback / Contact" },
+            { path: "/privacy", title: "Privacy Policy"},
+            { path: "/terms", title: "Terms of Service"}
         ]
     }
 ]
