@@ -2,8 +2,10 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useState } from "react";
 
 import styles from "./EncounterDetails.module.css";
+import { useData } from "../components/DataProvider";
 import EnemyIcon from "../components/icons/EnemyIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
+import StatusIcon from "../components/icons/StatusIcon";
 import PassiveCard from "../components/skill/PassiveCard";
 import SkillCard from "../components/skill/SkillCard";
 import { ColoredResistance } from "../lib/colors";
@@ -66,10 +68,26 @@ function TargetComponent({ target }) {
     </div>
 }
 
+function BuffComponent({id}) {
+    const [statuses, statusesLoading] = useData("statuses");
+    if(statusesLoading || !(id in statuses)) return null;
+    
+    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
+            <StatusIcon status={statuses[id]} style={{ display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" }} />
+            <span>{statuses[id].name}</span>
+        </div>
+        <div style={{ display: "inline-block", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
+            <span>{statuses[id].desc}</span>
+        </div>
+    </div>;
+}
+
 export default function EncounterDetails({ data }) {
     const [phase, setPhase] = useState(0);
     const [targetIndex, setTargetIndex] = useState(0);
 
+    const buffs = (data.phases ? data.phases[phase].buffs : data.buffs) ?? [];
     const targets = data.phases ? data.phases[phase].targets : data.targets;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
@@ -81,6 +99,11 @@ export default function EncounterDetails({ data }) {
             </div> :
             null
         }
+
+        {buffs.length > 0 ? <div style={{display: "flex", flexDirection: "column"}}>
+            {buffs.map(id => <BuffComponent key={id} id={id} />)}
+        </div> : null}
+
 
         <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
             <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
