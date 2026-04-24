@@ -103,7 +103,8 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
 
     return items.filter(item => {
         if (!additionalFilter(item)) return false;
-
+        if(item.upcoming) return false;
+        
         for (const filterType in f) {
             if (type === "identity") {
                 if (strictFiltering) {

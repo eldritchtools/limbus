@@ -9,8 +9,8 @@ import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
 export default function RecommendedListDisplay({ identityIds, setIdentityIds, egoIds, setEgoIds, skillReplaces, editable = false }) {
-    const [identities, identitiesLoading] = useIdentitiesWithUpcoming(true);
-    const [egos, egosLoading] = useEgosWithUpcoming(true);
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
+    const [egos, egosLoading] = useEgosWithUpcoming();
 
     const handleSetIdentityId = id => {
         if (identityIds.includes(id)) setIdentityIds(p => p.filter(x => x !== id))
