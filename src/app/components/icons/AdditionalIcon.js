@@ -5,10 +5,10 @@
 
 import { ASSETS_ROOT } from "@/app/paths";
 
-export default function AdditionalIcon({ path, style = {} }) {
-    const { width, height } = style;
-    return <div style={{ width, height, position: "relative" }}>
-        {/* <Image src={`${ASSETS_ROOT}/additional_icons/${path}.png`} alt={path} title={path} fill sizes="32px" style={{ ...remStyle, objectFit: "cover" }} /> */}
-        <img src={`${ASSETS_ROOT}/additional_icons/${path}.png`} alt={path} title={path} style={{ ...style, objectFit: "cover" }} />
-    </div>
+export function getAdditionalIconSrc(id) {
+    return `${ASSETS_ROOT}/additional_icons/${id}.png`;
+}
+
+export default function AdditionalIcon({ id, style = {} }) {
+    return <img src={getAdditionalIconSrc(id)} alt={id} title={id} style={{ ...style, objectFit: "cover" }} />
 }
