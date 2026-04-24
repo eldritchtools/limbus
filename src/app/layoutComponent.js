@@ -23,15 +23,20 @@ TimeAgo.addDefaultLocale(en);
 
 const paths = [
     { path: "/", title: "Home" },
-    { path: "/builds", title: "Team Builds" },
-    { path: "/md-plans", title: "MD Plans" },
-    { path: "/collections", title: "Collections" },
-    { path: "/identities", title: "Identities" },
-    { path: "/egos", title: "E.G.Os" },
-    { path: "/timers", title: "Timers" },
-    { path: "/encounters", title: "Encounters"},
+    {
+        title: "General", subpaths: [
+            { path: "/builds", title: "Team Builds" },
+            { path: "/md-plans", title: "MD Plans" },
+            { path: "/collections", title: "Collections" },
+            { path: "/identities", title: "Identities" },
+            { path: "/egos", title: "E.G.Os" },
+            { path: "/timers", title: "Timers" },
+            { path: "/encounters", title: "Encounters" }
+        ]
+    },
     {
         title: "My Profile", subpaths: [
+            { path: "/my-profile", title: "View My Profile" },
             { path: "/my-posts", title: "My Posts" },
             { path: "/edit-profile", title: "Edit Profile" },
         ]
@@ -57,12 +62,12 @@ const paths = [
     },
     {
         title: "Site / Contact", subpaths: [
-            { path: "/about", title: "About"},
-            { path: "/supporters", title: "Supporters"},
+            { path: "/about", title: "About" },
+            { path: "/supporters", title: "Supporters" },
             { path: "/update-history", title: "Update History" },
             { path: "/feedback", title: "Feedback / Contact" },
-            { path: "/privacy", title: "Privacy Policy"},
-            { path: "/terms", title: "Terms of Service"}
+            { path: "/privacy", title: "Privacy Policy" },
+            { path: "/terms", title: "Terms of Service" }
         ]
     }
 ]

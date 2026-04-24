@@ -12,7 +12,7 @@ import { ColoredResistance } from "@/app/lib/colors";
 import { constructDefenseLevel, constructHp, constructSpeed } from "@/app/lib/identity";
 
 function OverlayBase({ behind, content, blockAccess = false }) {
-    return <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", borderRadius: "inherit" }}>
+    return <div style={{ position: "relative", width: "100%", aspectRatio: "40 / 25", overflow: "hidden", borderRadius: "inherit" }}>
         {behind}
         <div style={{ position: "absolute", inset: 0, background: "rgba(0, 0, 0, 0.75)", pointerEvents: blockAccess ? null : "none" }}>
             {content}
