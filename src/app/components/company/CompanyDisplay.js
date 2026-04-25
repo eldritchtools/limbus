@@ -66,7 +66,7 @@ function EgoDisplay({ ego, egoBitsets, setEgoBitsets, editable }) {
     }
 }
 
-function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, setEgoBitsets, identities, egos, editable, saveString }) {
+function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, setEgoBitsets, identities, egos, editable, setForceSave, saveString }) {
     const [activeTab, setActiveTab] = useLocalState("companyActiveTab", "both");
     const [ownedFilter, setOwnedFilter] = useLocalState("companyOwnedFilter", "both");
     const [separateSinners, setSeparateSinners] = useLocalState("companySeparateSinners", false);
@@ -210,6 +210,9 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 <button onClick={unsetAllFiltered}>
                     Unset All Filtered Items
                 </button>
+                <button onClick={() => setForceSave(true)}>
+                    Save
+                </button>
                 <div>
                     {saveString}
                 </div>
@@ -238,6 +241,7 @@ export default function CompanyDisplay({ username, editable = false }) {
     const [notSet, setNotSet] = useState(false);
 
     const [changed, setChanged] = useState(false);
+    const [forceSave, setForceSave] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
     const [saveStatus, setSaveStatus] = useState("idle");
     const saveTimeout = useRef(null);
@@ -270,7 +274,7 @@ export default function CompanyDisplay({ username, editable = false }) {
     }, [loading, contentLoading, user, username, editable]);
 
     useEffect(() => {
-        if (!changed || !editable) return;
+        if ((!changed || !editable) && !forceSave) return;
 
         const saveData = async () => {
             const data = {
@@ -298,10 +302,12 @@ export default function CompanyDisplay({ username, editable = false }) {
                 setSaveStatus("error");
                 setChanged(false);
             }
-        }, 5000);
+        }, forceSave ? 0 : 5000);
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setForceSave(false);
         return () => clearTimeout(saveTimeout.current);
-    }, [identityBitsets, egoBitsets, changed, user, editable]);
+    }, [identityBitsets, egoBitsets, changed, user, editable, forceSave]);
 
     const saveString = useMemo(() => {
         if (saveStatus === "idle") return null;
@@ -330,6 +336,6 @@ export default function CompanyDisplay({ username, editable = false }) {
         identityBitsets={identityBitsets} setIdentityBitsets={handleSetIdentityBitsets}
         egoBitsets={egoBitsets} setEgoBitsets={handleSetEgoBitsets}
         identities={identities} egos={egos}
-        editable={editable} saveString={saveString}
+        editable={editable} setForceSave={setForceSave} saveString={saveString}
     />
 }
