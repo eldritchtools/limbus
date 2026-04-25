@@ -20,44 +20,59 @@ function permute(array) {
     return array;
 }
 
-function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSinners, keywordTargets, solvers }) {
+function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSinners, keywordTargets, statusTargets, solvers }) {
     const solutionsPerSolver = Math.ceil(MAX_SOLUTIONS / solvers);
     const kwToIndex = Object.fromEntries(Object.entries(keywordTargets).filter(([, cnt]) => cnt > 0).map(([kw], i) => ([kw, i])));
+    let condCount = Object.keys(kwToIndex).length;
+    const stToIndex = Object.fromEntries(Object.entries(statusTargets).filter(([, cnt]) => cnt > 0).map(([st], i) => ([st, i + condCount])));
+    condCount += Object.keys(stToIndex).length;
 
-    const kwPerIdentity = {};
-    const matchCountPerSinner = 
+    const condPerIdentity = {};
+    const matchCountPerSinner =
         Object.fromEntries(
             enabledSinnerIds.filter(x => !(x in fixedIdentityIds))
-            .map(x => [x, Array.from({length: Object.keys(kwToIndex).length}, () => 0)])
+                .map(x => [x, Array.from({ length: condCount }, () => 0)])
         );
     const identitiesPerSinner = Object.fromEntries(enabledSinnerIds.filter(x => !(x in fixedIdentityIds)).map(x => [x, []]));
     identityOptions.forEach(identity => {
         if (!(identity.sinnerId in identitiesPerSinner)) return;
-        if (!(identity.skillKeywordList ?? []).some(x => x in keywordTargets)) return;
-        const kws = Object.keys(kwToIndex).map(() => false);
+
+        const conds = Array.from({ length: condCount }, () => false);
         let matches = 0;
-        identity.skillKeywordList.forEach(kw => {
+        (identity.skillKeywordList ?? []).forEach(kw => {
             if (kw in kwToIndex) {
-                kws[kwToIndex[kw]] = true;
+                conds[kwToIndex[kw]] = true;
                 matches++;
             }
         });
-        matchCountPerSinner[identity.sinnerId][matches-1]++;
+        (identity.statuses ?? []).forEach(st => {
+            if (st in stToIndex) {
+                conds[stToIndex[st]] = true;
+                matches++;
+            }
+        });
+
+        if(matches === 0) return;
+
+        matchCountPerSinner[identity.sinnerId][matches - 1]++;
 
         identitiesPerSinner[identity.sinnerId].push({
             id: identity.id,
             sinnerId: identity.sinnerId,
-            kws: kws
+            conds: conds
         });
 
-        kwPerIdentity[identity.id] = kws;
+        condPerIdentity[identity.id] = conds;
     });
 
-    const initRequirement = Array.from({ length: Object.keys(kwToIndex).length }, () => 0);
+    const initRequirement = Array.from({ length: condCount }, () => 0);
     Object.entries(keywordTargets).forEach(([kw, cnt]) => initRequirement[kwToIndex[kw]] = cnt);
-    Object.values(fixedIdentityIds).forEach(id =>
-        (identityOptions.find(x => x.id === id).skillKeywordList ?? []).forEach(kw => initRequirement[kwToIndex[kw]]--)
-    )
+    Object.entries(statusTargets).forEach(([st, cnt]) => initRequirement[stToIndex[st]] = cnt);
+    Object.values(fixedIdentityIds).forEach(id => {
+        const identity = identityOptions.find(x => x.id === id);
+        (identity.skillKeywordList ?? []).forEach(kw => { if (kw in kwToIndex) initRequirement[kwToIndex[kw]]-- });
+        (identity.statuses ?? []).forEach(st => { if (st in stToIndex) initRequirement[stToIndex[st]]-- });
+    })
 
     const solverStates = Array.from({ length: solvers }, () => ({
         sinnerOrder: permute([...Object.keys(identitiesPerSinner)]),
@@ -71,8 +86,8 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
     }));
 
     solverStates[0].sinnerOrder.sort((a, b) => {
-        for(let i=Object.keys(kwToIndex).length-1; i>=0; i--){
-            if(matchCountPerSinner[a][i] === matchCountPerSinner[b][i]) continue;
+        for (let i = Object.keys(kwToIndex).length - 1; i >= 0; i--) {
+            if (matchCountPerSinner[a][i] === matchCountPerSinner[b][i]) continue;
             return matchCountPerSinner[b][i] - matchCountPerSinner[a][i];
         }
         return 0;
@@ -80,9 +95,9 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
 
     Object.entries(identitiesPerSinner).forEach(([sinnerId, identities]) => {
         solverStates[0].identityOrders[sinnerId] = [...identities].sort((a, b) => {
-            const acnt = kwPerIdentity[a.id].filter(x => x).length;
-            const bcnt = kwPerIdentity[b.id].filter(x => x).length
-            if(acnt === bcnt) return b.id.localeCompare(a.id);
+            const acnt = condPerIdentity[a.id].filter(x => x).length;
+            const bcnt = condPerIdentity[b.id].filter(x => x).length
+            if (acnt === bcnt) return b.id.localeCompare(a.id);
             return bcnt - acnt;
         });
     });
@@ -91,18 +106,18 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
 
     const pushId = (solver, id) => {
         solver.solution.push(id);
-        const kws = kwPerIdentity[id];
+        const conds = condPerIdentity[id];
         for (let i = 0; i < solver.needed.length; i++) {
-            if (kws[i]) solver.needed[i]--;
+            if (conds[i]) solver.needed[i]--;
         }
         solver.remain--;
     }
 
     const popId = solver => {
         const popped = solver.solution.pop();
-        const kws = kwPerIdentity[popped];
+        const conds = condPerIdentity[popped];
         for (let i = 0; i < solver.needed.length; i++) {
-            if (kws[i]) solver.needed[i]++;
+            if (conds[i]) solver.needed[i]++;
         }
         solver.remain++;
     }
