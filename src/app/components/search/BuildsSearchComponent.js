@@ -37,7 +37,7 @@ export function prepareBuildFilters(filters, additionalParams = {}) {
                 return [i, e];
             }, [[], []]);
             if (include.length > 0) acc[f] = include;
-            if (exclude.length > 0) acc[`${f}_exclude`] = exclude;
+            if (exclude.length > 0) acc[`${f}Exclude`] = exclude;
         }
         else if (f === "keywords") {
             const [include, exclude] = v.reduce(([i, e], x) => {
@@ -46,7 +46,7 @@ export function prepareBuildFilters(filters, additionalParams = {}) {
                 return [i, e];
             }, [[], []]);
             if (include.length > 0) acc[f] = include;
-            if (exclude.length > 0) acc[`${f}_exclude`] = exclude;
+            if (exclude.length > 0) acc[`${f}Exclude`] = exclude;
         }
         return acc;
     }, additionalParams);

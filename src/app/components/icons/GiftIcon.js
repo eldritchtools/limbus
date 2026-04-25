@@ -5,7 +5,9 @@
 
 import KeywordIcon from "./KeywordIcon";
 import TierIcon from "./TierIcon";
+import { useData } from "../DataProvider";
 import { GiftTagStrips } from "../gifts/GiftTags";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -31,7 +33,7 @@ export function getGiftImgSrc(gift) {
 
 function GiftImg({ gift, style }) {
     const src = getGiftImgSrc(gift);
-    if(!src) return null;
+    if (!src) return null;
 
     // return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} />
     return <img src={src} alt={gift.names[0]} style={style} />
@@ -45,12 +47,16 @@ function GiftIconContainer({ scale = 1, children }) {
     </div>
 }
 
-function GiftIconMain({ gift, enhanceRank = 0, scale = 1, tagStrips }) {
+function GiftIconMain({ gift, enhanceRank = 0, scale = 1, forceTagStrips }) {
+    const { getCustomizationValue } = useSiteCustomization();
+
+    const tagStrips = forceTagStrips === undefined ? getCustomizationValue("giftTagStrips") : forceTagStrips;
+
     return <GiftIconContainer scale={scale}>
         <GiftImg gift={gift} style={scaleStyle(giftStyle, scale * 0.75)} />
         <span style={giftTierStyle}><TierIcon tier={gift.tier} scale={scale} scaleY={1.4} /></span>
-        {enhanceRank > 0 ? <span style={giftEnhanceStyle}><TierIcon tier={"+".repeat(enhanceRank)} scale={scale*1.2} /></span> : null}
-        {gift.keyword !== "Keywordless" ? <span style={giftKeywordStyle}><KeywordIcon id={gift.keyword} size={scaleSize(scale*0.3)} /></span> : null}
+        {enhanceRank > 0 ? <span style={giftEnhanceStyle}><TierIcon tier={"+".repeat(enhanceRank)} scale={scale * 1.2} /></span> : null}
+        {gift.keyword !== "Keywordless" ? <span style={giftKeywordStyle}><KeywordIcon id={gift.keyword} size={scaleSize(scale * 0.3)} /></span> : null}
         {tagStrips ? <GiftTagStrips gift={gift} scale={scale} /> : null}
     </GiftIconContainer>
 }

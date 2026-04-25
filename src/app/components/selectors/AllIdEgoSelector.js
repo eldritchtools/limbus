@@ -18,11 +18,6 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
 
-    const handleSetMode = mode => {
-        setFilters([]);
-        setMode(mode);
-    }
-
     const list = useMemo(() => {
         let result = [];
 
@@ -67,11 +62,11 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "98%", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", paddingLeft: "1rem" }}>
             {identityOptions ?
-                <div className={`tab-header ${mode === "id" ? "active" : ""}`} onClick={() => handleSetMode("id")}>Identities</div> :
+                <div className={`tab-header ${mode === "id" ? "active" : ""}`} onClick={() => setMode("id")}>Identities</div> :
                 null
             }
             {egoOptions ? 
-                <div className={`tab-header ${mode === "ego" ? "active" : ""}`} onClick={() => handleSetMode("ego")}>E.G.Os</div> :
+                <div className={`tab-header ${mode === "ego" ? "active" : ""}`} onClick={() => setMode("ego")}>E.G.Os</div> :
                 null
             }
         </div>

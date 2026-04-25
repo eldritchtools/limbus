@@ -3,7 +3,7 @@ import GiftIcon from "../icons/GiftIcon";
 import { useModal } from "../modals/ModalProvider";
 import { getGiftTooltipProps } from "../tooltips/GiftTooltip";
 
-function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeTooltip = true, expandable = true, tagStrips = false }) {
+function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeTooltip = true, expandable = true }) {
     const { openGiftModal } = useModal();
     const canHover = useMemo(() => window.matchMedia("(hover: hover)").matches, []);
 
@@ -19,7 +19,7 @@ function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeT
     if (text) {
         return <span {...props}>{gift.names[enhanceRank]}</span>;
     } else {
-        return <span {...props}><GiftIcon gift={gift} enhanceRank={enhanceRank} scale={scale} tagStrips={tagStrips} /></span>;
+        return <span {...props}><GiftIcon gift={gift} enhanceRank={enhanceRank} scale={scale} /></span>;
     }
 }
 
@@ -31,7 +31,7 @@ function GiftFetch({ id, ...props }) {
     } else if (!(id in gifts)) {
         console.warn(`Gift ${id} not found.`);
 
-        if (text) return <span>Gift not found</span>;
+        if (text ?? false) return <span>Gift not found</span>;
         else return <GiftIcon id={id} />
     } else {
         return <GiftMain id={id} gift={gifts[id]} {...props} />

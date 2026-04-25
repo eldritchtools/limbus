@@ -4,6 +4,7 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
 
+import CompanyDisplay from "@/app/components/company/CompanyDisplay";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import SocialsDisplay from "@/app/components/user/SocialsDisplay";
 import { getUserDataFromUsername } from "@/app/database/users";
@@ -41,6 +42,7 @@ export default function ProfilePage({ params }) {
     }, [parsedUsername]);
 
     useEffect(() => {
+        if (viewMode === "company") return;
         const cfg = contentConfig[viewMode];
         if (!cfg) return;
 
@@ -70,6 +72,7 @@ export default function ProfilePage({ params }) {
     }
 
     const contentDisplay = () => {
+        if (viewMode === "company") return <CompanyDisplay username={username} />;
         if (contentLoading) return <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading...</p>;
         const cfg = contentConfig[viewMode];
         if (!cfg) return;
@@ -110,6 +113,7 @@ export default function ProfilePage({ params }) {
                 <div className={`tab-header ${viewMode === "builds" ? "active" : ""}`} onClick={() => handleSetViewMode("builds")}>Builds</div>
                 <div className={`tab-header ${viewMode === "collections" ? "active" : ""}`} onClick={() => handleSetViewMode("collections")}>Collections</div>
                 <div className={`tab-header ${viewMode === "md_plans" ? "active" : ""}`} onClick={() => handleSetViewMode("md_plans")}>MD Plans</div>
+                <div className={`tab-header ${viewMode === "company" ? "active" : ""}`} onClick={() => handleSetViewMode("company")}>Company</div>
             </div>
 
             {contentDisplay()}

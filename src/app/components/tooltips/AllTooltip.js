@@ -1,4 +1,5 @@
 import EgoTooltip from "./EgoTooltip";
+import EncounterTooltip from "./EncounterTooltip";
 import GeneralTooltip from "./GeneralTooltip";
 import GiftTooltip from "./GiftTooltip";
 import IdentityTooltip from "./IdentityTooltip";
@@ -17,5 +18,6 @@ export default function AllTooltips() {
         <MarkdownTooltip />
         <ThemePackTooltip />
         <TimerTooltip />
+        <EncounterTooltip />
     </>;
 }

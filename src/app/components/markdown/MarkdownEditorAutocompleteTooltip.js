@@ -1,5 +1,6 @@
 "use client";
 
+import { getAdditionalIconSrc } from "../icons/AdditionalIcon";
 import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
 import { getIdentityImgSrc } from "../icons/IdentityIcon";
@@ -20,7 +21,7 @@ function constructWrapper(maxWidth) {
 }
 
 function constructImageElement(path, size) {
-    if(!path) return null;
+    if (!path) return null;
     const img = document.createElement("img");
     img.style.width = `${size}px`;
     img.style.height = `${size}px`;
@@ -48,7 +49,7 @@ function constructTitleElement(name, left = false, withIcon = null) {
         row.style.marginBottom = "8px";
 
         title.style.flexGrow = "1";
-        if(withIcon) row.appendChild(constructImageElement(withIcon, 32))
+        if (withIcon) row.appendChild(constructImageElement(withIcon, 32))
         row.appendChild(title);
         return row;
     } else {
@@ -136,7 +137,7 @@ function constructThemePackAutocompleteTooltip(entry) {
     container.style.position = "relative";
     container.style.left = 0;
     container.style.top = 0;
-    
+
     const imgMain = document.createElement("img");
     imgMain.style.width = "190px";
     imgMain.style.height = "345px";
@@ -146,7 +147,7 @@ function constructThemePackAutocompleteTooltip(entry) {
     imgMain.src = getThemePackImgSrc(entry);
     container.appendChild(imgMain);
 
-    if(entry.overlayImage) {
+    if (entry.overlayImage) {
         const imgOverlay = document.createElement("img");
         imgOverlay.style.width = "190px";
         imgOverlay.style.height = "216px";
@@ -161,11 +162,21 @@ function constructThemePackAutocompleteTooltip(entry) {
     return wrapper;
 }
 
+function constructIconAutocompleteTooltip(entry) {
+    const wrapper = constructWrapper(320);
+
+    wrapper.appendChild(constructTitleElement(entry.name, true, getAdditionalIconSrc(entry.id)));
+
+    return wrapper;
+}
+
 export default function constructMarkdownEditorAutocompleteTooltip(entry, type, otherData = null) {
     if (type === "identity") return constructIdentityAutocompleteTooltip(entry);
     if (type === "ego") return constructEgoAutocompleteTooltip(entry);
     if (type === "status" || type === "statusicon") return constructStatusAutocompleteTooltip(entry);
     if (type === "giftname" || type === "gifticons") return constructGiftAutocompleteTooltip(entry, otherData);
     if (type === "themepack") return constructThemePackAutocompleteTooltip(entry);
+    // if (type === "encounter") return constructEncounterAutocompleteTooltip(entry);
+    if (type === "icon") return constructIconAutocompleteTooltip(entry);
     return null;
 }

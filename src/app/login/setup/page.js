@@ -6,6 +6,7 @@ import { updateAchievementsProgress } from '@/app/database/achievements';
 import { useAuth } from '@/app/database/authProvider';
 import { insertBuild } from '@/app/database/builds';
 import { insertCollection } from '@/app/database/collections';
+import { updateCompany } from '@/app/database/companies';
 import { localStores } from '@/app/database/localDB';
 import { createMdPlan } from '@/app/database/mdPlans';
 import { useRequestsCache } from '@/app/database/RequestsCacheProvider';
@@ -248,6 +249,11 @@ export default function UsernameSetup() {
                 localStores["achievements"].remove("main");
             }
 
+            if (syncs.includes("companies")) {
+                updateCompany(user, localData["companies"][0]);
+                localStores["companies"].remove("main");
+            }
+
             setSyncing(false);
             if (failed) await fetchLocal();
             else setSyncDone(true);
@@ -260,7 +266,8 @@ export default function UsernameSetup() {
             "savedCollections": "Saved Collections",
             "mdPlans": "MD Plans",
             "savedMdPlans": "Saved MD Plans",
-            "achievements": "Achievements"
+            "achievements": "Achievements",
+            "companies": "Company"
         }
 
         return <main style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", textAlign: 'center', marginTop: '3rem' }}>

@@ -5,7 +5,8 @@ const aliases = {
     "gn": "giftname",
     "gi": "gifticons",
     "kw": "keyword",
-    "tp": "themepack"
+    "tp": "themepack",
+    "enc": "encounter"
 };
 
 export function convertMarkdownAlias(type) {

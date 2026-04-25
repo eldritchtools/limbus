@@ -427,13 +427,21 @@ function extractSkillData(skill, level, rank, applyCrits = false) {
     return skillData;
 }
 
+export function computeSkillValues(skill) {
+    const data = extractSkillData({ data: skill, bonusesEnabled: true }, LEVEL_CAP);
+    return {
+        min: computeSkill(data, { cond: "all", type: "min", target: { def: data.offDefLevel } }),
+        max: computeSkill(data, { cond: "all", type: "max", target: { def: data.offDefLevel } })
+    }
+}
+
 function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
     const skillData = useSkillData("identity", identity.id, uptie);
 
     const applyCrits = opts.crit === "all" || (opts.crit === "poise" && identity.skillKeywordList?.includes("Poise"))
 
     const [atkskills] = identity.skillTypes.reduce(([skills, counts], skill) => {
-        if(!(skill.id in skillData.skills)) return [skills, counts];
+        if (!(skill.id in skillData.skills)) return [skills, counts];
 
         const tier = skillData.skills[skill.id].tier;
 
@@ -454,7 +462,7 @@ function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
     }, [[], {}]);
 
     const defskills = identity.defenseSkillTypes.map(s => {
-        if(!(s.id in skillData.skills)) return null;
+        if (!(s.id in skillData.skills)) return null;
 
         const finalApplyCrits = applyCrits || (opts.crit === "poise" && (skillData.skills[s.id].critSkill ?? false));
 

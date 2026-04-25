@@ -14,7 +14,7 @@ export default function SocialsDisplay({ socials, expandDirection = "row", align
         style.flexDirection = "row";
         style.flexWrap = "wrap";
         style.alignItems = "center";
-        style.justifyContent = align;
+        style.justifyContent = "start";
     }
 
     return <div style={style}>

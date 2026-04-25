@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 
@@ -11,6 +12,7 @@ import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
+import { encounterCategoryLabels } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import { uiStrings } from "../lib/uiStrings";
 import { selectStyle } from "../styles/selectStyle";
@@ -94,15 +96,35 @@ export default function EncountersPage() {
     const [category, setCategory] = useState(null);
     const [encounter, setEncounter] = useState(null);
 
-    const categoryOptions = useMemo(() => encountersLoading ? [] : [
-        { value: "md", label: "Mirror Dungeon" },
-        { value: "reflectrial", label: "Reflectrial" }
-    ], [encountersLoading]);
+    const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
+        if (f === "category") acc["category"] = v;
+        if (f === "encounter") acc["encounter"] = v.split(",");
+        return acc;
+    }, {});
 
-    const encounterOptions = useMemo(() => category ? Object.entries(encounters[category.value]).map(([id, name]) => ({
+    const encounterToOption = (id, name) => ({
         value: id,
         label: `${name} (${id})`
-    })) : [], [category, encounters]);
+    });
+
+    const categoryOptions = useMemo(() => encountersLoading ? [] :
+        Object.entries(encounterCategoryLabels).map(([cat, label]) => ({ value: cat, label: label })),
+        [encountersLoading]
+    );
+
+    const encounterOptions = useMemo(() => category ?
+        Object.entries(encounters[category.value]).map(([id, name]) => encounterToOption(id, name)) : [], [category, encounters]);
+
+    useEffect(() => {
+        if (encountersLoading) return;
+        const cat = searchParams.category;
+        const enc = searchParams.encounter
+        if (cat && cat in encounters && enc && enc in encounters[cat]) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setCategory(categoryOptions.find(x => x.value === cat));
+            setEncounter(encounterToOption(enc, encounters[cat][enc]))
+        }
+    }, [encountersLoading, searchParams, categoryOptions, encounters])
 
     if (encountersLoading) return <LoadingContentPageTemplate />;
 

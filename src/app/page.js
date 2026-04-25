@@ -7,83 +7,68 @@ import MdPlan from "./components/contentCards/MdPlan";
 import TeamBuild from "./components/contentCards/TeamBuild";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "./components/dataHooks/upcoming";
 import { useData } from "./components/DataProvider";
+import HoverBlocker from "./components/HoverBlocker";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
-import StatusIcon from "./components/icons/StatusIcon";
 import { useModal } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
+import { useSiteCustomization } from "./components/SiteCustomizationProvider";
 import { getHomepagePosts } from "./database/homepage";
 import styles from "./homepage.module.css";
+import { HomepageLinkList, homepageLinks } from "./lib/homepageLinks";
 import { HomepageTimers } from "./timers/TimersTable";
 
-const paths = [
-    {
-        category: "General",
-        links: [
-            { href: "/builds", title: "Team Builds", newHref: "/builds/new", icon: "WideAreaRampage" },
-            { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new", icon: "IndexPrescriptDon_0" },
-            { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
-            { href: "/identities", title: "Identities", icon: "EgoErodeReplica" },
-            { href: "/egos", title: "E.G.Os", icon: "ActivatedEgoPassive" },
-            { href: "/timers", title: "Timers", icon: "TimeAcceleration" },
-            { href: "/encounters", title: "Encounters", icon: "HugeIrritationAlly" }
-        ]
-    },
-    {
-        category: "Mirror Dungeon",
-        links: [
-            { href: "/achievements", title: "Achievements Tracker", icon: "DistortedDongrangMomentaryGlory" },
-            { href: "/gifts", title: "E.G.O Gifts", icon: "PowerOfLoveAndJustice" },
-            { href: "/fusions", title: "Fusion Recipes", icon: "VibrationNesting" },
-            { href: "/theme-packs", title: "Theme Packs", icon: "VengeanceBookSpider" },
-            { href: "/md-events", title: "Choice Events", icon: "Aggro" }
-        ]
-    },
-    {
-        category: "Utility Tools",
-        links: [
-            { href: "/daily-random", title: "Daily Randomized Team", icon: "Cycle" },
-            { href: "/training-calc", title: "Dispense and Training Calculator", icon: "ResultEnhancement" },
-            { href: "/keyword-solver", title: "Keyword Solver", icon: "ThreeMirrorpartYiSang" },
-            { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
-            { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" }
-        ]
-    },
-    {
-        category: "Others",
-        links: [
-            { href: "/about", title: "About", icon: "KnowledgeExplored" },
-            { href: "/supporters", title: "Supporters", icon: "MagicalGirlAppear" },
-            { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }
-        ]
-    }
-]
+function RecentAdditions() {
+    const [blockHover, setBlockHover] = useState(false);
+    const [open, setOpen] = useState(false);
 
-function LinkComponent({ href, title, icon }) {
-    const { isMobile } = useBreakpoint();
-    const iconStyle = isMobile ? { width: "24px", height: "24px" } : { width: "32px", height: "32px" };
-    return <NoPrefetchLink className="text-link" href={href} style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-        {/* <div className={styles.LinkComponent}> */}
-        {icon ? <StatusIcon id={icon} style={iconStyle} /> : null}
-        <span style={{ width: "100%" }}>{title}</span>
-        {/* </div> */}
-    </NoPrefetchLink>
+    return <div
+        className={`${styles.recentAdditions} ${!blockHover ? styles.canHover : null}`}
+        onClick={!blockHover ? () => setOpen(p => !p) : null}
+    >
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem" }}>
+            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Recent Additions</span>
+            <span style={{ fontSize: "0.9rem", color: "#aaa" }}>Most notable changes in case you missed them.</span>
+        </div>
+
+        {open ? <div>
+            <ul style={{lineHeight: "1.3"}}>
+                <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/company"}>Company</NoPrefetchLink></HoverBlocker> Page - Set the identities and E.G.Os you own. They can be viewed in your profile or used when filtering team builds.</li>
+                <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink></HoverBlocker> Page - Customize how certain parts of the site are displayed. More options to be added in the future.</li>
+                <li>Tokens now supports icons. Currently this has icons for some associations, fingers, wings, and some syndicates.</li>
+                <li>Tokens now supports encounters.</li>
+                <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/encounters"}>Encounters</NoPrefetchLink></HoverBlocker> Page - View details on notable encounters in the game. Leave comments and find team builds for them. More encounters to be added in the future.</li>
+            </ul>
+        </div> : null}
+
+        <span className="text-link" style={{ alignSelf: "center" }}>
+            {open ? "▴ Click to Collapse ▴" : "▾ Click to Expand ▾"}
+        </span>
+    </div>
+
 }
 
 function LinksMenu() {
+    const { getCustomizationValue } = useSiteCustomization();
+    const favorite = getCustomizationValue("favoriteLinks");
+    const [forceOpen, setForceOpen] = useState(false);
+
     return <div className={styles.LinksMenu}>
-        {paths.map((section, i) => <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-            {section.category ? <span className={styles.LinksCategory}>{section.category}</span> : null}
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                {section.links
-                    .map(link => <div key={link.href} style={{ display: "flex", alignItems: "center" }}>
-                        <LinkComponent {...link} />
-                        {link.newHref ? <><span>&nbsp;(</span><LinkComponent href={link.newHref} title={"New"} /><span>)</span></> : null}
-                    </div>)
-                    .reduce((acc, curr, i) => i === 0 ? [curr] : [...acc, <span key={i}>•</span>, curr], [])
-                }
-            </div>
-        </div>)}
+        {favorite !== null && favorite.length > 0 ? <HomepageLinkList links={favorite} includeNew={true} clickable={true} /> : null}
+        {forceOpen || favorite === null ?
+            homepageLinks.map((section, i) => <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                {section.category ? <span className={styles.LinksCategory}>{section.category}</span> : null}
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                    <HomepageLinkList links={section.links} includeNew={true} clickable={true} />
+                </div>
+            </div>) :
+            null
+        }
+        {
+            !forceOpen && favorite !== null ?
+                <span className="text-link" onClick={() => setForceOpen(true)}>▾ Expand Links ▾</span> :
+                null
+        }
     </div>
 }
 
@@ -135,13 +120,10 @@ export default function Home() {
             <h2 style={{ margin: 0 }}>Welcome to Limbus Company Tools, Manager!</h2>
             <p>
                 Limbus Company Tools is a platform for managers to create, share, and discover various builds and strategies for use in their gameplay. Users can also find various tools and database pages for the game.
-                <br /> <br />
-                This site is a combination of two other sites (<NoPrefetchLink className="text-link" href={"https://limbus-teams.eldritchtools.com"}>Team Building Hub</NoPrefetchLink> and <NoPrefetchLink className="text-link" href={"https://limbus-md.eldritchtools.com"}>Mirror Dungeon Site</NoPrefetchLink>) and is currently in an early launch version, so some features may not have been properly migrated from the old sites. Please report any bugs in the Discord or through the feedback page.
-                <br /> <br />
-                Use the sidebar or click on the links below to get started.
             </p>
             <LinksMenu />
             <HomepageTimers />
+            <RecentAdditions />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>
                 <div style={{ minWidth: "300px", flex: 1, display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", border: "1px solid #aaa", borderRadius: "0.5rem", padding: "1rem", boxSizing: "border-box" }}>
                     <h3 style={{ margin: 0 }}>Latest Additions</h3>

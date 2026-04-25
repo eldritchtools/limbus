@@ -1,14 +1,23 @@
+import { useMemo } from "react";
+
 import { AtkWeight, DiffedAtkWeight } from "./AtkWeight";
 import Coin from "./Coin";
+import { computeSkillValues } from "./SkillCalc";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import DiffedText from "../texts/DiffedText";
 import ProcessedText from "../texts/ProcessedText";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { affinityColorMapping } from "@/app/lib/colors";
 import { constructOffDefLevel } from "@/app/lib/skill";
 
-export default function SkillCard({ skill, label = "", count = 0, level, mini = false, pre }) {
+export default function SkillCard({ skill, label = "", count = 0, level, mini = false, pre, includeSkillValues = true }) {
+    const skillValues = useMemo(() => {
+        if (!skill || !includeSkillValues) return null;
+        return computeSkillValues(skill);
+    }, [skill, includeSkillValues]);
+
     if (!skill) return null;
 
     let iconSize = mini ? 24 : 32;
@@ -17,6 +26,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
     let iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
     let nameStyleOverride = mini ? { fontSize: "0.8rem" } : {};
+    let pillStyle = { display: "flex", height: iconSize, gap: "0.25rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem" };
 
     let diff = pre && Object.keys(pre).length > 0;
     let diffNew = pre && Object.keys(pre).length === 0;
@@ -46,7 +56,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
             </div>
         </div>
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.1rem", marginBottom: "0.25rem", alignItems: "center" }}>
-            <span style={{ display: "flex", height: iconSize, gap: "0.25rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem" }}>
+            <span style={pillStyle}>
                 <span>
                     Power: {diff ? <DiffedText
                         before={`${pre.baseValue} ${pre.coinValue < 0 ? pre.coinValue : `+${pre.coinValue}`}`}
@@ -61,20 +71,29 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                     )}
                 </span>
             </span>
-            <span style={{ display: "flex", height: iconSize, gap: "0.25rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem" }}>
+            <span style={pillStyle}>
                 {skill.defType === "attack" || skill.defType === "counter" ?
                     <Icon path={"offense level"} style={iconStyle} /> :
                     <Icon path={"defense level"} style={iconStyle} />
                 }
                 {constructOffDefLevel(skill, level)}
             </span>
+            {includeSkillValues ? <>
+                <span style={pillStyle} {...getGeneralTooltipProps("Assumes all conditionals. Use Display Type in a Team Build for a more detailed calculation.")}>
+                    Clash: {skillValues.min[0]}-{skillValues.max[0]}
+                </span>
+                <span style={pillStyle} {...getGeneralTooltipProps("Assumes all conditionals. Use Display Type in a Team Build for a more detailed calculation.")}>
+                    Damage: {skillValues.min[1]}-{skillValues.max[1]}
+                </span>
+            </> : null
+            }
             {skill.spCost ?
-                <span style={{ display: "flex", height: iconSize, alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem" }}>
+                <span style={pillStyle}>
                     SP Cost: {skill.spCost}
                 </span> :
                 null
             }
-            <span style={{ display: "flex", minHeight: iconSize, alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem", gap: "0.2rem" }}>
+            <span style={pillStyle}>
                 Atk Weight:
                 {diff > 0 ?
                     <DiffedAtkWeight preSkillData={pre} postSkillData={skill} /> :
