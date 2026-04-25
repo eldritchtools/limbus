@@ -72,7 +72,7 @@ export function HomepageLink({ href, link, includeNew = false, clickable = false
 
     return <div key={linkObj.href} style={{ display: "flex", alignItems: "center" }}>
         <LinkComponent {...linkObj} clickable={clickable} />
-        {includeNew && linkObj.newHref ? <><span>&nbsp;(</span><LinkComponent href={linkObj.newHref} title={"New"} /><span>)</span></> : null}
+        {includeNew && linkObj.newHref ? <><span>&nbsp;(</span><LinkComponent href={linkObj.newHref} title={"New"} clickable={clickable} /><span>)</span></> : null}
     </div>
 }
 
