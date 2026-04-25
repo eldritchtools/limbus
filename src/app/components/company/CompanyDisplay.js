@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 
 import styles from "./CompanyDisplay.module.css";
