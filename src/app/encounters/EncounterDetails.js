@@ -72,7 +72,7 @@ function BuffComponent({ id }) {
     const [statuses, statusesLoading] = useData("statuses");
     if (statusesLoading || !(id in statuses)) return null;
 
-    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem" }}>
+    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", width: "min(800px, 90vw)", boxSizing: "border-box" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <StatusIcon status={statuses[id]} style={{ display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" }} />
             <span>{statuses[id].name}</span>

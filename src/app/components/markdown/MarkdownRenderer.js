@@ -83,7 +83,7 @@ function IdentityItem({ id }) {
         return <span>{"{Loading...}"}</span>
     } else {
         if (id in identities)
-            return <LinkWithTooltip href={`/identities/${id}`} tooltipProps={getIdentityTooltipProps(id)}>
+            return <LinkWithTooltip href={`/identities/${id}`} tooltipProps={getIdentityTooltipProps(id)} className="text-link" style={{ textDecoration: "underline" }}>
                 [{sinnerIdMapping[identities[id].sinnerId]}] {identities[id].name}
             </LinkWithTooltip>;
         else
@@ -97,7 +97,7 @@ function EgoItem({ id }) {
         return <span>{"{Loading...}"}</span>
     } else {
         if (id in egos)
-            return <LinkWithTooltip href={`/egos/${id}`} tooltipProps={getEgoTooltipProps(id)}>
+            return <LinkWithTooltip href={`/egos/${id}`} tooltipProps={getEgoTooltipProps(id)} className="text-link" style={{ textDecoration: "underline" }}>
                 [{sinnerIdMapping[egos[id].sinnerId]}] {egos[id].name}
             </LinkWithTooltip>;
         else
@@ -197,7 +197,7 @@ function EncounterItem({ str }) {
     } else if (!(cat in encounters) || !(enc in encounters[cat])) {
         return <span>{`{encounter:${str}}`}</span>;
     } else {
-        return <LinkWithTooltip href={`/encounters?category=${cat}&encounter=${enc}`} tooltipProps={getEncounterTooltipProps(cat, enc)}>
+        return <LinkWithTooltip href={`/encounters?category=${cat}&encounter=${enc}`} tooltipProps={getEncounterTooltipProps(cat, enc)} className="text-link" style={{ textDecoration: "underline" }}>
             {encounterCategoryLabels[cat]}: {encounters[cat][enc]}
         </LinkWithTooltip>;
     }
@@ -235,7 +235,7 @@ function BuildItem({ id }) {
         invalid ?
             <span>{`{build:${id}}`}</span> :
             <span>
-                <LinkWithTooltip href={`/builds/${id}`} tooltipProps={getMarkdownTooltipProps("build", build)}>
+                <LinkWithTooltip href={`/builds/${id}`} tooltipProps={getMarkdownTooltipProps("build", build)} className="text-link" style={{ textDecoration: "underline" }}>
                     {build.title}
                 </LinkWithTooltip>
             </span>
@@ -261,7 +261,7 @@ function CollectionItem({ id }) {
         invalid ?
             <span>{`{collection:${id}}`}</span> :
             <span>
-                <LinkWithTooltip href={`/collections/${id}`} tooltipProps={getMarkdownTooltipProps("collection", collection)}>
+                <LinkWithTooltip href={`/collections/${id}`} tooltipProps={getMarkdownTooltipProps("collection", collection)} className="text-link" style={{ textDecoration: "underline" }}>
                     {collection.title}
                 </LinkWithTooltip>
             </span>
@@ -287,7 +287,7 @@ function MdPlanItem({ id }) {
         invalid ?
             <span>{`{mdplan:${id}}`}</span> :
             <span>
-                <LinkWithTooltip href={`/md-plans/${id}`} tooltipProps={getMarkdownTooltipProps("md_plan", plan)}>
+                <LinkWithTooltip href={`/md-plans/${id}`} tooltipProps={getMarkdownTooltipProps("md_plan", plan)} className="text-link" style={{ textDecoration: "underline" }}>
                     {plan.title}
                 </LinkWithTooltip>
             </span>

@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { DataProvider, getMeta } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
+import { SiteCustomizationProvider } from "./components/SiteCustomizationProvider";
 import AllTooltips from "./components/tooltips/AllTooltip";
 import UserStatus from "./components/user/UserStatus";
 import { AuthProvider } from "./database/authProvider";
@@ -39,6 +40,7 @@ const paths = [
             { path: "/my-profile", title: "View My Profile" },
             { path: "/my-posts", title: "My Posts" },
             { path: "/edit-profile", title: "Edit Profile" },
+            { path: "/site-customization", title: "Site Customization"}
         ]
     },
     {
@@ -64,8 +66,8 @@ const paths = [
         title: "Site / Contact", subpaths: [
             { path: "/about", title: "About" },
             { path: "/supporters", title: "Supporters" },
-            { path: "/update-history", title: "Update History" },
             { path: "/feedback", title: "Feedback / Contact" },
+            { path: "/update-history", title: "Update History" },
             { path: "/privacy", title: "Privacy Policy" },
             { path: "/terms", title: "Terms of Service" }
         ]
@@ -84,25 +86,27 @@ export default function LayoutComponent({ children }) {
 
     return <AuthProvider>
         <RequestsCacheProvider>
-            <Layout
-                title={"Limbus Company Tools"}
-                lastUpdated={lastUpdated}
-                // linkSet={"limbus"}
-                description={description}
-                gameName={"Limbus Company"}
-                developerName={"Project Moon"}
-                githubLink={"https://github.com/eldritchtools/limbus"}
-                paths={paths}
-                LinkComponent={NoPrefetchLink}
-                topComponent={<UserStatus />}
-            >
-                <DataProvider>
-                    <ModalProvider>
-                        {children}
-                        <AllTooltips />
-                    </ModalProvider>
-                </DataProvider>
-            </Layout>
+            <SiteCustomizationProvider>
+                <Layout
+                    title={"Limbus Company Tools"}
+                    lastUpdated={lastUpdated}
+                    // linkSet={"limbus"}
+                    description={description}
+                    gameName={"Limbus Company"}
+                    developerName={"Project Moon"}
+                    githubLink={"https://github.com/eldritchtools/limbus"}
+                    paths={paths}
+                    LinkComponent={NoPrefetchLink}
+                    topComponent={<UserStatus />}
+                >
+                    <DataProvider>
+                        <ModalProvider>
+                            {children}
+                            <AllTooltips />
+                        </ModalProvider>
+                    </DataProvider>
+                </Layout>
+            </SiteCustomizationProvider>
         </RequestsCacheProvider>
     </AuthProvider>
 }

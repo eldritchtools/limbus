@@ -11,6 +11,7 @@ import SelectBuildModalContent from "./SelectBuildModalContent";
 import SelectGiftModalContent from "./SelectGiftModalContent";
 import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
 import SelectThemePackModalContent from "./SelectThemePackModalContent";
+import SetFavoriteLinksModalContent from "./SetFavoriteLinksModalContent";
 import UpdateHistoryModalContent from "./UpdateHistoryModalContent";
 
 const ModalContext = createContext();
@@ -24,7 +25,8 @@ const MODAL_COMPONENTS = {
     "deleteContent": DeleteContentModalContent,
     "deleteComment": DeleteCommentModalContent,
     "updateHistory": UpdateHistoryModalContent,
-    "choiceEvent": ChoiceEventModalContent
+    "choiceEvent": ChoiceEventModalContent,
+    "setFavoriteLinks": SetFavoriteLinksModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -70,6 +72,10 @@ export function ModalProvider({ children }) {
         openModal("choiceEvent", { choiceEvent });
     }
 
+    const openSetFavoriteLinksModal = ({ currentList, setFavoriteLinks }) => {
+        openModal("setFavoriteLinks", { currentList, setFavoriteLinks });
+    }
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
@@ -84,6 +90,7 @@ export function ModalProvider({ children }) {
         openDeleteCommentModal,
         openUpdateHistoryModal,
         openChoiceEventModal,
+        openSetFavoriteLinksModal,
         closeModal
     }
 

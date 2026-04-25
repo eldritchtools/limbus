@@ -15,7 +15,7 @@ import { checkFilterMatch, filterByFilters } from "../lib/filter";
 import { TextWithStatuses } from "../lib/statusReplacement";
 import useLocalState from "../lib/useLocalState";
 
-function GiftDesc({ gift, tagStrips }) {
+function GiftDesc({ gift }) {
     const { openGiftModal } = useModal();
 
     return <div
@@ -27,7 +27,7 @@ function GiftDesc({ gift, tagStrips }) {
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-                <Gift gift={gift} includeTooltip={false} tagStrips={tagStrips} />
+                <Gift gift={gift} includeTooltip={false} />
             </div>
             <div style={{ display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
                 <TextWithStatuses templateText={gift.descs[0]} />
@@ -36,7 +36,7 @@ function GiftDesc({ gift, tagStrips }) {
     </div>
 }
 
-function GiftCard({ gift, isSmall, tagStrips }) {
+function GiftCard({ gift, isSmall }) {
     const { openGiftModal } = useModal();
 
     return <div
@@ -49,7 +49,7 @@ function GiftCard({ gift, isSmall, tagStrips }) {
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-                <Gift gift={gift} includeTooltip={false} scale={isSmall ? .6 : 1} tagStrips={tagStrips} />
+                <Gift gift={gift} includeTooltip={false} scale={isSmall ? .6 : 1} />
             </div>
             <div style={{
                 display: "inline-block", fontSize: "1rem", lineHeight: "1.5", inlineSize: "50ch", textWrap: "wrap",
@@ -61,7 +61,7 @@ function GiftCard({ gift, isSmall, tagStrips }) {
     </div>
 }
 
-function GiftList({ searchString, filters, tagFilter, tagFilterExcluding, includeDescription, displayType, showTagStrips, giftsData, isSmall }) {
+function GiftList({ searchString, filters, tagFilter, tagFilterExcluding, includeDescription, displayType, giftsData, isSmall }) {
     const list = useMemo(() => {
         const combinedFilters = [...filters];
         if (tagFilter) {
@@ -86,9 +86,9 @@ function GiftList({ searchString, filters, tagFilter, tagFilterExcluding, includ
 
     const listComponents = list.map(([id, gift]) => {
         switch (displayType) {
-            case "icon": return <Gift key={id} gift={gift} includeTooltip={true} scale={isSmall ? .6 : 1} tagStrips={showTagStrips} />;
-            case "card": return <GiftCard key={id} gift={gift} isSmall={isSmall} tagStrips={showTagStrips} />;
-            case "desc": return <GiftDesc key={id} gift={gift} tagStrips={showTagStrips} />;
+            case "icon": return <Gift key={id} gift={gift} includeTooltip={true} scale={isSmall ? .6 : 1} />;
+            case "card": return <GiftCard key={id} gift={gift} isSmall={isSmall} />;
+            case "desc": return <GiftDesc key={id} gift={gift} />;
             default: return null;
         }
     });
@@ -118,7 +118,6 @@ export default function GiftsPage() {
     const [displayType, setDisplayType] = useLocalState("giftsDisplayType", "icon");
     const [tagFilter, setTagFilter] = useState(null);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
-    const [showTagStrips, setShowTagStrips] = useState(false);
     const { isDesktop } = useBreakpoint();
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
@@ -166,16 +165,6 @@ export default function GiftsPage() {
                     </label>
                 </div>
                 <div />
-                <div style={{ display: "flex" }}>
-                    <label>
-                        <input type="checkbox" checked={showTagStrips} onChange={e => setShowTagStrips(e.target.checked)} />
-                        <span {...getGeneralTooltipProps("Display colored strips on gifts to quickly see their tags. (Experimental Feature)")}
-                            style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
-                        >
-                            Show Tag Strips
-                        </span>
-                    </label>
-                </div>
             </div>
             <IconsSelector type={"column"} categories={["giftTier", "status", "atkTypeKwless", "affinity"]} values={filters} setValues={setFilters} />
         </div>
@@ -189,7 +178,6 @@ export default function GiftsPage() {
                 tagFilterExcluding={tagFilterExcluding}
                 includeDescription={includeDescription}
                 displayType={displayType}
-                showTagStrips={showTagStrips}
                 giftsData={giftsData}
                 isSmall={!isDesktop}
             />

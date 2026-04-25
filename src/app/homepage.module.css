@@ -15,26 +15,18 @@
     font-weight: bold;
 }
 
-.LinkComponent {
-    background: #1f1f1f;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* border: 1px solid #777; */
-    text-decoration: none;
-    padding: 0.25rem;
+.recentAdditions {
+    width: 100%;
+    border: 1px #aaa solid;
+    border-radius: 12px;
     box-sizing: border-box;
-    color: #ddd;
-    font-weight: bold;
-    text-decoration: none;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    transition: all 0.2s ease;
 }
 
-.LinkComponent:hover {
-    filter: brightness(1.3);
-    color: #bbb;
-}
-
-.LinkComponent:visited {
-    color: #ddd;   
+.recentAdditions.canHover:hover {
+    background: #3a3a3a;
 }
