@@ -40,6 +40,7 @@ const paths = [
             { path: "/my-profile", title: "View My Profile" },
             { path: "/my-posts", title: "My Posts" },
             { path: "/edit-profile", title: "Edit Profile" },
+            { path: "/company", title: "Company"},
             { path: "/site-customization", title: "Site Customization"}
         ]
     },

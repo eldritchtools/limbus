@@ -6,7 +6,7 @@ export const db = new Dexie("limbus-company-tools");
 
 const itemStores = ["builds", "collections", "mdPlans"];
 const savedStores = ["savedBuilds", "savedCollections", "savedMdPlans"];
-const singleStores = ["achievements"];
+const singleStores = ["achievements", "companies"];
 const unsyncedStores = ["keywordSolver", "teamRandomizer", "trainingCalc", "siteCustomization"];
 
 db.version(1).stores(
@@ -36,7 +36,7 @@ export const localStores = {
 }
 
 export function getLocalStore(store) {
-    return makeStore(db[store]);
+    return localStores[store] ?? makeStore(db[store]);
 }
 
 export function isLocalId(id) {

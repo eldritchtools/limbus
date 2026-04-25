@@ -103,32 +103,41 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
 
     return items.filter(item => {
         if (!additionalFilter(item)) return false;
-        if(item.upcoming) return false;
-        
+        if (item.upcoming) return false;
+
         for (const filterType in f) {
             if (type === "identity") {
+                if (!(filterType in identityFilterMatchFunctions)) continue;
+
                 if (strictFiltering) {
                     if (!f[filterType].every(x => identityFilterMatchFunctions[filterType](x, item))) return false;
                 } else {
                     if (!f[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
                 }
             } else if (type === "ego") {
+                if (!(filterType in egoFilterMatchFunctions)) continue;
+
                 if (strictFiltering) {
                     if (!f[filterType].every(x => egoFilterMatchFunctions[filterType](x, item))) return false;
                 } else {
                     if (!f[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
                 }
             } else if (type === "gift") {
+                if (!(filterType in giftFilterMatchFunctions)) continue;
+
                 if (!f[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
 
         for (const filterType in fe) {
             if (type === "identity") {
+                if (!(filterType in identityFilterMatchFunctions)) continue;
                 if (fe[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
             } else if (type === "ego") {
+                if (!(filterType in egoFilterMatchFunctions)) continue;
                 if (fe[filterType].some(x => egoFilterMatchFunctions[filterType](x, item))) return false;
             } else if (type === "gift") {
+                if (!(filterType in giftFilterMatchFunctions)) continue;
                 if (fe[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
             }
         }

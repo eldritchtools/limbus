@@ -60,7 +60,7 @@ export default function SearchMdPlansPage() {
 
                     <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
                         <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        <button className="page-button" disabled={plans.length > 0} onClick={() => setPage(p => p + 1)}>Next</button>
+                        <button className="page-button" disabled={plans.length < 20} onClick={() => setPage(p => p + 1)}>Next</button>
                     </div>
                 </div>
         }

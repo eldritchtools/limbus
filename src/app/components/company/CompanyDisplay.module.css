@@ -1,0 +1,14 @@
+.clickableIcon {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.clickableIcon.owned {
+    filter: brightness(1);
+    border: 1px #aaa solid;
+}
+
+.clickableIcon.unowned {
+    filter: brightness(0.5) saturate(0.6);
+}

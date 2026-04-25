@@ -33,6 +33,7 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{lineHeight: "1.3"}}>
+                <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/company"}>Company</NoPrefetchLink></HoverBlocker> Page - Set the identities and E.G.Os you own. They can be viewed in your profile or used when filtering team builds.</li>
                 <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink></HoverBlocker> Page - Customize how certain parts of the site are displayed. More options to be added in the future.</li>
                 <li>Tokens now supports icons. Currently this has icons for some associations, fingers, wings, and some syndicates.</li>
                 <li>Tokens now supports encounters.</li>
