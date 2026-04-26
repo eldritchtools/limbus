@@ -15,11 +15,15 @@ import NumberInput from "../components/objects/NumberInput";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
+import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
+import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import { IdentityMenuSelector } from "../components/selectors/IdentitySelectors";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
 import { getLocalStore } from "../database/localDB";
 import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
+import { checkFilterMatch } from "../lib/filter";
+import { selectStyle } from "../styles/selectStyle";
 
 function ResultComponent({ identities, result, keywordTargets, statusTargets, router, isMobile }) {
     const counts = Object.fromEntries(keywords.slice(0, 7).map(kw => [kw, 0]));
@@ -69,6 +73,7 @@ export default function TeamSolverPage() {
     const [deployedSinners, setDeployedSinners] = useState(7);
     const [keywordTargets, setKeywordTargets] = useState(Array.from({ length: 7 }, () => 0));
     const [statusTargets, setStatusTargets] = useState([]);
+    const [tagTargets, setTagTargets] = useState([]);
     const [solvers, setSolvers] = useState(5);
 
     const [wbMode, setWbMode] = useState("b");
@@ -95,6 +100,7 @@ export default function TeamSolverPage() {
             if (data.deployedSinners) setDeployedSinners(data.deployedSinners);
             if (data.keywordTargets) setKeywordTargets(data.keywordTargets);
             if (data.statusTargets) setStatusTargets(data.statusTargets);
+            if (data.tagTargets) setTagTargets(data.tagTargets);
             if (data.solvers) setSolvers(data.solvers);
             if (data.wbMode) setWbMode(data.wbMode);
             if (data.wbList) setWbList(data.wbList);
@@ -115,7 +121,7 @@ export default function TeamSolverPage() {
             const data = {
                 id: "main",
                 fixedIdentityIds, enabledSinners, deployedSinners,
-                keywordTargets, statusTargets, solvers,
+                keywordTargets, statusTargets, tagTargets, solvers,
                 wbMode, wbList, wbListDisplay, wbListOpen
             }
 
@@ -133,7 +139,9 @@ export default function TeamSolverPage() {
         }, 1000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [initializing, fixedIdentityIds, enabledSinners, deployedSinners, keywordTargets, statusTargets, solvers, wbMode, wbList, wbListDisplay, wbListOpen]);
+    }, [initializing, fixedIdentityIds, enabledSinners, deployedSinners,
+        keywordTargets, statusTargets, tagTargets, solvers,
+        wbMode, wbList, wbListDisplay, wbListOpen]);
 
     const handleSetFixedIdentityId = (index, id) => {
         setFixedIdentityIds(p => p.map((v, i) => i === index ? id : v));
@@ -209,6 +217,12 @@ export default function TeamSolverPage() {
                         acc[status] = num;
                         return acc;
                     }, {}),
+                tagTargets:
+                    tagTargets.reduce((acc, { tag, num }) => {
+                        if (num === 0 || !tag) return acc;
+                        acc[tag] = num;
+                        return acc;
+                    }, {}),
                 solvers: solvers
             };
 
@@ -250,11 +264,19 @@ export default function TeamSolverPage() {
         </div>;
     }, [wbList, wbListDisplay, identities, identitiesLoading]);
 
-    const identityOptions = useMemo(() => {
+    const [identityOptions, statusOptions, tagOptions] = useMemo(() => {
         if (identitiesLoading) return [];
-        return Object.entries(identities).reverse().reduce((acc, [_, identity]) => {
-            acc[identity.sinnerId].push(identity); return acc;
-        }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, []])));
+        const identityOptions = Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, []]));
+        const statusOptions = new Set();
+        const tagOptions = new Set();
+
+        Object.values(identities).reverse().forEach(identity => {
+            identityOptions[identity.sinnerId].push(identity);
+            (identity.statuses ?? []).forEach(x => statusOptions.add(x));
+            (identity.tags ?? []).forEach(x => tagOptions.add(x));
+        })
+
+        return [identityOptions, [...statusOptions], [...tagOptions]];
     }, [identities, identitiesLoading]);
 
     if (identitiesLoading || initializing) return <LoadingContentPageTemplate />;
@@ -303,7 +325,7 @@ export default function TeamSolverPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span>Deployed Sinners:</span>
+                    <span>Max Sinners:</span>
                     <NumberInput value={deployedSinners} onChange={setDeployedSinners} min={1} max={12} style={{ textAlign: "center", width: "3ch" }} />
                 </div>
                 <button onClick={() => setWbListOpen(p => !p)}>
@@ -338,11 +360,37 @@ export default function TeamSolverPage() {
                     <StatusDropdownSelector
                         selected={status}
                         setSelected={x => setStatusTargets(p => p.map((y, ind) => i === ind ? { ...y, status: x } : y))}
+                        options={statusOptions}
                     />
                 </div>
                 <NumberInputWithButtons
                     value={num}
                     setValue={x => setStatusTargets(p => p.map((y, ind) => i === ind ? { ...y, num: x } : y))}
+                    min={0} max={12}
+                    inputStyle={{ width: "2ch" }}
+                />
+            </div>)}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            <button onClick={() => setTagTargets(p => [...p, { tag: null, num: 0 }])}>Add Additional Faction/Tag</button>
+            {tagTargets.map(({ tag, num }, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
+                <button
+                    onClick={() => setTagTargets(p => p.filter((x, ind) => i !== ind))}
+                    style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
+                >
+                    x
+                </button>
+                <div style={{ flex: 1 }}>
+                    <FactionDropdownSelector
+                        selected={tag}
+                        setSelected={x => setTagTargets(p => p.map((y, ind) => i === ind ? { ...y, tag: x } : y))}
+                        options={tagOptions}
+                    />
+                </div>
+                <NumberInputWithButtons
+                    value={num}
+                    setValue={x => setTagTargets(p => p.map((y, ind) => i === ind ? { ...y, num: x } : y))}
                     min={0} max={12}
                     inputStyle={{ width: "2ch" }}
                 />

@@ -7,7 +7,8 @@ const tagMap = {
     color: ({ value, children, key }) => <span key={key} style={{ color: value }}>{children}</span>,
     mark: ({ value, children, key }) => <span key={key} style={{ backgroundColor: value }}>{children}</span>,
     b: ({ children, key }) => <span key={key} style={{ fontWeight: "bold" }}>{children}</span>,
-    u: ({ children, key }) => <span key={key} style={{ textDecoration: "underline" }}>{children}</span>
+    u: ({ children, key }) => <span key={key} style={{ textDecoration: "underline" }}>{children}</span>,
+    s: ({ children, key }) => <span key={key} style={{ textDecoration: "line-through" }}>{children}</span>,
 };
 
 function parseToTree(input) {
@@ -104,7 +105,8 @@ function renderNodes(nodes, options = {}) {
         enableTooltips = true,
         iconStyleOverride = {},
         nameStyleOverride = {},
-        allowReplacement = true
+        allowReplacement = true,
+        textOnly = false
     } = options;
 
     function render(node) {
@@ -122,6 +124,8 @@ function renderNodes(nodes, options = {}) {
         }
 
         const children = (node.children || []).map(render);
+
+        if(textOnly) return children.join("");
 
         const renderer = tagMap[node.name];
 
@@ -144,10 +148,14 @@ function renderNodes(nodes, options = {}) {
 }
 
 function parse(input, options) {
-    const tree = parseToTree(input);
+    const tree = parseToTree(input, options.textOnly);
     return renderNodes(tree, options);
 }
 
 export default function ProcessedText({ text, enableTooltips = true, iconStyleOverride = {}, nameStyleOverride = {}, allowReplacement = true }) {
     return parse(text, { enableTooltips, iconStyleOverride, nameStyleOverride, allowReplacement });
+}
+
+export function processText(text) {
+    return parse(text, {enableTooltips: false, allowReplacement: false, textOnly: true})[0];
 }

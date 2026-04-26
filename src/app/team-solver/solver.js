@@ -20,12 +20,14 @@ function permute(array) {
     return array;
 }
 
-function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSinners, keywordTargets, statusTargets, solvers }) {
+function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSinners, keywordTargets, statusTargets, tagTargets, solvers }) {
     const solutionsPerSolver = Math.ceil(MAX_SOLUTIONS / solvers);
     const kwToIndex = Object.fromEntries(Object.entries(keywordTargets).filter(([, cnt]) => cnt > 0).map(([kw], i) => ([kw, i])));
     let condCount = Object.keys(kwToIndex).length;
     const stToIndex = Object.fromEntries(Object.entries(statusTargets).filter(([, cnt]) => cnt > 0).map(([st], i) => ([st, i + condCount])));
     condCount += Object.keys(stToIndex).length;
+    const tagToIndex = Object.fromEntries(Object.entries(tagTargets).filter(([, cnt]) => cnt > 0).map(([tag], i) => ([tag, i + condCount])));
+    condCount += Object.keys(tagToIndex).length;
 
     const condPerIdentity = {};
     const matchCountPerSinner =
@@ -51,6 +53,12 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
                 matches++;
             }
         });
+        (identity.tags ?? []).forEach(tag => {
+            if (tag in tagToIndex) {
+                conds[tagToIndex[tag]] = true;
+                matches++;
+            }
+        });
 
         if(matches === 0) return;
 
@@ -68,10 +76,12 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
     const initRequirement = Array.from({ length: condCount }, () => 0);
     Object.entries(keywordTargets).forEach(([kw, cnt]) => initRequirement[kwToIndex[kw]] = cnt);
     Object.entries(statusTargets).forEach(([st, cnt]) => initRequirement[stToIndex[st]] = cnt);
+    Object.entries(tagTargets).forEach(([tag, cnt]) => initRequirement[tagToIndex[tag]] = cnt);
     Object.values(fixedIdentityIds).forEach(id => {
         const identity = identityOptions.find(x => x.id === id);
         (identity.skillKeywordList ?? []).forEach(kw => { if (kw in kwToIndex) initRequirement[kwToIndex[kw]]-- });
         (identity.statuses ?? []).forEach(st => { if (st in stToIndex) initRequirement[stToIndex[st]]-- });
+        (identity.tags ?? []).forEach(tag => { if (tag in tagToIndex) initRequirement[tagToIndex[tag]]-- });
     })
 
     const solverStates = Array.from({ length: solvers }, () => ({
@@ -151,9 +161,8 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
 
         let newSolution = null;
 
-        if (solver.remain <= 0) {
-            let valid = solver.needed.every(x => x <= 0);
-            if (valid) newSolution = [...solver.solution];
+        if (solver.needed.every(x => x <= 0)) {
+            newSolution = [...solver.solution];
             popId(solver);
         } else if (solver.needed.some(x => x > solver.remain)) {
             popId(solver);
