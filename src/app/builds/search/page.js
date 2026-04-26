@@ -51,17 +51,20 @@ export default function SearchBuildsPage() {
 
         {loading ?
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
-            builds.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
-                    {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
-                </p> :
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {builds.length === 0 ?
+                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                        {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
+                    </p> :
                     <BuildsSearchDisplay builds={builds} />
+                }
 
-                    <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
-                        <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        <button className="page-button" disabled={builds.length < 24} onClick={() => setPage(p => p + 1)}>Next</button>
-                    </div>
-                </div>}
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
+                    <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+                    {page}
+                    <button className="page-button" disabled={builds.length < 24} onClick={() => setPage(p => p + 1)}>Next</button>
+                </div>
+            </div>
+        }
     </div>;
 }

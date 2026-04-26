@@ -36,7 +36,7 @@ const createParams = {
     tags: "p_tags"
 }
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 30;
 
 export async function searchMdPlans(params, page, pageSize = null) {
     return callRPC("search_md_plans_v3", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
