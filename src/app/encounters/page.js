@@ -47,7 +47,7 @@ function BuildsSection({ tag }) {
                 <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
                     {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                 </p> :
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.5rem" }}>
                     <BuildsSearchDisplay builds={builds} />
 
                     <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
