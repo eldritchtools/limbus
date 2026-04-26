@@ -249,7 +249,7 @@ export default function MdPlanPage({ params }) {
             <div style={{ border: "1px #777 solid" }} />
 
             <span style={{ fontSize: "1.2rem" }}>Tracking Mode</span>
-            <span style={{ color: "#aaa" }}>Tracking mode allows you to mark gifts you&apos;ve obtained or theme packs you&apos;ve entered. Any progress made is saved locally. Tracking mode is automatically activated if you have tracking data, reset your tracking data if you want to disable this.</span>
+            <span style={{ color: "#aaa" }}>Tracking mode allows you to mark gifts you&apos;ve obtained or theme packs you&apos;ve entered by clicking them. Any progress made is saved locally. Tracking mode is automatically activated if you have tracking data for this MD Plan, reset your tracking data if you want to disable this.</span>
             <div style={{ display: "flex", gap: "0.25rem" }}>
                 <button onClick={() => toggleTracking()}>
                     {tracking === null ? "Activate Tracking Mode" : "Deactivate Tracking Mode"}

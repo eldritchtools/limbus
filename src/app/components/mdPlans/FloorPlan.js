@@ -53,7 +53,7 @@ function FloorItem({
         null
 
     const themePacksComponent = <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "160px" : "300px", height: "350px",
+        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
         border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", boxSizing: "border-box"
     }}>
         <h3 style={{ margin: 0 }}>Theme Packs</h3>
@@ -74,7 +74,7 @@ function FloorItem({
     </div>;
 
     const giftsComponent = <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "160px" : "300px", height: "350px",
+        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
         border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", boxSizing: "border-box"
     }}>
         <h3 style={{ margin: 0 }}>Gifts</h3>
