@@ -192,13 +192,14 @@ export default function CommentSection({ targetType, targetId, ownerId, commentC
 
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
                     <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                    {commentCount ? 
+                    {/* {commentCount !== undefined ? 
                         [-2, -1, 0, 1, 2].filter(x => page + x > 0 && page + x <= Math.ceil(commentCount / 20)).map(x =>
                             <button key={x} className="page-button" disabled={x === 0} onClick={() => setPage(page + x)}>{page + x}</button>
                         ) :
                         page
-                    }
-                    <button className="page-button" disabled={comments < 20} onClick={() => setPage(p => p + 1)}>Next</button>
+                    } */}
+                    {page}
+                    <button className="page-button" disabled={comments.length < 20} onClick={() => setPage(p => p + 1)}>Next</button>
                 </div>
             </div>
         }
