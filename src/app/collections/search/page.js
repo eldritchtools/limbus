@@ -51,18 +51,20 @@ export default function SearchCollectionsPage() {
 
         {loading ?
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading collections...</p> :
-            collections.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
-                    {page === 1 ? uiStrings.noPublishedContent("collections") : uiStrings.noMoreContent("collections")}
-                </p> :
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {collections.length === 0 ?
+                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                        {page === 1 ? uiStrings.noPublishedContent("collections") : uiStrings.noMoreContent("collections")}
+                    </p> :
                     <CollectionsSearchDisplay collections={collections} />
+                }
 
-                    <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
-                        <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        <button className="page-button" disabled={collections.length < 10} onClick={() => setPage(p => p + 1)}>Next</button>
-                    </div>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
+                    <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+                    {page}
+                    <button className="page-button" disabled={collections.length < 10} onClick={() => setPage(p => p + 1)}>Next</button>
                 </div>
+            </div>
         }
     </div>;
 }

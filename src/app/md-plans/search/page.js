@@ -51,18 +51,19 @@ export default function SearchMdPlansPage() {
 
         {loading ?
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading md plans...</p> :
-            plans.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
-                    {page === 1 ? uiStrings.noPublishedContent("md plans") : uiStrings.noMoreContent("md plans")}
-                </p> :
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {plans.length === 0 ?
+                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                        {page === 1 ? uiStrings.noPublishedContent("md plans") : uiStrings.noMoreContent("md plans")}
+                    </p> :
                     <MdPlansSearchDisplay plans={plans} />
-
-                    <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
-                        <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        <button className="page-button" disabled={plans.length < 20} onClick={() => setPage(p => p + 1)}>Next</button>
-                    </div>
+                }
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
+                    <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+                    {page}
+                    <button className="page-button" disabled={plans.length < 30} onClick={() => setPage(p => p + 1)}>Next</button>
                 </div>
+            </div>
         }
     </div>;
 }

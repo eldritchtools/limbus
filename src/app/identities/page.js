@@ -13,9 +13,10 @@ import RarityIcon from "../components/icons/RarityIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import DropdownButton from "../components/objects/DropdownButton";
-import Status from "../components/objects/Status";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
+import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
+import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
@@ -43,16 +44,6 @@ function SkillSpread({ identity, columns = 4 }) {
             </div>
         })}
     </div>
-}
-
-function processTag(tag, removeStyles = false) {
-    if (tag.includes("<color=#d40000><s>")) {
-        const text = tag.slice(18, 28)
-        if (removeStyles) return text;
-        else return <span style={{ color: "#d40000", textDecoration: "line-through" }}>{text}</span>
-    } else {
-        return tag;
-    }
 }
 
 function IdentityDetails({ id, identity }) {
@@ -112,8 +103,8 @@ function IdentityList({ identities, searchString, filters, displayType, separate
             identity => searchString.length === 0 || checkFilterMatch(searchString, identity.name),
             strictFiltering
         )
-        .map(x => [x.id, x])
-        .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
+            .map(x => [x.id, x])
+            .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
         [identities, searchString, filters, selectedStatuses, selectedFactionTags, selectedSeasons, strictFiltering]);
 
@@ -233,7 +224,7 @@ export default function Identities() {
     const [seasonsExcluding, setSeasonsExcluding] = useState(false);
 
     const [statusOptions, tagOptions, seasonOptions] = useMemo(() => {
-        if (identitiesLoading || statusesLoading) return [[], [], []];
+        if (identitiesLoading) return [[], [], []];
         const statusList = new Set();
         const tagList = new Set();
         const seasonList = new Set();
@@ -246,23 +237,15 @@ export default function Identities() {
         });
 
         return [
-            [...statusList].map(id => ({
-                value: id,
-                label: <Status status={statuses[id]} includeTooltip={false} />,
-                name: statuses[id].name
-            })).sort((a, b) => a.name.localeCompare(b.name)),
-            [...tagList].map(tag => ({
-                value: tag,
-                label: processTag(tag),
-                name: processTag(tag, true)
-            })).sort((a, b) => a.name.localeCompare(b.name)),
+            [...statusList],
+            [...tagList],
             [...seasonList].map(season => ({
                 value: `${season}`,
                 label: season === 9100 ? "Walpurgisnacht (any)" : getSeasonString(season),
                 name: season === 9100 ? "Walpurgisnacht" : getSeasonString(season)
             })).sort((a, b) => a.value - b.value)
         ]
-    }, [identities, identitiesLoading, statuses, statusesLoading]);
+    }, [identities, identitiesLoading]);
 
     return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h2 style={{ margin: 0 }}>Identities</h2>
@@ -280,15 +263,12 @@ export default function Identities() {
                         {statusesExcluding ? "Exclude" : "Include"}
                     </div>
                 </div>
-                <DropdownSelectorWithExclusion
-                    options={statusOptions}
+                <StatusDropdownSelector
                     selected={selectedStatuses}
                     setSelected={setSelectedStatuses}
-                    filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                    options={statusOptions}
                     isMulti={true}
-                    placeholder={"Select Statuses..."}
                     excludeMode={statusesExcluding}
-                    styles={selectStyle}
                 />
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
                     <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Factions/Tags:</div>
@@ -300,15 +280,12 @@ export default function Identities() {
                         {factionTagsExcluding ? "Exclude" : "Include"}
                     </div>
                 </div>
-                <DropdownSelectorWithExclusion
-                    options={tagOptions}
+                <FactionDropdownSelector
                     selected={selectedFactionTags}
                     setSelected={setSelectedFactionTags}
-                    filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                    options={tagOptions}
                     isMulti={true}
-                    placeholder={"Select Factions/Tags..."}
                     excludeMode={factionTagsExcluding}
-                    styles={selectStyle}
                 />
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
                     <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Season:</div>

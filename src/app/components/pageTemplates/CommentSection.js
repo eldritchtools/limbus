@@ -180,19 +180,28 @@ export default function CommentSection({ targetType, targetId, ownerId, commentC
 
         {loading ?
             <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading...</p> :
-            comments.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>{page === 1 ? "No comments yet." : "No more comments."}</p> :
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    {comments.map((c, i) => <Comment key={i} comment={c} targetType={targetType} targetId={targetId} buildOwnerId={ownerId} onPost={onPost} onEdit={onEdit} onDelete={onDelete} onPin={onPin} />)}
-
-                    <div style={{ display: "flex", gap: "0.5rem", alignSelf: "end" }}>
-                        <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                        {[-2, -1, 0, 1, 2].filter(x => page + x > 0 && page + x <= Math.ceil(commentCount / 20)).map(x =>
-                            <button key={x} className="page-button" disabled={x === 0} onClick={() => setPage(page + x)}>{page + x}</button>
-                        )}
-                        <button className="page-button" disabled={page >= commentCount / 20} onClick={() => setPage(p => p + 1)}>Next</button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {comments.length === 0 ?
+                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                        {page === 1 ? "No comments yet." : "No more comments."}
+                    </p> :
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        {comments.map((c, i) => <Comment key={i} comment={c} targetType={targetType} targetId={targetId} buildOwnerId={ownerId} onPost={onPost} onEdit={onEdit} onDelete={onDelete} onPin={onPin} />)}
                     </div>
+                }
+
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
+                    <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+                    {/* {commentCount !== undefined ? 
+                        [-2, -1, 0, 1, 2].filter(x => page + x > 0 && page + x <= Math.ceil(commentCount / 20)).map(x =>
+                            <button key={x} className="page-button" disabled={x === 0} onClick={() => setPage(page + x)}>{page + x}</button>
+                        ) :
+                        page
+                    } */}
+                    {page}
+                    <button className="page-button" disabled={comments.length < 20} onClick={() => setPage(p => p + 1)}>Next</button>
                 </div>
+            </div>
         }
     </section>
 }

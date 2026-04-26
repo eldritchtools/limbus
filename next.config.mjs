@@ -19,7 +19,17 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_LAST_UPDATED: new Date().toISOString(),
-  }
+  },
+
+  async redirects() {
+    return [
+      {
+        source: '/keyword-solver',
+        destination: '/team-solver',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

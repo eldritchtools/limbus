@@ -252,8 +252,8 @@ export default function CompanyDisplay({ username, editable = false }) {
         const handleCompany = company => {
             if (!company) {
                 if (editable) {
-                    setIdentityBitsets(Array.from({ length: 12 }, () => bitsetFunctions.newMask()));
-                    setEgoBitsets(Array.from({ length: 12 }, () => bitsetFunctions.newMask()));
+                    setIdentityBitsets(Array.from({ length: 12 }, () => bitsetFunctions.newMask(1)));
+                    setEgoBitsets(Array.from({ length: 12 }, () => bitsetFunctions.newMask(1)));
                 } else {
                     setNotSet(true);
                 }

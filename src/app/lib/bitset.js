@@ -45,5 +45,5 @@ export const bitsetFunctions = {
     getAllUnsetFlags: getAllUnsetFlags,
     toString: mask => mask.toString(),
     fromString: str => BigInt(str),
-    newMask: () => BigInt(0),
+    newMask: (num = 0) => BigInt(num),
 }

@@ -11,7 +11,15 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
-function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFloors, removeFloor, addThemePacks, removeThemePacks, addFloorGifts, removeFloorGifts, hideDescriptions, editable }) {
+function FloorItem({
+    floor, setFloor, difficulty, index,
+    isFirst, isLast, swapFloors, removeFloor,
+    addThemePacks, removeThemePacks,
+    addFloorGifts, removeFloorGifts,
+    hideDescriptions,
+    createGiftListComponent, createThemePackListComponent,
+    editable
+}) {
     const { isMobile } = useBreakpoint();
 
     const packScale = isMobile ? .4 : (floor.themePacks.length === 1 ? .44 : .3)
@@ -45,7 +53,7 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
         null
 
     const themePacksComponent = <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "160px" : "300px", height: "350px",
+        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
         border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", boxSizing: "border-box"
     }}>
         <h3 style={{ margin: 0 }}>Theme Packs</h3>
@@ -57,14 +65,16 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
             null
         }
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center", width: "100%", overflowY: "auto", overflowX: "hidden" }}>
-            {floor.themePacks.map(pack =>
-                <ThemePackIcon key={pack} id={pack} displayName={true} scale={packScale} />
-            )}
+            {
+                !editable && createThemePackListComponent ?
+                    createThemePackListComponent(floor.themePacks, packScale) :
+                    floor.themePacks.map(pack => <ThemePackIcon key={pack} id={pack} displayName={true} scale={packScale} />)
+            }
         </div>
     </div>;
 
     const giftsComponent = <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "160px" : "300px", height: "350px",
+        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
         border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", boxSizing: "border-box"
     }}>
         <h3 style={{ margin: 0 }}>Gifts</h3>
@@ -76,9 +86,11 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
             null
         }
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", overflowY: "auto" }}>
-            {floor.gifts.map(gift =>
-                <Gift key={gift} id={gift} scale={isMobile ? 0.6 : 0.9} />
-            )}
+            {
+                !editable && createGiftListComponent ?
+                    createGiftListComponent(floor.gifts, isMobile ? 0.6 : 0.9) :
+                    floor.gifts.map(gift => <Gift key={gift} id={gift} scale={isMobile ? 0.6 : 0.9} />)
+            }
         </div>
     </div>
 
@@ -110,7 +122,13 @@ function FloorItem({ floor, setFloor, difficulty, index, isFirst, isLast, swapFl
     </div>
 }
 
-export default function FloorPlan({ difficulty, floors, setFloors, addThemePacks, removeThemePacks, addFloorGifts, removeFloorGifts, editable = false }) {
+export default function FloorPlan({
+    difficulty, floors, setFloors,
+    addThemePacks, removeThemePacks,
+    addFloorGifts, removeFloorGifts,
+    createGiftListComponent, createThemePackListComponent,
+    editable = false
+}) {
     const [nextKey, setNextKey] = useState(0);
     const [hideDescriptions, setHideDescriptions] = useState(false);
 
@@ -181,6 +199,8 @@ export default function FloorPlan({ difficulty, floors, setFloors, addThemePacks
                     addFloorGifts={() => addFloorGifts(i)}
                     removeFloorGifts={() => removeFloorGifts(i)}
                     hideDescriptions={hideDescriptions}
+                    createGiftListComponent={createGiftListComponent}
+                    createThemePackListComponent={createThemePackListComponent}
                     editable={editable}
                 />
             )}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
+
 import styles from "./AdversitiesDisplay.module.css";
 import { useData } from "../DataProvider";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
@@ -18,6 +20,7 @@ export function AdversitiesPointTotal({ adversities }) {
 
 export default function AdversitiesDisplay({ adversities, setAdversities, editable = false }) {
     const [mdData, mdDataLoading] = useData("md/details");
+    const { isMobile } = useBreakpoint();
 
     if (mdDataLoading) return null;
 
@@ -45,8 +48,8 @@ export default function AdversitiesDisplay({ adversities, setAdversities, editab
             <button onClick={unsetAllAdversities}>Unset all</button>
         </div> : null}
         {Object.entries(mdData.adversity).map(([f, list]) =>
-            <div key={f} style={{display: "flex"}}>
-                <div style={{ display: "flex", alignItems: "center", padding: "0.5rem", border: "1px #aaa solid", borderRadius: "0.5rem", gap: "0.5rem" }}>
+            <div key={f} style={{ display: "flex" }}>
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "center", padding: "0.25rem", border: "1px #aaa solid", borderRadius: "0.5rem", gap: "0.5rem" }}>
                     <span style={{ fontSize: "1.1rem", fontWeight: "bold" }}>F{f}</span>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
                         {list.map((adv, i) =>

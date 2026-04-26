@@ -10,6 +10,8 @@ export async function GET() {
         { loc: `${SITE_URL}/collections`, lastmod: today },
         { loc: `${SITE_URL}/identities`, lastmod: today },
         { loc: `${SITE_URL}/egos`, lastmod: today },
+        { loc: `${SITE_URL}/timers`, lastmod: today },
+        { loc: `${SITE_URL}/encounters`, lastmod: today },
         { loc: `${SITE_URL}/achievements`, lastmod: today },
         { loc: `${SITE_URL}/gifts`, lastmod: today },
         { loc: `${SITE_URL}/fusions`, lastmod: today },

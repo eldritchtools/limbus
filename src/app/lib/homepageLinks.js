@@ -31,7 +31,7 @@ export const homepageLinks = [
         links: [
             { href: "/daily-random", title: "Daily Randomized Team", icon: "Cycle" },
             { href: "/training-calc", title: "Dispense and Training Calculator", icon: "ResultEnhancement" },
-            { href: "/keyword-solver", title: "Keyword Solver", icon: "ThreeMirrorpartYiSang" },
+            { href: "/team-solver", title: "Team Solver", icon: "ThreeMirrorpartYiSang" },
             { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
             { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" }
         ]

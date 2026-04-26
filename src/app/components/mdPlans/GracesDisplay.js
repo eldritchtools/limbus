@@ -1,5 +1,6 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useState } from "react";
 
 import styles from "./GracesDisplay.module.css";
@@ -9,6 +10,8 @@ import Icon from "../icons/Icon";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 
 function GraceComponent({ data, level, setLevel, setCurrentGrace, editable }) {
+    const { isMobile } = useBreakpoint();
+
     const handleLevelSet = l => {
         setCurrentGrace();
         if (level === l) setLevel(0);
@@ -18,8 +21,8 @@ function GraceComponent({ data, level, setLevel, setCurrentGrace, editable }) {
     let componentClass = styles.graceComponent;
     if (!editable) componentClass = `${componentClass} ${level > 0 ? styles.active : styles.inactive}`;
 
-    return <div className={componentClass} onClick={setCurrentGrace}>
-        <GraceIcon graceId={data.id} level={level} />
+    return <div className={componentClass} onClick={setCurrentGrace} style={{ width: isMobile ? "150px" : "175px" }}>
+        <GraceIcon graceId={data.id} level={level} scale={isMobile ? 0.75 : 1} />
         <div>{data.name}</div>
         {editable ?
             <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -39,14 +42,15 @@ function GraceComponent({ data, level, setLevel, setCurrentGrace, editable }) {
 export default function GracesDisplay({ graceLevels, setGraceLevels, editable = false }) {
     const [mdData, mdDataLoading] = useData("md/details");
     const [currentGrace, setCurrentGrace] = useState(0);
+    const { isMobile } = useBreakpoint();
 
     const handleLevelSet = l => {
         setGraceLevels(p => p.map(() => l));
     }
 
     const constructDesc = () => {
-        if(mdDataLoading) return null;
-        
+        if (mdDataLoading) return null;
+
         const level = Math.max(graceLevels[currentGrace] - 1, 0);
         const descs = mdData.grace[currentGrace].descs[level];
         return <div style={{ whiteSpace: "pre-wrap", paddingRight: "0.2rem", textAlign: "start" }}>
@@ -67,7 +71,7 @@ export default function GracesDisplay({ graceLevels, setGraceLevels, editable = 
     if (mdDataLoading) return null;
 
     return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-        <div className={styles.graceGrid}>
+        <div className={styles.graceGrid} style={{ gridTemplateColumns: isMobile ? "repeat(2, 150px)" : "repeat(5, 175px)" }}>
             {mdData.grace.sort((a, b) => a.index - b.index).map(grace =>
                 <GraceComponent
                     key={grace.id} data={grace}
