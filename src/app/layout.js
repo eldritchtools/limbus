@@ -1,6 +1,7 @@
 import "./globals.css";
 import Script from "next/script";
 
+import ChunkErrorHandler from "./ChunkErrorHandler";
 import LayoutComponent from "./layoutComponent";
 
 export const metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
                 </Script>
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
+                <ChunkErrorHandler />
                 <LayoutComponent>{children}</LayoutComponent>
             </body>
         </html>
