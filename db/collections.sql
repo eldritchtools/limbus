@@ -144,7 +144,7 @@ with check (
   )
 );
 
-create or replace function public.search_collections_v3(
+create or replace function public.search_collections_v4(
   p_query text default null,
   collection_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -211,7 +211,7 @@ begin
       CASE
         WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN ts_rank(c.search_vector, v_tsquery)
         WHEN v_sort = 'new' THEN EXTRACT(EPOCH FROM COALESCE(c.published_at, c.created_at))
-        WHEN v_sort = 'popular' THEN c.score
+        WHEN v_sort = 'popular' THEN public.compute_popularity(c.like_count, c.comment_count, c.view_count, c.created_at, c.published_at)
         WHEN v_sort = 'random' THEN RANDOM()
       END AS sort_value 
     FROM public.collections c

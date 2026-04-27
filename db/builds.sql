@@ -66,7 +66,7 @@ ON public.builds
 FOR DELETE
 USING (auth.uid() = user_id);
 
-CREATE OR REPLACE FUNCTION public.search_builds_v9(
+CREATE OR REPLACE FUNCTION public.search_builds_v10(
   p_query TEXT DEFAULT NULL,
   build_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -154,7 +154,7 @@ BEGIN
       CASE
         WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN ts_rank(b.search_vector, v_tsquery)
         WHEN v_sort = 'new' THEN EXTRACT(EPOCH FROM COALESCE(b.published_at, b.created_at))
-        WHEN v_sort = 'popular' THEN b.score
+        WHEN v_sort = 'popular' THEN public.compute_popularity(b.like_count, b.comment_count, b.view_count, b.created_at, b.published_at)
         WHEN v_sort = 'random' THEN RANDOM()
       END AS sort_value
 

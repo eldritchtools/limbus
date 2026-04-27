@@ -45,7 +45,7 @@ export async function getPopularBuilds(page = 1, pageSize = null) {
 }
 
 export async function searchBuilds(params, page = 1, pageSize = null) {
-    return callRPC("search_builds_v9", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_builds_v10", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
 }
 
 export async function getBuild(id, forEdit = false) {

@@ -27,7 +27,7 @@ const createParams = {
 const DEFAULT_PAGE_SIZE = 10;
 
 export async function searchCollections(params, page = 1, pageSize = null) {
-    return callRPC("search_collections_v3", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_collections_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
 }
 
 export async function getCollection(id) {

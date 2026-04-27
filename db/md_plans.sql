@@ -125,7 +125,7 @@ with check (
   )
 );
 
-create or replace function public.search_md_plans_v3(
+create or replace function public.search_md_plans_v4(
   p_query text default null,
   plan_id_filter uuid[] default null,
   username_exact_filter text default null,
@@ -205,7 +205,7 @@ begin
       CASE
         WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN ts_rank(p.search_vector, v_tsquery)
         WHEN v_sort = 'new' THEN extract(epoch from coalesce(p.published_at, p.created_at))
-        WHEN v_sort = 'popular' THEN p.score
+        WHEN v_sort = 'popular' THEN public.compute_popularity(p.like_count, p.comment_count, p.view_count, p.created_at, p.published_at)
         WHEN v_sort = 'random' THEN random()
       END AS sort_value
 

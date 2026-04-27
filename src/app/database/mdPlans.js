@@ -39,7 +39,7 @@ const createParams = {
 const DEFAULT_PAGE_SIZE = 30;
 
 export async function searchMdPlans(params, page, pageSize = null) {
-    return callRPC("search_md_plans_v3", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_md_plans_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
 }
 
 export async function getMdPlan(planId) {
