@@ -1,42 +1,12 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useState, useCallback } from "react";
-import Select from "react-select";
 
 import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
+import { GiftTagFilterSelector } from "../gifts/GiftTags";
 import IconsSelector from "../selectors/IconsSelector";
 
-import { giftTagColors } from "@/app/lib/colors";
 import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
-import { selectStyleVariable } from "@/app/styles/selectStyle";
-
-const tagCheck = {
-    "Enhanceable": x => x.enhanceable,
-    "Ingredient": x => x.ingredientOf,
-    "Fusion Only": x => x.fusion,
-    "Hard Only": x => x.hardonly,
-    "Cursed": x => x.cursedPair,
-    "Blessed": x => x.blessedPair
-}
-
-function TagFilterSelector({ tagFilter, setTagFilter }) {
-    const options = [
-        { value: "Enhanceable", label: <span style={{ color: giftTagColors.enhanceable }}>Enhanceable</span> },
-        { value: "Ingredient", label: <span style={{ color: giftTagColors.ingredient }}>Ingredient</span> },
-        { value: "Fusion Only", label: <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> },
-        { value: "Hard Only", label: <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> },
-        { value: "Cursed", label: <span style={{ color: giftTagColors.cursed }}>Cursed</span> },
-        { value: "Blessed", label: <span style={{ color: giftTagColors.blessed }}>Blessed</span> },
-    ]
-
-    return <Select
-        isClearable={true}
-        options={options}
-        value={tagFilter ? options.find(x => x.value === tagFilter) : null}
-        onChange={x => setTagFilter(x ? x.value : null)}
-        styles={selectStyleVariable}
-    />
-}
 
 export default function SelectGiftModalContent({ title, getChoiceList, showSearch = false, onSelectGift, forcedFilter }) {
     const [giftsData, giftsLoading] = useData("gifts");
@@ -57,20 +27,22 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
         }, 0);
     }
 
-    const composedSearchFilter = gift => {
-        if (searchString.length > 0 && !checkFilterMatch(searchString, [gift.names[0], gift.search_desc])) return false;
-        if (forcedFilter && !forcedFilter(gift)) return false;
-        if (tagFilter) {
-            if (tagFilterExcluding) {
-                if (tagCheck[tagFilter](gift)) return false;
-            } else {
-                if (!tagCheck[tagFilter](gift)) return false;
-            }
-        }
-        return true;
-    };
+    const combinedFilters = [...filters];
+    if (tagFilter) {
+        if (tagFilterExcluding) combinedFilters.push(["tag", `-${tagFilter}`]);
+        else combinedFilters.push(["tag", tagFilter]);
+    }
 
-    const searchGiftList = giftsLoading ? [] : filterByFilters("gift", Object.values(giftsData), filters, composedSearchFilter);
+    const searchGiftList = giftsLoading ? [] : filterByFilters(
+        "gift",
+        Object.values(giftsData),
+        combinedFilters,
+        gift => {
+            if (forcedFilter && !forcedFilter(gift)) return false;
+            if (searchString.length > 0 && !checkFilterMatch(searchString, [gift.names[0], gift.search_desc])) return false;
+            return true;
+        }
+    )
 
     if (giftsLoading) return <div />
 
@@ -115,7 +87,7 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
                             </div>
                         </div>
                         <div style={{ textAlign: "start" }}>
-                            <TagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
+                            <GiftTagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
                         </div>
                     </div>
 

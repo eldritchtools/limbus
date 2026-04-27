@@ -14,6 +14,7 @@ export function GiftTagStrips({ gift, scale }) {
         {gift.fusion ? <div style={{ ...scaledSize, background: giftTagColors.fusion }} /> : null}
         {gift.hardonly ? <div style={{ ...scaledSize, background: giftTagColors.hardonly }} /> : null}
         {gift.events ? <div style={{ ...scaledSize, background: giftTagColors.eventreward }} /> : null}
+        {gift.exclusiveTo ? <div style={{ ...scaledSize, background: giftTagColors.packexclusive }} /> : null}
         {gift.hidden ? <div style={{ ...scaledSize, background: giftTagColors.hidden }} /> : null}
         {gift.cursedPair ? <div style={{ ...scaledSize, background: giftTagColors.cursed }} /> : null}
         {gift.blessedPair ? <div style={{ ...scaledSize, background: giftTagColors.blessed }} /> : null}
@@ -49,6 +50,7 @@ export function GiftTagLabels({ gift, full = false, enhanceLevel, setEnhanceLeve
         {gift.fusion ? <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> : null}
         {gift.hardonly ? <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> : null}
         {gift.events ? <span style={{ color: giftTagColors.eventreward }}>Event Reward</span> : null}
+        {gift.exclusiveTo ? <span style={{ color: giftTagColors.packexclusive }}>Pack Exclusive</span> : null}
         {gift.hidden ? <span style={{ color: giftTagColors.hidden }}>Hidden</span> : null}
 
         {gift.cursedPair ? (
@@ -79,6 +81,7 @@ export function GiftTagFilterSelector({ tagFilter, setTagFilter }) {
         { value: "Fusion Only", label: <span style={{ color: giftTagColors.fusion }}>Fusion Only</span> },
         { value: "Hard Only", label: <span style={{ color: giftTagColors.hardonly }}>Hard Only</span> },
         { value: "Event Reward", label: <span style={{ color: giftTagColors.eventreward }}>Event Reward</span> },
+        { value: "Pack Exclusive", label: <span style={{ color: giftTagColors.packexclusive }}>Pack Exclusive</span> },
         { value: "Hidden", label: <span style={{ color: giftTagColors.hidden }}>Hidden</span> },
         { value: "Cursed", label: <span style={{ color: giftTagColors.cursed }}>Cursed</span> },
         { value: "Blessed", label: <span style={{ color: giftTagColors.blessed }}>Blessed</span> },

@@ -14,9 +14,10 @@ export const giftTagColors = {
     ingredient: "#f97316",
     fusion: "#facc15",
     hardonly: "#f87171",
+    eventreward: "#14b8a6",
+    packexclusive: "#b45309",
     cursed: "#a78bfa",
     blessed: "#38bdf8",
-    eventreward: "#14b8a6",
     hidden: "#9ca3af"
 }
 
