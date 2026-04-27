@@ -20,26 +20,33 @@ function TargetComponent({ target }) {
         setPartIndex(null);
     }, [target]);
 
+    if (!target) return null;
+
     const currentPart = target.parts ? (partIndex !== null ? target.parts[partIndex] : null) : target;
 
-    const maybeResist = key => currentPart ?
+    const maybeResist = key => currentPart && currentPart.resists ?
         <ColoredResistance resist={currentPart.resists[key]} /> :
         <span style={{ fontWeight: "bold", color: "#aaa" }}>??</span>
 
-    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "start", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>{target.name}</h3>
             <EnemyIcon id={target.portrait} style={{ width: isMobile ? "250px" : "auto" }} />
 
-            {target.parts ? target.parts.map((part, i) =>
-                <div key={i}
-                    className={`tab-header ${partIndex === i ? "active" : ""}`}
-                    style={{ border: "1px #777 solid", padding: "0.25rem", borderRadius: "0.5rem" }}
-                    onClick={() => setPartIndex(i)}
-                >
-                    {part.name}
-                </div>
-            ) : null}
+            {target.parts ?
+                <div style={{ display: "flex", gap: "0.2rem" }}>
+                    {target.parts.map((part, i) =>
+                        <div key={i}
+                            className={`tab-header ${partIndex === i ? "active" : ""}`}
+                            style={{ border: "1px #777 solid", padding: "0.25rem", borderRadius: "0.5rem" }}
+                            onClick={() => setPartIndex(i)}
+                        >
+                            {part.name}
+                        </div>
+                    )}
+                </div> :
+                null
+            }
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", textAlign: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
@@ -84,21 +91,46 @@ function BuffComponent({ id }) {
 }
 
 export default function EncounterDetails({ data }) {
+    const [wave, setWave] = useState(0);
     const [phase, setPhase] = useState(0);
     const [targetIndex, setTargetIndex] = useState(0);
 
-    const allyBuffs = (data.phases ? data.phases[phase].allyBuffs : data.allyBuffs) ?? [];
-    const enemyBuffs = (data.phases ? data.phases[phase].enemyBuffs : data.enemyBuffs) ?? [];
-    const targets = data.phases ? data.phases[phase].targets : data.targets;
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTargetIndex(0);
+    }, [data]);
+
+    let targetsData = data, waves = null, phases = null;
+    if ("waves" in targetsData) {
+        waves = targetsData.waves.length;
+        targetsData = targetsData.waves[wave];
+    }
+    if ("phases" in targetsData) {
+        phases = targetsData.phases.length;
+        targetsData = targetsData.phases[phase];
+    }
+
+    const allyBuffs = targetsData.allyBuffs ?? [];
+    const enemyBuffs = targetsData.enemyBuffs ?? [];
+    const targets = targetsData.targets;
 
     if (!targets) return <div>
         <h3>No encounter data.</h3>
     </div>
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        {data.phases ?
+        {waves ?
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-                {Array.from({ length: data.phases.length }, (_, i) =>
+                {Array.from({ length: waves }, (_, i) =>
+                    <div key={i} className={`tab-header ${wave === i ? "active" : ""}`} onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); }}>Wave {i + 1}</div>
+                )}
+            </div> :
+            null
+        }
+
+        {phases ?
+            <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                {Array.from({ length: phases }, (_, i) =>
                     <div key={i} className={`tab-header ${phase === i ? "active" : ""}`} onClick={() => { setPhase(i); setTargetIndex(0); }}>Phase {i + 1}</div>
                 )}
             </div> :
@@ -120,6 +152,7 @@ export default function EncounterDetails({ data }) {
                 {targets.map((target, i) =>
                     <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => setTargetIndex(i)}>
                         <EnemyIcon id={target.portrait} style={{ width: "100%", height: "100%" }} />
+                        {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
                     </div>
                 )}
             </div>

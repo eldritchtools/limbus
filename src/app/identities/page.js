@@ -17,6 +17,7 @@ import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelec
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
+import ProcessedText, { processText } from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
@@ -69,7 +70,7 @@ function IdentityDetails({ id, identity }) {
             {(identity.skillKeywordList || []).map(keyword => <KeywordIcon key={keyword} id={keyword} />)}
         </div>)}
         {wrapCell(<div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.2rem" }}>
-            {identity.tags.map(tag => <div key={tag}>{processTag(tag)}</div>)}
+            {identity.tags.map(tag => <div key={tag}>{<ProcessedText text={tag}/>}</div>)}
         </div>)}
     </tr>
 }
