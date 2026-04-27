@@ -45,17 +45,33 @@ BEGIN
   INSERT INTO public.popular_builds_cache (
     build_id, score, ranking_type, computed_at
   )
+  
   SELECT
-    b.id,
-    b.score,
-    'recent' AS ranking_type,
-    NOW() AS computed_at
-  FROM public.builds b
-  WHERE b.is_published AND b.block_discovery = false
-  ORDER BY b.score DESC
+    t.id,
+    t.score,
+    'recent',
+    NOW()
+  FROM (
+    SELECT
+      b.id,
+      public.compute_popularity(
+        b.like_count,
+        b.comment_count,
+        b.view_count,
+        b.created_at,
+        b.published_at
+      ) AS score
+    FROM public.builds b
+    WHERE 
+      b.is_published 
+      AND b.block_discovery = false
+      AND b.created_at > NOW() - interval '30 days'
+  ) t
+  ORDER BY t.score DESC
   LIMIT 100;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
 
 CREATE OR REPLACE FUNCTION public.get_popular_builds_v5(p_limit INTEGER, p_offset INTEGER)
 RETURNS TABLE (

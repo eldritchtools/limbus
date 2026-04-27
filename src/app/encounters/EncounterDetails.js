@@ -3,21 +3,24 @@ import { useEffect, useState } from "react";
 
 import styles from "./EncounterDetails.module.css";
 import { useData } from "../components/DataProvider";
+import EgoIcon from "../components/icons/EgoIcon";
 import EnemyIcon from "../components/icons/EnemyIcon";
+import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import StatusIcon from "../components/icons/StatusIcon";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import PassiveCard from "../components/skill/PassiveCard";
 import SkillCard from "../components/skill/SkillCard";
 import { ColoredResistance } from "../lib/colors";
 import { affinities } from "../lib/constants";
 
 function TargetComponent({ target }) {
-    const [partIndex, setPartIndex] = useState(null);
+    const [partIndex, setPartIndex] = useState(0);
     const { isMobile } = useBreakpoint();
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setPartIndex(null);
+        setPartIndex(0);
     }, [target]);
 
     if (!target) return null;
@@ -27,6 +30,20 @@ function TargetComponent({ target }) {
     const maybeResist = key => currentPart && currentPart.resists ?
         <ColoredResistance resist={currentPart.resists[key]} /> :
         <span style={{ fontWeight: "bold", color: "#aaa" }}>??</span>
+
+    const override = [];
+    if (target.identityOverride) {
+        override.push(<NoPrefetchLink key={target.identityOverride} href={`/identities/${target.identityOverride}`} >
+            <IdentityIcon id={target.identityOverride} uptie={4} displayName={true} displayRarity={true} size={128} />
+        </NoPrefetchLink>);
+    }
+    if (target.egoList) {
+        target.egoList.forEach(egoId => {
+            override.push(<NoPrefetchLink key={egoId} href={`/egos/${egoId}`}>
+                <EgoIcon id={egoId} type={"awaken"} displayName={true} displayRarity={true} size={128} />
+            </NoPrefetchLink>);
+        })
+    }
 
     return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "start", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
@@ -69,6 +86,12 @@ function TargetComponent({ target }) {
             </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            {override.length > 0 ? <>
+                <span style={{fontSize: "1.2rem", fontWeight: "bold", textAlign: "center"}}>Identity and E.G.Os</span>
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.2rem" }}>
+                    {override}
+                </div>
+            </> : null}
             {(target.skills ?? []).map((skill, i) => <SkillCard key={i} skill={skill} includeSkillValues={false} />)}
             {(target.passives ?? []).map((passive, i) => <PassiveCard key={i} passive={passive} />)}
         </div>
@@ -97,15 +120,17 @@ export default function EncounterDetails({ data }) {
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
+        setWave(0);
+        setPhase(0);
         setTargetIndex(0);
     }, [data]);
 
     let targetsData = data, waves = null, phases = null;
-    if ("waves" in targetsData) {
+    if ("waves" in targetsData && targetsData.waves[wave]) {
         waves = targetsData.waves.length;
         targetsData = targetsData.waves[wave];
     }
-    if ("phases" in targetsData) {
+    if ("phases" in targetsData && targetsData.phases[phase]) {
         phases = targetsData.phases.length;
         targetsData = targetsData.phases[phase];
     }

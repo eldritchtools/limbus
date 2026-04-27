@@ -62,6 +62,8 @@ const giftFilterMatchFunctions = {
             if (item.hardonly) return true;
         } else if (filter === "Event Reward") {
             if (item.events) return true;
+        } else if (filter === "Pack Exclusive") {
+            if (item.exclusiveTo) return true;
         } else if (filter === "Hidden") {
             if (item.hidden) return true;
         } else if (filter === "Cursed") {

@@ -17,7 +17,7 @@ import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelec
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
-import ProcessedText, { processText } from "../components/texts/ProcessedText";
+import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";

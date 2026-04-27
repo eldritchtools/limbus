@@ -33,12 +33,12 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{lineHeight: "1.3"}}>
+                <li>Updated the popularity scoring function since older posts&apos; scores weren&apos;t decaying properly with age.</li>
+                <li>All Extreme and Railway MD Theme Pack bosses has been added to the Encounters Page.</li>
                 <li>Keyword Solver has been renamed to <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-solver"}>Team Solver</NoPrefetchLink></HoverBlocker> and now supports statuses and tags/factions. It also now returns results with less sinners than the specified team size if they already meet the criteria.</li>
                 <li>MD Plans now has a tracking mode. Activate it to mark gifts as obtained or theme packs as entered to follow the plan easier.</li>
                 <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/company"}>Company</NoPrefetchLink></HoverBlocker> Page - Set the identities and E.G.Os you own. They can be viewed in your profile or used when filtering team builds.</li>
                 <li><HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink></HoverBlocker> Page - Customize how certain parts of the site are displayed. More options to be added in the future.</li>
-                <li>Tokens now supports icons. Currently this has icons for some associations, fingers, wings, and some syndicates.</li>
-                <li>Tokens now supports encounters.</li>
             </ul>
         </div> : null}
 

@@ -26,7 +26,7 @@ function GiftTooltipContent({ gift, enhanceRank = 0, expandable = true }) {
             {gift.names[enhanceRank]}
         </div>
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.2rem", minWidth: "100px" }}>
                 <GiftIcon gift={gift} enhanceRank={enhanceRank} />
                 <GiftTagLabels gift={gift} />
             </div>
