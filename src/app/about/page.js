@@ -38,9 +38,9 @@ export default function AboutPage() {
                 <summary>Do you work with creators?</summary>
                 Yes. The site is open to collaboration with creators. 
                 <br/>
-                Send me a message on Discord or use the <NoPrefetchLink href={"/feedback"}>Contact</NoPrefetchLink> page. 
+                Send me a message on Discord or use the <NoPrefetchLink href={"/feedback"} className="text-link">Contact</NoPrefetchLink> page. 
                 <br/>
-                You can also check out the <NoPrefetchLink href={"/supporters"}>Supporters</NoPrefetchLink> page.
+                You can also check out the <NoPrefetchLink href={"/supporters"} className="text-link">Supporters</NoPrefetchLink> page.
             </details>
 
             <details>

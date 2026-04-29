@@ -1,13 +1,13 @@
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import React from "react";
 
 import EgoIcon from "../components/icons/EgoIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";
-import { keywords } from "../lib/constants";
 import KeywordIcon from "../components/icons/KeywordIcon";
-import SinnerIcon from "../components/icons/SinnerIcon";
 import RarityIcon from "../components/icons/RarityIcon";
-import { useBreakpoint } from "@eldritchtools/shared-components";
+import SinnerIcon from "../components/icons/SinnerIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { keywords } from "../lib/constants";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

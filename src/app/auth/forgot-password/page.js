@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+
 import { getSupabase } from '@/app/database/connection';
 
 export default function ForgotPasswordPage() {
