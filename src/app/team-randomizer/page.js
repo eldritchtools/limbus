@@ -14,11 +14,15 @@ import NumberInput from "../components/objects/NumberInput";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { useAuth } from "../database/authProvider";
+import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
+import { bitsetFunctions } from "../lib/bitset";
 import { egoRankMapping } from "../lib/constants";
 import { constructTeamCode } from "../lib/teamCodeEncoding";
 
 export default function TeamRandomizerPage() {
+    const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities_mini");
     const [egos, egosLoading] = useData("egos_mini");
 
@@ -32,6 +36,7 @@ export default function TeamRandomizerPage() {
     const [wbList, setWbList] = useState([]);
     const [wbListDisplay, setWbListDisplay] = useState("mixed");
     const [wbListOpen, setWbListOpen] = useState(false);
+    const [companyLoading, setCompanyLoading] = useState(false);
 
     const [randomizeIdentities, setRandomizeIdentities] = useState(true);
     const [randomizeEgos, setRandomizeEgos] = useState(true);
@@ -120,11 +125,11 @@ export default function TeamRandomizerPage() {
     const replacementComponents = useMemo(() => Array.from({ length: 12 }).map((_, i) => {
         const pieces = [];
         if (fixedIdentityIds[i]) pieces.push("ID");
-        if (fixedEgoIds[i][0]) pieces.push("Z");
-        if (fixedEgoIds[i][1]) pieces.push("T");
-        if (fixedEgoIds[i][2]) pieces.push("H");
-        if (fixedEgoIds[i][3]) pieces.push("W");
-        if (fixedEgoIds[i][4]) pieces.push("A");
+        if (fixedEgoIds[i][0]) pieces.push("ZAYIN");
+        if (fixedEgoIds[i][1]) pieces.push("TETH");
+        if (fixedEgoIds[i][2]) pieces.push("HE");
+        if (fixedEgoIds[i][3]) pieces.push("WAW");
+        if (fixedEgoIds[i][4]) pieces.push("ALEPH");
         if (pieces.length > 0) return <span key={i} style={{ padding: "0.25rem" }}>Fixed: {pieces.join(", ")}</span>;
         return null;
     }), [fixedIdentityIds, fixedEgoIds]);
@@ -143,12 +148,9 @@ export default function TeamRandomizerPage() {
 
     const triggerRandomize = () => {
         if (randomizeIdentities) {
-            const idOptions = wbListOpen ?
-                (wbMode === "w" ?
-                    wbList.filter(x => `${x}`[0] === "1") :
-                    Object.keys(identities).filter(x => !wbList.includes(x))
-                ) :
-                Object.keys(identities);
+            const idOptions = wbMode === "w" ?
+                wbList.filter(x => `${x}`[0] === "1") :
+                Object.keys(identities).filter(x => !wbList.includes(x));
 
             const randomizedIds = fixedIdentityIds.map((x, i) => {
                 if (x) return x;
@@ -161,12 +163,9 @@ export default function TeamRandomizerPage() {
         }
 
         if (randomizeEgos) {
-            const idOptions = wbListOpen ?
-                (wbMode === "w" ?
-                    wbList.filter(x => `${x}`[0] === "2") :
-                    Object.keys(egos).filter(x => !wbList.includes(x))
-                ) :
-                Object.keys(egos);
+            const idOptions = wbMode === "w" ?
+                wbList.filter(x => `${x}`[0] === "2") :
+                Object.keys(egos).filter(x => !wbList.includes(x));
 
             const randomizedIds = fixedEgoIds.map((xi, i) =>
                 xi.map((x, j) => {
@@ -187,13 +186,43 @@ export default function TeamRandomizerPage() {
         router.push(`/builds/new?${params.toString()}`)
     }
 
+    const applyCompanyData = () => {
+        if (identitiesLoading || egosLoading || loading) return;
+        setCompanyLoading(true);
+
+        const handleCompany = company => {
+            if (!company) return;
+            const newValues = [];
+            const idMasks = company.identities.map(mask => bitsetFunctions.fromString(mask));
+            Object.entries(identities).forEach(([id, identity]) => {
+                if (bitsetFunctions.hasFlag(idMasks[identity.sinnerId - 1], Number(id.slice(-2)) - 1)) return;
+                newValues.push(id);
+            });
+            const egoMasks = company.egos.map(mask => bitsetFunctions.fromString(mask));
+            Object.entries(egos).forEach(([id, ego]) => {
+                if (bitsetFunctions.hasFlag(egoMasks[ego.sinnerId - 1], Number(id.slice(-2)) - 1)) return;
+                newValues.push(id);
+            });
+
+            setWbMode("b");
+            setWbList(newValues);
+            setCompanyLoading(false);
+        }
+
+        if (user) {
+            getCompany(user).then(handleCompany);
+        } else {
+            getLocalStore("companies").get("main").then(handleCompany);
+        }
+    }
+
     const buttonsPanel = <BuildDisplayMenuCard key={"button"}>
         <div style={{ display: "flex" }}>
             <button onClick={clearAll}>Clear all</button>
             <button onClick={clearAllUnfixed}>Clear all unfixed</button>
         </div>
         <button onClick={() => setWbListOpen(p => !p)}>
-            Toggle Blacklist/Whitelist
+            {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
         </button>
         <div style={{ display: "flex" }}>
             <button onClick={() => triggerRandomize()} style={{ background: "#1e7e34" }}>
@@ -284,10 +313,11 @@ export default function TeamRandomizerPage() {
         </div>
 
         {wbListOpen ? <>
-            <div style={{ display: "flex", gap: "1rem", alignSelf: "start" }}>
+            <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
                 <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
                 <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
-                <span className={`tab-header`} onClick={() => setWbList([])}>Clear All</span>
+                <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
+                <button onClick={() => setWbList([])}>Clear All</button>
             </div>
             <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

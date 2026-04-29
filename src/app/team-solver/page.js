@@ -15,15 +15,15 @@ import NumberInput from "../components/objects/NumberInput";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
-import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import { IdentityMenuSelector } from "../components/selectors/IdentitySelectors";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
+import { useAuth } from "../database/authProvider";
+import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
+import { bitsetFunctions } from "../lib/bitset";
 import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
-import { checkFilterMatch } from "../lib/filter";
-import { selectStyle } from "../styles/selectStyle";
 
 function ResultComponent({ identities, result, keywordTargets, statusTargets, router, isMobile }) {
     const counts = Object.fromEntries(keywords.slice(0, 7).map(kw => [kw, 0]));
@@ -67,6 +67,7 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
 }
 
 export default function TeamSolverPage() {
+    const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
     const [fixedIdentityIds, setFixedIdentityIds] = useState(Array.from({ length: 12 }, () => null));
     const [enabledSinners, setEnabledSinners] = useState(Array.from({ length: 12 }, () => true));
@@ -80,6 +81,7 @@ export default function TeamSolverPage() {
     const [wbList, setWbList] = useState([]);
     const [wbListDisplay, setWbListDisplay] = useState("mixed");
     const [wbListOpen, setWbListOpen] = useState(false);
+    const [companyLoading, setCompanyLoading] = useState(false);
 
     const [initializing, setInitializing] = useState(true);
     const [solving, setSolving] = useState(false);
@@ -156,6 +158,31 @@ export default function TeamSolverPage() {
         setEnabledSinners(Array.from({ length: 12 }, () => true));
     }
 
+    const applyCompanyData = () => {
+        if (identitiesLoading || loading) return;
+        setCompanyLoading(true);
+
+        const handleCompany = company => {
+            if (!company) return;
+            const newValues = [];
+            const idMasks = company.identities.map(mask => bitsetFunctions.fromString(mask));
+            Object.entries(identities).forEach(([id, identity]) => {
+                if (bitsetFunctions.hasFlag(idMasks[identity.sinnerId - 1], Number(id.slice(-2)) - 1)) return;
+                newValues.push(id);
+            });
+
+            setWbMode("b");
+            setWbList(newValues);
+            setCompanyLoading(false);
+        }
+
+        if (user) {
+            getCompany(user).then(handleCompany);
+        } else {
+            getLocalStore("companies").get("main").then(handleCompany);
+        }
+    }
+
     const triggerSolver = () => {
         if (solving) {
             if (!workerRef.current) return;
@@ -190,12 +217,9 @@ export default function TeamSolverPage() {
 
             const params = {
                 identityOptions:
-                    wbListOpen ?
-                        (wbMode === "w" ?
-                            wbList.map(id => identities[id]) :
-                            Object.values(identities).filter(x => !wbList.includes(x.id))
-                        ) :
-                        Object.values(identities),
+                    wbMode === "w" ?
+                        wbList.map(id => identities[id]) :
+                        Object.values(identities).filter(x => !wbList.includes(x.id)),
                 fixedIdentityIds:
                     fixedIdentityIds.reduce((acc, id, i) => {
                         if (!id) return acc;
@@ -329,7 +353,7 @@ export default function TeamSolverPage() {
                     <NumberInput value={deployedSinners} onChange={setDeployedSinners} min={1} max={12} style={{ textAlign: "center", width: "3ch" }} />
                 </div>
                 <button onClick={() => setWbListOpen(p => !p)}>
-                    Toggle Blacklist/Whitelist
+                    {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
                 </button>
                 <button onClick={() => resetSinners()}>
                     Reset sinner settings
@@ -397,13 +421,12 @@ export default function TeamSolverPage() {
             </div>)}
         </div>
 
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>The tool can take quite a while to find solutions if the requirements are strict. The first few teams will be relatively fast if they exist, but the rest may take a while to be found. Try switching to the faster search mode if it takes a while. Variety increases variety of teams that will appear if there are a lot of them to avoid getting all the same builds with just 1-2 differing identities, but the results will always have some level of randomness to them. The solver will only use identities that match at least one of the requirements.</span>
-
         {wbListOpen ? <>
-            <div style={{ display: "flex", gap: "1rem", alignSelf: "start" }}>
+            <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
                 <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
                 <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
-                <span className={`tab-header`} onClick={() => setWbList([])}>Clear All</span>
+                <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
+                <button onClick={() => setWbList([])}>Clear All</button>
             </div>
             <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -420,6 +443,10 @@ export default function TeamSolverPage() {
             />
         </> : null
         }
+
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>The tool can take quite a while to find solutions if the requirements are strict. The first few teams will be relatively fast if they exist, but the rest may take a while to be found. Try switching to the faster search mode if it takes a while. Variety increases variety of teams that will appear if there are a lot of them to avoid getting all the same builds with just 1-2 differing identities, but the results will always have some level of randomness to them. The solver will only use identities that match at least one of the requirements.</span>
+
+        <h3 style={{ margin: 0 }}>Results</h3>
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem" }}>
             {results.map((result, i) =>
