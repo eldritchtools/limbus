@@ -8,20 +8,21 @@ import styles from "./themePacks.module.css";
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import HoverBlocker from "../components/HoverBlocker";
+import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
-function ThemePack({ id, themePack, isSmall, openOverride = false }) {
+function ThemePack({ id, themePack, isSmall, viewMode, openOverride = false }) {
     const [open, setOpen] = useState(false);
     const [blockHover, setBlockHover] = useState(false);
 
     return <div
         className={`${styles.themePackCard} ${!blockHover && !openOverride ? styles.canHover : null}`}
         onClick={() => { if (!blockHover && !openOverride) setOpen(p => !p) }}
-        style={{height: isSmall ? "250px" : "400px"}}
+        style={{ height: isSmall ? "250px" : "400px" }}
     >
         <div style={{ height: "fit-content", boxSizing: "border-box" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "3px" }}>
@@ -30,16 +31,31 @@ function ThemePack({ id, themePack, isSmall, openOverride = false }) {
         </div>
 
         {open || openOverride ?
-            <div style={{ display: "grid", gridAutoFlow: "column", gridTemplateRows: "repeat(4, 1fr)" }}>
-                {themePack["exclusive_gifts"] ?
-                    themePack["exclusive_gifts"].map((gift, i) =>
-                        <HoverBlocker key={gift} setBlockHover={setBlockHover}>
-                            <Gift key={i} id={gift} scale={isSmall ? .5 : 1} />
-                        </HoverBlocker>
-                    ) :
-                    "No exclusive gifts"
-                }
-            </div> :
+            (viewMode === "gifts" ?
+                (
+                    themePack["exclusive_gifts"] ?
+                        <div style={{ display: "grid", gridAutoFlow: "column", gridTemplateRows: "repeat(4, 1fr)" }}>
+                            {
+                                themePack["exclusive_gifts"].map((gift, i) =>
+                                    <HoverBlocker key={gift} setBlockHover={setBlockHover}>
+                                        <Gift key={i} id={gift} scale={isSmall ? .5 : 1} />
+                                    </HoverBlocker>
+                                )
+                            }
+                        </div> :
+                        "No exclusive gifts"
+                ) :
+                (
+                    themePack["bossEncounters"] ?
+                        <div style={{ display: "flex", flexDirection: "column", justifySelf: "start", maxWidth: "200px" }}>
+                            <span>Possible Bosses:</span>
+                            {themePack["bossEncounters"].map(enc => <HoverBlocker key={enc} setBlockHover={setBlockHover}>
+                                <MarkdownRenderer content={`{enc:${enc}}`} />
+                            </HoverBlocker>)}
+                        </div> :
+                        "Boss data to be added"
+                )
+            ) :
             null
         }
     </div>
@@ -118,7 +134,8 @@ export default function ThemePacksPage() {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedFloors, setSelectedFloors] = useState([]);
 
-    const [forceOpen, setForceOpen] = useState(false);
+    const [viewMode, setViewMode] = useLocalState("themePacksViewMode", "gifts");
+    const [forceOpen, setForceOpen] = useLocalState("themePacksForceOpen", false);
 
     const filterStrings = useMemo(() => {
         if (themePacksLoading || giftsLoading) return;
@@ -153,8 +170,8 @@ export default function ThemePacksPage() {
                 if (selectedFloors.length !== 0 && !selectedFloors.some(selectedFloor => checkFloorMatch(selectedFloor, id))) return false;
                 if (searchString.length !== 0 && !checkFilterMatch(searchString, includeGifts ? filterStrings[id] : themePack.name)) return false;
                 return true;
-            }).map(([id, themePack]) => <ThemePack key={id} id={id} themePack={themePack} isSmall={!isDesktop} openOverride={forceOpen} />)
-        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
+            }).map(([id, themePack]) => <ThemePack key={id} id={id} themePack={themePack} isSmall={!isDesktop} viewMode={viewMode} openOverride={forceOpen} />)
+        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, checkFloorMatch, includeGifts, isDesktop, viewMode, forceOpen]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
         <h2 style={{ margin: 0 }}>Theme Packs</h2>
@@ -183,6 +200,8 @@ export default function ThemePacksPage() {
                 setSelected={setSelectedFloors}
                 floors={floorPacksLoading ? {} : floorPacksData}
             />
+            <span style={{ textAlign: "end" }}>View Mode:</span>
+            <button onClick={() => setViewMode(p => p === "gifts" ? "encs" : "gifts")}>Viewing {viewMode === "gifts" ? "Gifts" : "Boss Encounters"}</button>
             <div />
             <label>
                 <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />

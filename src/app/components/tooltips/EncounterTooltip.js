@@ -12,20 +12,37 @@ import { encounterCategoryLabels } from "@/app/lib/encounters";
 const TOOLTIP_ID = "encounter-tooltip";
 
 function EncounterTooltipContent({ cat, id, encounter }) {
-    let targets = encounter;
-    if ("waves" in targets) targets = targets.waves[targets.waves.length - 1];
-    if ("phases" in targets) targets = targets.phases[targets.phases.length - 1];
-    targets = targets.targets.map((x, i) =>
+    const handleTargets = (acc, targets) => {
+        acc.push(...targets);
+    }
+
+    const handlePhase = (acc, phase) => {
+        handleTargets(acc, phase.targets);
+    }
+
+    const handleWave = (acc, wave) => {
+        if("phases" in wave) wave.phases.forEach(phase => handlePhase(acc, phase));
+        else handleTargets(acc, wave.targets);
+    }
+    
+    const handleEncounter = (acc, encounter) => {
+        if("waves" in encounter) encounter.waves.forEach(wave => handleWave(acc, wave));
+        else if("phases" in encounter) encounter.phases.forEach(phase => handlePhase(acc, phase));
+        else handleTargets(acc, encounter.targets);
+        return acc;
+    }
+
+    const targets = handleEncounter([], encounter).map((x, i) =>
         <div key={i} style={{ width: "75px", height: "150px", border: "1px #aaa solid" }} onClick={() => setTargetIndex(i)}>
             <EnemyIcon id={x.portrait} style={{ width: "100%", height: "100%" }} />
         </div>
     );
 
-    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center" }}>
+    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center", maxWidth: "100%" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <span>{encounterCategoryLabels[cat]}: {encounter.name}</span>
         </div>
-        <div style={{ display: "flex", gap: "0.2rem" }}>
+        <div style={{ display: "flex", gap: "0.2rem", maxWidth: "100%" }}>
             {targets}
         </div>
         {isTouchDevice() ? <NoPrefetchLink href={`/encounters?category=${cat}&encounter=${id}`} style={{ alignSelf: "center", fontSize: "1.2rem" }}>Go to page</NoPrefetchLink> : null}
