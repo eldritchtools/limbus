@@ -96,7 +96,7 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
             <span>{title}</span>
             {src ? <BannerIcon path={src} style={style} /> : null}
         </div>
-        <TimeComponent date={date} dateString={dateString} />
+        <TimeComponent key={dateString} date={date} dateString={dateString} />
     </div>
 }
 
