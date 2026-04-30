@@ -27,7 +27,10 @@ function TableTip({ tip, isSmall }) {
     const wrapping = tip.nowrap ? "pre" : "pre-line";
 
     const getCellComponent = (cell) => {
-        if (typeof cell === "string") return <div style={{ whiteSpace: wrapping, padding: "0.1rem", textAlign: "center" }}>{cell}</div>;
+        if (typeof cell === "string")
+            return <div style={{ whiteSpace: wrapping, padding: "0.1rem", textAlign: "center" }}>
+                <MarkdownRenderer content={cell} /> 
+            </div>;
         if (typeof cell === "object" && cell !== null && !Array.isArray(cell)) {
             if ("gifts" in cell && !giftsLoading) {
                 const gifts = Object.values(giftsData).filter(gift => cell.gifts.includes(gift.names[0]))

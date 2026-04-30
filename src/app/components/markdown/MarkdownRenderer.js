@@ -334,7 +334,9 @@ export default function MarkdownRenderer({ content }) {
                         case "mdplan":
                             return <MdPlanItem id={tokenValues[0]} />;
                         case "user":
-                            return <NoPrefetchLink href={`/profiles/${tokenValues[0]}`}>{tokenValues[0]}</NoPrefetchLink>;
+                            return <NoPrefetchLink href={`/profiles/${tokenValues[0]}`} className="text-link" style={{ textDecoration: "underline" }}>
+                                {tokenValues[0]}
+                            </NoPrefetchLink>;
                         case "sinner":
                             try {
                                 return <span>{sinnerIdMapping[parseInt(tokenValues[0])]}</span>;
