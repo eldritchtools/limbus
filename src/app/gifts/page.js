@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import styles from "./gifts.module.css";
 import { useData } from "../components/DataProvider";
@@ -120,6 +120,9 @@ export default function GiftsPage() {
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
     const { isDesktop } = useBreakpoint();
 
+    const newGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.new), [giftsData, giftsLoading]);
+    const updatedGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.updated), [giftsData, giftsLoading]);
+
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h2 style={{ margin: 0 }}>E.G.O Gifts</h2>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
@@ -169,6 +172,22 @@ export default function GiftsPage() {
             <IconsSelector type={"column"} categories={["giftTier", "status", "atkTypeKwless", "affinity"]} values={filters} setValues={setFilters} />
         </div>
         <div style={{ border: "1px #777 solid", width: "100%" }} />
+        {filters.length === 0 && tagFilter === null && searchString.length === 0 ?
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", width: "100%" }}>
+                {newGifts.length > 0 ? <React.Fragment>
+                    <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>New</span>
+                    <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isDesktop ? 100 : 60}px, 1fr))`, width: "100%", rowGap: "0.5rem" }}>
+                        {newGifts.map(([id, gift]) => <Gift key={id} gift={gift} includeTooltip={true} scale={isDesktop ? 1 : 0.6} />)}
+                    </div>
+                </React.Fragment> : null}
+                {updatedGifts.length > 0 ? <React.Fragment>
+                    <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Updated</span>
+                    <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isDesktop ? 100 : 60}px, 1fr))`, width: "100%", rowGap: "0.5rem" }}>
+                        {updatedGifts.map(([id, gift]) => <Gift key={id} gift={gift} includeTooltip={true} scale={isDesktop ? 1 : 0.6} />)}
+                    </div>
+                </React.Fragment> : null}
+            </div> :
+            null}
         {giftsLoading ?
             <div style={{ textAlign: "center", fontSize: "1.5rem" }}>Loading Gifts...</div> :
             <GiftList
