@@ -74,7 +74,7 @@ function Encounter({ category, categoryName, encounter }) {
 
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>Details</div>
-            {category === "reflectrial" ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
+            {category === "reflectrial" || category === "story" ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
         </div>
 
         {tab === "details" ?
