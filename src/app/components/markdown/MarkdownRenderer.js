@@ -197,7 +197,12 @@ function EncounterItem({ str }) {
     } else if (!(cat in encounters) || !(enc in encounters[cat])) {
         return <span>{`{encounter:${str}}`}</span>;
     } else {
-        return <LinkWithTooltip href={`/encounters?category=${cat}&encounter=${enc}`} tooltipProps={getEncounterTooltipProps(cat, enc)} className="text-link" style={{ textDecoration: "underline" }}>
+        return <LinkWithTooltip 
+            href={`/encounters?category=${cat}&encounter=${enc}`} 
+            tooltipProps={getEncounterTooltipProps(cat, enc)} 
+            className="text-link" 
+            style={{ textDecoration: "underline" }}
+        >
             {encounterCategoryLabels[cat]}: {encounters[cat][enc]}
         </LinkWithTooltip>;
     }
