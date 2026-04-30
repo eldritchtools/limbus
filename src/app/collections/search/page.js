@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import CollectionsSearchDisplay from "@/app/components/contentCardDisplays/CollectionsSearchDisplay";
@@ -9,16 +9,17 @@ import { searchCollections } from "@/app/database/collections";
 import { uiStrings } from "@/app/lib/uiStrings";
 
 export default function SearchCollectionsPage() {
+    const router = useRouter();
     const searchParams = useSearchParams();
 
-    const filters = useMemo(() => searchParams.entries().reduce((acc, [f, v]) => {
-        if (f === "search") acc[f] = v;
-        else if (f === "tags") acc[f] = v.split(",");
-        return acc;
-    }, {}), [searchParams]);
+    const [filters, page] = useMemo(() => searchParams.entries().reduce(([filters, page], [f, v]) => {
+        if (f === "search") filters[f] = v;
+        else if (f === "tags") filters[f] = v.split(",");
+        else if (f === "page") return [filters, Number(v)];
+        return [filters, page];
+    }, [{}, 1]), [searchParams]);
 
     const [collections, setCollections] = useState([]);
-    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,12 +42,19 @@ export default function SearchCollectionsPage() {
 
     const triggerSearch = filters => {
         const params = new URLSearchParams(filters);
-        window.location.href = `/collections/search?${params.toString()}`;
+        router.push(`/collections/search?${params.toString()}`);
+    }
+
+    const navigatePage = page => {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('page', String(page))
+
+        router.push(`/collections/search?${params.toString()}`);
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
         <h2 style={{ margin: 0 }}>Collections</h2>
-        <CollectionsSearchComponent initialValues={filters} createLink={true} searchFunc={triggerSearch} />
+        <CollectionsSearchComponent key={searchParams.toString()} initialValues={filters} createLink={true} searchFunc={triggerSearch} />
         <div style={{ border: "1px #777 solid" }} />
 
         {loading ?
@@ -60,9 +68,9 @@ export default function SearchCollectionsPage() {
                 }
 
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
-                    <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+                    <button className="page-button" disabled={page === 1} onClick={() => navigatePage(page - 1)}>Prev</button>
                     {page}
-                    <button className="page-button" disabled={collections.length < 10} onClick={() => setPage(p => p + 1)}>Next</button>
+                    <button className="page-button" disabled={collections.length < 10} onClick={() => navigatePage(page + 1)}>Next</button>
                 </div>
             </div>
         }
