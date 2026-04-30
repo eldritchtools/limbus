@@ -90,8 +90,6 @@ export default function EgoPage({ params }) {
         if (v > uptie) setUptie(v);
     }
 
-    console.log(preAwakeningSkills);
-
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
         <div style={{ display: "flex", flexDirection: "row", width: "100%", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
             <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "min(480px, 100%)" }}>
