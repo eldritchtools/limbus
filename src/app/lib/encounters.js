@@ -1,6 +1,6 @@
 export const encounterCategoryLabels = {
     "md": "Mirror Dungeon",
     "reflectrial": "Reflectrial",
-    // "story": "Story",
+    "story": "Story",
     // "rr": "Refraction Railway"
 }

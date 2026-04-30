@@ -1,5 +1,6 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useState } from "react";
 
 import Gift from "../gifts/Gift";
@@ -14,19 +15,22 @@ import { affinityColorMapping } from "@/app/lib/colors";
 export default function GiftModalContent({ gift, enhanceRank }) {
     const [enhanceLevel, setEnhanceLevel] = useState(enhanceRank);
     let level = Math.min(enhanceLevel, gift.descs.length - 1);
+    const {isMobile} = useBreakpoint();
 
     return <div style={{ display: "grid", gridTemplateRows: "auto 1fr", width: "100%", gap: "0.5rem", maxHeight: "80vh", overflow: "hidden" }}>
         <div style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start", color: affinityColorMapping[gift.affinity] }}>
             {gift.names[level]}
         </div>
-        <div style={{ display: "flex", flexDirection: "row", gap: "1rem", minHeight: 0 }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", flex: "0 0 auto" }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", minHeight: 0 }}>
+            <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", alignItems: "center", gap: "0.2rem", flex: "0 0 auto" }}>
                 <div>
                     <Gift gift={gift} includeTooltip={false} enhanceRank={enhanceLevel} expandable={false} />
                 </div>
-                <GiftTagLabels gift={gift} full={true} enhanceLevel={enhanceLevel} setEnhanceLevel={setEnhanceLevel} />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: isMobile ? "start" : "center", gap: "0.2rem"}}>
+                    <GiftTagLabels gift={gift} full={true} enhanceLevel={enhanceLevel} setEnhanceLevel={setEnhanceLevel} />
+                </div>
             </div>
-            <div style={{ flex: "1 1 0", minHeight: 0, overflowY: "auto" }}>
+            <div style={{ flex: isMobile ? "" : "1 1 0", minHeight: 0, overflowY: "auto" }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
                         <ProcessedText text={gift.descs[level]} />
@@ -36,8 +40,8 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                             gift.exclusiveTo ?
                                 <div style={{ display: "flex", flexDirection: "column" }}>
                                     <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Exclusive Theme Packs</span>
-                                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", maxWidth: "calc(100vw - 100px)", overflowX: "auto" }}>
-                                        {gift.exclusiveTo.map(packId => <ThemePackWithFloors key={packId} id={packId} />)}
+                                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", maxWidth: isMobile ? "90vw" : "calc(100vw - 100px)", overflowX: "auto" }}>
+                                        {gift.exclusiveTo.map(packId => <ThemePackWithFloors key={packId} id={packId} scale={isMobile ? .3 : .5} />)}
                                     </div>
                                 </div> : null
                         }
@@ -45,7 +49,7 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                             gift.events ?
                                 <div style={{ display: "flex", flexDirection: "column" }}>
                                     <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Events</span>
-                                    {gift.events.map(eventId => <ChoiceEventIcon key={eventId} id={eventId} scale={0.5} displayName={true} />)}
+                                    {gift.events.map(eventId => <ChoiceEventIcon key={eventId} id={eventId} scale={isMobile ? .3 : .5} displayName={true} />)}
                                 </div> : null
                         }
                         {
@@ -55,7 +59,7 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                                         <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Fusion Recipes</span>
                                         <div style={{ overflowX: "auto", overflowY: "hidden" }}>
                                             <div style={{ display: "flex", flexDirection: "column" }}>
-                                                {gift.recipes.map((recipe, i) => <FusionRecipe key={i} recipe={{ ingredients: recipe }} includeProduct={false} />)}
+                                                {gift.recipes.map((recipe, i) => <FusionRecipe key={i} recipe={{ ingredients: recipe }} includeProduct={false} scale={isMobile ? .7 : 1}/>)}
                                             </div>
                                         </div>
                                     </> : null}
@@ -63,7 +67,7 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                                         <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Ingredient of</span>
                                         <div style={{ overflowX: "auto", overflowY: "hidden" }}>
                                             <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem" }}>
-                                                {gift.ingredientOf.map(giftId => <Gift key={giftId} id={giftId} includeTooltip={true} expandable={true} />)}
+                                                {gift.ingredientOf.map(giftId => <Gift key={giftId} id={giftId} includeTooltip={true} expandable={true} scale={isMobile ? .7 : 1} />)}
                                             </div>
                                         </div>
                                     </> : null}

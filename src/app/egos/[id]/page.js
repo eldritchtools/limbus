@@ -14,6 +14,7 @@ import UptieSelector from "@/app/components/selectors/UptieSelector";
 import PassiveCard from "@/app/components/skill/PassiveCard";
 import SkillCard from "@/app/components/skill/SkillCard";
 import TooltipTemplate from "@/app/components/tooltips/TooltipTemplate";
+import { searchBuilds } from "@/app/database/builds";
 import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constants";
 import { constructSkillLabel } from "@/app/lib/skill";
@@ -64,7 +65,7 @@ export default function EgoPage({ params }) {
 
     useEffect(() => {
         const fetchBuilds = async () => {
-            setBuilds(await getFilteredBuilds({ "egos": [id] }, true, "score", false, 1, 6) || []);
+            setBuilds(await searchBuilds({ "egos": [id], published: true, sortBy: "popular" }, 1, 6) || []);
         }
 
         if (activeTab === "builds" && !builds) fetchBuilds();
@@ -89,8 +90,6 @@ export default function EgoPage({ params }) {
         if (v > uptie) setUptie(v);
     }
 
-    console.log(preAwakeningSkills);
-
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
         <div style={{ display: "flex", flexDirection: "row", width: "100%", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
             <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "min(480px, 100%)" }}>
@@ -113,8 +112,8 @@ export default function EgoPage({ params }) {
                     }
                 </div>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                    <EgoIcon ego={egoData} type={"awaken"} style={{ width: "50%", maxWidth: "192px", height: "auto" }} />
-                    {"corrosionType" in egoData ? <EgoIcon ego={egoData} type={"erosion"} style={{ width: "50%", maxWidth: "192px", height: "auto" }} /> : null}
+                    <EgoIcon ego={egoData} type={"awaken"} style={{ width: "192px", height: "auto" }} />
+                    {"corrosionType" in egoData ? <EgoIcon ego={egoData} type={"erosion"} style={{ width: "192px", height: "auto" }} /> : null}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", textAlign: "center" }}>
                     <div style={{ display: "flex", flexDirection: "column", border: "1px #777 dotted", padding: "0.2rem" }}>

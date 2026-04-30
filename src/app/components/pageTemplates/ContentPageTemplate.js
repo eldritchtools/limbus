@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 import CommentSection from "./CommentSection";
@@ -10,7 +10,7 @@ import EditButton from "../contentActions/EditButton";
 import LikeButton from "../contentActions/LikeButton";
 import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
-import { ViewSolid } from "../contentActions/Symbols";
+import { BackSolid, ViewSolid } from "../contentActions/Symbols";
 import Tag from "../objects/Tag";
 import SocialsDisplay from "../user/SocialsDisplay";
 import UsernameWithTime from "../user/UsernameWithTime";
@@ -28,6 +28,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
     const { user } = useAuth();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const router = useRouter();
 
     useEffect(() => {
         if (!content && pathname && searchParams) {
@@ -47,6 +48,14 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
     useEffect(() => {
         if (content) document.title = `${content.title} | Limbus Company Tools`;
     }, [content]);
+
+    const handleBack = () => {
+        if (window.history.length > 1) {
+            router.back()
+        } else {
+            router.push(`/${targetType}`)
+        }
+    }
 
     const constructAction = (action) => {
         if (action === "like") return <LikeButton key={"like"} targetType={targetType} targetId={targetId} likeCount={content.like_count} />;
@@ -74,6 +83,9 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
         </div>
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
+        <div onClick={handleBack}>
+            <button><BackSolid text={"Go Back"} /></button>
+        </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap" }}>
                 {titleIcons}

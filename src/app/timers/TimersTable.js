@@ -96,7 +96,7 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
             <span>{title}</span>
             {src ? <BannerIcon path={src} style={style} /> : null}
         </div>
-        <TimeComponent date={date} dateString={dateString} />
+        <TimeComponent key={dateString} date={date} dateString={dateString} />
     </div>
 }
 
@@ -136,6 +136,10 @@ export default function TimersTable({ timers }) {
         <TimerRow title={"Weekly Reset (6AM KST)"} date={getNextThurs()} />
         {timers?.event ?
             <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} /> :
+            null
+        }
+        {timers?.event2 ?
+            <TimerRow title={timers.event2.name} src={timers.event2.src} dateString={timers.event2.endDate} /> :
             null
         }
         {timers?.feature ?

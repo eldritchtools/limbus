@@ -33,10 +33,10 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{lineHeight: "1.3"}}>
+                <li>All new extreme theme pack bosses and bosses for the new intervallo theme packs and story nodes have been added to the Encounters Page.</li>
                 <li>Added an exclusive gifts helper section to the <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink></HoverBlocker> tool to help users in selecting theme packs.</li>
                 <li>Team <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-solver"}>Solver</NoPrefetchLink></HoverBlocker> and <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-randomizer"}>Randomizer</NoPrefetchLink></HoverBlocker> tools now support using the user&apos;s Company Data to set the Black/Whitelist. The toggle has also been changed to a show/hide toggle rather than an active/inactive toggle and the number of items on the list is now shown on the button.</li>
                 <li>Updated the popularity scoring function since older posts&apos; scores weren&apos;t decaying properly with age.</li>
-                <li>All Extreme and Railway MD Theme Pack bosses has been added to the Encounters Page.</li>
                 <li>Keyword Solver has been renamed to <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-solver"}>Team Solver</NoPrefetchLink></HoverBlocker> and now supports statuses and tags/factions. It also now returns results with less sinners than the specified team size if they already meet the criteria.</li>
                 <li>MD Plans now has a tracking mode. Activate it to mark gifts as obtained or theme packs as entered to follow the plan easier.</li>
             </ul>
