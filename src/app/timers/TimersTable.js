@@ -138,6 +138,10 @@ export default function TimersTable({ timers }) {
             <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} /> :
             null
         }
+        {timers?.event2 ?
+            <TimerRow title={timers.event2.name} src={timers.event2.src} dateString={timers.event2.endDate} /> :
+            null
+        }
         {timers?.feature ?
             <TimerRow title={timers.feature.name} src={timers.feature.src} dateString={timers.feature.endDate} /> :
             null
