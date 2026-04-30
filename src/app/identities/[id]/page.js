@@ -69,7 +69,7 @@ export default function Identity({ params }) {
 
     useEffect(() => {
         const fetchBuilds = async () => {
-            setBuilds(await searchBuilds({ "identities": [id], published: true, sortBy: "score" }, 1, 6) || []);
+            setBuilds(await searchBuilds({ "identities": [id], published: true, sortBy: "popular" }, 1, 6) || []);
         }
 
         if (activeTab === "builds" && !builds) fetchBuilds();
