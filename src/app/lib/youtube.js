@@ -19,6 +19,12 @@ export function extractYouTubeId(input) {
             return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
         }
 
+        // youtube.com/live/VIDEOID
+        if (url.pathname.startsWith("/live/")) {
+            const id = url.pathname.replace("/live/", "");
+            return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+        }
+
         // youtu.be/VIDEOID
         if (url.hostname === "youtu.be") {
             const id = url.pathname.slice(1);
@@ -94,7 +100,7 @@ export function YouTubeThumbnailEmbed({ videoId, className }) {
                     <img
                         src={thumbnailUrl}
                         alt="YouTube video thumbnail"
-                        style={{ objectFit: "cover", filter: "brightness(0.85)" }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.85)" }}
                     />
 
                     {/* Play button overlay */}
