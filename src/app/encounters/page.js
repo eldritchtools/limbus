@@ -1,6 +1,7 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useBreakpoint } from "@eldritchtools/shared-components";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 
@@ -96,6 +97,8 @@ export default function EncountersPage() {
     const [encounters, encountersLoading] = useData("encounters");
     const [category, setCategory] = useState(null);
     const [encounter, setEncounter] = useState(null);
+    const {isMobile} = useBreakpoint();
+    const router = useRouter();
 
     const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
         if (f === "category") acc["category"] = v;
@@ -121,13 +124,22 @@ export default function EncountersPage() {
         }
     }, [encountersLoading, searchParams, categoryOptions, encounters])
 
+    const handleSetEncounter = enc => {
+        if (!category || !enc) return;
+        const params = new URLSearchParams();
+        params.set("category", category.value);
+        params.set("encounter", enc.value);
+
+        router.replace(`/encounters?${params.toString()}`, {scroll: false});
+    };
+
     if (encountersLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h2 style={{ margin: 0 }}>Encounters</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>Check out details for various encounters in the game. This is an early version of this page. More encounters, details, and QoL will gradually be added to this page over time. Feel free to suggest encounters you want to see added or prioritized.</span>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "auto 300px", alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
+            <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
                 <Select
                     options={categoryOptions}
@@ -141,7 +153,7 @@ export default function EncountersPage() {
                 <Select
                     options={encounterOptions}
                     value={encounter}
-                    onChange={setEncounter}
+                    onChange={handleSetEncounter}
                     placeholder={"Choose encounter..."}
                     filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
                     styles={selectStyle}

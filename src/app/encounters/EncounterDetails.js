@@ -45,7 +45,7 @@ function TargetComponent({ target }) {
         })
     }
 
-    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "start", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "center" : "start", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>{target.name}</h3>
             <EnemyIcon id={target.portrait} style={{ width: isMobile ? "250px" : "auto" }} />

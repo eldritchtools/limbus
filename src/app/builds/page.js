@@ -1,5 +1,6 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
@@ -18,12 +19,13 @@ import { selectStyle } from "../styles/selectStyle";
 
 function EncountersSelection({ category, setCategory, encounter, setEncounter, searchParams }) {
     const [encounters, encountersLoading] = useData("encounters");
+    const { isMobile } = useBreakpoint();
     const router = useRouter();
 
     const categoryOptions = useMemo(() => getEncounterCategoryOptions(true), []);
-    
-    const encounterOptions = useMemo(() => 
-        encountersLoading || !category ? [] : getEncounterOptions(encounters, category), 
+
+    const encounterOptions = useMemo(() =>
+        encountersLoading || !category ? [] : getEncounterOptions(encounters, category),
         [encountersLoading, encounters, category]
     );
 
@@ -40,17 +42,17 @@ function EncountersSelection({ category, setCategory, encounter, setEncounter, s
     }, [searchParams, encounters, encountersLoading, categoryOptions, setCategory, setEncounter]);
 
     const handleSetEncounter = enc => {
-        if(!category || !enc) return;
+        if (!category || !enc) return;
         const params = new URLSearchParams();
         params.set('mode', "enc");
         params.set("category", category.value);
         params.set("encounter", enc.value);
 
-        router.push(`/builds?${params.toString()}`);
+        router.replace(`/builds?${params.toString()}`, {scroll: false});
     };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "auto 300px", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
             <Select
                 options={categoryOptions}
@@ -73,11 +75,9 @@ function EncountersSelection({ category, setCategory, encounter, setEncounter, s
 
         {category && encounter ?
             <React.Fragment>
-                <span className="sub-text" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem" }}>
-                    <span>Showing builds for the encounter</span>
-                    <MarkdownRenderer content={`{enc:${category.value}|${encounter.value}}.`} />
-                    <span>If you&apos;d like to see your build here, use the tag</span>
-                    <Tag tag={`${category.value}-${encounter.value}`} type={"build"} />.
+                <span className="sub-text" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem", textWrap: "wrap" }}>
+                    <MarkdownRenderer content={`Showing builds for the encounter {enc:${category.value}|${encounter.value}}. If you'd like to see your build here, use the corresponding tag.`} />
+                    <Tag tag={`${category.value}-${encounter.value}`} type={"build"} />
                 </span>
                 <span className="sub-text">Clicking on the link will bring you to the encounters page where you can find more details about the encounter or share your experience with it.</span>
             </React.Fragment> :
@@ -149,7 +149,7 @@ export default function BuildsPage() {
     const handleTabClick = tab => {
         if (activeTab === tab) setRefreshCounter(p => p + 1);
         else setActiveTab(tab);
-        
+
         const params = new URLSearchParams();
         params.set('mode', String(tab));
 
