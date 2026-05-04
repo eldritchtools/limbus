@@ -40,7 +40,7 @@
     height: 24px;
     pointer-events: none;
     text-align: center;
-    background: linear-gradient(to bottom, transparent, black);
+    background: linear-gradient(to bottom, transparent, var(--bg-secondary));
 }
 
 .floorSelectGrid {

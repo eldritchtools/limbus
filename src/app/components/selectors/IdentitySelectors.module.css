@@ -42,7 +42,7 @@
     pointer-events: none;
     display: flex;
     justify-content: center;
-    background: linear-gradient(to bottom, transparent, black);
+    background: linear-gradient(to bottom, transparent, var(--bg-secondary));
 }
 
 .identityMenuSelectorGrid {
