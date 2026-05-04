@@ -10,6 +10,7 @@ import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import IconsSelector from "../components/selectors/IconsSelector";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
@@ -22,6 +23,18 @@ function SettingContainer({ name, desc, children }) {
         <span className="sub-text">{desc}</span>
         {children}
     </div>
+}
+
+const filterSelectionModes = {
+    "ieo": "Include/Exclude/Off",
+    "lr": "Include & Exclude",
+    "st": "Simple Toggle"
+}
+
+const filterModeDescriptions = {
+    "ieo": "Include/Exclude/Off: Clicking on a filter cycles it between include, exclude, and off.",
+    "lr": "Include & Exclude: Left clicking includes a filter, right clicking excludes it. Left/Right click again to turn off. On mobile, use a long press in place of right click.",
+    "st": "Simple Toggle: Left clicking on a filter toggles between include and off. No exclude."
 }
 
 const presetOptions = {
@@ -56,6 +69,7 @@ export default function SiteCustomizationPage() {
     const { openSetFavoriteLinksModal } = useModal();
     const [applying, setApplying] = useState(false);
     const [message, setMessage] = useState(null);
+    const [filterPreview, setFilterPreview] = useState([]);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -85,7 +99,7 @@ export default function SiteCustomizationPage() {
         setTimeout(() => setMessage(null), 3000);
     }
 
-    const [currentPreset, currentFont] = useMemo(() => {
+    const [currentPreset, currentFont, currentFilterSelectionMode] = useMemo(() => {
         if (loading) return ["default", fontOptions["Default"]];
         const preset = Object.entries(presets).find(([id, [bg, text, sc]]) =>
             ((data.baseBackgroundColor ?? customizationDefaults.baseBackgroundColor) === bg) &&
@@ -95,9 +109,12 @@ export default function SiteCustomizationPage() {
 
         const font = Object.entries(fontOptions).find(([value]) => (data.font ?? customizationDefaults.font) === value)
 
+        const filterMode = Object.entries(filterSelectionModes).find(([value]) => (data.filterSelectionMode ?? customizationDefaults.filterSelectionMode) === value)
+
         return [
             preset ? preset[0] : "custom",
-            font ? font[0] : "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+            font ? font[0] : "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+            filterMode ? filterMode[0] : "ieo"
         ]
     }, [data, loading]);
 
@@ -126,7 +143,15 @@ export default function SiteCustomizationPage() {
         let index = list.findIndex(x => x === currentFont) + delta;
         if (index < 0) index = list.length - 1;
         else if (index >= list.length) index = 0;
-        setData(p => ({...p, font: list[index]}));
+        setData(p => ({ ...p, font: list[index] }));
+    }
+
+    const changeFilterSelectionMode = delta => {
+        const list = Object.keys(filterSelectionModes);
+        let index = list.findIndex(x => x === currentFilterSelectionMode) + delta;
+        if (index < 0) index = list.length - 1;
+        else if (index >= list.length) index = 0;
+        setData(p => ({ ...p, filterSelectionMode: list[index] }));
     }
 
     if (loading) return <LoadingContentPageTemplate />
@@ -173,8 +198,28 @@ export default function SiteCustomizationPage() {
         </SettingContainer>
 
         <SettingContainer
+            name={"Filter Selection Mode"}
+            desc={"Change how the filter selection menus work."}
+        >
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <button onClick={() => changeFilterSelectionMode(-1)}>{"<"}</button>
+                <DropdownButton value={currentFilterSelectionMode} setValue={v => setData(p => ({ ...p, filterSelectionMode: v }))} options={filterSelectionModes} />
+                <button onClick={() => changeFilterSelectionMode(1)}>{">"}</button>
+            </div>
+            <span>
+                {filterModeDescriptions[currentFilterSelectionMode]}
+            </span>
+            <IconsSelector
+                type={"row"}
+                categories={["sinner", "status", "affinity", "skillType"]}
+                values={filterPreview} setValues={setFilterPreview}
+                filterModeOverride={currentFilterSelectionMode}
+            />
+        </SettingContainer>
+
+        <SettingContainer
             name={"Site Display Settings"}
-            desc={<div>Change the base colors and other display settings on the site. Multiple other colors will be derived from the chosen base colors. These settings will not affect things with predefined colors or font settings. <span style={{ fontSize: "0.8rem", color: uiColors.red }}>Caution: The site is mainly designed with the default settings in mind (darker backgrounds and lighter texts). Using other settings may cause parts of the site to be difficult to see or may cause some layouts to break. Certain colors may be changed over time to accommodate for both light and dark backgrounds. 
+            desc={<div>Change the base colors and other display settings on the site. Multiple other colors will be derived from the chosen base colors. These settings will not affect things with predefined colors or font settings. <span style={{ fontSize: "0.8rem", color: uiColors.red }}>Caution: The site is mainly designed with the default settings in mind (darker backgrounds and lighter texts). Using other settings may cause parts of the site to be difficult to see or may cause some layouts to break. Certain colors may be changed over time to accommodate for both light and dark backgrounds.
             </span></div>}
         >
             <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", alignSelf: "center", alignItems: "center", textAlign: "center" }}>
@@ -282,7 +327,7 @@ export default function SiteCustomizationPage() {
             <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>
             <button onClick={resetCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Reset All to Default</button>
         </div>
-        <div style={{alignSelf: "center"}}>
+        <div style={{ alignSelf: "center" }}>
             <span>{message}</span>
         </div>
     </div>

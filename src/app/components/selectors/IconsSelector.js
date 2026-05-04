@@ -5,6 +5,7 @@ import KeywordIcon from "../icons/KeywordIcon";
 import RarityIcon from "../icons/RarityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import TierIcon from "../icons/TierIcon";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 const categoryItems = {
     "identityTier": ["0", "00", "000"],
@@ -32,15 +33,53 @@ function getCategoryItems(category) {
     return categoryItems[category] ?? additionalCategories[category];
 }
 
-export default function IconsSelector({ type, categories, values, setValues, borderless = false }) {
-    const handleToggle = (filter, selected, excluded) => {
-        if (selected)
-            setValues(values.map(x => x === filter ? `-${x}` : x));
-        else if (excluded)
-            setValues(values.filter(x => `-${filter}` !== x));
-        else
-            setValues([...values, filter]);
-    }
+export default function IconsSelector({ type, categories, values, setValues, borderless = false, filterModeOverride }) {
+    const { getCustomizationValue } = useSiteCustomization();
+    const filterSelectionMode = filterModeOverride ?? getCustomizationValue("filterSelectionMode");
+
+    const clickProps = useMemo(() => {
+        if(filterSelectionMode === "ieo") {
+            return {
+                "onClick": (filter, selected, excluded, event) => {
+                    if (selected)
+                        setValues(values.map(x => x === filter ? `-${x}` : x));
+                    else if (excluded)
+                        setValues(values.filter(x => `-${filter}` !== x));
+                    else
+                        setValues([...values, filter]);
+                }
+            }
+        } else if (filterSelectionMode === "lr") {
+            return {
+                "onClick": (filter, selected, excluded, event) => {
+                    if (selected)
+                        setValues(values.filter(x => x !== filter));
+                    else if (excluded)
+                        setValues([...values.filter(x => x !== `-${filter}`), filter]);
+                    else
+                        setValues([...values, filter]);
+                },
+                "onContextMenu": (filter, selected, excluded, event) => {
+                    event.preventDefault();
+                    if (selected)
+                        setValues([...values.filter(x => x !== filter), `-${filter}`]);
+                    else if (excluded)
+                        setValues(values.filter(x => x !== `-${filter}`));
+                    else
+                        setValues([...values, `-${filter}`]);
+                }
+            }
+        } else if (filterSelectionMode === "st") {
+            return {
+                "onClick": (filter, selected, excluded, event) => {
+                    if (selected)
+                        setValues(values.filter(x => x !== filter));
+                    else
+                        setValues([...values, filter]);
+                }
+            }
+        }
+    }, [filterSelectionMode, values, setValues]);
 
     const clearAll = () => {
         setValues([]);
@@ -51,8 +90,8 @@ export default function IconsSelector({ type, categories, values, setValues, bor
         const excluded = !selected && values.includes(`-${filter}`);
 
         let cat = category;
-        if(cat === "atkType" || cat === "defType") cat = "skillType";
-        if(cat === "atkTypeKwless") cat = filterCategories[filter];
+        if (cat === "atkType" || cat === "defType") cat = "skillType";
+        if (cat === "atkTypeKwless") cat = filterCategories[filter];
 
         let icon = null;
         switch (cat) {
@@ -81,7 +120,8 @@ export default function IconsSelector({ type, categories, values, setValues, bor
 
         return <div key={filter}
             className={`${styles.iconSelectorButton} ${selected ? styles.selected : null} ${excluded ? styles.excluded : null}`}
-            onClick={() => handleToggle(filter, selected, excluded)}
+            onClick={clickProps.onClick ? e => clickProps.onClick(filter, selected, excluded, e) : null}
+            onContextMenu={clickProps.onContextMenu ? e => clickProps.onContextMenu(filter, selected, excluded, e) : null}
         >
             {icon}
         </div>

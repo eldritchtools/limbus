@@ -5,5 +5,6 @@ export const customizationDefaults = {
     baseTextColor: "#dddddd",
     surfaceContrast: .05,
     textScale: 1,
-    font: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    font: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    filterSelectionMode: "ieo"
 }
