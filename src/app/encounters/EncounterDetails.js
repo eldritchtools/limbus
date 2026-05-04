@@ -1,5 +1,5 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import styles from "./EncounterDetails.module.css";
 import { useData } from "../components/DataProvider";
@@ -87,7 +87,7 @@ function TargetComponent({ target }) {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
             {override.length > 0 ? <>
-                <span style={{fontSize: "1.2rem", fontWeight: "bold", textAlign: "center"}}>Identity and E.G.Os</span>
+                <span style={{ fontSize: "1.2rem", fontWeight: "bold", textAlign: "center" }}>Identity and E.G.Os</span>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.2rem" }}>
                     {override}
                 </div>
@@ -114,18 +114,24 @@ function BuffComponent({ id }) {
 }
 
 export default function EncounterDetails({ data }) {
+    const [battle, setBattle] = useState(0);
     const [wave, setWave] = useState(0);
     const [phase, setPhase] = useState(0);
     const [targetIndex, setTargetIndex] = useState(0);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
+        setBattle(0);
         setWave(0);
         setPhase(0);
         setTargetIndex(0);
     }, [data]);
 
-    let targetsData = data, waves = null, phases = null;
+    let targetsData = data, battles = null, waves = null, phases = null;
+    if ("battles" in targetsData && targetsData.battles[wave]) {
+        battles = targetsData.battles.length;
+        targetsData = targetsData.battles[battle];
+    }
     if ("waves" in targetsData && targetsData.waves[wave]) {
         waves = targetsData.waves.length;
         targetsData = targetsData.waves[wave];
@@ -144,10 +150,29 @@ export default function EncounterDetails({ data }) {
     </div>
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
+        {battles ?
+            <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                {Array.from({ length: battles }, (_, i) =>
+                    <div
+                        key={i} className={`tab-header ${battle === i ? "active" : ""}`}
+                        onClick={() => { setBattle(i); setWave(0); setPhase(0); setTargetIndex(0); }}
+                    >
+                        Battle {i + 1}
+                    </div>
+                )}
+            </div> :
+            null
+        }
+
         {waves ?
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: waves }, (_, i) =>
-                    <div key={i} className={`tab-header ${wave === i ? "active" : ""}`} onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); }}>Wave {i + 1}</div>
+                    <div
+                        key={i} className={`tab-header ${wave === i ? "active" : ""}`}
+                        onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); }}
+                    >
+                        Wave {i + 1}
+                    </div>
                 )}
             </div> :
             null
@@ -156,7 +181,12 @@ export default function EncounterDetails({ data }) {
         {phases ?
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: phases }, (_, i) =>
-                    <div key={i} className={`tab-header ${phase === i ? "active" : ""}`} onClick={() => { setPhase(i); setTargetIndex(0); }}>Phase {i + 1}</div>
+                    <div
+                        key={i} className={`tab-header ${phase === i ? "active" : ""}`}
+                        onClick={() => { setPhase(i); setTargetIndex(0); }}
+                    >
+                        Phase {i + 1}
+                    </div>
                 )}
             </div> :
             null

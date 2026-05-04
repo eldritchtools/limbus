@@ -14,6 +14,10 @@ const concerns = [
     {
         concern: "An encounter I'm looking for isn't in the Encounters page.",
         answer: "I gradually add older encounters to the Encounters page, but it's a mostly manual process, so it takes a while and I may miss some relevant encounters. Feel free to suggest adding it, so I can prioritize it."
+    },
+    {
+        concern: "Why don't you use boss names for encounters? They can be a bit hard to find.",
+        answer: "Story node or event ids are used to minimize the possibility of spoiling players who haven't reached those fights yet."
     }
 ]
 

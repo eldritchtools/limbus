@@ -59,6 +59,24 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
                 }
             </div>);
         }
+    } else {
+        subAchievements = [<div key={0} className={styles.subitem}>
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <label className={styles.checkboxContainer}>
+                    <input type="checkbox" onChange={() => {
+                        if (tracking[achievement.id] > 0) setAchievementTracking(0);
+                        else setAchievementTracking(1);
+                    }} checked={tracking[achievement.id] > 0} />
+                    <span className={styles.checkmark} />
+                </label>
+                <span className={styles.points}>+{achievement.points}</span>
+                <span className={styles.itemLabel}>{achievement.text}</span>
+            </div>
+            {achievement.hardonly ?
+                <span style={{ minWidth: "4rem", textAlign: "center", color: uiColors.red }}>Hard only</span> :
+                <span style={{ minWidth: "4rem", textAlign: "center", color: uiColors.green }}>Normal or Hard</span>
+            }
+        </div>]
     }
 
     const hardonly = Array.isArray(achievement.hardonly) ? !achievement.hardonly.some(x => x === false) : achievement.hardonly;
@@ -89,8 +107,8 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
         <div style={{ padding: "0.5rem 1.5rem 0.1rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {subAchievements ? <div>{subAchievements}</div> : null}
             {isOpen ?
-                <div style={{ width: "100%", textAlign: "start" }}> 
-                    <AchievementTips achievement={achievement} isSmall={isSmall} /> 
+                <div style={{ width: "100%", textAlign: "start" }}>
+                    <AchievementTips achievement={achievement} isSmall={isSmall} />
                 </div> :
                 null
             }
