@@ -6,11 +6,13 @@ import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
+import TierIcon from "../components/icons/TierIcon";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
 import { getEgoTooltipProps } from "../components/tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../components/tooltips/IdentityTooltip";
+import { uiColors } from "../lib/colors";
 import useLocalState from "../lib/useLocalState";
 
 function TextTip({ tip }) {
@@ -29,7 +31,7 @@ function TableTip({ tip, isSmall }) {
     const getCellComponent = (cell) => {
         if (typeof cell === "string")
             return <div style={{ whiteSpace: wrapping, padding: "0.1rem", textAlign: "center" }}>
-                <MarkdownRenderer content={cell} /> 
+                <MarkdownRenderer content={cell} />
             </div>;
         if (typeof cell === "object" && cell !== null && !Array.isArray(cell)) {
             if ("gifts" in cell && !giftsLoading) {
@@ -46,12 +48,12 @@ function TableTip({ tip, isSmall }) {
         <table style={{ width: "fit-content", borderCollapse: "collapse" }}>
             <thead>
                 <tr>
-                    {tip.headers.map((header, i) => <th key={i} style={{ padding: "0.1rem 0.2rem", border: "1px #666 dotted" }}>{header}</th>)}
+                    {tip.headers.map((header, i) => <th key={i} style={{ padding: "0.1rem 0.2rem", border: "1px var(--secondary-border-color) solid" }}>{header}</th>)}
                 </tr>
             </thead>
             <tbody>
                 {tip.cells.map((row, i) => <tr key={i}>
-                    {row.map((cell, i) => <td key={i} style={{ padding: "0.1rem 0.2rem", border: "1px #666 dotted" }}>
+                    {row.map((cell, i) => <td key={i} style={{ padding: "0.1rem 0.2rem", border: "1px var(--secondary-border-color) solid" }}>
                         {getCellComponent(cell)}
                     </td>)}
                 </tr>)}
@@ -107,7 +109,7 @@ function ShowGiftsTip({ tip, isSmall }) {
     );
 
     const giftsStyle = { display: "flex", flexDirection: "row", height: "fit-content", flexWrap: "wrap", padding: "0.5rem" };
-    const centerStyle = { display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", border: "1px #666 dotted", padding: "0.5rem" };
+    const centerStyle = { display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", border: "1px var(--secondary-border-color) solid", padding: "0.5rem" };
     const constructGift = gift => <Gift key={gift.id} gift={gift} scale={isSmall ? 0.5 : 1} />
 
     const gridComponents = [];
@@ -115,7 +117,7 @@ function ShowGiftsTip({ tip, isSmall }) {
     // General
     if (general.length > 0) {
         gridComponents.push(<div key={gridComponents.length} style={centerStyle}>{isSmall ? "Any" : "General"}</div>);
-        gridComponents.push(<div key={gridComponents.length} style={{ border: "1px #666 dotted" }}>
+        gridComponents.push(<div key={gridComponents.length} style={{ border: "1px var(--secondary-border-color) solid" }}>
             <div style={giftsStyle}>{general.map(constructGift)}</div>
         </div>);
     }
@@ -124,12 +126,10 @@ function ShowGiftsTip({ tip, isSmall }) {
         return <div key={gridComponents.length}
             style={{
                 display: "flex", flexDirection: "row", flexWrap: "wrap", alignItems: "center", alignContent: "flex-start",
-                padding: "0.25rem", border: "1px #666 dotted", gap: "0.5rem"
+                padding: "0.25rem", border: "1px var(--secondary-border-color) solid", gap: "0.5rem"
             }}>
             {Object.entries(packGiftMapping).map(([pack, gifts], i) =>
-                <div key={i} style={{
-                    display: "flex", flexDirection: "column", textAlign: "center", border: "1px #777 dotted", borderRadius: "1rem", padding: "0.2rem"
-                }}>
+                <div key={i} className="panel-container" style={{ textAlign: "center", padding: "0.2rem" }}>
                     <div><ThemePackNameWithTooltip id={pack} /></div>
                     <div style={{ ...giftsStyle, justifyContent: "center" }}>{gifts.map(constructGift)}</div>
                 </div>
@@ -159,10 +159,10 @@ function ShowGiftsTip({ tip, isSmall }) {
             null
         }
         <div style={{ display: "flex", gap: "1rem", paddingLeft: "0.5rem", margin: "0.5rem 0" }}>
-            <span className="tab-header" style={{ color: mode === "normal" ? "#4ade80" : "#166534" }} onClick={() => setMode("normal")}>Normal</span>
-            <span className="tab-header" style={{ color: mode === "hard" ? "#f87171" : "#7f1d1d" }} onClick={() => setMode("hard")}>Hard</span>
+            <span className="tab-header" style={{ color: uiColors.green, filter: mode === "normal" ? "brightness(1.2)" : "brightness(0.5)" }} onClick={() => setMode("normal")}>Normal</span>
+            <span className="tab-header" style={{ color: uiColors.red,  filter: mode === "hard" ? "brightness(1.2)" : "brightness(0.5)" }} onClick={() => setMode("hard")}>Hard</span>
         </div>
-        <div style={{ display: "grid", width: "100%", gridTemplateColumns: "auto 1fr", border: "1px #666 dotted" }}>
+        <div style={{ display: "grid", width: "100%", gridTemplateColumns: "auto 1fr", border: "1px var(--secondary-border-color) solid" }}>
             {gridComponents}
         </div>
     </div>
@@ -216,7 +216,7 @@ function ShowThemePacksByFloorTip({ tip }) {
         return acc;
     }, {});
 
-    const centerStyle = { display: "flex", alignItems: "center", justifyContent: "center", border: "1px #666 dotted" };
+    const centerStyle = { display: "flex", alignItems: "center", justifyContent: "center", border: "1px var(--secondary-border-color) solid" };
 
     const components = [];
     ["any", "1", "2", "3", "4", "5", "6-10"].forEach(floor => {
@@ -227,7 +227,7 @@ function ShowThemePacksByFloorTip({ tip }) {
         components.push(<div key={components.length} style={{ ...centerStyle, display: "flex", flexDirection: "column", padding: "0.2rem" }}>
             {packsByFloor[floor].map(id => {
                 if ("highlight" in tip && floor in tip.highlight && tip.highlight[floor].includes(id))
-                    return <ThemePackNameWithTooltip key={id} id={id} style={{ fontWeight: "bold", color: "#4ade80" }} />
+                    return <ThemePackNameWithTooltip key={id} id={id} style={{ fontWeight: "bold", color: uiColors.green }} />
                 else
                     return <ThemePackNameWithTooltip key={id} id={id} />
             })}
@@ -269,7 +269,7 @@ function ShowIdentities({ tip, isSmall }) {
 
     return <div style={{ overflowX: "auto", overflowY: "hidden", alignSelf: "center", maxWidth: "100%" }}>
         <div style={{ width: "100%", display: "flex" }}>
-            {identities.map((identity, i) => <div key={i} style={{ border: "1px #666 dotted" }}>
+            {identities.map((identity, i) => <div key={i} style={{ border: "1px var(--secondary-border-color) solid" }}>
                 <NoPrefetchLink href={`/identities/${identity.id}`} {...getIdentityTooltipProps(identity.id)}>
                     <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} scale={isSmall ? 0.33 : .5} />
                 </NoPrefetchLink>
@@ -294,7 +294,7 @@ function ShowIdentitiesBySinner({ tip, isSmall }) {
     }, start);
 
     const components = Object.entries(idsBySinner).sort((a, b) => a[0] - b[0]).map(([sinnerId, list]) =>
-        <div key={sinnerId} style={{ display: "flex", alignItems: "center", width: isSmall ? "100%" : "480px", border: "1px #777 dotted" }}>
+        <div key={sinnerId} style={{ display: "flex", alignItems: "center", width: isSmall ? "100%" : "480px", border: "1px var(--secondary-border-color) solid" }}>
             <SinnerIcon num={sinnerId} style={{ width: "64px", height: "64px" }} />
             <div style={{ display: "flex", overflowX: "auto", overflowY: "hidden" }}>
                 {list.reverse().map(identity =>
@@ -313,7 +313,7 @@ function ShowIdentitiesBySinner({ tip, isSmall }) {
 
 function RefreshCostSummary({ isSmall }) {
     const arr = Array.from({ length: 10 }, (_, i) => i + 1);
-    const style = { textAlign: "center", padding: "0.5rem", border: "1px #666 dotted" }
+    const style = { textAlign: "center", padding: "0.5rem", border: "1px var(--secondary-border-color) solid" }
     let sum = 0;
     return <div style={{ display: "flex", alignSelf: "center", overflowX: "auto", maxWidth: "100%" }}>
         <table style={{ width: "fit-content", borderCollapse: "collapse" }}>
@@ -349,22 +349,21 @@ function RefreshCostSummary({ isSmall }) {
 }
 
 function EnhanceCostSummary({ isSmall }) {
-    const giftTierStyle = { fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "24px", color: "#ffd84d" }
-    const style = { textAlign: "center", padding: "0.5rem", border: "1px #666 dotted" }
+    const style = { textAlign: "center", padding: "0.5rem", border: "1px var(--secondary-border-color) solid" }
     return <div style={{ display: "flex", justifyContent: "center" }}>
         <table style={{ width: "fit-content", borderCollapse: "collapse" }}>
             <thead>
                 <tr>
                     <th style={style}>Tier</th>
-                    <th style={style}><span style={giftTierStyle}>I</span></th>
-                    <th style={style}><span style={giftTierStyle}>II</span></th>
-                    <th style={style}><span style={giftTierStyle}>III</span></th>
-                    <th style={style}><span style={giftTierStyle}>IV</span></th>
+                    <th style={style}><TierIcon tier={1} /></th>
+                    <th style={style}><TierIcon tier={2} /></th>
+                    <th style={style}><TierIcon tier={3} /></th>
+                    <th style={style}><TierIcon tier={4} /></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th style={style}><span style={giftTierStyle}>+</span></th>
+                    <th style={style}><TierIcon tier={"+"} /></th>
                     <td style={style}>50</td>
                     <td style={style}>60</td>
                     <td style={style}>75</td>
@@ -374,7 +373,7 @@ function EnhanceCostSummary({ isSmall }) {
                     <th style={style}>
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             <Gift id={9189} scale={isSmall ? .6 : 1} />
-                            <span style={giftTierStyle}>+</span>
+                            <TierIcon tier={"+"} />
                         </div>
                     </th>
                     <td style={style}>35</td>
@@ -383,7 +382,7 @@ function EnhanceCostSummary({ isSmall }) {
                     <td style={style}>70</td>
                 </tr>
                 <tr>
-                    <th style={style}><span style={giftTierStyle}>++</span></th>
+                    <th style={style}><TierIcon tier={"++"} /></th>
                     <td style={style}>100</td>
                     <td style={style}>120</td>
                     <td style={style}>150</td>
@@ -393,7 +392,7 @@ function EnhanceCostSummary({ isSmall }) {
                     <th style={style}>
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             <Gift id={9189} scale={isSmall ? .6 : 1} />
-                            <span style={giftTierStyle}>++</span>
+                            <TierIcon tier={"++"} />
                         </div>
                     </th>
                     <td style={style}>70</td>
@@ -409,7 +408,7 @@ function EnhanceCostSummary({ isSmall }) {
 function ShowEGOsTip({ tip, isSmall }) {
     return <div style={{ overflowX: "auto", overflowY: "hidden", alignSelf: "center", maxWidth: "100%" }}>
         <div style={{ width: "100%", display: "flex" }}>
-            {tip.EGOs.map(EGOId => <div key={EGOId} style={{ border: "1px #666 dotted" }}>
+            {tip.EGOs.map(EGOId => <div key={EGOId} style={{ border: "1px var(--secondary-border-color) solid" }}>
                 <NoPrefetchLink href={`/egos/${EGOId}`} {...getEgoTooltipProps(EGOId)}>
                     <EgoIcon id={EGOId} scale={isSmall ? .33 : 0.5} displayName={true} displayRarity={true} type={"awaken"} />
                 </NoPrefetchLink>

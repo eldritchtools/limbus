@@ -12,6 +12,7 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import RarityIcon from "../components/icons/RarityIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
@@ -21,6 +22,7 @@ import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import JsonLd from "../lib/jsonLd";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
@@ -48,8 +50,8 @@ function SkillSpread({ identity, columns = 4 }) {
 }
 
 function IdentityDetails({ id, identity }) {
-    const wrapCell = contents => <td style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid", verticalAlign: "middle" }}>
-        <NoPrefetchLink key={id} href={`/identities/${id}`} style={{ color: "#ddd", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "128px" }} >
+    const wrapCell = contents => <td style={{ borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", verticalAlign: "middle" }}>
+        <NoPrefetchLink key={id} href={`/identities/${id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "128px" }} >
             {contents}
         </NoPrefetchLink>
     </td>
@@ -70,13 +72,13 @@ function IdentityDetails({ id, identity }) {
             {(identity.skillKeywordList || []).map(keyword => <KeywordIcon key={keyword} id={keyword} />)}
         </div>)}
         {wrapCell(<div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.2rem" }}>
-            {identity.tags.map(tag => <div key={tag}>{<ProcessedText text={tag}/>}</div>)}
+            {identity.tags.map(tag => <div key={tag}>{<ProcessedText text={tag} />}</div>)}
         </div>)}
     </tr>
 }
 
 function IdentityCard({ identity }) {
-    return <div className={styles.clickableIdCard} style={{ display: "flex", flexDirection: "row", padding: "0.5rem", width: "min(420px, 100%)", height: "280px", border: "1px #777 solid", borderRadius: "0.25rem", boxSizing: "border-box" }}>
+    return <div className={styles.clickableIdCard}>
         <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
             <IdentityIcon identity={identity} uptie={2} displayName={false} displayRarity={true} />
             {identity.tags.includes("Base Identity") ? null : <IdentityIcon identity={identity} uptie={4} displayName={false} displayRarity={false} />}
@@ -129,7 +131,7 @@ function IdentityList({ identities, searchString, filters, displayType, separate
 
     if (displayType === "icon") {
         const listToComponents = list => <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
-            {list.map(([id, identity]) => <div key={id}><NoPrefetchLink href={`/identities/${id}`} style={{ color: "#ddd", textDecoration: "none" }} >
+            {list.map(([id, identity]) => <div key={id}><NoPrefetchLink href={`/identities/${id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none" }} >
                 <div className={styles.clickableId}>
                     <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
                 </div>
@@ -153,7 +155,7 @@ function IdentityList({ identities, searchString, filters, displayType, separate
         }
     } else if (displayType === "card") {
         const listToComponents = list => <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, min(420px, 100%))", width: "100%", gap: "0.5rem", justifyContent: "center" }}>
-            {list.map(([id, identity]) => <div key={id}><NoPrefetchLink href={`/identities/${id}`} style={{ color: "#ddd", textDecoration: "none" }} ><IdentityCard key={id} identity={identity} /></NoPrefetchLink></div>)}
+            {list.map(([id, identity]) => <div key={id}><NoPrefetchLink href={`/identities/${id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none" }} ><IdentityCard key={id} identity={identity} /></NoPrefetchLink></div>)}
         </div>
 
         if (separateSinners) {
@@ -188,8 +190,8 @@ function IdentityList({ identities, searchString, filters, displayType, separate
                     {
                         separateSinners ?
                             Object.entries(splitBySinner(list)).map(([sinnerId, list]) => [
-                                <tr key={sinnerId}><td colSpan={6} style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid" }}>
-                                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", fontSize: "1.2rem", fontWeight: "bold", }}>
+                                <tr key={sinnerId}><td colSpan={6} style={{ borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid" }}>
+                                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", fontSize: "1.2rem", fontWeight: "bold" }}>
                                         <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
                                         {sinnerIdMapping[sinnerId]}
                                     </div>
@@ -208,7 +210,6 @@ function IdentityList({ identities, searchString, filters, displayType, separate
 
 export default function Identities() {
     const [identities, identitiesLoading] = useData("identities");
-    const [statuses, statusesLoading] = useData("statuses");
 
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
@@ -248,117 +249,125 @@ export default function Identities() {
         ]
     }, [identities, identitiesLoading]);
 
-    return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>Identities</h2>
-        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                <span style={{ textAlign: 'end' }}>Search:</span>
-                <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder="Identity Name" />
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Statuses:</div>
-                    <div
-                        className="toggle-text"
-                        onClick={() => setStatusesExcluding(p => !p)}
-                        style={{ color: statusesExcluding ? "#f87171" : "#4ade80" }}
-                    >
-                        {statusesExcluding ? "Exclude" : "Include"}
+    return <>
+        <JsonLd data={{
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "Identities",
+            "url": "https://limbus.eldritchtools.com/identities",
+            "isPartOf": {
+                "@id": "https://limbus.eldritchtools.com/#website"
+            }
+        }} />
+        <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
+            <h2 style={{ margin: 0 }}>Identities</h2>
+            <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                    <span style={{ textAlign: 'end' }}>Search:</span>
+                    <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder="Identity Name" />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Statuses:</div>
+                        <div
+                            className={`toggle-text ${statusesExcluding ? "red" : "green"}`}
+                            onClick={() => setStatusesExcluding(p => !p)}
+                        >
+                            {statusesExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <StatusDropdownSelector
+                        selected={selectedStatuses}
+                        setSelected={setSelectedStatuses}
+                        options={statusOptions}
+                        isMulti={true}
+                        excludeMode={statusesExcluding}
+                    />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Factions/Tags:</div>
+                        <div
+                            className={`toggle-text ${factionTagsExcluding ? "red" : "green"}`}
+                            onClick={() => setFactionTagsExcluding(p => !p)}
+                        >
+                            {factionTagsExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <FactionDropdownSelector
+                        selected={selectedFactionTags}
+                        setSelected={setSelectedFactionTags}
+                        options={tagOptions}
+                        isMulti={true}
+                        excludeMode={factionTagsExcluding}
+                    />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Season:</div>
+                        <div
+                            className={`toggle-text ${seasonsExcluding ? "red" : "green"}`}
+                            onClick={() => setSeasonsExcluding(p => !p)}
+                        >
+                            {seasonsExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <DropdownSelectorWithExclusion
+                        options={seasonOptions}
+                        selected={selectedSeasons}
+                        setSelected={setSelectedSeasons}
+                        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                        isMulti={true}
+                        placeholder={"Select Seasons..."}
+                        excludeMode={seasonsExcluding}
+                        styles={selectStyle}
+                    />
+                    <span style={{ textAlign: "end" }}>Display Type:</span>
+                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                        <label>
+                            <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
+                            Icons Only
+                        </label>
+                        <label>
+                            <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
+                            Cards
+                        </label>
+                        <label>
+                            <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
+                            Full Details
+                        </label>
+                    </div>
+                    <div />
+                    <div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                            <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                            Strict Filtering
+                            <span className="sub-text">(Require all selected filters)</span>
+                        </label>
+                    </div>
+                    <div />
+                    <div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                            <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
+                            Separate by Sinner
+                        </label>
+                    </div>
+                    <div />
+                    <div>
+                        <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
                     </div>
                 </div>
-                <StatusDropdownSelector
-                    selected={selectedStatuses}
-                    setSelected={setSelectedStatuses}
-                    options={statusOptions}
-                    isMulti={true}
-                    excludeMode={statusesExcluding}
-                />
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Factions/Tags:</div>
-                    <div
-                        className="toggle-text"
-                        onClick={() => setFactionTagsExcluding(p => !p)}
-                        style={{ color: factionTagsExcluding ? "#f87171" : "#4ade80" }}
-                    >
-                        {factionTagsExcluding ? "Exclude" : "Include"}
-                    </div>
-                </div>
-                <FactionDropdownSelector
-                    selected={selectedFactionTags}
-                    setSelected={setSelectedFactionTags}
-                    options={tagOptions}
-                    isMulti={true}
-                    excludeMode={factionTagsExcluding}
-                />
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Season:</div>
-                    <div
-                        className="toggle-text"
-                        onClick={() => setSeasonsExcluding(p => !p)}
-                        style={{ color: seasonsExcluding ? "#f87171" : "#4ade80" }}
-                    >
-                        {seasonsExcluding ? "Exclude" : "Include"}
-                    </div>
-                </div>
-                <DropdownSelectorWithExclusion
-                    options={seasonOptions}
-                    selected={selectedSeasons}
-                    setSelected={setSelectedSeasons}
-                    filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
-                    isMulti={true}
-                    placeholder={"Select Seasons..."}
-                    excludeMode={seasonsExcluding}
-                    styles={selectStyle}
-                />
-                <span style={{ textAlign: "end" }}>Display Type:</span>
-                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-                    <label>
-                        <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
-                        Icons Only
-                    </label>
-                    <label>
-                        <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                        Cards
-                    </label>
-                    <label>
-                        <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                        Full Details
-                    </label>
-                </div>
-                <div />
-                <div>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
-                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                        Strict Filtering
-                        <span style={{ fontSize: "0.8rem", color: "#aaa" }}>(Require all selected filters)</span>
-                    </label>
-                </div>
-                <div />
-                <div>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                        <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
-                        Separate by Sinner
-                    </label>
-                </div>
-                <div />
-                <div>
-                    <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                </div>
+                <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
             </div>
-            <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
+            <HorizontalDivider />
+            {identitiesLoading ? null :
+                <IdentityList
+                    identities={identities}
+                    searchString={searchString}
+                    filters={filters}
+                    displayType={displayType}
+                    separateSinners={separateSinners}
+                    strictFiltering={strictFiltering}
+                    selectedStatuses={selectedStatuses}
+                    selectedFactionTags={selectedFactionTags}
+                    selectedSeasons={selectedSeasons}
+                    compareMode={compareMode}
+                />
+            }
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
-        {identitiesLoading ? null :
-            <IdentityList
-                identities={identities}
-                searchString={searchString}
-                filters={filters}
-                displayType={displayType}
-                separateSinners={separateSinners}
-                strictFiltering={strictFiltering}
-                selectedStatuses={selectedStatuses}
-                selectedFactionTags={selectedFactionTags}
-                selectedSeasons={selectedSeasons}
-                compareMode={compareMode}
-            />
-        }
-    </div>;
+    </>;
 }

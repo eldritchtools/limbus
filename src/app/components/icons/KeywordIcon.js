@@ -43,5 +43,6 @@ export default function KeywordIcon({ id, size = 32, style = {} }) {
         src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
         alt={id} title={id} 
         style={{ width: `${size}px`, height: `${size}px`, ...style }}
+        loading="lazy"
     />;
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import MdPlansSearchDisplay from "../contentCardDisplays/MdPlansSearchDisplay";
+import { HorizontalDivider } from "../objects/Dividers";
 import PlansSearchComponent, { prepareMdPlanFilters } from "../search/PlansSearchComponent";
 
 import { useAuth } from "@/app/database/authProvider";
@@ -69,12 +70,12 @@ export default function SelectMdPlanModalContent({ onSelectMdPlan, allowDrafts =
             )
         }
         <span style={{ textAlign: "center" }}>Adding the same md plan more than once is not supported.</span>
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
 
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading md plans...</p> :
+            <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>Loading md plans...</p> :
             plans.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>
                     {page === 1 ? uiStrings.noPublishedContent("md plans") : uiStrings.noMoreContent("md plans")}
                 </p> :
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

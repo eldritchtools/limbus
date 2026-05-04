@@ -82,17 +82,16 @@ function AuthForm() {
                 maxWidth: '24rem',
                 margin: '0 auto',
                 padding: '1.25rem',
-                background: "#111",
-                borderRadius: "0.75rem",
-                border: "1px solid #333",
+                background: "var(--bg-secondary)",
+                borderRadius: "1rem",
+                border: "1px solid var(--secondary-border-color)",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
-                color: '#ddd',
             }}
         >
             <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.25rem', textAlign: 'center' }} >
                 {isLogin ? 'Login' : 'Sign Up'}
             </h2>
-            <div style={{ fontSize: "0.8rem", marginBottom: "0.75rem", textAlign: "center" }}>(Authentication via Supabase)</div>
+            <div className="sub-text" style={{ marginBottom: "0.75rem", textAlign: "center" }}>(Authentication via Supabase)</div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -111,7 +110,7 @@ function AuthForm() {
                 </div>
             </form>
 
-            <div style={{ margin: '1rem 0', textAlign: 'center', color: '#aaa' }}>OR</div>
+            <div style={{ margin: '1rem 0', textAlign: 'center', fontWeight: "bold", color: 'var(--seconary-text-color' }}>OR</div>
 
             <button onClick={handleGoogleLogin} className={styles.googleButton}>
                 <svg
@@ -125,7 +124,7 @@ function AuthForm() {
                 Continue with Google
             </button>
 
-            <p style={{ marginTop: '0.75rem', color: '#ccc', fontSize: '0.875rem', textAlign: 'center' }}>
+            <p className="sub-text" style={{ marginTop: '0.75rem', textAlign: 'center' }}>
                 {isLogin ? 'Need an account?' : 'Already have one?'}{' '}
                 <button
                     onClick={() => setIsLogin(!isLogin)}
@@ -152,8 +151,8 @@ export default function LoginPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#1f1f1f',
-                color: '#ddd',
+                backgroundColor: 'var(--bg-primary)',
+                color: 'var(--primary-text-color)',
             }}
         >
             <AuthForm />

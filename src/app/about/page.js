@@ -1,4 +1,5 @@
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { HorizontalDivider } from "../components/objects/Dividers";
 
 export default function AboutPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
@@ -8,7 +9,7 @@ export default function AboutPage() {
             <span>Users can browse or share content such as team builds and md plans, use one of the many tools available on the site, or explore database pages covering game content.</span>
             <span>This site is currently maintained by one person, with support from the community as it continues to grow.</span>
 
-            <div style={{ border: "1px #777 solid", width: "100%" }} />
+            <HorizontalDivider />
 
             <h2 style={{ margin: 0 }}>FAQ</h2>
 

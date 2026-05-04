@@ -36,7 +36,7 @@ function GiftTooltipContent({ gift, enhanceRank = 0, expandable = true }) {
             </div>
         </div>
         {expandable ?
-            <div style={{ borderTop: "1px #444 dashed", fontSize: "0.8rem", color: "#999", textAlign: "center" }}>
+            <div className="sub-text" style={{ borderTop: "1px var(--secondary-border-color) dashed", textAlign: "center" }}>
                 Click gift to expand
             </div> :
             null

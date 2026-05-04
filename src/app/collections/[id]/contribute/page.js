@@ -9,6 +9,7 @@ import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import { useModal } from "@/app/components/modals/ModalProvider";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import UsernameWithTime from "@/app/components/user/UsernameWithTime";
 import { useAuth } from "@/app/database/authProvider";
@@ -98,7 +99,7 @@ export default function ContributeCollectionPage({ params }) {
                 </div>
             </div>
 
-            <div style={{ border: "1px #777 solid" }} />
+            <HorizontalDivider />
 
             <div style={{ display: "flex", gap: "0.25rem" }} >
                 <button onClick={() => openSelectBuildModal({ onSelectBuild: x => onSelectContent("build", x) })}>Select a build to contribute</button>
@@ -119,7 +120,7 @@ export default function ContributeCollectionPage({ params }) {
             }
 
             <span style={{ fontSize: "1.2rem" }}>Description:</span>
-            <span style={{ fontSize: "1rem", color: "#aaa" }}>
+            <span className="sub-text">
                 Description to display on the collection if approved. The owner may decide to edit this.
             </span>
             <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
@@ -127,13 +128,13 @@ export default function ContributeCollectionPage({ params }) {
             </div>
 
             <span style={{ fontSize: "1.2rem" }}>Submitter Note:</span>
-            <span style={{ fontSize: "1rem", color: "#aaa" }}>
+            <span className="sub-text">
                 Anything else you may want to convey to the owner for this contribution. This will not be displayed on the collection if the submission is approved.
             </span>
             <textarea value={submitterNote} style={{ width: "min(100%, 85vw)", height: "5rem" }} onChange={e => setSubmitterNote(e.target.value)} />
         </div>
 
-        <span style={{ fontSize: "1rem", color: "#aaa" }}>
+        <span className="sub-text">
             Contributions cannot be edited once submitted and you will not be allowed to submit the same item until it is approved or rejected. Please make sure the details are final before submitting.
         </span>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem" }}>

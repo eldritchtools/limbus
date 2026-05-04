@@ -17,7 +17,7 @@ function StatusIconMain({ status, style }) {
     if(!src) return null;
     if(src.includes("?")) return null;
     // return <Image src={src} alt={status.name} width={32} height={32} style={style} />
-    return <img src={src} alt={status.name} style={style} />
+    return <img src={src} alt={status.name} style={style} loading="lazy" />
 }
 
 function StatusIconFetch({id, style}) {

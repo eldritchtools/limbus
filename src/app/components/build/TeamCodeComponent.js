@@ -24,7 +24,7 @@ export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
 
     return <BuildDisplayMenuCard>
         <div>
-            <span style={{ fontSize: "1.2rem", borderBottom: "1px #ddd dotted" }} {...getGeneralTooltipProps("teamcode")}>Team Code</span>
+            <span className="hover-text" style={{ fontSize: "1.2rem" }} {...getGeneralTooltipProps("teamcode")}>Team Code</span>
         </div>
         <div style={{ position: "relative", width: "100%" }}>
             <textarea

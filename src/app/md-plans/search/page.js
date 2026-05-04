@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import MdPlansSearchDisplay from "@/app/components/contentCardDisplays/MdPlansSearchDisplay";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import PlansSearchComponent, { prepareMdPlanFilters } from "@/app/components/search/PlansSearchComponent";
 import { searchMdPlans } from "@/app/database/mdPlans";
 import { uiStrings } from "@/app/lib/uiStrings";
@@ -55,13 +56,13 @@ export default function SearchMdPlansPage() {
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
         <h2 style={{ margin: 0 }}>MD Plans</h2>
         <PlansSearchComponent key={searchParams.toString()} initialValues={filters} createLink={true} searchFunc={triggerSearch} />
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
 
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading md plans...</p> :
+            <p className="title-text" style={{ textAlign: "center" }}>Loading md plans...</p> :
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {plans.length === 0 ?
-                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                    <p className="title-text" style={{ textAlign: "center" }}>
                         {page === 1 ? uiStrings.noPublishedContent("md plans") : uiStrings.noMoreContent("md plans")}
                     </p> :
                     <MdPlansSearchDisplay plans={plans} />

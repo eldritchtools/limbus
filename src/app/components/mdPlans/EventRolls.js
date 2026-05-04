@@ -56,7 +56,7 @@ export default function EventRolls({ identityIds, identityUpties, deploymentOrde
             {affinities.map(affinity =>
                 <div key={affinity} style={{ display: "grid", gridTemplateRows: "repeat(2, auto)", justifyItems: "center" }}>
                     <KeywordIcon id={affinity} />
-                    <div style={{ fontWeight: "bold", "color": "#ddd" }}>
+                    <div style={{ fontWeight: "bold", "color": "var(--primary-text-color)" }}>
                         {values[affinity]}
                     </div>
                 </div>)}

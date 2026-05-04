@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import CollectionsSearchDisplay from "@/app/components/contentCardDisplays/CollectionsSearchDisplay";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import CollectionsSearchComponent, { prepareCollectionFilters } from "@/app/components/search/CollectionsSearchComponent";
 import { searchCollections } from "@/app/database/collections";
 import { uiStrings } from "@/app/lib/uiStrings";
@@ -55,13 +56,13 @@ export default function SearchCollectionsPage() {
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
         <h2 style={{ margin: 0 }}>Collections</h2>
         <CollectionsSearchComponent key={searchParams.toString()} initialValues={filters} createLink={true} searchFunc={triggerSearch} />
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
 
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading collections...</p> :
+            <p className="title-text" style={{ textAlign: "center" }}>Loading collections...</p> :
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {collections.length === 0 ?
-                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                    <p className="title-text" style={{ textAlign: "center" }}>
                         {page === 1 ? uiStrings.noPublishedContent("collections") : uiStrings.noMoreContent("collections")}
                     </p> :
                     <CollectionsSearchDisplay collections={collections} />

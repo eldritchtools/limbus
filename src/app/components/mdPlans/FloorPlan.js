@@ -9,6 +9,7 @@ import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
+import { uiColors } from "@/app/lib/colors";
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
 function FloorItem({
@@ -44,7 +45,7 @@ function FloorItem({
         }}>
             <button onClick={() => swapFloors(index - 1)} disabled={isFirst}>{hideDescriptions ? "<" : "∧"}</button>
             <button onClick={() => removeFloor()}>
-                <div style={{ color: "#ff4848", fontWeight: "bold" }}>
+                <div style={{ color: uiColors.red, fontWeight: "bold" }}>
                     ✕
                 </div>
             </button>
@@ -52,9 +53,8 @@ function FloorItem({
         </div> :
         null
 
-    const themePacksComponent = <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
-        border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", boxSizing: "border-box"
+    const themePacksComponent = <div className="panel-container" style={{
+        alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px"
     }}>
         <h3 style={{ margin: 0 }}>Theme Packs</h3>
         {editable ?
@@ -73,9 +73,8 @@ function FloorItem({
         </div>
     </div>;
 
-    const giftsComponent = <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
-        border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", boxSizing: "border-box"
+    const giftsComponent = <div className="panel-container" style={{
+        alignItems: "center", width: isMobile ? "150px" : "300px", height: "350px",
     }}>
         <h3 style={{ margin: 0 }}>Gifts</h3>
         {editable ?
@@ -176,7 +175,7 @@ export default function FloorPlan({
             <label>
                 <input type="checkbox" checked={hideDescriptions} onChange={e => setHideDescriptions(e.target.checked)} />
                 <span {...getGeneralTooltipProps("This will hide floor descriptions, allowing you to see the floor plan in a more compact manner.")}
-                    style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                    className="hover-text"
                 >
                     Hide Floor Descriptions
                 </span>

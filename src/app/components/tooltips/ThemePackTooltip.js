@@ -5,6 +5,8 @@ import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import ThemePackIcon from "../icons/ThemePackIcon";
 
+import { uiColors } from "@/app/lib/colors";
+
 const TOOLTIP_ID = "theme-pack-tooltip";
 
 function ThemePackTooltipContent({ id, themePack }) {
@@ -14,8 +16,8 @@ function ThemePackTooltipContent({ id, themePack }) {
         <div style={{ fontSize: "1.5em", fontWeight: "bold" }}>{themePack.name}</div>
         <ThemePackIcon themePack={themePack} scale={0.5} />
         <div style={{ display: "grid", width: "190px", gridTemplateColumns: "1fr 1fr" }} >
-            <div style={{ color: "#4ade80" }}>Normal</div>
-            <div style={{ color: "#f87171" }}>Hard</div>
+            <div style={{ color: uiColors.green }}>Normal</div>
+            <div style={{ color: uiColors.red }}>Hard</div>
             <div>{normal.length ? normal.map(f => `F${f}`).join(", ") : "None"}</div>
             <div>{hard.length ? hard.map(f => `F${f}`).join(", ") : "None"}</div>
         </div>

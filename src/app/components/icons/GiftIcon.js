@@ -36,7 +36,7 @@ function GiftImg({ gift, style }) {
     if (!src) return null;
 
     // return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} />
-    return <img src={src} alt={gift.names[0]} style={style} />
+    return <img src={src} alt={gift.names[0]} style={style} loading="lazy" />
 }
 
 function GiftIconContainer({ scale = 1, children }) {

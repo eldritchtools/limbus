@@ -19,8 +19,8 @@ function GiftRow({ list = null, dict = null, isSmall }) {
 }
 
 function Container({ category, isSmall }) {
-    return <div style={{ display: "flex", flexDirection: "column", border: "1px #aaa dotted", borderRadius: "0.5rem", padding: "0.5rem", width: "100%", boxSizing: "border-box" }}>
-        <div style={{ fontSize: "1.25rem", fontWeight: "bold" }}>{category.title}</div>
+    return <div className="panel-container">
+        <div className="title-text">{category.title}</div>
         {
             "gifts" in category ?
                 <GiftRow list={category.gifts} isSmall={isSmall} /> :
@@ -33,12 +33,12 @@ function Container({ category, isSmall }) {
 }
 
 function ComboContainer({ data, isSmall }) {
-    return <div style={{ display: "flex", flexDirection: "column", border: "1px #aaa dotted", borderRadius: "0.5rem", padding: "0.5rem", width: "100%", boxSizing: "border-box" }}>
-        <div style={{ fontSize: "1.25rem", fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center" }}><KeywordIcon id={data.title} />{data.title}</div>
+    return <div className="panel-container">
+        <div className="title-text" style={{ display: "flex", flexDirection: "row", alignItems: "center" }}><KeywordIcon id={data.title} />{data.title}</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)" }}>
             {data.sections.map((section, index) =>
-                <div key={section.title} style={{ display: "flex", flexDirection: "column", borderRight: index === 0 ? "1px #aaa dotted" : null, padding: "0.5rem" }}>
-                    <div style={{ fontSize: "1rem", fontWeight: "bold" }}>{section.title}</div>
+                <div key={section.title} style={{ display: "flex", flexDirection: "column", borderRight: index === 0 ? "1px var(--primary-border-color) solid" : null, padding: "0.5rem" }}>
+                    <div className="title-text" style={{fontSize: "1.1rem"}}>{section.title}</div>
                     {<GiftRow dict={section.gifts} isSmall={isSmall} />}
                 </div>
             )}

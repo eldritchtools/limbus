@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import BuildsSearchDisplay from "../components/contentCardDisplays/BuildsSearchDisplay";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import BuildsSearchComponent from "../components/search/BuildsSearchComponent";
 import { getPopularBuilds, searchBuilds } from "../database/builds";
 import useLocalState from "../lib/useLocalState";
@@ -62,19 +63,19 @@ export default function BuildsPage() {
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Team Builds</h2>
         <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
             <div className={`tab-header ${activeTab === "popular" ? "active" : ""}`} onClick={() => handleTabClick("popular")}>Popular</div>
             <div className={`tab-header ${activeTab === "new" ? "active" : ""}`} onClick={() => handleTabClick("new")}>New</div>
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
         </div>
         {loading ?
-            <div style={{ color: "#9ca3af" }}>
+            <div className="title-text">
                 {"Loading builds..."}
             </div> :
             <div style={{ display: "flex", flexDirection: "column" }}>
                 {activeTab === "popular" ?
-                    <p style={{ color: "#aaa", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
+                    <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
                         Most popular builds are recomputed every few hours.
                     </p> :
                     null}

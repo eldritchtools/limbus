@@ -4,12 +4,13 @@ import { Tooltip } from "react-tooltip";
 
 const style = {
     outlineStyle: "solid",
-    outlineColor: "#ddd",
+    outlineColor: "var(--primary-border-color)",
     outlineWidth: "1px",
-    backgroundColor: "#000000",
+    backgroundColor: "var(--bg-secondary)",
     borderRadius: "1rem",
     zIndex: "9999",
-    maxWidth: "min(90vw, 800px)"
+    maxWidth: "min(90vw, 800px)",
+    color: "var(--primary-text-color)"
 };
 
 export default function TooltipTemplate({ id, contentFunc, clickable }) {

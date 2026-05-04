@@ -44,12 +44,12 @@ export default function ModalContainer({ isOpen, onClose, index = 0, children })
 
     const contentStyle = {
         position: "relative",
-        background: "black",
+        background: "var(--bg-secondary)",
         padding: "0.5rem",
         borderRadius: "0.5rem",
         minWidth: "300px",
         maxWidth: "min(1600px, 90%)",
-        border: "1px #aaa solid",
+        border: "1px var(--primary-border-color) solid",
         boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
 
         transform: visible

@@ -7,10 +7,12 @@
     box-sizing: border-box;
     cursor: pointer;
     font-size: 1rem;
+    background: var(--bg-input);
+    border: 1px solid var(--secondary-border-color);
 }
 
 .floor-select-trigger:hover {
-    background-color: #555;
+    background-color: var(--bg-hover);
     border-radius: 4px;
     transition: background-color 0.2s, border-color 0.2s;
 }
@@ -21,8 +23,8 @@
 }
 
 .floor-select-content {
-    background: #1f1f1f;
-    border: 1px solid #ccc;
+    background: var(--bg-secondary);
+    border: 1px solid var(--secondary-border-color);
     border-radius: 5px;
     width: 100%;
     max-width: 650px;
@@ -56,7 +58,7 @@
 
 .floor-select-item:focus,
 .floor-select-item:hover {
-    background: #555;
+    background-color: var(--bg-hover);
     transition: background-color 0.2s, border-color 0.2s;
 }
 

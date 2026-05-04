@@ -12,7 +12,7 @@ import { keywords } from "../lib/constants";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default function DaysSinceTable({ entries, identities, egos }) {
-    const stickyHeaderStyle = { position: "sticky", top: 0, background: "#333", padding: "0.25rem", zIndex: 1 };
+    const stickyHeaderStyle = { position: "sticky", top: 0, background: "var(--bg-input)", padding: "0.25rem", zIndex: 1 };
     const { isMobile } = useBreakpoint();
 
     const currentDateTime = useMemo(() => (new Date()).getTime(), []);
@@ -33,7 +33,7 @@ export default function DaysSinceTable({ entries, identities, egos }) {
                 <NoPrefetchLink href={`/identities/${id}`} style={{ width: isMobile ? "96px" : "128px", gap: "0.2rem" }}>
                     <IdentityIcon id={id} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} />
                 </NoPrefetchLink>
-                <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>{since} {since === 1 ? "Day" : "Days"}</span>
+                <span className="title-text">{since} {since === 1 ? "Day" : "Days"}</span>
             </div>
         } else {
             const since = computeDaysSince(egos[id].date);
@@ -41,13 +41,13 @@ export default function DaysSinceTable({ entries, identities, egos }) {
                 <NoPrefetchLink href={`/egos/${id}`} style={{ width: isMobile ? "96px" : "128px", gap: "0.2rem" }}>
                     <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} />
                 </NoPrefetchLink>
-                <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>{since} {since === 1 ? "Day" : "Days"}</span>
+                <span className="title-text">{since} {since === 1 ? "Day" : "Days"}</span>
             </div>
         }
     }
 
     const constructRow = id => {
-        return <tr key={id} style={{ borderTop: "1px #777 solid" }}>
+        return <tr key={id} style={{ borderTop: "1px var(--secondary-border-color) solid" }}>
             <td>
                 {isNaN(Number(id)) ? <KeywordIcon id={id} size={48} /> : <SinnerIcon num={id} style={{ width: "48px", height: "48px" }} />}
             </td>
@@ -62,7 +62,7 @@ export default function DaysSinceTable({ entries, identities, egos }) {
         </tr>
     }
 
-    return <div style={{ overflowX: "auto", maxWidth: "95vw", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
+    return <div style={{ overflowX: "auto", maxWidth: "95vw", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         <table style={{ borderCollapse: "collapse" }}>
             <thead>
                 <tr>

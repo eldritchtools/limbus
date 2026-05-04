@@ -6,6 +6,7 @@ import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import RarityIcon from "../components/icons/RarityIcon";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import { IdentityDropdownSelector } from "../components/selectors/IdentitySelectors";
 import UptieSelector from "../components/selectors/UptieSelector";
 import PassiveCard from "../components/skill/PassiveCard";
@@ -47,7 +48,7 @@ function ComparisonCard({ identity }) {
         return list;
     }, [skills, combatPassives, supportPassives, identity]);
 
-    return <div style={{ display: "flex", flexDirection: "column", flex: "1", minWidth: "320px", maxWidth: "480px", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", gap: "0.5rem" }}>
+    return <div className="panel-container" style={{ flex: "1", minWidth: "320px", maxWidth: "480px", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <RarityIcon rarity={identity.rank} style={{ display: "inline", height: "1.5rem" }} />
             <div style={{ display: "flex", flexDirection: "column", fontSize: "1rem", fontWeight: "bold", alignItems: "center", textAlign: "center" }}>
@@ -60,7 +61,7 @@ function ComparisonCard({ identity }) {
             <IdentityIcon identity={identity} uptie={2} displayName={false} displayRarity={false} size={128} />
             {identity.tags.includes("Base Identity") ? null : <IdentityIcon identity={identity} uptie={4} displayName={false} displayRarity={false} size={128} />}
         </div>
-        <div style={{ border: "1px #aaa solid", width: "100%" }} />
+        <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "column", width: "auto", height: "auto", justifyContent: "center", gap: "0.2rem", alignItems: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr 2fr" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem", textAlign: "center" }}>
@@ -96,7 +97,7 @@ function ComparisonCard({ identity }) {
                 {(identity.skillKeywordList || []).map(x => <KeywordIcon key={x} id={x} />)}
             </div>
         </div>
-        <div style={{ border: "1px #aaa solid", width: "100%" }} />
+        <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "column", "gap": "0.2rem", width: "100%" }}>
             {components}
         </div>
@@ -113,7 +114,7 @@ export default function IdentityComparisonBasic({ }) {
         </div>;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        <span style={{ fontSize: "0.9rem", wordWrap: "wrap" }}>
+        <span className="sub-text" style={{ wordWrap: "wrap" }}>
             Select two or more identities to compare their stats and skills.
         </span>
         <div style={{ minWidth: "20rem", maxWidth: "min(100rem, 90%)" }}>

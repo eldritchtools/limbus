@@ -11,6 +11,7 @@ import IdentityIcon from "../icons/IdentityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
+import { uiColors } from "@/app/lib/colors";
 import { sinnerIdMapping } from "@/app/lib/constants";
 import { checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
@@ -91,7 +92,7 @@ export function IdentityMenuSelector({ value, setValue, options, num }) {
                             </Select.Item>
                         )}
                         {value ? <Select.Item key={"cancel"} value={null} className={styles.identityMenuSelectorItem}>
-                            <div className={styles.identityMenuItemInner} style={{ height: "100%", justifyContent: "center", color: "#ff4848", fontSize: "3rem", fontWeight: "bold" }}>
+                            <div className={styles.identityMenuItemInner} style={{ height: "100%", justifyContent: "center", color: uiColors.red, fontSize: "3rem", fontWeight: "bold" }}>
                                 ✕
                             </div>
                         </Select.Item> : null}

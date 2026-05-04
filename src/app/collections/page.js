@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import CollectionsSearchDisplay from "../components/contentCardDisplays/CollectionsSearchDisplay";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import CollectionsSearchComponent from "../components/search/CollectionsSearchComponent";
 import { searchCollections } from "../database/collections";
 import useLocalState from "../lib/useLocalState";
@@ -65,14 +66,14 @@ export default function CollectionsPage() {
             Collections are lists of builds and md plans managed by users. Some collections may be open to contributions from other users.
         </div>
         <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
             <div className={`tab-header ${activeTab === "popular" ? "active" : ""}`} onClick={() => handleTabClick("popular")}>Popular</div>
             <div className={`tab-header ${activeTab === "new" ? "active" : ""}`} onClick={() => handleTabClick("new")}>New</div>
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
         </div>
         {loading ?
-            <div style={{ color: "#9ca3af" }}>
+            <div className="title-text">
                 {"Loading collections..."}
             </div> :
             <CollectionsSearchDisplay collections={collections} />

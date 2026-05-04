@@ -18,7 +18,7 @@ export default function ActionTemplate({ type = "button", active, disabled, onCl
                 {children}
             </div>
         else
-            return <NoPrefetchLink className={className} href={href} style={{ textDecoration: "none", color: "#ddd" }}>
+            return <NoPrefetchLink className={className} href={href} style={{ textDecoration: "none", color: "var(--primary-text-color)" }}>
                 {children}
             </NoPrefetchLink>;
     } else {

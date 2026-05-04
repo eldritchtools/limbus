@@ -16,6 +16,7 @@ import GracesDisplay from "@/app/components/mdPlans/GracesDisplay";
 import RecommendedBuildsDisplay from "@/app/components/mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import SkillReplace from "@/app/components/skill/SkillReplace";
 import { keywordIdMapping } from "@/app/database/keywordIds";
@@ -246,10 +247,10 @@ export default function MdPlanPage({ params }) {
                 </div>
             </div>
 
-            <div style={{ border: "1px #777 solid" }} />
+            <HorizontalDivider />
 
             <span style={{ fontSize: "1.2rem" }}>Tracking Mode</span>
-            <span style={{ color: "#aaa" }}>Tracking mode allows you to mark gifts you&apos;ve obtained or theme packs you&apos;ve entered by clicking them. Any progress made is saved locally. Tracking mode is automatically activated if you have tracking data for this MD Plan, reset your tracking data if you want to disable this.</span>
+            <span className="sub-text">Tracking mode allows you to mark gifts you&apos;ve obtained or theme packs you&apos;ve entered by clicking them. Any progress made is saved locally. Tracking mode is automatically activated if you have tracking data for this MD Plan, reset your tracking data if you want to disable this.</span>
             <div style={{ display: "flex", gap: "0.25rem" }}>
                 <button onClick={() => toggleTracking()}>
                     {tracking === null ? "Activate Tracking Mode" : "Deactivate Tracking Mode"}
@@ -268,7 +269,7 @@ export default function MdPlanPage({ params }) {
 
             {plan.recommendation_mode === "build" && extraOpts?.skillReplaces ? <>
                 <span style={{ fontSize: "1.2rem" }}>Skill Replacements</span>
-                <span style={{ color: "#aaa" }}>Skills to replace on recommended identities.</span>
+                <span className="sub-text">Skills to replace on recommended identities.</span>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxWidth: "100%" }}>
                     {Object.entries(extraOpts.skillReplaces).map(([id, counts]) =>
                         <div key={id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
@@ -283,7 +284,7 @@ export default function MdPlanPage({ params }) {
             {plan.grace_levels.some(x => x > 0) ?
                 <>
                     <span style={{ fontSize: "1.2rem" }}>Grace of the Stars</span>
-                    <span style={{ color: "#aaa" }}>Starting buffs bought with starlight</span>
+                    <span className="sub-text">Starting buffs bought with starlight</span>
                     <GracesDisplay graceLevels={plan.grace_levels} />
                 </> :
                 null
@@ -293,7 +294,7 @@ export default function MdPlanPage({ params }) {
                 plan.difficulty === "E" && plan.adversities && Object.keys(plan.adversities).length > 0 ?
                     <>
                         <span style={{ fontSize: "1.2rem" }}>Adversities: <AdversitiesPointTotal adversities={plan.adversities} /></span>
-                        <span style={{ color: "#aaa" }}>Adversities to take in the Extreme floors</span>
+                        <span className="sub-text">Adversities to take in the Extreme floors</span>
                         <AdversitiesDisplay adversities={plan.adversities} />
                     </> :
                     null
@@ -302,13 +303,10 @@ export default function MdPlanPage({ params }) {
             {plan.start_gift_ids.length > 0 || plan.observe_gift_ids.length > 0 ?
                 <>
                     <span style={{ fontSize: "1.2rem" }}>Gifts Setup</span>
-                    <span style={{ color: "#aaa" }}>Gifts to start the run with.</span>
+                    <span className="sub-text">Gifts to start the run with.</span>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                         {plan.start_gift_ids.length > 0 ?
-                            <div style={{
-                                display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
-                                width: isMobile ? "200px" : "300px", padding: "0.2rem", border: "1px #aaa solid", borderRadius: "1rem"
-                            }}>
+                            <div className="panel-container" style={{alignItems: "center", gap: "0.5rem", width: isMobile ? "200px" : "300px", padding: "0.2rem"}}>
                                 <span style={{ fontSize: "1.2rem" }}>Starting Gifts</span>
                                 <span style={{ display: "flex", alignItems: "center" }}>
                                     Keyword: <KeywordIcon id={keywordIdMapping[plan.keyword_id]} style={{ height: "32px" }} />
@@ -318,10 +316,7 @@ export default function MdPlanPage({ params }) {
                             null
                         }
                         {plan.observe_gift_ids.length > 0 ?
-                            <div style={{
-                                display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
-                                width: isMobile ? "200px" : "300px", padding: "0.2rem", border: "1px #aaa solid", borderRadius: "1rem"
-                            }}>
+                            <div className="panel-container" style={{alignItems: "center", gap: "0.5rem", width: isMobile ? "200px" : "300px", padding: "0.2rem"}}>
                                 <span style={{ fontSize: "1.2rem" }}>Gift Observation</span>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontWeight: "bold" }}>
                                     <Icon path={"starlight"} style={{ width: "25px", height: "25px" }} />
@@ -339,7 +334,7 @@ export default function MdPlanPage({ params }) {
             {plan.target_gift_ids.length > 0 ?
                 <>
                     <span style={{ fontSize: "1.2rem" }}>Targeted Gifts</span>
-                    <span style={{ color: "#aaa" }}>Gifts that should be targeted during the run</span>
+                    <span className="sub-text">Gifts that should be targeted during the run</span>
                     {createGiftListComponent(plan.target_gift_ids, isMobile ? 0.6 : 1, false)}
                 </> :
                 null

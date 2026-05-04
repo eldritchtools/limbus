@@ -1,9 +1,6 @@
 .LinksMenu {
     width: 100%;
-    background: #1f1f1f;
     padding: 0.5rem;
-    /* border: 1px #aaa solid; */
-    /* border-radius: 1rem; */
     box-sizing: border-box;
     gap: 1rem;
     display: flex;
@@ -17,7 +14,7 @@
 
 .recentAdditions {
     width: 100%;
-    border: 1px #aaa solid;
+    border: 1px var(--primary-border-color) solid;
     border-radius: 12px;
     box-sizing: border-box;
     padding: 0.5rem;
@@ -28,5 +25,16 @@
 }
 
 .recentAdditions.canHover:hover {
-    background: #3a3a3a;
+    background: var(--bg-hover);
+}
+
+.panelContainer {
+    min-width: 300px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--primary-border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-sizing: border-box;
 }

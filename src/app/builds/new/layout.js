@@ -1,6 +1,10 @@
 export const metadata = {
-    title: "New Team Build | Limbus Company Tools",
-    description: "Create a new team build"
+  title: "New Team Build | Limbus Company Tools",
+  description: "Create a new team build",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function NewBuildLayout({ children }) {

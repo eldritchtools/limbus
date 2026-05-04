@@ -58,7 +58,7 @@ export default function SinDistribution({ identityIds, deploymentOrder, activeSi
             {affinities.map(affinity =>
                 <div key={affinity} style={{ display: "grid", gridTemplateRows: "repeat(2, auto)", justifyItems: "center" }}>
                     <KeywordIcon id={affinity} />
-                    <div style={{ fontWeight: "bold", "color": values[affinity] ? "#ddd" : "#aaa" }}>
+                    <div style={{ fontWeight: "bold", "color": values[affinity] ? "var(--primary-text-color)" : "var(--secondary-text-color)" }}>
                         {values[affinity]}
                     </div>
                 </div>)}

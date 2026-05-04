@@ -127,7 +127,7 @@ function SingleResult({ result }) {
 }
 
 function Result({ result, successCondition = false, failureCondition = false }) {
-    return <div style={cardStyle("#444")}>
+    return <div style={cardStyle("var(--secondary-border-color)")}>
         {successCondition ?
             <span style={{ color: uiColors.green, fontWeight: "bold" }}>Success</span> :
             null
@@ -137,12 +137,12 @@ function Result({ result, successCondition = false, failureCondition = false }) 
             null
         }
         {result.condition !== "None" ?
-            <span style={{ fontSize: "0.9rem", color: "#aaa" }}>{result.condition}</span> :
+            <span className="sub-text">{result.condition}</span> :
             null
         }
         {result.results?.map((res, i) => <SingleResult key={i} result={res} />)}
         {!result.results && !result.nextEvent ?
-            <span style={{ color: "#aaa" }}>Nothing happened.</span> :
+            <span style={{ color: "var(--secondary-text-color)" }}>Nothing happened.</span> :
             null
         }
         {result.nextEvent ?
@@ -219,10 +219,10 @@ function processMessage(message) {
 }
 
 function Option({ option }) {
-    return <div style={cardStyle("#777")}>
-        {option.lockCondition ? <span style={{ fontSize: "0.8rem", color: "#aaa" }}><LockCondition condition={option.lockCondition} /></span> : null}
+    return <div style={cardStyle("var(--secondary-border-color)")}>
+        {option.lockCondition ? <span className="sub-text"><LockCondition condition={option.lockCondition} /></span> : null}
         <span>{processMessage(option.message)}</span>
-        {option.messageDesc ? <span style={{ fontSize: "0.9rem", color: "#aaa" }}>{option.messageDesc}</span> : null}
+        {option.messageDesc ? <span className="sub-text">{option.messageDesc}</span> : null}
         <div style={{ display: "flex", flexDirection: "column", paddingLeft: "1.5rem" }}>
             {option.result?.map((result, i) => <Result key={i} result={result} />)}
         </div>
@@ -246,7 +246,7 @@ function Event({ event }) {
             {event.options.map((option, i) => <Option key={i} option={option} />)}
         </div>
     if (event.type === "Roll")
-        return <div style={cardStyle("#aaa")}>
+        return <div style={cardStyle("var(--primary-border-color)")}>
             <div style={{ display: "flex", alignItems: "center", fontWeight: "bold" }}>
                 {event.advantageAffinities.map(x => <KeywordIcon key={x} id={x} />)}
                 {event.rollType === "min" ? "≥ " : "≤ "}
@@ -260,7 +260,7 @@ function Event({ event }) {
             {event.bonuses ?
                 <div style={{display: "flex", flexDirection: "column", gap: "0.1rem"}}>
                     {event.bonuses.map((bonus, i) => 
-                        <span key={i} style={{ display: "inline-flex", fontSize: "0.8rem", color: "#aaa" }}>
+                        <span key={i} className="sub-text" style={{ display: "inline-flex" }}>
                             {bonus.value > 0 ? `+${bonus.value}` : bonus.value}:&nbsp;<RollBonusTarget target={bonus.target} />
                         </span>
                     )}

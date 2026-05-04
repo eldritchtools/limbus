@@ -21,6 +21,7 @@ function ChoiceEventIconMain({ id, choiceEvent = null, displayName = false, scal
         <img src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
             alt={choiceEvent.name} title={choiceEvent.name}
             style={{ ...scaledStyle, objectFit: "cover" }}
+            loading="lazy"
         />
         {displayName ?
             <div style={{

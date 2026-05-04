@@ -1,5 +1,6 @@
 import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {
     query: "p_query",
@@ -36,10 +37,8 @@ const createParams = {
     tags: "p_tags"
 }
 
-const DEFAULT_PAGE_SIZE = 30;
-
 export async function searchMdPlans(params, page, pageSize = null) {
-    return callRPC("search_md_plans_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_md_plans_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.md_plans.defaultPageSize));
 }
 
 export async function getMdPlan(planId) {
@@ -68,7 +67,7 @@ export async function unpinMdPlanComment(planId) {
 }
 
 export async function getSavedMdPlans(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_md_plans_v3", paginateParams({ p_user_id: user_id }, page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("get_saved_md_plans_v3", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.md_plans.defaultPageSize));
 }
 
 export async function getMdPlansForSitemap(page, count) {

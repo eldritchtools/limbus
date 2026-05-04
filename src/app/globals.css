@@ -1,21 +1,66 @@
+:root {
+  --bg: #1f1f1f;
+  --text: #ddd;
+
+  --base-text-size: clamp(12px, 1.5vw, 16px);
+  --surface-contrast: 0.08;
+  --text-scale: 0;
+}
+
+:root,
+[data-theme-mode] {
+  --primary-text-color: var(--text);
+  --secondary-text-color: color-mix(in srgb, var(--text) 70%, transparent);
+  --disabled-text-color: color-mix(in srgb, var(--text) 50%, transparent);
+  --primary-border-color: color-mix(in srgb, var(--text) 70%, var(--bg));
+  --secondary-border-color: color-mix(in srgb, var(--text) 40%, var(--bg));
+  --tertiary-border-color: color-mix(in srgb, var(--text) 20%, var(--bg));
+  color: var(--primary-text-color);
+  font-size: calc(var(--base-text-size) * var(--text-scale));
+  font-family: var(--font, Arial, Helvetica, sans-serif);
+}
+
+[data-theme-mode="dark"] {
+  --bg-primary: var(--bg);
+  --bg-secondary: color-mix(in srgb, black calc((1 - var(--surface-contrast)) * 100%), var(--bg) calc(var(--surface-contrast) * 100%));
+  --bg-input: color-mix(in srgb, var(--bg), white calc(var(--surface-contrast) * 100%));
+  --bg-hover: color-mix(in srgb, var(--bg), white calc(var(--surface-contrast) * 300%));
+  background-color: var(--bg-primary);
+}
+
+[data-theme-mode="light"] {
+  --bg-primary: var(--bg);
+  --bg-secondary: color-mix(in srgb, white calc((1 - var(--surface-contrast)) * 100%), var(--bg) calc(var(--surface-contrast) * 100%));
+  --bg-input: color-mix(in srgb, var(--bg), black calc(var(--surface-contrast) * 100%));
+  --bg-hover: color-mix(in srgb, var(--bg), black calc(var(--surface-contrast) * 300%));
+  background-color: var(--bg-primary);
+}
+
 html {
-  font-size: clamp(12px, 1.5vw, 16px);
+  font-size: calc(var(--base-text-size) * var(--text-scale));
 }
 
 body {
-  background: #1f1f1f;
-  color: #ddd;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  background-color: var(--bg-primary);
+  color: var(--primary-text-color);
+  font-family: var(--font, Arial, Helvetica, sans-serif);
   margin: 0px;
+}
+
+button,
+select,
+input {
+  font-family: inherit;
 }
 
 button,
 select,
 input,
 textarea {
-  background-color: #2a2a2a;
-  color: #ddd;
-  border: 1px solid #555;
+  background-color: var(--bg-input);
+  color: var(--primary-text-color);
+  border: 1px solid var(--secondary-border-color);
   padding: 4px 8px;
   border-radius: 4px;
   margin: 2px;
@@ -25,21 +70,21 @@ textarea {
 
 button:hover,
 select:hover {
-  background-color: #3a3a3a;
+  background-color: var(--bg-hover);
   cursor: pointer;
 }
 
 .input:focus {
   outline: none;
   border-color: #7ba7ff;
-  background-color: #262626;
+  background-color: var(--bg-input);
 }
 
 button:disabled {
-  background-color: #1a1a1a;
-  color: #777;
+  color: var(--disabled-text-color);
   cursor: "not-allowed";
   opacity: 0.6;
+  filter: brightness(0.6);
 }
 
 input[type="checkbox"] {
@@ -72,7 +117,7 @@ a:active {
 }
 
 * {
-  scrollbar-color: #999 #2a2a2a;
+  scrollbar-color: var(--secondary-text-color) var(--bg-input);
   /* Firefox: thumb color, track color */
 }
 
@@ -82,18 +127,18 @@ a:active {
 }
 
 *::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--bg-primary);
   /* dark track */
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #444;
+  background: var(--input-border-color);
   /* medium-dark thumb */
   border-radius: 4px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--secondary-border-color);
   /* slightly lighter on hover */
 }
 

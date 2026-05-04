@@ -19,7 +19,7 @@ export default function MyPostsPage() {
     const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("myPostsSubTab", "published");
 
     useEffect(() => {
-        if(!mainActiveTabInitialized || !activeTabInitialized) return;
+        if (!mainActiveTabInitialized || !activeTabInitialized) return;
         const cfg = contentConfig[mainActiveTab];
         if (!cfg) return;
         const baseParams = { ignoreBlockDiscovery: true, sortBy: "new" };
@@ -65,7 +65,7 @@ export default function MyPostsPage() {
         </div>;
 
     const contentDisplay = () => {
-        if (contentLoading) return <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading...</p>;
+        if (contentLoading) return <p className="title-text" style={{ textAlign: "center" }}>Loading...</p>;
         const cfg = contentConfig[mainActiveTab];
         if (!cfg) return;
 
@@ -89,12 +89,12 @@ export default function MyPostsPage() {
                 else if (activeTab === "drafts") str = uiStrings.noDrafts;
                 else if (activeTab === "saved") str = uiStrings.noSavedContent(cfg.str);
                 if (str) {
-                    components.push(<p key={"no-content"} style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                    components.push(<p key={"no-content"} className="title-text" style={{ textAlign: "center" }}>
                         {str}
                     </p>)
                 }
             } else {
-                components.push(<p key={"no-content"} style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                components.push(<p key={"no-content"} className="title-text" style={{ textAlign: "center" }}>
                     {uiStrings.noMoreContent(cfg.str)}
                 </p>)
             }
@@ -136,14 +136,14 @@ export default function MyPostsPage() {
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             {mainActiveTab === "builds" ?
                 <NoPrefetchLink href="/builds/new" style={{ textDecoration: "none" }}>
-                    <div style={{ fontSize: "1.2rem", fontWeight: "bold", cursor: "pointer", color: "#777" }}>+New Build</div>
+                    <div className="tab-header">+New Build</div>
                 </NoPrefetchLink> :
                 mainActiveTab === "collections" ?
                     <NoPrefetchLink href="/collections/new" style={{ textDecoration: "none" }}>
-                        <div style={{ fontSize: "1.2rem", fontWeight: "bold", cursor: "pointer", color: "#777" }}>+New Collection</div>
+                        <div className="tab-header">+New Collection</div>
                     </NoPrefetchLink> :
                     <NoPrefetchLink href="/md-plans/new" style={{ textDecoration: "none" }}>
-                        <div style={{ fontSize: "1.2rem", fontWeight: "bold", cursor: "pointer", color: "#777" }}>+New MD Plans</div>
+                        <div className="tab-header">+New MD Plans</div>
                     </NoPrefetchLink>
             }
             {user ?

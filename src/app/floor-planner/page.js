@@ -11,10 +11,12 @@ import Gift from "../components/gifts/Gift";
 import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { uiColors } from "../lib/colors";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 
@@ -32,7 +34,7 @@ function FloorSelector({ value, setValue, options, isSmall }) {
 
         <Select.Content className={styles.floorSelectContent} position="popper">
             <Select.Viewport>
-                <div className={styles.floorSelectGrid}>
+                <div className={styles.floorSelectGrid} style={{gridTemplateColumns: `repeat(auto-fill, minmax(${380 * (isSmall ? .15 : .25)}px, 1fr))`}}>
                     {options.map((option) =>
                         <Select.Item key={option} value={option} className={styles.floorSelectItem}>
                             <div className={styles.floorItemInner}>
@@ -42,8 +44,8 @@ function FloorSelector({ value, setValue, options, isSmall }) {
                     )}
                     {value ? <Select.Item key={"cancel"} value={null} className={styles.floorSelectItem}>
                         <div className={styles.floorItemInner} style={{
-                            height: "100%", justifyContent: "center",
-                            color: "#ff4848", fontSize: "3rem", fontWeight: "bold"
+                            width: "100%", height: "100%", justifyContent: "center",
+                            color: uiColors.red, fontSize: "3rem", fontWeight: "bold"
                         }}>
                             ✕
                         </div>
@@ -55,7 +57,7 @@ function FloorSelector({ value, setValue, options, isSmall }) {
     </Select.Root>;
 }
 
-function ExclusiveGiftList({selectedFloors}) {
+function ExclusiveGiftList({ selectedFloors }) {
     const [giftsData, giftsLoading] = useData("gifts");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
@@ -107,15 +109,13 @@ function ExclusiveGiftList({selectedFloors}) {
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
         <h3 style={{ margin: "0.5rem", textAlign: "center" }}>Exclusive Gifts Helper</h3>
         {themePacks.length > 0 ?
-            <div style={{ padding: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", overflowX: "auto", width: "100%" }}>
+            <div className="panel-container" style={{ overflowX: "auto", width: "100%" }}>
                 <div style={{ display: "flex", gap: "0.2rem" }}>
                     {themePacks.map(([id, gifts]) =>
                         <div
                             key={id}
-                            style={{
-                                display: "flex", alignItems: "center", height: "350px", gap: "0.2rem",
-                                border: "1px #aaa solid", borderRadius: "1rem", padding: "1rem", boxSizing: "border-box"
-                            }}
+                            className="panel-container"
+                            style={{ flexDirection: "row", alignItems: "center", height: "350px", gap: "0.2rem" }}
                         >
                             <div style={{ height: "fit-content", boxSizing: "border-box" }}>
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "3px" }}>
@@ -139,9 +139,8 @@ function ExclusiveGiftList({selectedFloors}) {
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.15rem" }}>
                     <span style={{ fontWeight: "bold", textAlign: "end" }}>Tag Filter</span>
                     <div
-                        className="toggle-text"
+                        className={`toggle-text ${tagFilterExcluding ? "red" : "green"}`}
                         onClick={() => setTagFilterExcluding(p => !p)}
-                        style={{ color: tagFilterExcluding ? "#f87171" : "#4ade80" }}
                     >
                         {tagFilterExcluding ? "Exclude" : "Include"}
                     </div>
@@ -160,7 +159,7 @@ function ExclusiveGiftList({selectedFloors}) {
                 borderless={true}
             />
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
         {giftsLoading ?
             <div style={{ textAlign: "center", fontSize: "1.2rem" }}>Loading Gifts...</div> :
             <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${giftSize}px, 1fr))`, width: "100%", rowGap: "0.5rem" }}>
@@ -232,7 +231,9 @@ export default function FloorPlannerPage() {
         <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
             <label>
                 <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
-                    style={{ marginRight: "0.2rem", borderBottom: "1px #aaa dotted" }}>
+                    className="hover-text"
+                    style={{marginRight: "0.2rem"}}
+                >
                     Select Difficulty:
                 </span>
                 <select name="difficulty" id="difficulty" value={difficulty} onChange={e => handleSetDifficulty(e.target.value)}>

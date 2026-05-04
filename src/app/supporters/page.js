@@ -38,7 +38,7 @@ export default function SupportersPage() {
             <div style={{ height: "0.5rem" }} />
 
             <h3 style={{ margin: 0 }}>Creator Friends</h3>
-            <span style={{ fontSize: "0.9rem", color: "#aaa" }}>Creators who support or collaborate with the site. Check them out if you&apos;re interested!</span>
+            <span className="sub-text">Creators who support or collaborate with the site. Check them out if you&apos;re interested!</span>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                 {creators.map((c, i) => <Creator key={i} creator={c} />)}
             </div>

@@ -4,13 +4,13 @@
     display: flex;
     transition: all 0.2s ease;
     width: 100%;
-    border-top: 1px #777 dotted;
-    border-bottom: 1px #777 dotted;
+    border-top: 1px var(--secondary-border-color) dotted;
+    border-bottom: 1px var(--secondary-border-color) dotted;
     border-radius: 1rem;
 }
 
 .collection.canHover:hover {
-    background: #3a3a3a;
+    background: var(--bg-hover);
 }
 
 .collectionLink {

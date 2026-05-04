@@ -1,30 +1,61 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import ColorPicker from "./ColorPicker";
+import Slider from "./Slider";
 import GiftIcon from "../components/icons/GiftIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { HorizontalDivider } from "../components/objects/Dividers";
+import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { uiColors } from "../lib/colors";
 import { customizationDefaults } from "../lib/customizationDefaults";
 import { HomepageLinkList } from "../lib/homepageLinks";
 
 function SettingContainer({ name, desc, children }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem" }}>
         <h3 style={{ margin: 0 }}>{name}</h3>
-        <span style={{ fontSize: "0.9rem", color: "#aaa" }}>{desc}</span>
+        <span className="sub-text">{desc}</span>
         {children}
     </div>
 }
 
+const presetOptions = {
+    "default": "Dark Mode (default)",
+    "deep-dark": "Deep Dark",
+    "soft-dark": "Soft Dark",
+    "light": "Light Mode",
+    "warm": "Warm Light",
+    "dim": "Dim"
+}
+
+const presets = {
+    "default": ["#1f1f1f", "#dddddd", 0.05],
+    "deep-dark": ["#000000", "#e5e5e5", 0.08],
+    "soft-dark": ["#262626", "#cfcfcf", 0.03],
+    "light": ["#ffffff", "#222222", 0.06],
+    "warm": ["#f4f1ea", "#2c2a26", 0.05],
+    "dim": ["#2d2f34", "#e0e3e7", 0.05]
+}
+
+const fontOptions = {
+    "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif": "Default",
+    "'Inter', sans-serif": "Inter",
+    "'Merriweather', serif": "Serif",
+    "'JetBrains Mono', monospace": "Monospace"
+};
+
 export default function SiteCustomizationPage() {
-    const { customizationData, setCustomization } = useSiteCustomization();
+    const { customizationData, setCustomization, createPreviewContainer } = useSiteCustomization();
     const [data, setData] = useState(customizationData);
     const [loading, setLoading] = useState(true);
     const { openSetFavoriteLinksModal } = useModal();
     const [applying, setApplying] = useState(false);
-    const [message, setMessage] = useState(null); 
+    const [message, setMessage] = useState(null);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -34,13 +65,68 @@ export default function SiteCustomizationPage() {
 
     const applyCustomization = async () => {
         setApplying(true);
-        if(setCustomization(data)) 
+        if (setCustomization(data))
             setMessage("Applied!")
         else
             setMessage("Failed to apply.")
         setApplying(false);
 
-        setTimeout(() => setMessage(null), 3000); 
+        setTimeout(() => setMessage(null), 3000);
+    }
+
+    const resetCustomization = async () => {
+        setApplying(true);
+        if (setCustomization({}))
+            setMessage("Settings have been reset!")
+        else
+            setMessage("Failed to reset.")
+        setApplying(false);
+
+        setTimeout(() => setMessage(null), 3000);
+    }
+
+    const [currentPreset, currentFont] = useMemo(() => {
+        if (loading) return ["default", fontOptions["Default"]];
+        const preset = Object.entries(presets).find(([id, [bg, text, sc]]) =>
+            ((data.baseBackgroundColor ?? customizationDefaults.baseBackgroundColor) === bg) &&
+            ((data.baseTextColor ?? customizationDefaults.baseTextColor) === text) &&
+            ((data.surfaceContrast ?? customizationDefaults.surfaceContrast) === sc)
+        )
+
+        const font = Object.entries(fontOptions).find(([value]) => (data.font ?? customizationDefaults.font) === value)
+
+        return [
+            preset ? preset[0] : "custom",
+            font ? font[0] : "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        ]
+    }, [data, loading]);
+
+    const setPreset = preset => {
+        setData(p => ({
+            ...p,
+            baseBackgroundColor: presets[preset][0],
+            baseTextColor: presets[preset][1],
+            surfaceContrast: presets[preset][2]
+        }))
+    }
+
+    const changePreset = delta => {
+        if (currentPreset === "custom") setPreset("default");
+        else {
+            const list = Object.keys(presets);
+            let index = list.findIndex(x => x === currentPreset) + delta;
+            if (index < 0) index = list.length - 1;
+            else if (index >= list.length) index = 0;
+            setPreset(list[index]);
+        }
+    }
+
+    const changeFont = delta => {
+        const list = Object.keys(fontOptions);
+        let index = list.findIndex(x => x === currentFont) + delta;
+        if (index < 0) index = list.length - 1;
+        else if (index >= list.length) index = 0;
+        setData(p => ({...p, font: list[index]}));
     }
 
     if (loading) return <LoadingContentPageTemplate />
@@ -86,8 +172,117 @@ export default function SiteCustomizationPage() {
             </div>
         </SettingContainer>
 
+        <SettingContainer
+            name={"Site Display Settings"}
+            desc={<div>Change the base colors and other display settings on the site. Multiple other colors will be derived from the chosen base colors. These settings will not affect things with predefined colors or font settings. <span style={{ fontSize: "0.8rem", color: uiColors.red }}>Caution: The site is mainly designed with the default settings in mind (darker backgrounds and lighter texts). Using other settings may cause parts of the site to be difficult to see or may cause some layouts to break.
+            </span></div>}
+        >
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", alignSelf: "center", alignItems: "center", textAlign: "center" }}>
+                <div>
+                    <span className="hover-text" {...getGeneralTooltipProps("Preset values for color settings")}>
+                        Preset
+                    </span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
+                    <DropdownButton value={currentPreset} setValue={setPreset} options={presetOptions} defaultDisplay={"Custom"} />
+                    <div style={{ display: "flex", gap: "0.2rem", justifyContent: "center" }}>
+                        <button onClick={() => changePreset(-1)}>{"<"}</button>
+                        <button onClick={() => changePreset(1)}>{">"}</button>
+                    </div>
+                </div>
+                <div>
+                    <span className="hover-text" {...getGeneralTooltipProps("Color used for most backgrounds. Other background and border colors will be derived from this.")}>
+                        Base Background Color
+                    </span>
+                </div>
+                <div>
+                    <ColorPicker
+                        value={data.baseBackgroundColor ?? customizationDefaults.baseBackgroundColor}
+                        onChange={x => setData(p => ({ ...p, baseBackgroundColor: x }))}
+                    />
+                </div>
+                <div>
+                    <span className="hover-text" {...getGeneralTooltipProps("Color used for most texts. Other text and border colors will be derived from this.")}>
+                        Base Text Color
+                    </span>
+                </div>
+                <div>
+                    <ColorPicker
+                        value={data.baseTextColor ?? customizationDefaults.baseTextColor}
+                        onChange={x => setData(p => ({ ...p, baseTextColor: x }))}
+                    />
+                </div>
+                <div>
+                    <span className="hover-text" {...getGeneralTooltipProps("How big the contrast between backgrounds will be. Higher values will make backgrounds have higher contrast with each other.")}>
+                        Surface Contrast
+                    </span>
+                </div>
+                <div>
+                    <Slider
+                        value={data.surfaceContrast ?? customizationDefaults.surfaceContrast}
+                        onChange={v => setData(p => ({ ...p, surfaceContrast: v }))}
+                        min={0} max={0.5} step={.01}
+                    />
+                </div>
+                <div>
+                    <span className="hover-text" {...getGeneralTooltipProps("How big texts will be. By default, font size automatically scales based on the screen size. This setting gives you additional control to fine tune the final size.")}>
+                        Text Scaling
+                    </span>
+                </div>
+                <div>
+                    <Slider
+                        value={data.textScale ?? customizationDefaults.textScale}
+                        onChange={v => {
+                            if (v === 0)
+                                setData(p => {
+                                    const { textScale: d, ...rem } = p;
+                                    return rem;
+                                })
+                            else
+                                setData(p => ({ ...p, textScale: v }))
+                        }}
+                        min={0.5} max={3} step={.1}
+                    />
+                </div>
+                <div>
+                    <span className="hover-text" {...getGeneralTooltipProps("Font used for text on the site")}>
+                        Font Style
+                    </span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
+                    <DropdownButton value={currentFont} setValue={v => setData(p => ({ ...p, font: v }))} options={fontOptions} />
+                    <div style={{ display: "flex", gap: "0.2rem", justifyContent: "center" }}>
+                        <button onClick={() => changeFont(-1)}>{"<"}</button>
+                        <button onClick={() => changeFont(1)}>{">"}</button>
+                    </div>
+                </div>
+            </div>
+            <div style={{ alignSelf: "center" }}>
+                {createPreviewContainer({
+                    baseBackgroundColor: data.baseBackgroundColor ?? customizationDefaults.baseBackgroundColor,
+                    baseTextColor: data.baseTextColor ?? customizationDefaults.baseTextColor,
+                    surfaceContrast: data.surfaceContrast ?? customizationDefaults.surfaceContrast,
+                    textScale: data.textScale ?? customizationDefaults.textScale,
+                    font: data.font ?? customizationDefaults.font,
+                    children:
+                        <div style={{ background: "var(--bg-primary)", padding: "0.5em" }}>
+                            <div className="panel-container" style={{ gap: "0.2rem" }}>
+                                <span className="title-text" style={{ fontSize: "1.2em" }}>Display Preview</span>
+                                <span className="sub-text" style={{ fontSize: "0.8em" }}>Preview text</span>
+                                <HorizontalDivider />
+                                <span>Preview Description</span>
+                                <button>Preview Button</button>
+                            </div>
+                        </div>
+                })}
+            </div>
+        </SettingContainer>
+
         <div style={{ alignSelf: "center" }}>
             <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>
+            <button onClick={resetCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Reset All to Default</button>
+        </div>
+        <div style={{alignSelf: "center"}}>
             <span>{message}</span>
         </div>
     </div>

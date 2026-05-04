@@ -112,7 +112,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                 <TeamCodeComponent teamCode={teamCode} />
             </div>
         </> :
-            <div style={{ borderTop: "1px #777 dotted", borderBottom: "1px #777 dotted", borderRadius: "1rem", boxSizing: "border-box" }}>
+            <div style={{ borderTop: "1px var(--secondary-border-color) dotted", borderBottom: "1px var(--secondary-border-color) dotted", borderRadius: "1rem", boxSizing: "border-box" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start", padding: "1rem", boxSizing: "border-box" }}>
                     {builds.length > 0 ?
                         <div style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin", width: "100%" }}>
@@ -130,7 +130,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                     }
                     {editable ? <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
                         <button onClick={() => openSelectBuildModal({ onSelectBuild: handleSelectBuild })}>Add Build</button>
-                        <span style={{ color: "#aaa" }}>Select a build to remove it</span>
+                        <span style={{ color: "var(--secondary-text-color)" }}>Select a build to remove it</span>
                     </div> :
                         null
                     }

@@ -370,10 +370,10 @@ export default function MarkdownRenderer({ content }) {
                 blockquote: ({ node, ...props }) => (
                     <blockquote
                         style={{
-                            borderLeft: "4px solid #ccc",
+                            borderLeft: "4px solid var(--primary-border-color)",
                             paddingLeft: "1rem",
                             margin: "1rem 0",
-                            color: "#bbb",
+                            color: "var(--secondary-text-color)",
                             fontStyle: "italic",
                         }}
                         {...props}

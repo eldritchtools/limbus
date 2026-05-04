@@ -99,10 +99,7 @@ export default function ResetPasswordPage() {
 
     return (
         <main style={{ display: 'flex', alignItems: "center", justifyContent: 'center', marginTop: 48, height: "90vh" }}>
-            <div style={{
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                border: "1px #555 solid", borderRadius: "12px", padding: "2rem"
-            }}>
+            <div className="panel-container" style={{ alignItems: "center", justifyContent: "center", padding: "2rem" }}>
                 <form onSubmit={handleReset} style={{ width: 380 }}>
                     <h2 style={{ textAlign: 'center', marginBottom: 12 }}>Reset Password</h2>
 

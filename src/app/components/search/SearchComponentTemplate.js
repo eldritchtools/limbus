@@ -66,7 +66,7 @@ function IdentityFilter({ value, setValue, excluding, toggleExcluding }) {
 
     return <>
         <div className={styles.searchFilterLabel}>
-            <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Identities</div>
+            <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Identities</div>
             <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.2rem" }}>
                 {loading || identitiesLoading ? null :
                     <div
@@ -78,9 +78,8 @@ function IdentityFilter({ value, setValue, excluding, toggleExcluding }) {
                     </div>
                 }
                 <div
-                    className="toggle-text"
+                    className={`toggle-text ${excluding ? "red" : "green"}`}
                     onClick={() => toggleExcluding()}
-                    style={{ color: excluding ? "#f87171" : "#4ade80" }}
                 >
                     {excluding ? "Exclude" : "Include"}
                 </div>
@@ -119,7 +118,7 @@ function EgoFilter({ value, setValue, excluding, toggleExcluding }) {
 
     return <>
         <div className={styles.searchFilterLabel}>
-            <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>EGOs</div>
+            <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">EGOs</div>
             <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.2rem" }}>
                 {loading || egosLoading ? null :
                     <div
@@ -131,9 +130,8 @@ function EgoFilter({ value, setValue, excluding, toggleExcluding }) {
                     </div>
                 }
                 <div
-                    className="toggle-text"
+                    className={`toggle-text ${excluding ? "red" : "green"}`}
                     onClick={() => toggleExcluding()}
-                    style={{ color: excluding ? "#f87171" : "#4ade80" }}
                 >
                     {excluding ? "Exclude" : "Include"}
                 </div>
@@ -146,7 +144,7 @@ function EgoFilter({ value, setValue, excluding, toggleExcluding }) {
 function KeywordFilter({ value, setValue }) {
     return <>
         <div className={styles.searchFilterLabel}>
-            <span {...getGeneralTooltipProps("twiceToExclude")} style={{ borderBottom: "1px #777 dotted" }}>Keywords</span>
+            <span {...getGeneralTooltipProps("twiceToExclude")} className="hover-text">Keywords</span>
         </div>
         <IconsSelector type={"row"} categories={["status", "affinity", "skillType"]} values={value} setValues={setValue} />
     </>;

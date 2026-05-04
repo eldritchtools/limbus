@@ -1,8 +1,25 @@
+import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
+
 export const metadata = {
     title: "Achievements | Limbus Company Tools",
-    description: "Achievement Tracker"
+    description: "View and track achievement progress or tips"
 };
 
+const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+        getWebPageSchema({
+            title: "Achievements",
+            description: "View and track achievement progress or tips",
+            url: "https://limbus.eldritchtools.com/achievements"
+        })
+    ]
+};
+
+
 export default function AchievementsLayout({ children }) {
-    return <>{children}</>
+    return <>
+        <JsonLd data={schema} />
+        {children}
+    </>
 }

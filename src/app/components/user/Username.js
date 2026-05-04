@@ -8,7 +8,7 @@ export default function Username({ username, flair, style = {}, clickable = true
 
     if (flair)
         return <span style={{ whiteSpace: "wrap" }}>
-            {component} <em style={{ color: "#aaa" }}>({flair})</em>
+            {component} <em style={{ color: "var(--secondary-text-color)" }}>({flair})</em>
         </span>
     return component;
 }

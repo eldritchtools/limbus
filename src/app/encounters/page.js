@@ -7,6 +7,7 @@ import Select from "react-select";
 import EncounterDetails from "./EncounterDetails";
 import BuildsSearchDisplay from "../components/contentCardDisplays/BuildsSearchDisplay";
 import { useData } from "../components/DataProvider";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
 import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -42,9 +43,9 @@ function BuildsSection({ tag }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
         <span>If you&apos;d like to see your build here, use the tag <Tag tag={tag} type={"build"} />.</span>
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
+            <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
             builds.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>
                     {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                 </p> :
                 <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.5rem" }}>
@@ -83,7 +84,7 @@ function Encounter({ category, categoryName, encounter }) {
                 <BuildsSection tag={`${category}-${encounter}`} /> :
                 null
         }
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
 
         <div style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
             <CommentSection targetType={"encounter"} targetId={encounterData.siteId} ownerId={"None"} />
@@ -153,7 +154,7 @@ export default function EncountersPage() {
                 />
             </div>
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
         {category && encounter ?
             <Encounter category={category.value} categoryName={category.label} encounter={encounter.value} /> :
             null

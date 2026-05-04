@@ -33,7 +33,7 @@ function EncounterTooltipContent({ cat, id, encounter }) {
     }
 
     const targets = handleEncounter([], encounter).map((x, i) =>
-        <div key={i} style={{ width: "75px", height: "150px", border: "1px #aaa solid" }} onClick={() => setTargetIndex(i)}>
+        <div key={i} style={{ width: "75px", height: "150px", border: "1px var(--primary-border-color) solid" }} onClick={() => setTargetIndex(i)}>
             <EnemyIcon id={x.portrait} style={{ width: "100%", height: "100%" }} />
         </div>
     );

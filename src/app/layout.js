@@ -3,6 +3,7 @@ import Script from "next/script";
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
 import LayoutComponent from "./layoutComponent";
+import JsonLd, { getOrganizationSchema, getWebsiteSchema } from "./lib/jsonLd";
 
 export const metadata = {
     title: "Limbus Company Tools",
@@ -10,6 +11,13 @@ export const metadata = {
     metadataBase: new URL("https://limbus.eldritchtools.com")
 };
 
+const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+        getOrganizationSchema(),
+        getWebsiteSchema()
+    ]
+};
 
 export default function RootLayout({ children }) {
     return (
@@ -27,6 +35,7 @@ export default function RootLayout({ children }) {
                     gtag('config', 'G-HJ0SH2TDC8', {page_path: window.location.pathname});
                     `}
                 </Script>
+                <JsonLd data={schema} />
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
                 <ChunkErrorHandler />

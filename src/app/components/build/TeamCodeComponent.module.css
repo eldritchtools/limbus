@@ -11,7 +11,8 @@
 }
 
 .copyPopupBox {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--bg-secondary);
+  color: var(--primary-text-color);
   padding: 6px 10px;
   border-radius: 1rem;
   font-size: 1rem;

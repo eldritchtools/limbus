@@ -15,7 +15,7 @@ export default function UpdateHistoryModalContent({ date, title, path }) {
     const [update, updateLoading] = useData(`updates/${path}`);
 
     return <div style={{ display: "flex", flexDirection: "column", gap: ".5rem", padding: "1rem", maxHeight: "90vh", overflowY: "auto", maxWidth: "min(80vw, 1000px)" }}>
-        <span style={{ color: "#aaa", fontSize: "0.9rem" }}>{date}</span>
+        <span className="sub-text">{date}</span>
         <h3 style={{ margin: 0 }}>{title}</h3>
         {updateLoading ? 
             <span>Loading...</span> :

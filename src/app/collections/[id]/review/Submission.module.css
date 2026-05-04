@@ -1,10 +1,4 @@
 .submission {
-    border: 1px #aaa solid;
-    border-radius: 12px;
-    box-sizing: border-box;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
     text-align: left;
     transition: all 0.2s ease;
     gap: 0.5rem;
@@ -15,12 +9,6 @@
 }
 
 .submissionEditing {
-    border: 1px #aaa solid;
-    border-radius: 12px;
-    box-sizing: border-box;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
     text-align: left;
     transition: all 0.2s ease;
     gap: 0.5rem;

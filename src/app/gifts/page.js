@@ -8,6 +8,7 @@ import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import { useModal } from "../components/modals/ModalProvider";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { affinityColorMapping } from "../lib/colors";
@@ -19,7 +20,7 @@ function GiftDesc({ gift }) {
     const { openGiftModal } = useModal();
 
     return <div
-        className={styles.giftDesc}
+        className={`panel-container ${styles.giftDesc}`}
         onClick={() => openGiftModal({ gift, enhanceRank: 0 })}
     >
         <div style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "bold", textAlign: "start", color: affinityColorMapping[gift.affinity] }}>
@@ -40,7 +41,7 @@ function GiftCard({ gift, isSmall }) {
     const { openGiftModal } = useModal();
 
     return <div
-        className={styles.giftCard}
+        className={`panel-container ${styles.giftCard}`}
         style={{ height: isSmall ? "175px" : "250px" }}
         onClick={() => openGiftModal({ gift, enhanceRank: 0 })}
     >
@@ -101,7 +102,7 @@ function GiftList({ searchString, filters, tagFilter, tagFilterExcluding, includ
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
         <h3 style={{ margin: 0 }}>Results: {listComponents.length}</h3>
-        <span style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: ".5rem" }}>
+        <span className="sub-text" style={{ marginBottom: ".5rem" }}>
             This count may include gifts that are no longer obtainable or are not part of the gift compendium.
         </span>
         <div style={{ display: "grid", gridTemplateColumns: columns, width: "100%", rowGap: "0.5rem" }}>
@@ -133,7 +134,7 @@ export default function GiftsPage() {
                     <label>
                         <input type="checkbox" checked={includeDescription} onChange={e => setIncludeDescription(e.target.checked)} />
                         <span {...getGeneralTooltipProps("This will check the description for all enhancement levels of the gift.")}
-                            style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                            className="hover-text"
                         >
                             Include Description
                         </span>
@@ -142,9 +143,8 @@ export default function GiftsPage() {
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
                     <span style={{ fontWeight: "bold", textAlign: "end" }}>Tag Filter</span>
                     <div
-                        className="toggle-text"
+                        className={`toggle-text ${tagFilterExcluding ? "red" : "green"}`}
                         onClick={() => setTagFilterExcluding(p => !p)}
-                        style={{ color: tagFilterExcluding ? "#f87171" : "#4ade80" }}
                     >
                         {tagFilterExcluding ? "Exclude" : "Include"}
                     </div>
@@ -171,7 +171,7 @@ export default function GiftsPage() {
             </div>
             <IconsSelector type={"column"} categories={["giftTier", "status", "atkTypeKwless", "affinity"]} values={filters} setValues={setFilters} />
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
         {filters.length === 0 && tagFilter === null && searchString.length === 0 ?
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", width: "100%" }}>
                 {newGifts.length > 0 ? <React.Fragment>

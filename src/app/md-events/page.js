@@ -1,5 +1,6 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useMemo, useState } from "react";
 
 import styles from "./mdEvents.module.css";
@@ -9,6 +10,7 @@ import HoverBlocker from "../components/HoverBlocker";
 import ChoiceEventIcon from "../components/icons/ChoiceEventIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { useModal } from "../components/modals/ModalProvider";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { affinities } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
@@ -17,32 +19,34 @@ import useLocalState from "../lib/useLocalState";
 function ChoiceEventCard({ choiceEvent }) {
     const { openChoiceEventModal } = useModal();
     const [blockHover, setBlockHover] = useState(false);
+    const { isMobile } = useBreakpoint();
 
     return <div
-        className={`${styles.choiceEventCard} ${!blockHover ? styles.canHover : null}`}
+        className={`panel-container ${styles.choiceEventCard} ${!blockHover ? styles.canHover : null}`}
         onClick={() => { if (!blockHover) openChoiceEventModal({ choiceEvent }) }}
+        style={{ minWidth: isMobile ? "300px" : "375px" }}
     >
         <span style={{ fontSize: "1.1rem", fontWeight: "bold", textAlign: "center" }}>{choiceEvent.name === "" ? "[Unnamed Event]" : choiceEvent.name}</span>
         <div style={{ display: "flex", justifyContent: "center" }}>
             {choiceEvent.advantages ?
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>+</span>
-                    {choiceEvent.advantages.map(x => <KeywordIcon key={x} id={x} />)}
+                    {choiceEvent.advantages.map(x => <KeywordIcon key={x} id={x} size={isMobile ? 24 : 32} />)}
                 </div> :
                 null
             }
-            <ChoiceEventIcon choiceEvent={choiceEvent} scale={0.5} />
+            <ChoiceEventIcon choiceEvent={choiceEvent} scale={isMobile ? 0.3 : 0.5} />
             {choiceEvent.advantages ?
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>-</span>
-                    {affinities.filter(x => !(choiceEvent.advantages.includes(x))).map(x => <KeywordIcon key={x} id={x} />)}
+                    {affinities.filter(x => !(choiceEvent.advantages.includes(x))).map(x => <KeywordIcon key={x} id={x} size={isMobile ? 24 : 32} />)}
                 </div> :
                 null
             }
         </div>
         {choiceEvent.gifts ?
             <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
-                {choiceEvent.gifts.map(id => <HoverBlocker key={id} setBlockHover={setBlockHover}><Gift id={id} /></HoverBlocker>)}
+                {choiceEvent.gifts.map(id => <HoverBlocker key={id} setBlockHover={setBlockHover}><Gift id={id} scale={isMobile ? 0.7 : 1} /></HoverBlocker>)}
             </div> :
             null
         }
@@ -50,6 +54,8 @@ function ChoiceEventCard({ choiceEvent }) {
 }
 
 function EventsList({ searchString, includeGifts, choiceEvents, giftsData }) {
+    const { isMobile } = useBreakpoint();
+
     const list = useMemo(() =>
         Object.entries(choiceEvents).filter(([, x]) => {
             if (searchString.length !== 0) {
@@ -64,7 +70,7 @@ function EventsList({ searchString, includeGifts, choiceEvents, giftsData }) {
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.25rem" }}>
         <h3 style={{ margin: 0 }}>Results: {list.length}</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(375px, 1fr))", width: "100%", gap: "0.5rem", rowGap: "0.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 300 : 375}px, 1fr))`, width: "100%", gap: "0.5rem", rowGap: "0.5rem" }}>
             {list.map(event => <ChoiceEventCard key={event.id} choiceEvent={event} />)}
         </div>
     </div>
@@ -86,14 +92,14 @@ export default function MDEventsPage() {
                 <label>
                     <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
                     <span {...getGeneralTooltipProps("This will check the names of the gifts that can be obtained from the event.")}
-                        style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                        className="hover-text"
                     >
                         Include Gifts
                     </span>
                 </label>
             </div>
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
         {choiceEventsLoading || giftsLoading ?
             <div style={{ textAlign: "center", fontSize: "1.5rem" }}>Loading Events...</div> :
             <EventsList

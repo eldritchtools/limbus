@@ -29,7 +29,7 @@ function TargetComponent({ target }) {
 
     const maybeResist = key => currentPart && currentPart.resists ?
         <ColoredResistance resist={currentPart.resists[key]} /> :
-        <span style={{ fontWeight: "bold", color: "#aaa" }}>??</span>
+        <span style={{ fontWeight: "bold", color: "var(--secondary-text-color)" }}>??</span>
 
     const override = [];
     if (target.identityOverride) {
@@ -55,7 +55,7 @@ function TargetComponent({ target }) {
                     {target.parts.map((part, i) =>
                         <div key={i}
                             className={`tab-header ${partIndex === i ? "active" : ""}`}
-                            style={{ border: "1px #777 solid", padding: "0.25rem", borderRadius: "0.5rem" }}
+                            style={{ border: "1px var(--secondary-border-color) solid", padding: "0.25rem", borderRadius: "0.5rem" }}
                             onClick={() => setPartIndex(i)}
                         >
                             {part.name}
@@ -102,7 +102,7 @@ function BuffComponent({ id }) {
     const [statuses, statusesLoading] = useData("statuses");
     if (statusesLoading || !(id in statuses)) return null;
 
-    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", width: "min(800px, 90vw)", boxSizing: "border-box" }}>
+    return <div className="panel-container" style={{ width: "min(800px, 90vw)" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <StatusIcon status={statuses[id]} style={{ display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" }} />
             <span>{statuses[id].name}</span>

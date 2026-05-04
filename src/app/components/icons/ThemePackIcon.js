@@ -44,11 +44,13 @@ function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 
         <img src={getThemePackImgSrc(themePack)}
             alt={themePack.name} title={themePack.name}
             style={{ ...scaledStyle, position: "absolute", left: 0, top: 0 }}
+            loading="lazy"
         />
         {themePack.overlayImage ?
             <img src={getThemePackOverlayImgSrc(themePack)}
                 alt={themePack.name} title={themePack.name}
                 style={{ ...rescaleOverlay(scale), position: "absolute", left: 0, top: 100 * scale }}
+                loading="lazy"
             /> :
             null
         }

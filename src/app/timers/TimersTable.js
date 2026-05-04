@@ -87,7 +87,7 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
 
     return <div
         style={{
-            display: "flex", border: "1px #777 solid", alignItems: "center",
+            display: "flex", alignItems: "center",
             flexDirection: column ? "column" : "row", flex: 1, justifyContent: "center"
         }}
         {...tooltipProps}
@@ -127,7 +127,7 @@ function getNextThurs() {
 }
 
 export default function TimersTable({ timers }) {
-    return <div style={{ display: "flex", flexDirection: "column", overflowX: "auto", maxWidth: "95vw", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: "column", overflowX: "auto", maxWidth: "95vw", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         {timers?.season ?
             <TimerRow title={`Season ${getSeasonString(7)}`} src={timers.season.src} dateString={timers.season.endDate} /> :
             null
@@ -159,7 +159,7 @@ export function HomepageTimers() {
 
     if (timersLoading) return null;
 
-    return <div style={{ display: "flex", flexWrap: "wrap", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
+    return <div style={{ display: "flex", flexWrap: "wrap", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flex: 1 }}>
             <TimerRow title={"Daily Reset (6AM KST)"} date={getNextDay()} column={true} />
             <TimerRow title={"Weekly Reset (6AM KST)"} date={getNextThurs()} column={true} />

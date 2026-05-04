@@ -4,6 +4,7 @@ import { useSkillData } from "../dataHooks/skills";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import AutoScroller from "../objects/AutoScroller";
+import NamePill from "../objects/NamePill";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { affinityColorMapping } from "@/app/lib/colors";
@@ -289,7 +290,7 @@ function CalcCard({ skill, clash, damage }) {
 
     return <div style={{
         display: "flex", flexDirection: "column", padding: "0.5rem", gap: "0.5rem",
-        border: `1px ${affinityColorMapping[skill.affinity] ?? "#777"} solid`, borderRadius: "1rem"
+        border: `1px ${affinityColorMapping[skill.affinity] ?? affinityColorMapping["none"]} solid`, borderRadius: "1rem"
     }}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
@@ -297,14 +298,9 @@ function CalcCard({ skill, clash, damage }) {
                     <KeywordIcon id={skill.atkType} size={24} /> :
                     <KeywordIcon id={skill.defType} size={24} />
                 }
-                <div style={{
-                    borderRadius: "5px", backgroundColor: affinityColorMapping[skill.affinity], padding: "5px",
-                    color: "#ddd", textShadow: "black 1px 1px 5px", fontWeight: "bold", fontSize: "0.8rem"
-                }}>
-                    {skill.name}
-                </div>
+                <NamePill name={skill.name} affinity={skill.affinity} />
             </div>
-            <div style={{ flex: "0 0 auto", color: "#aaa", fontWeight: "bold", fontSize: "1rem", marginLeft: "0.5rem" }}>
+            <div style={{ flex: "0 0 auto", color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: "1rem", marginLeft: "0.5rem" }}>
                 {typeof skill.rank[0] === 'number' ? `Skill ${skill.rank[0]}` : skill.rank[0]}{skill.rank.length === 2 ? `-${skill.rank[1]}` : ""}
             </div>
         </div>
@@ -313,7 +309,7 @@ function CalcCard({ skill, clash, damage }) {
                 <span>
                     Power: {skill.basePower} {skill.coinPower < 0 ? skill.coinPower : `+${skill.coinPower}`}
                 </span>
-                <span style={{ gap: "0" }}>
+                <span style={{ display: "flex", gap: "0" }}>
                     {skill.coins.map((coin, i) =>
                         <Icon key={i} path={coin === "unbreakable" ? "unbreakable coin" : "coin"} style={{ width: "18px", height: "18px" }} />
                     )}
@@ -367,7 +363,7 @@ function SkillCalc({ skills, opts }) {
             if (!(label in clashes)) clashes[label] = [];
             if (clashes[label].length !== 0) clashes[label].push(<span key={clashes[label].length}>, </span>);
             clashes[label].push(
-                <span key={clashes[label].length} style={{ color: affinityColorMapping[skill.affinity] ?? "#ddd", ...numStyle }} {...numProps}>
+                <span key={clashes[label].length} style={{ color: affinityColorMapping[skill.affinity] ?? "var(--primary-text-color)", ...numStyle }} {...numProps}>
                     {clash}
                 </span>
             )
@@ -375,7 +371,7 @@ function SkillCalc({ skills, opts }) {
             if (!(label in damages)) damages[label] = [];
             if (damages[label].length !== 0) damages[label].push(<span key={damages[label].length}>, </span>);
             damages[label].push(
-                <span key={damages[label].length} style={{ color: affinityColorMapping[skill.affinity] ?? "#ddd", ...numStyle }} {...numProps}>
+                <span key={damages[label].length} style={{ color: affinityColorMapping[skill.affinity] ?? "var(--primary-text-color)", ...numStyle }} {...numProps}>
                     {damage}
                 </span>
             )
@@ -388,11 +384,11 @@ function SkillCalc({ skills, opts }) {
         ]
 
         Object.keys(clashes).forEach((key, i) => {
-            gridItems.push(<div key={i} style={{ textAlign: "center", padding: "0rem 0.25rem", fontWeight: "bold", color: "#aaa" }}>{key}</div>);
-            gridItems.push(<div key={`${i}-c`} style={{ borderLeft: "1px #777 solid", padding: "0rem 0.2rem" }}>
+            gridItems.push(<div key={i} style={{ textAlign: "center", padding: "0rem 0.25rem", fontWeight: "bold", color: "var(--secondary-text-color)" }}>{key}</div>);
+            gridItems.push(<div key={`${i}-c`} style={{ borderLeft: "1px var(--primary-border-color) solid", padding: "0rem 0.2rem" }}>
                 {clashes[key]}
             </div>);
-            gridItems.push(<div key={`${i}-d`} style={{ borderLeft: "1px #777 solid", padding: "0rem 0.2rem" }}>
+            gridItems.push(<div key={`${i}-d`} style={{ borderLeft: "1px var(--primary-border-color) solid", padding: "0rem 0.2rem" }}>
                 {damages[key]}
             </div>);
         })

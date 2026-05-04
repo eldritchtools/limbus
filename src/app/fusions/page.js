@@ -5,18 +5,16 @@ import { useMemo, useState } from "react";
 
 import { useData } from "../components/DataProvider";
 import KeywordIcon from "../components/icons/KeywordIcon";
-import ThemePackIcon from "../components/icons/ThemePackIcon";
 import FusionRecipe from "../components/objects/FusionRecipe";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
-import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
-import { selectStyle } from "../styles/selectStyle";
 
 function getFilterStrings(gift, includeDescription) {
     if (includeDescription) return [gift.names[0], gift.search_desc];
@@ -60,15 +58,15 @@ function filterFusionRecipes(gifts, fusionsList, searchString, includeDescriptio
 }
 
 function FusionRow({ recipe, giftsData, isSmall }) {
-    const tdStyle = { borderTop: "1px grey dotted", borderBottom: "1px grey dotted", padding: "5px" };
+    const tdStyle = { borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", padding: "5px" };
 
     return <tr>
         <td style={tdStyle}><FusionRecipe recipe={recipe} scale={isSmall ? .6 : 1} /></td>
         <td style={tdStyle}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", whiteSpace: "pre" }}>
                 {giftsData[recipe.id].hardonly ?
-                    <div style={{ color: "#f87171" }}>Hard only</div> :
-                    <div style={{ minWidth: "3.5rem", color: "#4ade80" }}>Normal or Hard</div>
+                    <div style={{ color: uiColors.red }}>Hard only</div> :
+                    <div style={{ minWidth: "3.5rem", color: uiColors.green }}>Normal or Hard</div>
                 }
             </div>
         </td>
@@ -102,14 +100,14 @@ function FusionsDisplay({ searchString, includeDescription, includeIngredients, 
         }, keywords.reduce((acc, keyword) => { acc[keyword] = []; return acc }, {}))
 
         const components = [];
-        const tdstyle = { borderTop: "1px grey dotted", borderBottom: "1px grey dotted" }
+        const tdStyle = { borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", padding: "5px" };
         const style = { fontSize: "1.5em", fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center" };
         keywords.forEach(keyword => {
             if (fusionsByKeyword[keyword].length === 0) return;
             if (keyword === "Keywordless")
-                components.push(<tr key={keyword}><td style={tdstyle} colSpan={3}><div style={style}>Keywordless</div></td></tr>);
+                components.push(<tr key={keyword}><td style={tdStyle} colSpan={3}><div style={style}>Keywordless</div></td></tr>);
             else
-                components.push(<tr key={keyword}><td style={tdstyle} colSpan={3}><div style={style}><KeywordIcon id={keyword} scale={1.5} />{keyword}</div></td></tr>);
+                components.push(<tr key={keyword}><td style={tdStyle} colSpan={3}><div style={style}><KeywordIcon id={keyword} scale={1.5} />{keyword}</div></td></tr>);
             fusionsByKeyword[keyword].forEach(recipe => components.push(<FusionRow key={components.length} recipe={recipe} giftsData={giftsData} isSmall={isSmall} />));
         });
 
@@ -173,7 +171,7 @@ export default function FusionsPage() {
                     <label>
                         <input type="checkbox" checked={includeDescription} onChange={e => setIncludeDescription(e.target.checked)} />
                         <span {...getGeneralTooltipProps("This will check the description for all enhancement levels of the gift.")}
-                            style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                            className="hover-text"
                         >
                             Include Description
                         </span>
@@ -181,7 +179,7 @@ export default function FusionsPage() {
                     <label>
                         <input type="checkbox" checked={includeIngredients} onChange={e => setIncludeIngredients(e.target.checked)} />
                         <span {...getGeneralTooltipProps("This will check for the search text in the ingredients as well. Also affected by 'Include Description'.")}
-                            style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                            className="hover-text"
                         >
                             Include Ingredients
                         </span>

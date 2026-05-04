@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import MdPlan from "@/app/components/contentCards/MdPlan";
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import DropdownButton from "@/app/components/objects/DropdownButton";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import Username from "@/app/components/user/Username";
@@ -113,7 +114,7 @@ export default function CollectionPage({ params }) {
                 <MarkdownRenderer content={collection.body} />
             </div>
 
-            <div style={{ border: "1px #777 solid" }} />
+            <HorizontalDivider />
 
             {isMobile ? null :
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>

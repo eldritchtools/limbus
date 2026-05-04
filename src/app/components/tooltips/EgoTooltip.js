@@ -7,7 +7,6 @@ import TooltipTemplate from "./TooltipTemplate";
 import { useSkillData } from "../dataHooks/skills";
 import { useData } from "../DataProvider";
 import EgoIcon from "../icons/EgoIcon";
-import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import Status from "../objects/Status";
 import { AtkWeight } from "../skill/AtkWeight";

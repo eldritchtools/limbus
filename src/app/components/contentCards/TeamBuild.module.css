@@ -7,13 +7,13 @@
     flex-direction: column;
     justify-content: space-between;
     text-align: left;
-    background: #1c1a17;
+    background: var(--bg-primary);
     transition: all 0.2s ease;
     pointer-events: all;
 }
 
 .teamBuild.canHover:hover {
-    background: #3a3a3a;
+    background: var(--bg-hover);
 }
 
 .teamBuildLink {
@@ -27,7 +27,7 @@
     flex-direction: column;
     border: 2px #7c6a55 solid;
     border-radius: 14px;
-    background: #101010;
+    background: var(--bg-secondary);
     position: absolute;
     top: 8px;
     left: -14px;
@@ -69,7 +69,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border-top: 2px #7c6a55 dashed;
-    background: #1c1a17;
+    background: var(--bg-primary);
     z-index: 4;
     height: 2.25rem;
     border-bottom-left-radius: 12px;

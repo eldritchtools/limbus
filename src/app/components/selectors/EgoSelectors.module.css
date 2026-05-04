@@ -10,10 +10,12 @@
     flex: 1;
     padding: 0;
     margin: 0;
+    background: var(--bg-input);
+    border: 1px solid var(--secondary-border-color);
 }
 
 .egoMenuSelectorTrigger:hover {
-    background-color: #555;
+    background-color: var(--bg-hover);
     border-radius: 4px;
     transition: background-color 0.2s, border-color 0.2s;
 }
@@ -24,8 +26,8 @@
 }
 
 .egoMenuSelectorContent {
-    background: #1f1f1f;
-    border: 1px solid #ccc;
+    background: var(--bg-secondary);
+    border: 1px solid var(--secondary-border-color);
     border-radius: 5px;
     max-height: 400px;
     z-index: 1000;
@@ -62,7 +64,7 @@
 .egoMenuSelectorItem:focus,
 .egoMenuSelectorItem:hover,
 .egoMenuSelectorItem.active {
-    background: #555;
+    background: var(--bg-hover);
     filter: brightness(1.3);
     transition: all 0.2s ease;
     outline: none;
