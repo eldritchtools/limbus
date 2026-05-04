@@ -23,6 +23,13 @@ function RecentAdditions() {
     const [blockHover, setBlockHover] = useState(false);
     const [open, setOpen] = useState(false);
 
+    const wrapLink = (text, href) =>
+        <HoverBlocker setBlockHover={setBlockHover}>
+            <NoPrefetchLink className="text-link" href={href}>
+                {text}
+            </NoPrefetchLink>
+        </HoverBlocker>
+
     return <div
         className={`${styles.recentAdditions} ${!blockHover ? styles.canHover : null}`}
         onClick={!blockHover ? () => setOpen(p => !p) : null}
@@ -34,12 +41,11 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>New {wrapLink("Site Customization", "/site-customization")} features allow users to change display settings on the site (colors, font, font size) or change how filter menus work.</li>
+                <li>An Encounters tab has been added to the builds page. Users can filter builds tagged with a specific encounter. This is the same as the builds tab that already exists in the encounters page, just more accessible.</li>
                 <li>All new extreme theme pack bosses and bosses for the new intervallo theme packs and story nodes have been added to the Encounters Page.</li>
-                <li>Added an exclusive gifts helper section to the <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/floor-planner"}>Floor Planner</NoPrefetchLink></HoverBlocker> tool to help users in selecting theme packs.</li>
-                <li>Team <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-solver"}>Solver</NoPrefetchLink></HoverBlocker> and <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-randomizer"}>Randomizer</NoPrefetchLink></HoverBlocker> tools now support using the user&apos;s Company Data to set the Black/Whitelist. The toggle has also been changed to a show/hide toggle rather than an active/inactive toggle and the number of items on the list is now shown on the button.</li>
-                <li>Updated the popularity scoring function since older posts&apos; scores weren&apos;t decaying properly with age.</li>
-                <li>Keyword Solver has been renamed to <HoverBlocker setBlockHover={setBlockHover}><NoPrefetchLink className="text-link" href={"/team-solver"}>Team Solver</NoPrefetchLink></HoverBlocker> and now supports statuses and tags/factions. It also now returns results with less sinners than the specified team size if they already meet the criteria.</li>
-                <li>MD Plans now has a tracking mode. Activate it to mark gifts as obtained or theme packs as entered to follow the plan easier.</li>
+                <li>Added an exclusive gifts helper section to the {wrapLink("Floor Planner", "/floor-planner")} tool to help users in selecting theme packs.</li>
+                <li>Team {wrapLink("Solver", "/team-solver")} and {wrapLink("Randomizer", "/team-randomizer")} tools now support using the user&apos;s Company Data to set the Black/Whitelist. The toggle has also been changed to a show/hide toggle rather than an active/inactive toggle and the number of items on the list is now shown on the button.</li>
             </ul>
         </div> : null}
 
