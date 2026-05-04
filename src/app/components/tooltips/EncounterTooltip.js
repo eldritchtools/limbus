@@ -13,7 +13,7 @@ const TOOLTIP_ID = "encounter-tooltip";
 
 function EncounterTooltipContent({ cat, id, encounter }) {
     const handleTargets = (acc, targets) => {
-        acc.push(...targets);
+        if(targets) acc.push(...targets);
     }
 
     const handlePhase = (acc, phase) => {
@@ -24,9 +24,16 @@ function EncounterTooltipContent({ cat, id, encounter }) {
         if("phases" in wave) wave.phases.forEach(phase => handlePhase(acc, phase));
         else handleTargets(acc, wave.targets);
     }
+
+    const handleBattle = (acc, battle) => {
+        if("waves" in battle) battle.waves.forEach(wave => handleWave(acc, wave));
+        else if ("phases" in battle) battle.phases.forEach(phase => handlePhase(acc, phase));
+        else handleTargets(acc, battle.targets);
+    }
     
     const handleEncounter = (acc, encounter) => {
-        if("waves" in encounter) encounter.waves.forEach(wave => handleWave(acc, wave));
+        if("battles" in encounter) encounter.battles.forEach(battle => handleBattle(acc, battle));
+        else if("waves" in encounter) encounter.waves.forEach(wave => handleWave(acc, wave));
         else if("phases" in encounter) encounter.phases.forEach(phase => handlePhase(acc, phase));
         else handleTargets(acc, encounter.targets);
         return acc;
@@ -42,9 +49,14 @@ function EncounterTooltipContent({ cat, id, encounter }) {
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <span>{encounterCategoryLabels[cat]}: {encounter.name}</span>
         </div>
-        <div style={{ display: "flex", gap: "0.2rem", maxWidth: "100%" }}>
-            {targets}
-        </div>
+        {targets.length > 0 ?
+            <div style={{ display: "flex", gap: "0.2rem", maxWidth: "100%" }}>
+                {targets}
+            </div> :
+            <div style={{ display: "flex", gap: "0.2rem", maxWidth: "100%" }}>
+                No encounter data
+            </div>
+        }
         {isTouchDevice() ? <NoPrefetchLink href={`/encounters?category=${cat}&encounter=${id}`} style={{ alignSelf: "center", fontSize: "1.2rem" }}>Go to page</NoPrefetchLink> : null}
     </div>;
 }

@@ -13,7 +13,7 @@ import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
-import { encounterCategoryLabels } from "../lib/encounters";
+import { encounterToOption, getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import { uiStrings } from "../lib/uiStrings";
 import { selectStyle } from "../styles/selectStyle";
@@ -99,27 +99,21 @@ export default function EncountersPage() {
 
     const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
         if (f === "category") acc["category"] = v;
-        if (f === "encounter") acc["encounter"] = v.split(",");
+        if (f === "encounter") acc["encounter"] = v;
         return acc;
     }, {});
 
-    const encounterToOption = (id, name) => ({
-        value: id,
-        label: `${name} (${id})`
-    });
+    const categoryOptions = useMemo(() => getEncounterCategoryOptions(), []);
 
-    const categoryOptions = useMemo(() => encountersLoading ? [] :
-        Object.entries(encounterCategoryLabels).map(([cat, label]) => ({ value: cat, label: label })),
-        [encountersLoading]
+    const encounterOptions = useMemo(() => 
+        encountersLoading || !category ? [] : getEncounterOptions(encounters, category), 
+        [encountersLoading, encounters, category]
     );
-
-    const encounterOptions = useMemo(() => category ?
-        Object.entries(encounters[category.value]).map(([id, name]) => encounterToOption(id, name)) : [], [category, encounters]);
 
     useEffect(() => {
         if (encountersLoading) return;
         const cat = searchParams.category;
-        const enc = searchParams.encounter
+        const enc = searchParams.encounter;
         if (cat && cat in encounters && enc && enc in encounters[cat]) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setCategory(categoryOptions.find(x => x.value === cat));
@@ -133,7 +127,7 @@ export default function EncountersPage() {
         <h2 style={{ margin: 0 }}>Encounters</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>Check out details for various encounters in the game. This is an early version of this page. More encounters, details, and QoL will gradually be added to this page over time. Feel free to suggest encounters you want to see added or prioritized.</span>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "auto 300px", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "auto 300px", alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
                 <Select
                     options={categoryOptions}
@@ -149,7 +143,7 @@ export default function EncountersPage() {
                     value={encounter}
                     onChange={setEncounter}
                     placeholder={"Choose encounter..."}
-                    filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
+                    filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
                     styles={selectStyle}
                 />
             </div>

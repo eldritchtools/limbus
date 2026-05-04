@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import styles from "./IconsSelector.module.css";
 import KeywordIcon from "../icons/KeywordIcon";
 import RarityIcon from "../icons/RarityIcon";
