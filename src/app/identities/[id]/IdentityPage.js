@@ -82,6 +82,8 @@ export default function IdentityPage({ params }) {
 
     if (identitiesLoading) return null;
 
+    if(!identityData) return <span className="title-text">Identity not found</span>
+
     const handleSetUptie = (v) => {
         if (v === "compare mode") setCompareMode(true);
         else {

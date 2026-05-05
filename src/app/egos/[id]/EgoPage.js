@@ -77,6 +77,8 @@ export default function EgoPage({ params }) {
 
     if (egosLoading) return null;
 
+    if(!egoData) return <span className="title-text">E.G.O not found</span>
+
     const handleSetUptie = (v) => {
         if (v === "compare mode") setCompareMode(true);
         else {
