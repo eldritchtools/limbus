@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 
 export async function GET(req) {
-    if (process.env.NEXT_PUBLIC_ENABLE_LOCAL_DATA !== "true") {
+    if (process.env.NODE_ENV !== "development") {
         return new Response(null, { status: 404 });
     }
 

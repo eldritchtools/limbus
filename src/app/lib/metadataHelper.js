@@ -33,19 +33,16 @@ export const getBuildForMetadata = async id => getFromDatabase("builds", id);
 export const getCollectionForMetadata = async id => getFromDatabase("collections", id);
 export const getMdPlanForMetadata = async id => getFromDatabase("md_plans", id);
 
-export const getIdentitiesForMetadata = async () => {
+const getJsonForMetadata = async (path) => {
     const base = process.env.NODE_ENV === "development" ? `http://localhost:3000${DATA_ROOT}` : DATA_ROOT;
-    const res = await fetch(`${base}/identities_mini.json`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${base}/${path}.json`, { next: { revalidate: 3600 } });
     const json = await res.json();
     return json;
-};
+}
 
-export const getEgosForMetadata = async () => {
-    const base = process.env.NODE_ENV === "development" ? `http://localhost:3000${DATA_ROOT}` : DATA_ROOT;
-    const res = await fetch(`${base}/egos_mini.json`, { next: { revalidate: 3600 } });
-    const json = await res.json();
-    return json;
-};
+export const getIdentitiesForMetadata = async () => await getJsonForMetadata("identities_mini");
+export const getEgosForMetadata = async () => await getJsonForMetadata("egos_mini");
+export const getEncountersForMetadata = async () => await getJsonForMetadata("encounters");
 
 export function cleanMetadataDescription(text = "") {
     if (!text) return "";
