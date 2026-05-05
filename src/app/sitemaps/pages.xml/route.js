@@ -20,7 +20,7 @@ export async function GET() {
         { loc: `${SITE_URL}/universal`, lastmod: today },
         { loc: `${SITE_URL}/daily-random`, lastmod: today },
         { loc: `${SITE_URL}/training-calc`, lastmod: today },
-        { loc: `${SITE_URL}/keyword-solver`, lastmod: today },
+        { loc: `${SITE_URL}/team-solver`, lastmod: today },
         { loc: `${SITE_URL}/team-randomizer`, lastmod: today },
         { loc: `${SITE_URL}/floor-planner`, lastmod: today },
         { loc: `${SITE_URL}/about`, lastmod: today },
