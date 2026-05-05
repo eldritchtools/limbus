@@ -11,7 +11,6 @@ import { getLocalStore } from "../database/localDB";
 import { LEVEL_CAP } from "../lib/constants";
 import { getLevelCost, getUptieCost, mdCrates, threadLux, xpLux } from "../lib/training";
 
-
 export default function TrainingCalcPage() {
     const [identities, identitiesLoading] = useData("identities_mini");
     const [egos, egosLoading] = useData("egos_mini");

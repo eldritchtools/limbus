@@ -1,5 +1,5 @@
 export const metadata = {
-    title: "Update History | Limbus Company Tools",
+    title: "Update History",
     description: "View update history"
 };
 

@@ -47,9 +47,9 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
         }
     }, [content, pathname, searchParams]);
 
-    useEffect(() => {
-        if (content) document.title = `${content.title} | Limbus Company Tools`;
-    }, [content]);
+    // useEffect(() => {
+    //     if (content) document.title = `${content.title} | Limbus Company Tools`;
+    // }, [content]);
 
     const handleBack = () => {
         if (window.history.length > 1) {

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 export const metadata = {
-    title: "Site Customization | Limbus Company Tools",
+    title: "Site Customization",
     description: "Customize various parts of the site"
 };
 

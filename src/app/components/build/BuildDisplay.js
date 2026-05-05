@@ -30,13 +30,20 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
         }
 
         <div className={styles.buildDisplay} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
-            {Array.from({ length: 12 }, (_, index) =>
-                <div key={index} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            {Array.from({ length: 12 }, (_, index) => {
+                let egosDisplay = null;
+                if(egoIds && Array.isArray(egoIds)) {
+                    if(egoIds[index] && Array.isArray(egoIds[index])) {
+                        egosDisplay = egoIds[index].map(id => egos[id] || null);
+                    }
+                }
+
+                return <div key={index} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                     <BuildDisplaySinnerContainer
                         displayType={displayType}
                         sinnerId={index + 1}
                         identity={identities[identityIds[index]] || null}
-                        egos={egoIds?.[index]?.map(id => egos[id] || null) || null}
+                        egos={egosDisplay}
                         identityUptie={upties ? upties[index] : null}
                         identityLevel={levels ? levels[index] : null}
                         egoThreadspins={threadspins ? threadspins[index] : null}
@@ -53,7 +60,7 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
                             <MarkdownRenderer content={notes[index]} />
                         </div> : null}
                 </div>
-            )}
+            })}
         </div>
     </div>
 }

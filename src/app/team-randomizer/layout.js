@@ -1,8 +1,11 @@
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Team Randomizer | Limbus Company Tools",
-    description: "Randomize a team. Copy it into a Team Build if you like it."
+    title: "Team Randomizer",
+    description: "Randomize a team. Copy it into a Team Build if you like it.",
+    alternates: {
+        canonical: "/team-randomizer"
+    }
 };
 
 const schema = {

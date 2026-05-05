@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Edit Team Build | Limbus Company Tools",
+  title: "Edit Team Build",
   description: "Edit a team build",
   robots: {
     index: false,

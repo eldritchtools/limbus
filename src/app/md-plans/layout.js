@@ -2,11 +2,6 @@ import { Suspense } from "react";
 
 import JsonLd from "../lib/jsonLd";
 
-export const metadata = {
-    title: "MD Plans | Limbus Company Tools",
-    description: "Browse MD Plans"
-};
-
 const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",

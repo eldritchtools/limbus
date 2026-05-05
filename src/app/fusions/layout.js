@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Fusions | Limbus Company Tools",
-    description: "View fusion recipes for E.G.O gifts in Mirror Dungeons"
+    title: "Fusions",
+    description: "View fusion recipes for E.G.O gifts in Mirror Dungeons",
+    alternates: {
+        canonical: "/fusions"
+    }
 };
 
 const schema = {

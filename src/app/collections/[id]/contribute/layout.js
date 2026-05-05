@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Contribute to Collection | Limbus Company Tools",
+  title: "Contribute to Collection",
   description: "Contribute to a collection",
   robots: {
     index: false,

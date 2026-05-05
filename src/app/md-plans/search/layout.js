@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "MD Plans | Limbus Company Tools",
+  title: "MD Plans",
   description: "Browse md plans",
   robots: {
     index: false,
