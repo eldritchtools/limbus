@@ -1,4 +1,3 @@
-import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
 import { contentConfig } from "../lib/contentConfig";
 
@@ -74,27 +73,4 @@ export async function unpinBuildComment(buildId) {
 
 export async function getSavedBuilds(user_id, page = 1, pageSize = null) {
     return callRPC("get_saved_builds_v4", paginateParams({p_user_id: user_id}, page, pageSize ?? contentConfig.builds.defaultPageSize))
-}
-
-export async function getBuildsForSitemap(page, count) {
-    const offset = (page - 1) * count;
-    const { data, error } = await getSupabase()
-        .from('builds')
-        .select('id, created_at, updated_at')
-        .eq('is_published', true)
-        .order('created_at', { ascending: true })
-        .range(offset, offset + count - 1);
-
-    if (error) throw (error);
-    return data;
-}
-
-export async function getBuildsCountForSitemap() {
-    const { count, error } = await getSupabase()
-        .from('builds')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_published', true);
-
-    if (error) throw (error);
-    return count;
 }

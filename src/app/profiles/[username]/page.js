@@ -2,8 +2,7 @@
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import CompanyDisplay from "@/app/components/company/CompanyDisplay";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";

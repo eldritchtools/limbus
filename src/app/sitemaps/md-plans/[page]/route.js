@@ -1,4 +1,4 @@
-import { getMdPlansForSitemap } from "@/app/database/mdPlans";
+import { getMdPlansForSitemap } from "@/app/database/sitemapDbHelper";
 import { SITE_URL, CHUNK_SIZE, buildUrlSet } from "@/app/lib/sitemapHelper";
 
 export async function GET(_, { params }) {

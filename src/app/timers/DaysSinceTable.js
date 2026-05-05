@@ -1,5 +1,4 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React from "react";
 
 import EgoIcon from "../components/icons/EgoIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";

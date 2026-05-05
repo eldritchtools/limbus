@@ -1,6 +1,4 @@
-import { getBuildsCountForSitemap } from '../database/builds';
-import { getCollectionsCountForSitemap } from '../database/collections';
-import { getMdPlansCountForSitemap } from '../database/mdPlans';
+import { getBuildsCountForSitemap, getCollectionsCountForSitemap, getMdPlansCountForSitemap } from '../database/sitemapDbHelper';
 
 import { SITE_URL, CHUNK_SIZE } from "@/app/lib/sitemapHelper";
 

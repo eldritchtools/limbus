@@ -1,5 +1,5 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";

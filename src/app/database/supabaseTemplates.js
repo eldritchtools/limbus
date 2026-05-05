@@ -1,4 +1,4 @@
-const { getSupabase } = require("./connection");
+import { getSupabase } from "./connection";
 
 export function convertParams(params, paramsMapping) {
     return Object.entries(paramsMapping).reduce((acc, [s, t]) => {

@@ -1,5 +1,5 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./EncounterDetails.module.css";
 import { useData } from "../components/DataProvider";

@@ -1,4 +1,4 @@
-import JsonLd from "../lib/jsonLd";
+import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Fusions | Limbus Company Tools",

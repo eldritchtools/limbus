@@ -1,4 +1,4 @@
-import { getSupabase } from "./connection"
+import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
 import { contentConfig } from "../lib/contentConfig";
 
@@ -100,27 +100,4 @@ export async function rejectCollectionSubmissionsForTarget(collection_id, target
         "reject_collection_submissions_for_target",
         { p_collection_id: collection_id, p_target_type: target_type, p_target_id: target_id }
     );
-}
-
-export async function getCollectionsForSitemap(page, count) {
-    const offset = (page - 1) * count;
-    const { data, error } = await getSupabase()
-        .from('collections')
-        .select('id, created_at, updated_at')
-        .eq('is_published', true)
-        .order('created_at', { ascending: true })
-        .range(offset, offset + count - 1);
-
-    if (error) throw (error);
-    return data;
-}
-
-export async function getCollectionsCountForSitemap() {
-    const { count, error } = await getSupabase()
-        .from('collections')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_published', true);
-
-    if (error) throw (error);
-    return count;
 }
