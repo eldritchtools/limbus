@@ -1,18 +1,20 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useBreakpoint } from "@eldritchtools/shared-components";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 
 import EncounterDetails from "./EncounterDetails";
 import BuildsSearchDisplay from "../components/contentCardDisplays/BuildsSearchDisplay";
 import { useData } from "../components/DataProvider";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
 import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
-import { encounterCategoryLabels } from "../lib/encounters";
+import { encounterToOption, getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import { uiStrings } from "../lib/uiStrings";
 import { selectStyle } from "../styles/selectStyle";
@@ -42,9 +44,9 @@ function BuildsSection({ tag }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
         <span>If you&apos;d like to see your build here, use the tag <Tag tag={tag} type={"build"} />.</span>
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
+            <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
             builds.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>
                     {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                 </p> :
                 <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.5rem" }}>
@@ -83,7 +85,7 @@ function Encounter({ category, categoryName, encounter }) {
                 <BuildsSection tag={`${category}-${encounter}`} /> :
                 null
         }
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
 
         <div style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
             <CommentSection targetType={"encounter"} targetId={encounterData.siteId} ownerId={"None"} />
@@ -95,30 +97,26 @@ export default function EncountersPage() {
     const [encounters, encountersLoading] = useData("encounters");
     const [category, setCategory] = useState(null);
     const [encounter, setEncounter] = useState(null);
+    const {isMobile} = useBreakpoint();
+    const router = useRouter();
 
     const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
         if (f === "category") acc["category"] = v;
-        if (f === "encounter") acc["encounter"] = v.split(",");
+        if (f === "encounter") acc["encounter"] = v;
         return acc;
     }, {});
 
-    const encounterToOption = (id, name) => ({
-        value: id,
-        label: `${name} (${id})`
-    });
+    const categoryOptions = useMemo(() => getEncounterCategoryOptions(), []);
 
-    const categoryOptions = useMemo(() => encountersLoading ? [] :
-        Object.entries(encounterCategoryLabels).map(([cat, label]) => ({ value: cat, label: label })),
-        [encountersLoading]
+    const encounterOptions = useMemo(() => 
+        encountersLoading || !category ? [] : getEncounterOptions(encounters, category), 
+        [encountersLoading, encounters, category]
     );
-
-    const encounterOptions = useMemo(() => category ?
-        Object.entries(encounters[category.value]).map(([id, name]) => encounterToOption(id, name)) : [], [category, encounters]);
 
     useEffect(() => {
         if (encountersLoading) return;
         const cat = searchParams.category;
-        const enc = searchParams.encounter
+        const enc = searchParams.encounter;
         if (cat && cat in encounters && enc && enc in encounters[cat]) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setCategory(categoryOptions.find(x => x.value === cat));
@@ -126,13 +124,22 @@ export default function EncountersPage() {
         }
     }, [encountersLoading, searchParams, categoryOptions, encounters])
 
+    const handleSetEncounter = enc => {
+        if (!category || !enc) return;
+        const params = new URLSearchParams();
+        params.set("category", category.value);
+        params.set("encounter", enc.value);
+
+        router.replace(`/encounters?${params.toString()}`, {scroll: false});
+    };
+
     if (encountersLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h2 style={{ margin: 0 }}>Encounters</h2>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>Check out details for various encounters in the game. This is an early version of this page. More encounters, details, and QoL will gradually be added to this page over time. Feel free to suggest encounters you want to see added or prioritized.</span>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "auto 300px", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
                 <Select
                     options={categoryOptions}
@@ -146,14 +153,14 @@ export default function EncountersPage() {
                 <Select
                     options={encounterOptions}
                     value={encounter}
-                    onChange={setEncounter}
+                    onChange={handleSetEncounter}
                     placeholder={"Choose encounter..."}
-                    filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
+                    filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
                     styles={selectStyle}
                 />
             </div>
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+        <HorizontalDivider />
         {category && encounter ?
             <Encounter category={category.value} categoryName={category.label} encounter={encounter.value} /> :
             null

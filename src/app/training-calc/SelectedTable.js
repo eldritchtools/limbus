@@ -13,7 +13,7 @@ import { getLevelCost, getUptieCost } from "../lib/training";
 export default function SelectedTable({ identities, egos, selected, setSelected, starts, setStarts, targets, setTargets }) {
     const [searchString, setSearchString] = useState("");
 
-    const stickyHeaderStyle = { position: "sticky", top: 0, background: "#333", padding: "0.25rem", zIndex: 1 };
+    const stickyHeaderStyle = { position: "sticky", top: 0, background: "var(--bg-hover)", padding: "0.25rem", zIndex: 1 };
     const buttonStyle = { fontWeight: "bold", width: "36px", height: "36px", padding: 0 }
 
     const getComputedComponents = id => {

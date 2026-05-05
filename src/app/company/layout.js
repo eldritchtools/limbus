@@ -1,8 +1,12 @@
 import { Suspense } from "react";
 
 export const metadata = {
-    title: "Company | Limbus Company Tools",
-    description: "Set the identities and E.G.Os you own"
+  title: "Company | Limbus Company Tools",
+  description: "Set the identities and E.G.Os you own",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function CompanyLayout({ children }) {

@@ -1,8 +1,10 @@
 "use client";
 
 import "./styles/page-button.css";
+import "./styles/panel-container.css";
 import "./styles/tabs.css";
 import "./styles/text-link.css";
+import "./styles/texts.css";
 import "./styles/toggle-button.css";
 import "./styles/toggle-text.css";
 

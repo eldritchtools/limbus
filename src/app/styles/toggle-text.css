@@ -7,3 +7,11 @@
 .toggle-text:hover {
   filter: brightness(1.2);
 }
+
+.toggle-text.green {
+  color: #4ade80;
+}
+
+.toggle-text.red {
+  color: #f87171;
+}

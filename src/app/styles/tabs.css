@@ -3,13 +3,13 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #777;
+    color: var(--disabled-text-color);
 }
 
 .tab-header:hover {
-    color: #aaa;
+    color: var(--secondary-text-color);
 }
 
 .tab-header.active {
-    color: #ddd;
+    color: var(--primary-text-color);
 }

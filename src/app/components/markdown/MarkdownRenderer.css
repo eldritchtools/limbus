@@ -11,8 +11,9 @@
 }
 
 .markdown blockquote {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid var(--primary-border-color);
   padding-left: 1rem;
   margin: 1rem 0;
-  background: #eff6ff;
+  color: var(--secondary-text-color);
+  font-style: italic;
 }

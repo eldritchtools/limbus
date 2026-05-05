@@ -11,12 +11,14 @@ import LikeButton from "../contentActions/LikeButton";
 import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
 import { BackSolid, ViewSolid } from "../contentActions/Symbols";
+import { HorizontalDivider } from "../objects/Dividers";
 import Tag from "../objects/Tag";
 import SocialsDisplay from "../user/SocialsDisplay";
 import UsernameWithTime from "../user/UsernameWithTime";
 
 import { useAuth } from "@/app/database/authProvider";
 import { isLocalId } from "@/app/database/localDB";
+import JsonLd from "@/app/lib/jsonLd";
 
 export function LoadingContentPageTemplate() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", fontSize: "1.5rem", fontWeight: "bold" }}>
@@ -82,61 +84,82 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
             Loading...
         </div>
 
-    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
-        <div onClick={handleBack}>
-            <button><BackSolid text={"Go Back"} /></button>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap" }}>
-                {titleIcons}
-                {content.title}
-            </h2>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "#ddd" }}>
-                    <UsernameWithTime data={content} scale={.9} />
-                </div>
-                {sideComponent}
-            </div>
-        </div>
-
-        {children}
-
-        <div style={{ border: "1px #777 solid" }} />
-
-        <div style={{ display: "flex", flexDirection: "column", paddingLeft: "0.5rem", width: "100%", gap: "0.5rem" }}>
-            {content.tags?.length > 0 ?
-                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-                    Tags: {content.tags.map((t, i) => <Tag key={i} tag={t.name ?? t} type={targetType} />)}
-                </div> :
-                null
+    return <>
+        <JsonLd data={{
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "@id": `https://limbus.eldritchtools.com/${targetType}/${targetId}`,
+            "headline": content.title,
+            "url": `https://limbus.eldritchtools.com/${targetType}/${targetId}`,
+            "datePublished": content.published_at ?? content.created_at,
+            "dateModified": content.updated_at,
+            "author": {
+                "@type": "Person",
+                "name": content.username
+            },
+            "publisher": {
+                "@id": "https://limbus.eldritchtools.com/#organization"
+            },
+            "isPartOf": {
+                "@id": "https://limbus.eldritchtools.com/#website"
             }
-            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
-                {actions.map(x => constructAction(x))}
+        }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
+            <div onClick={handleBack}>
+                <button><BackSolid text={"Go Back"} /></button>
             </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-                {user && user.id === content.user_id ?
-                    <div>
-                        <ViewSolid text={`${content.view_count !== null ? content.view_count.toLocaleString() : "-"} views`} />
+            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                    {titleIcons}
+                    {content.title}
+                </h2>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
+                        <UsernameWithTime data={content} scale={.9} />
                     </div>
-                    : null
+                    {sideComponent}
+                </div>
+            </div>
+
+            {children}
+
+            <HorizontalDivider />
+
+            <div style={{ display: "flex", flexDirection: "column", paddingLeft: "0.5rem", width: "100%", gap: "0.5rem" }}>
+                {content.tags?.length > 0 ?
+                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                        Tags: {content.tags.map((t, i) => <Tag key={i} tag={t.name ?? t} type={targetType} />)}
+                    </div> :
+                    null
+                }
+                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
+                    {actions.map(x => constructAction(x))}
+                </div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    {user && user.id === content.user_id ?
+                        <div>
+                            <ViewSolid text={`${content.view_count !== null ? content.view_count.toLocaleString() : "-"} views`} />
+                        </div>
+                        : null
+                    }
+                </div>
+                {content.user_socials?.length > 0 ?
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.25rem" }}>
+                        <span>Connect with {content.username}:</span>
+                        <SocialsDisplay socials={content.user_socials} expandDirection="column" align="start" />
+                    </div> :
+                    null
                 }
             </div>
-            {content.user_socials?.length > 0 ?
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.25rem" }}>
-                    <span>Connect with {content.username}:</span>
-                    <SocialsDisplay socials={content.user_socials} expandDirection="column" align="start" />
+
+            <HorizontalDivider />
+
+            {content.is_published ?
+                <div id="comments" style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
+                    <CommentSection targetType={targetType} targetId={targetId} ownerId={content.user_id} commentCount={content.comment_count} pinnedComment={content.pinned_comment} />
                 </div> :
-                null
+                <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>No comments while not published.</p>
             }
         </div>
-
-        <div style={{ border: "1px #777 solid" }} />
-
-        {content.is_published ?
-            <div id="comments" style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
-                <CommentSection targetType={targetType} targetId={targetId} ownerId={content.user_id} commentCount={content.comment_count} pinnedComment={content.pinned_comment} />
-            </div> :
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>No comments while not published.</p>
-        }
-    </div>
+    </>
 }

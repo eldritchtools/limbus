@@ -12,6 +12,7 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import RarityIcon from "../components/icons/RarityIcon";
 import SinnerIcon from "../components/icons/SinnerIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import Status from "../components/objects/Status";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
@@ -20,6 +21,7 @@ import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { ColoredResistance } from "../lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import JsonLd from "../lib/jsonLd";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
@@ -31,8 +33,8 @@ function SkillTypeIcons({ skill }) {
 }
 
 function EgoDetails({ id, ego }) {
-    const wrapCell = contents => <td style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid", verticalAlign: "middle" }}>
-        <NoPrefetchLink key={id} href={`/egos/${id}`} style={{ color: "#ddd", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "128px" }}>
+    const wrapCell = contents => <td style={{ borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", verticalAlign: "middle" }}>
+        <NoPrefetchLink key={id} href={`/egos/${id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "128px" }}>
             {contents}
         </NoPrefetchLink>
     </td>
@@ -53,7 +55,7 @@ function EgoDetails({ id, ego }) {
         {wrapCell(<div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(32px, 1fr))", width: "100%" }}>
             {affinities.map(affinity => <div key={affinity} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.25rem" }}>
                 <KeywordIcon id={affinity} />
-                <span>{affinity in ego.cost ? ego.cost[affinity] : <span style={{ color: "#777" }}>0</span>}</span>
+                <span>{affinity in ego.cost ? ego.cost[affinity] : <span style={{ color: "var(--disabled-text-color)" }}>0</span>}</span>
                 <span>{<ColoredResistance resist={ego.resists[affinity]} />}</span>
             </div>)}
         </div>)}
@@ -64,7 +66,7 @@ function EgoDetails({ id, ego }) {
 }
 
 function EgoCard({ ego }) {
-    return <div className={styles.clickableEgoCard} style={{ display: "flex", flexDirection: "row", padding: "0.5rem", width: "min(420px, 100%)", height: "280px", border: "1px #777 solid", borderRadius: "0.25rem", boxSizing: "border-box" }}>
+    return <div className={`panel-container ${styles.clickableEgoCard}`} style={{ flexDirection: "row", width: "min(420px, 100%)", height: "280px" }}>
         <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
             <EgoIcon ego={ego} type={"awaken"} displayName={false} displayRarity={true} />
             {"corrosionType" in ego ? <EgoIcon ego={ego} type={"erosion"} displayName={false} displayRarity={false} /> : null}
@@ -128,7 +130,7 @@ function EgoList({ egos, searchString, filters, displayType, separateSinners, st
 
     if (displayType === "icon") {
         const listToComponents = list => <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
-            {list.map(([id, ego]) => <div key={id}><NoPrefetchLink href={`/egos/${id}`} style={{ color: "#ddd", textDecoration: "none" }}>
+            {list.map(([id, ego]) => <div key={id}><NoPrefetchLink href={`/egos/${id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none" }}>
                 <div className={styles.clickableEgo}>
                     <EgoIcon ego={ego} type={"awaken"} displayName={true} displayRarity={true} />
                 </div>
@@ -152,7 +154,7 @@ function EgoList({ egos, searchString, filters, displayType, separateSinners, st
         }
     } else if (displayType === "card") {
         const listToComponents = list => <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, min(420px, 100%))", width: "100%", gap: "0.5rem", justifyContent: "center" }}>
-            {list.map(([id, ego]) => <div key={id}><NoPrefetchLink href={`/egos/${id}`} style={{ color: "#ddd", textDecoration: "none" }}><EgoCard key={id} ego={ego} /></NoPrefetchLink></div>)}
+            {list.map(([id, ego]) => <div key={id}><NoPrefetchLink href={`/egos/${id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none" }}><EgoCard key={id} ego={ego} /></NoPrefetchLink></div>)}
         </div>
 
         if (separateSinners) {
@@ -188,7 +190,7 @@ function EgoList({ egos, searchString, filters, displayType, separateSinners, st
                     {
                         separateSinners ?
                             Object.entries(splitBySinner(list)).map(([sinnerId, list]) => [
-                                <tr key={sinnerId}><td colSpan={7} style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid" }}>
+                                <tr key={sinnerId}><td colSpan={7} style={{ borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid" }}>
                                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", fontSize: "1.2rem", fontWeight: "bold", }}>
                                         <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
                                         {sinnerIdMapping[sinnerId]}
@@ -250,101 +252,110 @@ export default function EgosPage() {
         ]
     }, [egos, egosLoading, statuses, statusesLoading]);
 
-    return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>E.G.Os</h2>
-        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                <span style={{ textAlign: 'end' }}>Search:</span>
-                <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"E.G.O Name"} />
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Statuses:</div>
-                    <div
-                        className="toggle-text"
-                        onClick={() => setStatusesExcluding(p => !p)}
-                        style={{ color: statusesExcluding ? "#f87171" : "#4ade80" }}
-                    >
-                        {statusesExcluding ? "Exclude" : "Include"}
+    return <>
+        <JsonLd data={{
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "E.G.Os",
+            "url": "https://limbus.eldritchtools.com/egos",
+            "isPartOf": {
+                "@id": "https://limbus.eldritchtools.com/#website"
+            }
+        }} />
+        <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
+            <h2 style={{ margin: 0 }}>E.G.Os</h2>
+            <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                    <span style={{ textAlign: 'end' }}>Search:</span>
+                    <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"E.G.O Name"} />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Statuses:</div>
+                        <div
+                            className={`toggle-text ${statusesExcluding ? "red" : "green"}`}
+                            onClick={() => setStatusesExcluding(p => !p)}
+                        >
+                            {statusesExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <DropdownSelectorWithExclusion
+                        options={statusOptions}
+                        selected={selectedStatuses}
+                        setSelected={setSelectedStatuses}
+                        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                        isMulti={true}
+                        placeholder={"Select Statuses..."}
+                        excludeMode={statusesExcluding}
+                        styles={selectStyle}
+                    />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Season:</div>
+                        <div
+                            className={`toggle-text ${seasonsExcluding ? "red" : "green"}`}
+                            onClick={() => setSeasonsExcluding(p => !p)}
+                        >
+                            {seasonsExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <DropdownSelectorWithExclusion
+                        options={seasonOptions}
+                        selected={selectedSeasons}
+                        setSelected={setSelectedSeasons}
+                        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                        isMulti={true}
+                        placeholder={"Select Seasons..."}
+                        excludeMode={seasonsExcluding}
+                        styles={selectStyle}
+                    />
+                    <span style={{ textAlign: "end" }}>Display Type:</span>
+                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                        <label>
+                            <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
+                            Icons Only
+                        </label>
+                        <label>
+                            <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
+                            Cards
+                        </label>
+                        <label>
+                            <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
+                            Full Details
+                        </label>
+                    </div>
+                    <div />
+                    <div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                            <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                            Strict Filtering
+                            <span className="sub-text">(Require all selected filters)</span>
+                        </label>
+                    </div>
+                    <div />
+                    <div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                            <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
+                            Separate by Sinner
+                        </label>
+                    </div>
+                    <div />
+                    <div>
+                        <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
                     </div>
                 </div>
-                <DropdownSelectorWithExclusion
-                    options={statusOptions}
-                    selected={selectedStatuses}
-                    setSelected={setSelectedStatuses}
-                    filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
-                    isMulti={true}
-                    placeholder={"Select Statuses..."}
-                    excludeMode={statusesExcluding}
-                    styles={selectStyle}
-                />
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <div {...getGeneralTooltipProps("includeExclude")} style={{ borderBottom: "1px #777 dotted" }}>Filter Season:</div>
-                    <div
-                        className="toggle-text"
-                        onClick={() => setSeasonsExcluding(p => !p)}
-                        style={{ color: seasonsExcluding ? "#f87171" : "#4ade80" }}
-                    >
-                        {seasonsExcluding ? "Exclude" : "Include"}
-                    </div>
-                </div>
-                <DropdownSelectorWithExclusion
-                    options={seasonOptions}
-                    selected={selectedSeasons}
-                    setSelected={setSelectedSeasons}
-                    filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
-                    isMulti={true}
-                    placeholder={"Select Seasons..."}
-                    excludeMode={seasonsExcluding}
-                    styles={selectStyle}
-                />
-                <span style={{ textAlign: "end" }}>Display Type:</span>
-                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-                    <label>
-                        <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
-                        Icons Only
-                    </label>
-                    <label>
-                        <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                        Cards
-                    </label>
-                    <label>
-                        <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                        Full Details
-                    </label>
-                </div>
-                <div />
-                <div>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
-                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                        Strict Filtering
-                        <span style={{ fontSize: "0.8rem", color: "#aaa" }}>(Require all selected filters)</span>
-                    </label>
-                </div>
-                <div />
-                <div>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                        <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
-                        Separate by Sinner
-                    </label>
-                </div>
-                <div />
-                <div>
-                    <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                </div>
+                <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
             </div>
-            <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
+            <HorizontalDivider />
+            {egosLoading ? null :
+                <EgoList
+                    egos={egos}
+                    searchString={searchString}
+                    filters={filters}
+                    displayType={displayType}
+                    separateSinners={separateSinners}
+                    strictFiltering={strictFiltering}
+                    selectedStatuses={selectedStatuses}
+                    selectedSeasons={selectedSeasons}
+                    compareMode={compareMode}
+                />}
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
-        {egosLoading ? null :
-            <EgoList
-                egos={egos}
-                searchString={searchString}
-                filters={filters}
-                displayType={displayType}
-                separateSinners={separateSinners}
-                strictFiltering={strictFiltering}
-                selectedStatuses={selectedStatuses}
-                selectedSeasons={selectedSeasons}
-                compareMode={compareMode}
-            />}
-    </div>;
+    </>;
 }

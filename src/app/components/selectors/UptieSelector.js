@@ -6,6 +6,8 @@ import { useRef, useState } from "react";
 import styles from "./UptieSelector.module.css";
 import TierIcon from "../icons/TierIcon";
 
+import { uiColors } from "@/app/lib/colors";
+
 function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, bottomOption = null }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -40,7 +42,7 @@ function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, 
                                 </Select.Item>
                             )}
                             {allowEmpty ? <Select.Item key={"cancel"} value={null} className={styles.uptieSelectorItem}>
-                                <div className={styles.uptieItemInner} style={{ height: "1.5rem", justifyContent: "center", color: "#ff4848", fontSize: "1rem", fontWeight: "bold" }}>
+                                <div className={styles.uptieItemInner} style={{ height: "1.5rem", justifyContent: "center", color: uiColors.red, fontSize: "1rem", fontWeight: "bold" }}>
                                     ✕
                                 </div>
                             </Select.Item> : null}

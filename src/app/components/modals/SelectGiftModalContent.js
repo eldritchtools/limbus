@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
 import { GiftTagFilterSelector } from "../gifts/GiftTags";
+import { HorizontalDivider } from "../objects/Dividers";
 import IconsSelector from "../selectors/IconsSelector";
 
 import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
@@ -67,7 +68,7 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
             null
         }
         {choiceList && choiceList.length > 0 && showSearch ?
-            <div style={{ width: "100%", border: "1px #aaa solid" }} /> :
+            <HorizontalDivider /> :
             null
         }
         {showSearch ?
@@ -79,9 +80,8 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.15rem" }}>
                             <span style={{ fontWeight: "bold", textAlign: "end" }}>Tag Filter</span>
                             <div
-                                className="toggle-text"
+                                className={`toggle-text ${tagFilterExcluding ? "red" : "green"}`}
                                 onClick={() => setTagFilterExcluding(p => !p)}
-                                style={{ color: tagFilterExcluding ? "#f87171" : "#4ade80" }}
                             >
                                 {tagFilterExcluding ? "Exclude" : "Include"}
                             </div>
@@ -98,7 +98,7 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
                         borderless={true}
                     />
                 </div>
-                <div style={{ border: "1px #777 solid", width: "100%" }} />
+                <HorizontalDivider />
                 {giftsLoading ?
                     <div style={{ textAlign: "center", fontSize: "1.2rem" }}>Loading Gifts...</div> :
                     <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${giftSize}px, 1fr))`, width: "100%", rowGap: "0.5rem" }}>

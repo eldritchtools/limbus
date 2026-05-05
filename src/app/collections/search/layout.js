@@ -1,6 +1,10 @@
 export const metadata = {
-    title: "Collections | Limbus Company Tools",
-    description: "Browse collections of content managed by users"
+  title: "Collections | Limbus Company Tools",
+  description: "Browse collections of content managed by users",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function SearchCollectionsLayout({ children }) {

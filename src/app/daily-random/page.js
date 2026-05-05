@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import BuildIdentitiesGrid from "../components/build/BuildIdentitiesGrid";
 import TeamCodeComponent from "../components/build/TeamCodeComponent";
 import { useData } from "../components/DataProvider";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { commentsTargetIds } from "../lib/commentsTargetIds";
@@ -155,8 +156,8 @@ export default function DailyRandomizedPage() {
             The randomizer uses the date as its random seed, making sure that everyone gets the same team. There is a small caveat that if the data changes, the randomized teams can also change, so be wary of days when new data may be added.
         </span>
 
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
-        
+        <HorizontalDivider />
+
         <div style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
             <CommentSection targetType={"fixed"} targetId={commentsTargetIds.dailyRandom} ownerId={"None"} />
         </div>

@@ -196,7 +196,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             ? <div style={{ color: uiColors.red }}>{uiStrings.contentNoUser("builds")}</div>
             : null
         }
-        <span style={{fontSize: "0.9rem"}}>{uiStrings.upcomingInContent("builds")}</span>
+        <span className="sub-text">{uiStrings.upcomingInContent("builds")}</span>
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <span style={{ fontSize: "1.2rem" }}>Team Build</span>
@@ -246,7 +246,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             <input type="text" value={youtubeVideo} onChange={(e) => setYoutubeVideo(e.target.value)} placeholder="Paste a YouTube Video link or id (optional)" style={{ width: "clamp(20ch, 80%, 50ch)" }} />
         </div>
         {youtubeVideo.length > 0 ?
-            <span style={{ fontSize: "0.8rem" }}>Youtube Video Id: {extractYouTubeId(youtubeVideo.trim()) ?? "Not found"}</span> :
+            <span className="sub-text">Youtube Video Id: {extractYouTubeId(youtubeVideo.trim()) ?? "Not found"}</span> :
             null}
         <span style={{ fontSize: "1.2rem" }}>Tags</span>
         <TagSelector selected={tags} onChange={setTags} creatable={true} />
@@ -258,7 +258,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             </div>
             {otherSettings ?
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                    <div style={{ fontSize: "0.8rem", color: "#aaa" }}>
+                    <div className="sub-text">
                         Hide from discovery related features (popular, new, random, etc). Can still be found via search or on profiles.
                     </div>
                     <label style={{ display: "flex", alignItems: "center" }}>
@@ -270,7 +270,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             }
         </div>
         {user && !isPublished ?
-            <div style={{ color: "#aaa" }}>{uiStrings.drafts}</div> :
+            <div className="sub-text">{uiStrings.drafts}</div> :
             null
         }
         {isPublished ?

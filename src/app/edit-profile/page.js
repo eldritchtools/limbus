@@ -9,6 +9,7 @@ import DropdownButton from "../components/objects/DropdownButton";
 import { SocialIcon, socialsData } from "../components/user/userSocials";
 import { useAuth } from "../database/authProvider";
 import { updateUser } from "../database/users";
+import { uiColors } from "../lib/colors";
 
 function SocialsComponent({ socials, setSocials }) {
     const swapOrder = (i1, i2) => {
@@ -37,10 +38,10 @@ function SocialsComponent({ socials, setSocials }) {
                     type="text"
                     value={social.value}
                     onChange={e => handleChange(i, e.target.value)}
-                    style={{ borderColor: social.invalid ? "#fe0000" : "#555" }}
+                    style={{ borderColor: social.invalid ? uiColors.red : "var(--secondary-border-color)" }}
                     placeholder={socialsData[social.type].placeholder}
                 />
-                <button onClick={() => handleRemove(i)} style={{ color: "#FE0000", fontWeight: "bold" }}> ✕ </button>
+                <button onClick={() => handleRemove(i)} style={{ color: uiColors.red, fontWeight: "bold" }}> ✕ </button>
             </div>
         )}
     </div>
@@ -139,7 +140,6 @@ export default function EditProfilePage() {
     }
 
     const headerStyle = { marginTop: "1rem", marginBottom: "0" };
-    const subHeaderStyle = { fontSize: "0.8rem", color: "#aaa" };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Edit Profile</h2>
@@ -151,20 +151,20 @@ export default function EditProfilePage() {
                         View your profile <NoPrefetchLink className="text-link" href={`profiles/${profile.username}`}>here</NoPrefetchLink>.
                     </div>
                     <h4 style={headerStyle}>Username</h4>
-                    <span style={subHeaderStyle}>Name to display across the site. This must be updated separately from the rest of the profile.</span>
+                    <span className="sub-text">Name to display across the site. This must be updated separately from the rest of the profile.</span>
                     <div><input value={username} onChange={e => setUsername(e.target.value)} /></div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <button onClick={handleUpdateUsername} disabled={updating}>Update Username</button>
                         {usernameError}
                     </div>
                     <h4 style={headerStyle}>Flair</h4>
-                    <span style={subHeaderStyle}>Add a flair to display beside or below your username.</span>
+                    <span className="sub-text">Add a flair to display beside or below your username.</span>
                     <div><input value={flair} onChange={e => setFlair(e.target.value)} /></div>
                     <h4 style={headerStyle}>Profile Description</h4>
-                    <span style={subHeaderStyle}>The profile description will be displayed whenever someone views your profile.</span>
+                    <span className="sub-text">The profile description will be displayed whenever someone views your profile.</span>
                     <MarkdownEditorWrapper value={description} onChange={setDescription} placeholder="Write your profile description..." short={true} />
                     <h4 style={headerStyle}>Links & Socials</h4>
-                    <span style={subHeaderStyle}>Add links if you want people to find you elsewhere. These will be displayed on your profile and your builds.</span>
+                    <span className="sub-text">Add links if you want people to find you elsewhere. These will be displayed on your profile and your builds.</span>
                     <DropdownButton setValue={addSocial} defaultDisplay={"+ Add Social"} options={socialsOptions} />
                     <SocialsComponent socials={socials} setSocials={setSocials} />
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>

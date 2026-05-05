@@ -6,7 +6,7 @@
 
 .clickableIcon.owned {
     filter: brightness(1);
-    border: 1px #aaa solid;
+    border: 1px var(--primary-border-color) solid;
 }
 
 .clickableIcon.unowned {

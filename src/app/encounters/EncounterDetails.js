@@ -29,7 +29,7 @@ function TargetComponent({ target }) {
 
     const maybeResist = key => currentPart && currentPart.resists ?
         <ColoredResistance resist={currentPart.resists[key]} /> :
-        <span style={{ fontWeight: "bold", color: "#aaa" }}>??</span>
+        <span style={{ fontWeight: "bold", color: "var(--secondary-text-color)" }}>??</span>
 
     const override = [];
     if (target.identityOverride) {
@@ -45,7 +45,7 @@ function TargetComponent({ target }) {
         })
     }
 
-    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "start", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "center" : "start", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>{target.name}</h3>
             <EnemyIcon id={target.portrait} style={{ width: isMobile ? "250px" : "auto" }} />
@@ -55,7 +55,7 @@ function TargetComponent({ target }) {
                     {target.parts.map((part, i) =>
                         <div key={i}
                             className={`tab-header ${partIndex === i ? "active" : ""}`}
-                            style={{ border: "1px #777 solid", padding: "0.25rem", borderRadius: "0.5rem" }}
+                            style={{ border: "1px var(--secondary-border-color) solid", padding: "0.25rem", borderRadius: "0.5rem" }}
                             onClick={() => setPartIndex(i)}
                         >
                             {part.name}
@@ -87,7 +87,7 @@ function TargetComponent({ target }) {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
             {override.length > 0 ? <>
-                <span style={{fontSize: "1.2rem", fontWeight: "bold", textAlign: "center"}}>Identity and E.G.Os</span>
+                <span style={{ fontSize: "1.2rem", fontWeight: "bold", textAlign: "center" }}>Identity and E.G.Os</span>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.2rem" }}>
                     {override}
                 </div>
@@ -102,7 +102,7 @@ function BuffComponent({ id }) {
     const [statuses, statusesLoading] = useData("statuses");
     if (statusesLoading || !(id in statuses)) return null;
 
-    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", width: "min(800px, 90vw)", boxSizing: "border-box" }}>
+    return <div className="panel-container" style={{ width: "min(800px, 90vw)" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <StatusIcon status={statuses[id]} style={{ display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" }} />
             <span>{statuses[id].name}</span>
@@ -114,18 +114,24 @@ function BuffComponent({ id }) {
 }
 
 export default function EncounterDetails({ data }) {
+    const [battle, setBattle] = useState(0);
     const [wave, setWave] = useState(0);
     const [phase, setPhase] = useState(0);
     const [targetIndex, setTargetIndex] = useState(0);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
+        setBattle(0);
         setWave(0);
         setPhase(0);
         setTargetIndex(0);
     }, [data]);
 
-    let targetsData = data, waves = null, phases = null;
+    let targetsData = data, battles = null, waves = null, phases = null;
+    if ("battles" in targetsData && targetsData.battles[wave]) {
+        battles = targetsData.battles.length;
+        targetsData = targetsData.battles[battle];
+    }
     if ("waves" in targetsData && targetsData.waves[wave]) {
         waves = targetsData.waves.length;
         targetsData = targetsData.waves[wave];
@@ -144,10 +150,29 @@ export default function EncounterDetails({ data }) {
     </div>
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
+        {battles ?
+            <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                {Array.from({ length: battles }, (_, i) =>
+                    <div
+                        key={i} className={`tab-header ${battle === i ? "active" : ""}`}
+                        onClick={() => { setBattle(i); setWave(0); setPhase(0); setTargetIndex(0); }}
+                    >
+                        Battle {i + 1}
+                    </div>
+                )}
+            </div> :
+            null
+        }
+
         {waves ?
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: waves }, (_, i) =>
-                    <div key={i} className={`tab-header ${wave === i ? "active" : ""}`} onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); }}>Wave {i + 1}</div>
+                    <div
+                        key={i} className={`tab-header ${wave === i ? "active" : ""}`}
+                        onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); }}
+                    >
+                        Wave {i + 1}
+                    </div>
                 )}
             </div> :
             null
@@ -156,7 +181,12 @@ export default function EncounterDetails({ data }) {
         {phases ?
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: phases }, (_, i) =>
-                    <div key={i} className={`tab-header ${phase === i ? "active" : ""}`} onClick={() => { setPhase(i); setTargetIndex(0); }}>Phase {i + 1}</div>
+                    <div
+                        key={i} className={`tab-header ${phase === i ? "active" : ""}`}
+                        onClick={() => { setPhase(i); setTargetIndex(0); }}
+                    >
+                        Phase {i + 1}
+                    </div>
                 )}
             </div> :
             null

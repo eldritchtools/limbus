@@ -1,5 +1,5 @@
-import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {
     query: "p_query",
@@ -38,14 +38,12 @@ const createParams = {
     published: "p_published"
 };
 
-const DEFAULT_PAGE_SIZE = 24;
-
 export async function getPopularBuilds(page = 1, pageSize = null) {
-    return callRPC("get_popular_builds_v5", paginateParams({}, page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("get_popular_builds_v5", paginateParams({}, page, pageSize ?? contentConfig.builds.defaultPageSize));
 }
 
 export async function searchBuilds(params, page = 1, pageSize = null) {
-    return callRPC("search_builds_v10", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_builds_v10", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.builds.defaultPageSize));
 }
 
 export async function getBuild(id, forEdit = false) {
@@ -74,28 +72,5 @@ export async function unpinBuildComment(buildId) {
 }
 
 export async function getSavedBuilds(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_builds_v4", paginateParams({p_user_id: user_id}, page, pageSize ?? DEFAULT_PAGE_SIZE))
-}
-
-export async function getBuildsForSitemap(page, count) {
-    const offset = (page - 1) * count;
-    const { data, error } = await getSupabase()
-        .from('builds')
-        .select('id, created_at, updated_at')
-        .eq('is_published', true)
-        .order('created_at', { ascending: true })
-        .range(offset, offset + count - 1);
-
-    if (error) throw (error);
-    return data;
-}
-
-export async function getBuildsCountForSitemap() {
-    const { count, error } = await getSupabase()
-        .from('builds')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_published', true);
-
-    if (error) throw (error);
-    return count;
+    return callRPC("get_saved_builds_v4", paginateParams({p_user_id: user_id}, page, pageSize ?? contentConfig.builds.defaultPageSize))
 }

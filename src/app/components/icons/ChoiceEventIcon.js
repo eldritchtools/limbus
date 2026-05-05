@@ -13,14 +13,17 @@ function rescaleChoiceEvent(scale) {
 
 function ChoiceEventIconMain({ id, choiceEvent = null, displayName = false, scale = 1 }) {
     const scaledStyle = rescaleChoiceEvent(scale);
+    const illustId = choiceEvent?.illustId ?? choiceEvent?.id ?? id;
+
     return <div style={{ ...scaledStyle, position: "relative", display: "flex" }}>
         {/* <Image src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
             alt={choiceEvent.name} title={choiceEvent.name}
             fill style={{ objectFit: "cover" }}
         /> */}
-        <img src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${id ?? choiceEvent.id}.png`}
+        <img src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${illustId}.png`}
             alt={choiceEvent.name} title={choiceEvent.name}
             style={{ ...scaledStyle, objectFit: "cover" }}
+            loading="lazy"
         />
         {displayName ?
             <div style={{

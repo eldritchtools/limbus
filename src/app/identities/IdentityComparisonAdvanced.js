@@ -9,7 +9,9 @@ import KeywordIcon from "../components/icons/KeywordIcon"
 import SinnerIcon from "../components/icons/SinnerIcon"
 import NoPrefetchLink from "../components/NoPrefetchLink"
 import AutoScroller from "../components/objects/AutoScroller"
+import { HorizontalDivider } from "../components/objects/Dividers"
 import DropdownButton from "../components/objects/DropdownButton"
+import NamePill from "../components/objects/NamePill"
 import RangeInput from "../components/objects/RangeInput"
 import { AtkWeight } from "../components/skill/AtkWeight"
 import Coin from "../components/skill/Coin"
@@ -18,7 +20,7 @@ import SkillCard from "../components/skill/SkillCard"
 import ProcessedText from "../components/texts/ProcessedText"
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip"
 import { keywordToIdMapping } from "../database/keywordIds"
-import { affinityColorMapping, ColoredResistance } from "../lib/colors"
+import { ColoredResistance } from "../lib/colors"
 import { LEVEL_CAP, sinnerIdMapping } from "../lib/constants"
 import { constructDefenseLevel, constructHp, constructSpeed } from "../lib/identity"
 import { paragraphScore } from "../lib/scoring"
@@ -37,24 +39,26 @@ const options = {
 }
 
 function ComparisonCardBase({ identity, content }) {
-    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "320px", maxHeight: "480px", border: "1px #777 solid", borderRadius: "0.25rem", boxSizing: "border-box", alignItems: "center", gap: "0.2rem" }}>
+    return <div className="panel-container" style={{ width: "320px", maxHeight: "480px", borderRadius: "0.5rem", alignItems: "center", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", height: "128px" }}>
             <NoPrefetchLink href={`/identities/${identity.id}`}>
                 <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} size={128} />
             </NoPrefetchLink>
         </div>
-        <div style={{ border: "1px #777 solid", width: "90%" }} />
+        <HorizontalDivider />
         <div style={{ maxHeight: "320px", width: "100%" }}>
             {content}
         </div>
     </div >
 }
 
+const rowStyle = {borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", verticalAlign: "middle"}
+
 function ComparisonRowBase({ identity, content }) {
     return <>
-        {content.map((line, i) => <tr key={i} style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid", verticalAlign: "middle" }}>
+        {content.map((line, i) => <tr key={i} style={rowStyle}>
             {i === 0 ?
-                <td key={0} rowSpan={content.length} style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid", verticalAlign: "middle" }}>
+                <td key={0} rowSpan={content.length} style={rowStyle}>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", padding: "0.2rem" }}>
                         <NoPrefetchLink href={`/identities/${identity.id}`}>
                             <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} size={128} />
@@ -65,7 +69,7 @@ function ComparisonRowBase({ identity, content }) {
             }
 
             {line.map((piece, i) =>
-                <td key={i + 1} style={{ borderTop: "1px #777 solid", borderBottom: "1px #777 solid", verticalAlign: "middle" }}>
+                <td key={i + 1} style={rowStyle}>
                     {piece}
                 </td>)
             }
@@ -168,16 +172,14 @@ function ComparisonRow({ identity, skillList, compareType }) {
             const skillData = skill.data.data;
             return [
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center", maxWidth: "40ch", textAlign: "center" }}>
-                    <div style={{ color: "#aaa", fontWeight: "bold" }}>
+                    <div style={{ color: "var(--secondary-text-color)", fontWeight: "bold" }}>
                         {type === "atk" ?
                             (ind === 0 ?
                                 `Skill ${skill.data.tier}` :
                                 `Skill ${skill.data.tier}-${ind + 1}`) :
                             `Defense`}
                     </div>
-                    <div style={{ borderRadius: "5px", backgroundColor: affinityColorMapping[skillData.affinity], padding: "5px", color: "#ddd", textShadow: "black 1px 1px 5px", fontWeight: "bold" }}>
-                        {skillData.name}
-                    </div>
+                    <NamePill name={skillData.name} affinity={skillData.affinity} />
                     <div style={{ display: "flex", flexDirection: "row", gap: "0.25rem", alignItems: "center" }}>
                         {skillData.affinity !== "none" ? <KeywordIcon id={skillData.affinity} /> : null}
                         {skillData.defType !== "attack" ? <KeywordIcon id={skillData.defType} /> : null}
@@ -236,9 +238,7 @@ function ComparisonRow({ identity, skillList, compareType }) {
         const constructCells = ([type, passive, ind], i) => {
             return [
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center", maxWidth: "40ch", textAlign: "center" }}>
-                    <div style={{ borderRadius: "5px", backgroundColor: "grey", padding: "5px", color: "#ddd", textShadow: "black 1px 1px 5px", fontWeight: "bold" }}>
-                        {passive.name}
-                    </div>
+                    <NamePill name={passive.name} />
                 </div>,
 
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center", padding: "0.5rem" }}>
@@ -669,7 +669,7 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
             {compareType !== "stats" ?
                 <label>
                     <input type="checkbox" checked={grouped} onChange={e => setGrouped(p => !p)} />
-                    <span {...getGeneralTooltipProps("groupedComp")} style={{ borderBottom: "1px #777 dotted" }}>Grouped by Identity</span>
+                    <span {...getGeneralTooltipProps("groupedComp")} className="hover-text">Grouped by Identity</span>
                 </label> : null
             }
         </div>
@@ -722,7 +722,7 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
                     <>
                         <div style={filterStyle}>
                             <div style={{ display: "flex", height: "32px", alignItems: "center" }}>
-                                <span {...getGeneralTooltipProps("descSearch")} style={{ borderBottom: "1px #777 dotted" }}>
+                                <span {...getGeneralTooltipProps("descSearch")} className="hover-text">
                                     Search in Description:
                                 </span>
                             </div>
@@ -753,7 +753,7 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
                         </div>
                     </> : <>
                         <div style={filterStyle}>
-                            <span {...getGeneralTooltipProps("descSearch")} style={{ borderBottom: "1px #777 dotted" }}>
+                            <span {...getGeneralTooltipProps("descSearch")} className="hover-text">
                                 Search in Description:
                             </span>
                             <input value={searchString} onChange={e => setSearchString(e.target.value)} />

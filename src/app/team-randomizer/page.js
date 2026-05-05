@@ -239,7 +239,7 @@ export default function TeamRandomizerPage() {
             <label>
                 <input type="checkbox" checked={randomizeIdentities} onChange={e => setRandomizeIdentities(e.target.checked)} />
                 <span {...getGeneralTooltipProps("This will allow the randomizer to randomize identities")}
-                    style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                    className="hover-text"
                 >
                     Randomize Identities
                 </span>
@@ -247,7 +247,7 @@ export default function TeamRandomizerPage() {
             <label>
                 <input type="checkbox" checked={randomizeEgos} onChange={e => setRandomizeEgos(e.target.checked)} />
                 <span {...getGeneralTooltipProps("This will allow the randomizer to randomize E.G.Os")}
-                    style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                    className="hover-text"
                 >
                     Randomize E.G.Os
                 </span>
@@ -319,7 +319,7 @@ export default function TeamRandomizerPage() {
                 <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
                 <button onClick={() => setWbList([])}>Clear All</button>
             </div>
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
+            <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                     <span>Display:</span>
                     <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>

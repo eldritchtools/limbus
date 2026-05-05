@@ -15,7 +15,7 @@ function constructWrapper(maxWidth) {
     wrapper.style.flexDirection = "column";
     wrapper.style.padding = "8px 12px";
     wrapper.style.maxWidth = `${maxWidth}px`;
-    wrapper.style.color = "#ddd";
+    wrapper.style.color = "var(--primary-text-color)";
     wrapper.style.fontFamily = "sans-serif";
     return wrapper;
 }
@@ -65,7 +65,7 @@ function constructTextElement(text) {
     textBlock.style.fontSize = "0.85rem";
     textBlock.style.lineHeight = "1.25";
     textBlock.style.whiteSpace = "pre-wrap";
-    textBlock.style.color = "#ccc";
+    textBlock.style.color = "var(--primary-text-color)";
 
     return textBlock;
 }

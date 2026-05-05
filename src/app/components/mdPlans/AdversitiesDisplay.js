@@ -4,6 +4,7 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 
 import styles from "./AdversitiesDisplay.module.css";
 import { useData } from "../DataProvider";
+import { VerticalDivider } from "../objects/Dividers";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 export function AdversitiesPointTotal({ adversities }) {
@@ -49,7 +50,7 @@ export default function AdversitiesDisplay({ adversities, setAdversities, editab
         </div> : null}
         {Object.entries(mdData.adversity).map(([f, list]) =>
             <div key={f} style={{ display: "flex" }}>
-                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "center", padding: "0.25rem", border: "1px #aaa solid", borderRadius: "0.5rem", gap: "0.5rem" }}>
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "center", padding: "0.25rem", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", gap: "0.5rem" }}>
                     <span style={{ fontSize: "1.1rem", fontWeight: "bold" }}>F{f}</span>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
                         {list.map((adv, i) =>
@@ -59,7 +60,7 @@ export default function AdversitiesDisplay({ adversities, setAdversities, editab
                                 onClick={editable ? () => toggleAdversity(f, i) : null}
                             >
                                 <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "10px" }}>{adv.value}</span>
-                                <div style={{ height: "100%", border: "1px #777 solid" }} />
+                                <VerticalDivider />
                                 <span>{adv.name}</span>
                             </div>
                         )}

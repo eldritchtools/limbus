@@ -38,14 +38,10 @@
 }
 
 .buildDisplayMenuCard {
-  display: flex;
-  flex-direction: column;
-  width: 225px;
-  height: 100px;
+  width: 240px;
+  height: 120px;
   align-items: center;
   justify-content: center;
-  border: 1px #777 solid;
-  border-radius: 1rem;
-  padding: 0.5rem;
-  gap: 0.2rem
+  padding: 0.25rem;
+  gap: 0.2rem;
 }

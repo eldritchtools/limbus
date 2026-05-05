@@ -3,11 +3,11 @@
     flex-direction: column;
     height: max-content;
     gap: 0.2rem;
-    border: 1px #aaa solid;
+    border: 1px var(--primary-border-color) solid;
     border-radius: 1rem;
     padding: 1rem;
     box-sizing: border-box; 
-    background: #1f1f1f;
+    background: var(--bg-primary);
     transition: all 0.2s ease;
     max-width: 95vw;
 }

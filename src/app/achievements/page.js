@@ -13,6 +13,7 @@ import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentP
 import { getAchievementsProgress, updateAchievementsProgress } from "../database/achievements";
 import { useAuth } from "../database/authProvider";
 import { localStores } from "../database/localDB";
+import { uiColors } from "../lib/colors";
 import useLocalState from "../lib/useLocalState";
 
 function Achievement({ achievement, tracking, setAchievementTracking, isSmall }) {
@@ -53,11 +54,29 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
                     <span className={styles.itemLabel}>{text}</span>
                 </div>
                 {achievement.hardonly[i] ?
-                    <span style={{ minWidth: "4rem", textAlign: "center", color: "#f87171" }}>Hard only</span> :
-                    <span style={{ minWidth: "4rem", textAlign: "center", color: "#4ade80" }}>Normal or Hard</span>
+                    <span style={{ minWidth: "4rem", textAlign: "center", color: uiColors.red }}>Hard only</span> :
+                    <span style={{ minWidth: "4rem", textAlign: "center", color: uiColors.green }}>Normal or Hard</span>
                 }
             </div>);
         }
+    } else {
+        subAchievements = [<div key={0} className={styles.subitem}>
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <label className={styles.checkboxContainer}>
+                    <input type="checkbox" onChange={() => {
+                        if (tracking[achievement.id] > 0) setAchievementTracking(0);
+                        else setAchievementTracking(1);
+                    }} checked={tracking[achievement.id] > 0} />
+                    <span className={styles.checkmark} />
+                </label>
+                <span className={styles.points}>+{achievement.points}</span>
+                <span className={styles.itemLabel}>{achievement.text}</span>
+            </div>
+            {achievement.hardonly ?
+                <span style={{ minWidth: "4rem", textAlign: "center", color: uiColors.red }}>Hard only</span> :
+                <span style={{ minWidth: "4rem", textAlign: "center", color: uiColors.green }}>Normal or Hard</span>
+            }
+        </div>]
     }
 
     const hardonly = Array.isArray(achievement.hardonly) ? !achievement.hardonly.some(x => x === false) : achievement.hardonly;
@@ -79,8 +98,8 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
             </div>
             <div style={{ display: "flex", gap: "0.5rem", width: "15%", justifyContent: "end", alignItems: "center" }}>
                 {hardonly ?
-                    <span style={{ minWidth: "4rem", color: "#f87171" }}>Hard only</span> :
-                    <span style={{ minWidth: "4rem", color: "#4ade80" }}>Normal or Hard</span>
+                    <span style={{ minWidth: "4rem", color: uiColors.red }}>Hard only</span> :
+                    <span style={{ minWidth: "4rem", color: uiColors.green }}>Normal or Hard</span>
                 }
                 <span className={styles.arrow}>▼</span>
             </div>
@@ -88,8 +107,8 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
         <div style={{ padding: "0.5rem 1.5rem 0.1rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {subAchievements ? <div>{subAchievements}</div> : null}
             {isOpen ?
-                <div style={{ width: "100%", textAlign: "start" }}> 
-                    <AchievementTips achievement={achievement} isSmall={isSmall} /> 
+                <div style={{ width: "100%", textAlign: "start" }}>
+                    <AchievementTips achievement={achievement} isSmall={isSmall} />
                 </div> :
                 null
             }
@@ -151,16 +170,16 @@ function RewardsTab({ totalPoints, columns = 2 }) {
             else acc[0][reward.item] = reward.count;
 
             acc[2].push(<div key={acc[2].length} style={{ display: "grid", gridTemplateColumns: "1fr 4fr", textAlign: "center" }}>
-                <span style={{ textDecoration: "line-through", padding: "0.1rem", border: "1px #666 dotted" }}>{level}</span>
-                <span style={{ textDecoration: "line-through", padding: "0.1rem", border: "1px #666 dotted" }}>{reward.count}x {reward.item}</span>
+                <span style={{ textDecoration: "line-through", padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>{level}</span>
+                <span style={{ textDecoration: "line-through", padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>{reward.count}x {reward.item}</span>
             </div>);
         } else {
             if (reward.item in acc[1]) acc[1][reward.item] += reward.count;
             else acc[1][reward.item] = reward.count;
 
             acc[2].push(<div key={acc[2].length} style={{ display: "grid", gridTemplateColumns: "1fr 4fr", textAlign: "center" }}>
-                <span style={{ padding: "0.1rem", border: "1px #666 dotted" }}>{level}</span>
-                <span style={{ padding: "0.1rem", border: "1px #666 dotted" }}>{reward.count}x {reward.item}</span>
+                <span style={{ padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>{level}</span>
+                <span style={{ padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>{reward.count}x {reward.item}</span>
             </div>);
         }
 
@@ -184,8 +203,8 @@ function RewardsTab({ totalPoints, columns = 2 }) {
     const headers = [];
     for (let i = 0; i < columns; i++) {
         headers.push(<div style={{ display: "grid", gridTemplateColumns: "1fr 4fr", textAlign: "center" }}>
-            <span style={{ fontWeight: "bold", padding: "0.1rem", border: "1px #666 dotted" }}>Level</span>
-            <span style={{ fontWeight: "bold", padding: "0.1rem", border: "1px #666 dotted" }}>Reward</span>
+            <span style={{ fontWeight: "bold", padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>Level</span>
+            <span style={{ fontWeight: "bold", padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>Reward</span>
         </div>);
     }
 
@@ -383,8 +402,8 @@ export default function AchievementsPage() {
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
                 <div>Level: {Math.floor(xp / 100)}</div>
-                <div style={{ width: "5rem", height: "20px", backgroundColor: "#333", borderRadius: "5px", overflow: "hidden", position: "relative" }}>
-                    <div style={{ width: `${xp % 100}%`, height: "100%", backgroundColor: "#4caf50", transition: "width 0.3s ease" }} />
+                <div style={{ width: "5rem", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "5px", overflow: "hidden", position: "relative" }}>
+                    <div style={{ width: `${xp % 100}%`, height: "100%", backgroundColor: uiColors.green, transition: "width 0.3s ease" }} />
                     <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: "bold", textShadow: "0 0 8px #000" }}> {xp % 100}/100 </span>
                 </div>
             </div>

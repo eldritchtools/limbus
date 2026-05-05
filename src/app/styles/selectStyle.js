@@ -1,39 +1,39 @@
 const selectStyle = {
     control: (provided, state) => ({
         ...provided,
-        backgroundColor: "#2a2a2a",
-        color: "#ddd",
-        borderColor: state.isFocused ? "#888" : "#555",
+        backgroundColor: "var(--bg-input)",
+        color: "var(--primary-text-color)",
+        borderColor: state.isFocused ? "var(--primary-border-color)" : "var(--secondary-border-color)",
         boxShadow: "none",
-        "&:hover": { borderColor: "#888" },
+        "&:hover": { borderColor: "var(--primary-border-color)" },
         minHeight: "28px",
         minWidth: "15rem",
         maxWidth: "40rem"
     }),
     menu: (provided) => ({
         ...provided,
-        backgroundColor: "#2a2a2a",
-        border: "1px solid #555",
+        backgroundColor: "var(--bg-input)",
+        border: "1px solid var(--secondary-border-color)",
         maxWidth: "40rem",
         zIndex: 6
     }),
     option: (provided, state) => ({
         ...provided,
         backgroundColor: state.isFocused
-            ? (state.isSelected ? "#555" : "#444" )
+            ? (state.isSelected ? "var(--bg-hover)" : "var(--bg-hover)" )
             : state.isSelected
-                ? "#555"
+                ? "var(--bg-hover)"
                 : "transparent",
-        color: "#ddd",
+        color: "var(--primary-text-color)",
         cursor: "pointer",
     }),
     singleValue: (provided) => ({
         ...provided,
-        color: "#ddd",
+        color: "var(--primary-text-color)",
     }),
     input: (provided) => ({
         ...provided,
-        color: "#ddd",
+        color: "var(--primary-text-color)",
     }),
     valueContainer: (provided) => ({
         ...provided,
@@ -43,15 +43,15 @@ const selectStyle = {
     }),
     multiValue: (provided, state) => ({
         ...provided,
-        backgroundColor: "#555",
+        backgroundColor: "var(--secondary-border-color)",
         border: state.data.exclude ? "2px solid #ef4444" : "transparent",
-        boxShadow: state.data.exclude ? "inset 0 0 0 1px rgba(239,68,68,0.25)" : null,
+        // boxShadow: state.data.exclude ? "inset 0 0 0 1px rgba(239,68,68,0.25)" : null,
         borderRadius: "8px",
         padding: "2px 4px"
     }),
     multiValueLabel: (provided) => ({
         ...provided,
-        color: "#ddd",
+        color: "var(--primary-text-color)",
         fontSize: "0.9em",
     }),
 };
@@ -60,18 +60,18 @@ const selectStyleWide = {
     ...selectStyle,
     control: (provided, state) => ({
         ...provided,
-        backgroundColor: "#2a2a2a",
-        color: "#ddd",
-        borderColor: state.isFocused ? "#888" : "#555",
+        backgroundColor: "var(--bg-input)",
+        color: "var(--primary-text-color)",
+        borderColor: state.isFocused ? "var(--primary-border-color)" : "var(--secondary-border-color)",
         boxShadow: "none",
-        "&:hover": { borderColor: "#888" },
+        "&:hover": { borderColor: "var(--primary-border-color)" },
         minHeight: "28px",
         width: "55rem"
     }),
     menu: (provided) => ({
         ...provided,
-        backgroundColor: "#2a2a2a",
-        border: "1px solid #555",
+        backgroundColor: "var(--bg-input)",
+        border: "1px solid var(--secondary-border-color)",
         minHeight: "28px",
         width: "55rem",
         zIndex: 6
@@ -82,18 +82,18 @@ const selectStyleVariable = {
     ...selectStyle,
     control: (provided, state) => ({
         ...provided,
-        backgroundColor: "#2a2a2a",
-        color: "#ddd",
-        borderColor: state.isFocused ? "#888" : "#555",
+        backgroundColor: "var(--bg-input)",
+        color: "var(--primary-text-color)",
+        borderColor: state.isFocused ? "var(--primary-border-color)" : "var(--secondary-border-color)",
         boxShadow: "none",
-        "&:hover": { borderColor: "#888" },
+        "&:hover": { borderColor: "var(--primary-border-color)" },
         minHeight: "28px",
         width: "100%"
     }),
     menu: (provided) => ({
         ...provided,
-        backgroundColor: "#2a2a2a",
-        border: "1px solid #555",
+        backgroundColor: "var(--bg-input)",
+        border: "1px solid var(--secondary-border-color)",
         minHeight: "28px",
         width: "100%",
         zIndex: 6

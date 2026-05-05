@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import BuildsSearchDisplay from "../contentCardDisplays/BuildsSearchDisplay";
+import { HorizontalDivider } from "../objects/Dividers";
 import BuildsSearchComponent, { prepareBuildFilters } from "../search/BuildsSearchComponent";
 
 import { useAuth } from "@/app/database/authProvider";
@@ -74,12 +75,12 @@ export default function SelectBuildModalContent({ onSelectBuild, allowDrafts = f
             )
         }
         <span style={{ textAlign: "center" }}>Adding the same build more than once is not supported.</span>
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
 
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
+            <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
             builds.length === 0 ?
-                <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>
                     {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                 </p> :
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

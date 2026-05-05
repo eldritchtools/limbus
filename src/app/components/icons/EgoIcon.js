@@ -26,7 +26,7 @@ function EgoIconMain({ ego, style, type, banner = false, displayName = false, di
     const { width, height } = style;
 
     // const img = <Image src={src} alt={ego.name} title={ego.name} fill sizes="auto" style={{ ...remStyle, objectFit: "cover" }} />
-    const img = <img src={src} alt={ego.name} title={ego.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover"}} />
+    const img = <img src={src} alt={ego.name} title={ego.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover"}} loading="lazy" />
 
     return <div
         style={{

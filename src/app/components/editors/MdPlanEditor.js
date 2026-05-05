@@ -403,7 +403,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             <div style={{ color: uiColors.red }}>{uiStrings.contentNoUser("md plans")}</div>
             : null
         }
-        <span style={{ fontSize: "0.9rem" }}>{uiStrings.upcomingInContent("md plans")}</span>
+        <span className="sub-text">{uiStrings.upcomingInContent("md plans")}</span>
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
@@ -421,12 +421,12 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 <option value="specbuild">Spec Build</option>
             </select>
         </div>
-        <span style={{ color: "#aaa" }}>Select a mode if you want to recommend what to bring for this run plan. List mode lets you display a list of identities and E.G.Os. Build mode lets you select builds available on the site. Use Spec Build if you want to make an entirely new build specifically for this MD Plan.</span>
+        <span className="sub-text">Select a mode if you want to recommend what to bring for this run plan. List mode lets you display a list of identities and E.G.Os. Build mode lets you select builds available on the site. Use Spec Build if you want to make an entirely new build specifically for this MD Plan.</span>
         <span style={{ color: uiColors.red }}>Warning: Changing recommendation mode WILL reset anything currently in recommended.</span>
 
         {recommendationMode === "list" ? <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Identities and E.G.Os</span>
-            <span style={{ color: "#aaa" }}>Select identities and E.G.Os to recommend.</span>
+            <span className="sub-text">Select identities and E.G.Os to recommend.</span>
             <RecommendedListDisplay identityIds={identityIds} setIdentityIds={setIdentityIds} egoIds={egoIds} setEgoIds={setEgoIds} editable={true} />
         </> :
             null
@@ -434,7 +434,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
 
         {recommendationMode === "build" ? <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Builds</span>
-            <span style={{ color: "#aaa" }}>Select team builds to recommend. You may select as many as you want.</span>
+            <span className="sub-text">Select team builds to recommend. You may select as many as you want.</span>
             <RecommendedBuildsDisplay builds={builds} setBuilds={setBuilds} editable={true} />
         </> :
             null
@@ -442,7 +442,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
 
         {recommendationMode === "specbuild" ? <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
-            <span style={{ color: "#aaa" }}>Create the recommended team build.</span>
+            <span className="sub-text">Create the recommended team build.</span>
             <RecommendedSpecBuildDisplay
                 identityIds={identityIds} setIdentityIds={setIdentityIds}
                 egoIds={egoIds} setEgoIds={setEgoIds}
@@ -458,7 +458,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your run plan here..."} />
         </div>
         <span style={{ fontSize: "1.2rem" }}>Skill Replacements</span>
-        <span style={{ color: "#aaa" }}>Skills to replace on recommended identities. Only identities with changed skills will be shown.</span>
+        <span className="sub-text">Skills to replace on recommended identities. Only identities with changed skills will be shown.</span>
         {recommendationMode === "specbuild" ?
             <span>For the Spec Build recommendation mode, skill replacements can be found under additional details for each sinner. The toggle for this can be found on one of the panels below the team build.</span> :
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxWidth: "100%" }}>
@@ -477,21 +477,20 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
         }
 
         <span style={{ fontSize: "1.2rem" }}>Grace of the Stars</span>
-        <span style={{ color: "#aaa" }}>Starting buffs bought with starlight</span>
+        <span className="sub-text">Starting buffs bought with starlight</span>
         <GracesDisplay graceLevels={graceLevels} setGraceLevels={setGraceLevels} editable={true} />
         {
             difficulty === "E" ? <React.Fragment>
                 <span style={{ fontSize: "1.2rem" }}>Adversities: <AdversitiesPointTotal adversities={adversities} /></span>
-                <span style={{ color: "#aaa" }}>Adversities to take in the Extreme floors</span>
+                <span className="sub-text">Adversities to take in the Extreme floors</span>
                 <AdversitiesDisplay adversities={adversities} setAdversities={setAdversities} editable={true} />
             </React.Fragment> : null
         }
         <span style={{ fontSize: "1.2rem" }}>Gifts Setup</span>
-        <span style={{ color: "#aaa" }}>Gifts to start the run with. The corresponding graces need to be turned on to select multiple starting gifts.</span>
+        <span className="sub-text">Gifts to start the run with. The corresponding graces need to be turned on to select multiple starting gifts.</span>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            <div style={{
-                display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
-                width: isMobile ? "200px" : "300px", padding: "0.2rem", border: "1px #aaa solid", borderRadius: "1rem"
+            <div className="panel-container" style={{
+                alignItems: "center", gap: "0.5rem", width: isMobile ? "200px" : "300px", padding: "0.2rem"
             }}>
                 <span style={{ fontSize: "1.2rem" }}>Starting Gifts</span>
                 <Select
@@ -509,9 +508,8 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                     {startGifts.map(giftId => <Gift key={giftId} id={giftId} scale={isMobile ? 0.6 : 1} />)}
                 </div>
             </div>
-            <div style={{
-                display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
-                width: isMobile ? "200px" : "300px", padding: "0.2rem", border: "1px #aaa solid", borderRadius: "1rem"
+            <div className="panel-container" style={{
+                alignItems: "center", gap: "0.5rem", width: isMobile ? "200px" : "300px", padding: "0.2rem"
             }}>
                 <span style={{ fontSize: "1.2rem" }}>Gift Observation</span>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontWeight: "bold" }}>
@@ -529,7 +527,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
         </div>
 
         <span style={{ fontSize: "1.2rem" }}>Targeted Gifts</span>
-        <span style={{ color: "#aaa" }}>Gifts that should be targeted during the run</span>
+        <span className="sub-text">Gifts that should be targeted during the run</span>
 
         <div style={{ display: "flex" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 80px)" }}>
@@ -545,7 +543,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
         }
 
         <span style={{ fontSize: "1.2rem" }}>Floor Plan</span>
-        <span style={{ color: "#aaa" }}>Plans for each floor or set of floors. The floor set determines the available theme packs, while the label is shown to the viewers of the run plan (defaults to the floor set if not provided).</span>
+        <span className="sub-text">Plans for each floor or set of floors. The floor set determines the available theme packs, while the label is shown to the viewers of the run plan (defaults to the floor set if not provided).</span>
         <FloorPlan
             difficulty={difficulty} floors={floors} setFloors={setFloors}
             addThemePacks={addThemePacks} removeThemePacks={removeThemePacks}
@@ -560,7 +558,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             <input type="text" value={youtubeVideo} onChange={(e) => setYoutubeVideo(e.target.value)} placeholder="Paste a YouTube Video link or id (optional)" style={{ width: "clamp(20ch, 80%, 50ch)" }} />
         </div>
         {youtubeVideo.length > 0 ?
-            <span style={{ fontSize: "0.8rem" }}>Youtube Video Id: {extractYouTubeId(youtubeVideo.trim()) ?? "Not found"}</span> :
+            <span className="sub-text">Youtube Video Id: {extractYouTubeId(youtubeVideo.trim()) ?? "Not found"}</span> :
             null}
         <span style={{ fontSize: "1.2rem" }}>Tags</span>
         <TagSelector selected={tags} onChange={setTags} creatable={true} />
@@ -572,7 +570,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             </div>
             {otherSettings ?
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                    <div style={{ fontSize: "0.8rem", color: "#aaa" }}>
+                    <div className="sub-text">
                         Hide from discovery related features (popular, new, random, etc). Can still be found via search or on profiles.
                     </div>
                     <label style={{ display: "flex", alignItems: "center" }}>
@@ -584,7 +582,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             }
         </div>
         {user && !isPublished ?
-            <div style={{ color: "#aaa" }}>{uiStrings.drafts}</div> :
+            <div className="sub-text">{uiStrings.drafts}</div> :
             null
         }
         {isPublished ?

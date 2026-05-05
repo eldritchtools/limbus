@@ -1,8 +1,12 @@
 import { Suspense } from "react";
 
 export const metadata = {
-    title: "Team Builds | Limbus Company Tools",
-    description: "Browse team builds"
+  title: "Team Builds | Limbus Company Tools",
+  description: "Browse team builds",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function SearchBuildsLayout({ children }) {

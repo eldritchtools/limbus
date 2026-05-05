@@ -5,6 +5,7 @@ import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import RarityIcon from "../components/icons/RarityIcon";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
 import UptieSelector from "../components/selectors/UptieSelector";
 import PassiveCard from "../components/skill/PassiveCard";
@@ -32,7 +33,7 @@ function ComparisonCard({ ego }) {
         return list;
     }, [awakeningSkills, corrosionSkills, passives]);
 
-    return <div style={{ display: "flex", flexDirection: "column", flex: "1", minWidth: "320px", maxWidth: "480px", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", gap: "0.5rem" }}>
+    return <div className="panel-container" style={{ flex: "1", minWidth: "320px", maxWidth: "480px", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem", width: "100%" }}>
             <RarityIcon rarity={ego.rank.toLowerCase()} style={{ display: "inline", height: "2rem" }} />
             <div style={{ display: "flex", flexDirection: "column", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center", textAlign: "center" }}>
@@ -45,14 +46,14 @@ function ComparisonCard({ ego }) {
             <EgoIcon ego={ego} type={"awaken"} displayName={false} displayRarity={false} size={128} />
             {"corrosionType" in ego ? <EgoIcon ego={ego} type={"erosion"} displayName={false} displayRarity={false} size={128} /> : null}
         </div>
-        <div style={{ border: "1px #aaa solid", width: "100%" }} />
+        <HorizontalDivider />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, max-content)", gap: "0.2rem", justifyItems: "center", alignSelf: "center" }}>
             {affinities.map(affinity => <KeywordIcon key={affinity} id={affinity} />)}
-            {affinities.map(affinity => <span key={`${affinity}-c`}>{affinity in ego.cost ? `x${ego.cost[affinity]}` : <span style={{ color: "#777" }}>x0</span>}</span>)}
+            {affinities.map(affinity => <span key={`${affinity}-c`}>{affinity in ego.cost ? `x${ego.cost[affinity]}` : <span style={{ color: "var(--disabled-text-color)" }}>x0</span>}</span>)}
             {affinities.map(affinity => <span key={`${affinity}-r`}>{<ColoredResistance resist={ego.resists[affinity]} />}</span>)}
         </div>
-        <div style={{ border: "1px #aaa solid", width: "100%" }} />
+        <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "column", "gap": "0.2rem", width: "100%" }}>
             {components}
         </div>

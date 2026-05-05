@@ -9,13 +9,14 @@ import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import HoverBlocker from "../components/HoverBlocker";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
-function ThemePack({ id, themePack, isSmall, viewMode, openOverride = false }) {
+function ThemePack({ id, themePack, isSmall, openOverride = false }) {
     const [open, setOpen] = useState(false);
     const [blockHover, setBlockHover] = useState(false);
 
@@ -51,7 +52,7 @@ function ThemePack({ id, themePack, isSmall, viewMode, openOverride = false }) {
         </div>
         {isOpen ?
             <React.Fragment>
-                <div style={{ border: "1px #777 solid" }} />
+                <HorizontalDivider />
                 {
                     themePack["bossEncounters"] ?
                         <div style={{ display: "flex", flexDirection: "column", justifySelf: "start" }}>
@@ -190,7 +191,7 @@ export default function ThemePacksPage() {
                 <label>
                     <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
                     <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
-                        style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                        className="hover-text"
                     >
                         Include Gifts
                     </span>
@@ -212,13 +213,15 @@ export default function ThemePacksPage() {
             <label>
                 <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
                 <span {...getGeneralTooltipProps("Force all theme packs to show their exclusive gifts")}
-                    style={{ borderBottom: "1px #aaa dotted", cursor: "help" }}
+                    className="hover-text"
                 >
                     Force Open all Theme Packs
                 </span>
             </label>
         </div>
-        <div style={{ border: "1px #777 solid", width: "100%" }} />
+
+        <HorizontalDivider />
+
         {themePacksLoading || giftsLoading ?
             <div style={{ textAlign: "center", fontSize: "1.5rem" }}>Loading Theme Packs...</div> :
             <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.25rem" }}>

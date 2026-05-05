@@ -14,6 +14,10 @@ const concerns = [
     {
         concern: "An encounter I'm looking for isn't in the Encounters page.",
         answer: "I gradually add older encounters to the Encounters page, but it's a mostly manual process, so it takes a while and I may miss some relevant encounters. Feel free to suggest adding it, so I can prioritize it."
+    },
+    {
+        concern: "Why don't you use boss names for encounters? They can be a bit hard to find.",
+        answer: "Story node or event ids are used to minimize the possibility of spoiling players who haven't reached those fights yet."
     }
 ]
 
@@ -28,12 +32,7 @@ export default function Concerns() {
             .slice(0, 5);
     }, [searchString]);
 
-    return <div style={{
-        display: "flex", flexDirection: "column", padding: "1rem", gap: "1rem",
-        borderRadius: "1rem", border: "1px #777 solid", maxWidth: "min(100%, 800px)",
-        boxSizing: "border-box", lineHeight: "1.5", color: "#ddd"
-    }}
-    >
+    return <div className="panel-container" style={{gap: "1rem", maxWidth: "min(100%, 800px)", lineHeight: "1.5"}}>
         <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search concern..."} />
 
         {results.map(({ concern, answer }, i) => <div key={i}>

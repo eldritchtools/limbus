@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import MdPlansSearchDisplay from "../components/contentCardDisplays/MdPlansSearchDisplay";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import PlansSearchComponent from "../components/search/PlansSearchComponent";
 import { searchMdPlans } from "../database/mdPlans";
 import useLocalState from "../lib/useLocalState";
@@ -62,14 +63,14 @@ export default function MdPlansPage() {
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>MD Plans</h2>
         <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
             <div className={`tab-header ${activeTab === "popular" ? "active" : ""}`} onClick={() => handleTabClick("popular")}>Popular</div>
             <div className={`tab-header ${activeTab === "new" ? "active" : ""}`} onClick={() => handleTabClick("new")}>New</div>
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
         </div>
         {loading ?
-            <div style={{ color: "#9ca3af" }}>
+            <div className="title-text">
                 {"Loading MD plans..."}
             </div> :
             <MdPlansSearchDisplay plans={plans} />

@@ -15,7 +15,8 @@ const buildsConfig = {
     idKey: "buildIds",
     str: "builds",
     content: builds => <BuildsSearchDisplay builds={builds} />,
-    path: "builds"
+    path: "builds",
+    defaultPageSize: 24
 };
 
 const collectionsConfig = {
@@ -27,7 +28,8 @@ const collectionsConfig = {
     idKey: "collectionIds",
     str: "collections",
     content: collections => <CollectionsSearchDisplay collections={collections} />,
-    path: "collections"
+    path: "collections",
+    defaultPageSize: 10
 };
 
 const mdPlansConfig = {
@@ -39,7 +41,8 @@ const mdPlansConfig = {
     idKey: "planIds",
     str: "md plans",
     content: plans => <MdPlansSearchDisplay plans={plans} />,
-    path: "md-plans"
+    path: "md-plans",
+    defaultPageSize: 30
 };
 
 export const contentConfig = {

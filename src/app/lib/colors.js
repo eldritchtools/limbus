@@ -28,8 +28,8 @@ export const deploymentColors = {
 }
 
 export const uiColors = {
-    red: "rgba(255, 99, 71, 0.85)",
-    green: "rgba(50, 205, 50, 0.85)"
+    red: "rgba(255, 99, 71, 0.95)",
+    green: "rgba(50, 205, 50, 0.95)"
     //green: "rgba(60, 179, 113, 0.85)"
 }
 

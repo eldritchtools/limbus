@@ -1,5 +1,5 @@
 .text-link {
-    color: #ddd;
+    color: var(--primary-text-color);
     font-weight: bold;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -14,5 +14,5 @@
 }
 
 .text-link:visited {
-    color: #ddd;
+    color: var(--primary-text-color);
 }

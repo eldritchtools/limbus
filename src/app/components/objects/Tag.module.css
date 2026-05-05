@@ -1,7 +1,7 @@
 .tag {
-  background-color: #3a3a3a;
-  color: #ddd;
-  border: 1px solid #5a5a5a;
+  background-color: var(--bg-input);
+  color: var(--primary-text-color);
+  border: 1px solid var(--secondary-border-color);
   padding: 4px 8px;
   border-radius: 1rem;
   margin: 2px;
@@ -13,11 +13,11 @@
 }
 
 .tag:hover {
-  color: #ddd;
-  background-color: #5a5a5a;
+  color: var(--primary-text-color);
+  background-color: var(--bg-hover);
 }
 
 .tag:visited,
 .tag:hover:visited {
-    color: #ddd;
+  color: var(--primary-text-color);
 }

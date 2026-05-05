@@ -20,9 +20,9 @@ export default function NotificationsPage() {
     }, [user]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "column", width: "100%", alignItems: "center" }}>
-        <div style={{ display: "flex", flexDirection: "column", minWidth: "600px", width: "60%", alignItems: "center", border: "1px #444 solid", padding: "0.5rem", boxSizing: "border-box" }}>
+        <div className="panel-container" style={{ width: "min(100%, 1200px)" }}>
             {notifs.length === 0 ?
-                <div style={{ textAlign: "center", padding: "15px", color: "#aaa" }}>No notifications</div> :
+                <div style={{ textAlign: "center", padding: "15px", color: "var(--secondary-text-color)" }}>No notifications</div> :
                 notifs.map(notif => <Notification key={notif.id} notif={notif} />)
             }
         </div>

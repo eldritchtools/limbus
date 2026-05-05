@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from "next/image";
 import { useState } from "react";
 
 export function extractYouTubeId(input) {
@@ -16,6 +15,12 @@ export function extractYouTubeId(input) {
         // https://www.youtube.com/watch?v=VIDEOID
         if (url.searchParams.has("v")) {
             const id = url.searchParams.get("v");
+            return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+        }
+
+        // youtube.com/live/VIDEOID
+        if (url.pathname.startsWith("/live/")) {
+            const id = url.pathname.replace("/live/", "");
             return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
         }
 
@@ -94,7 +99,7 @@ export function YouTubeThumbnailEmbed({ videoId, className }) {
                     <img
                         src={thumbnailUrl}
                         alt="YouTube video thumbnail"
-                        style={{ objectFit: "cover", filter: "brightness(0.85)" }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.85)" }}
                     />
 
                     {/* Play button overlay */}

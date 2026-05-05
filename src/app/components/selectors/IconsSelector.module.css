@@ -11,7 +11,7 @@
 }
 
 .iconSelectorButton.selected {
-    background-color: #3f3f3f;
+    background-color: var(--bg-hover);
     border-bottom: 2px #4caf50 solid;
 }
 
@@ -22,7 +22,7 @@
 
 .iconSelectorContainer {
     display: flex;
-    border: 1px #777 dotted;
+    border: 1px var(--secondary-border-color) solid;
     border-radius: 1rem;
     min-width: 200px;
     padding: 0.5rem;

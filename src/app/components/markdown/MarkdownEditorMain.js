@@ -289,7 +289,7 @@ export default function MarkdownEditorMain({
                 className="cm-editor-container"
                 style={{
                     '--placeholder': `"${placeholder}"`,
-                    border: '1px solid #444',
+                    border: '1px solid var(--secondary-border-color)',
                     borderRadius: 4,
                     minHeight: short ? 100 : 200,
                     height: 'auto',

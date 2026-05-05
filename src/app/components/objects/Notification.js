@@ -59,7 +59,7 @@ export default function Notification({ notif, updateNotif }) {
         <div style={{ fontSize: "1rem", marginBottom: "4px" }} onClick={() => handleNotifClick(notif)}>
             {constructNotifMessage(notif)}
         </div>
-        <div style={{ fontSize: "0.8rem", color: "#999" }}>
+        <div className="sub-text">
             <ReactTimeAgo date={notif.created_at} locale="en-US" timeStyle="mini" />
         </div>
     </div>

@@ -35,11 +35,11 @@ export default function MarkdownEditorWrapper({ value, onChange, placeholder, in
         {mode === "detailed" ? <MarkdownEditorMain ref={editorRef} value={value} onChange={onChange} placeholder={placeholder} short={short} /> : null}
         {mode === "simple" ? <textarea ref={editorRef} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={{ height: "12ch" }} /> : null}
         {mode === "preview" ?
-            <div style={{ border: "1px #777 solid", padding: "0.5rem" }}>
+            <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.5rem" }}>
                 <MarkdownRenderer content={value} />
             </div> : null}
         {guideOpen ?
-            <div style={{ border: "1px #777 solid", padding: "0.5rem" }}>
+            <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.5rem" }}>
                 <MarkdownTokensGuide editorRef={editorRef} onChange={onChange} guideTab={guideTab} setGuideTab={setGuideTab} guideValue={guideValue} setGuideValue={setGuideValue} />
             </div> : null}
     </div>

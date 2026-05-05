@@ -26,7 +26,7 @@ export default function SkillReplace({ counts, setCounts, editable = false }) {
 
     return <div style={{ display: "flex", gap: "0.25rem" }}>
         {[0, 1, 2].map(i =>
-            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", border: "1px #777 solid", borderRadius: "0.5rem", padding: editable ? "0.1rem" : "0.2rem" }}>
+            <div key={i} className="panel-container" style={{ alignItems: "center", gap: "0.2rem", padding: editable ? "0.1rem" : "0.2rem" }}>
                 <span>S{i + 1}</span>
                 {editable ?
                     <input

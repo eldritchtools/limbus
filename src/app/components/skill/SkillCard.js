@@ -5,6 +5,7 @@ import Coin from "./Coin";
 import { computeSkillValues } from "./SkillCalc";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
+import NamePill from "../objects/NamePill";
 import DiffedText from "../texts/DiffedText";
 import ProcessedText from "../texts/ProcessedText";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
@@ -26,7 +27,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
     let iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
     let nameStyleOverride = mini ? { fontSize: "0.8rem" } : {};
-    let pillStyle = { display: "flex", height: iconSize, gap: "0.25rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0 0.2rem" };
+    let pillStyle = { display: "flex", height: iconSize, gap: "0.25rem", alignItems: "center", border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem", padding: "0 0.2rem" };
 
     let diff = pre && Object.keys(pre).length > 0;
     let diffNew = pre && Object.keys(pre).length === 0;
@@ -46,12 +47,10 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                     null}
                 {skill.defType !== "attack" ? <KeywordIcon id={skill.defType} size={iconSize} /> : null}
                 {skill.defType === "attack" || skill.defType === "counter" ? <KeywordIcon id={skill.atkType} size={iconSize} /> : null}
-                <div style={{ borderRadius: "5px", backgroundColor: affinityColorMapping[skill.affinity], padding: "5px", color: "#ddd", textShadow: "black 1px 1px 5px", fontWeight: "bold" }}>
-                    {skill.name}
-                </div>
-                {count > 0 ? <div style={{ color: "#aaa", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem" }}>x{count}</div> : null}
+                <NamePill name={skill.name} affinity={skill.affinity} />
+                {count > 0 ? <div style={{ color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem" }}>x{count}</div> : null}
             </div>
-            <div style={{ flex: "0 0 auto", color: "#aaa", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
+            <div style={{ flex: "0 0 auto", color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
                 {label}
             </div>
         </div>

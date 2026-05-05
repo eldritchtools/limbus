@@ -40,22 +40,19 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
         router.push(`/builds/new?${params.toString()}`)
     }
 
-    return <div style={{
-        display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", border: "1px #aaa solid",
-        borderRadius: "0.5rem", padding: "0.5rem", boxSizing: "border-box"
-    }}>
+    return <div className="panel-container" style={{ gap: "0.5rem", alignItems: "center" }}>
         <BuildIdentitiesGrid identityIds={result} scale={isMobile ? .2 : .33} />
         <div style={{ display: "flex", gap: "0.2rem" }}>
             {Object.entries(counts).map(([kw, cnt], i) =>
                 <div key={kw} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
                     <KeywordIcon id={kw} />
-                    <span style={{ fontWeight: "bold", color: cnt < keywordTargets[i] || keywordTargets[i] === 0 ? "#777" : uiColors.green }}>{cnt}</span>
+                    <span style={{ fontWeight: "bold", color: cnt < keywordTargets[i] || keywordTargets[i] === 0 ? "var(--disabled-text-color)" : uiColors.green }}>{cnt}</span>
                 </div>)
             }
             {statusTargets.filter(({ status, num }) => status && num).map(({ status, num }) =>
                 <div key={status} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
                     <StatusIcon id={status} style={{ width: "32px", height: "32px" }} />
-                    <span style={{ fontWeight: "bold", color: stCounts[status] < num ? "#777" : uiColors.green }}>{stCounts[status]}</span>
+                    <span style={{ fontWeight: "bold", color: stCounts[status] < num ? "var(--disabled-text-color)" : uiColors.green }}>{stCounts[status]}</span>
                 </div>)
             }
 
@@ -428,7 +425,7 @@ export default function TeamSolverPage() {
                 <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
                 <button onClick={() => setWbList([])}>Clear All</button>
             </div>
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.5rem", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem" }}>
+            <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                     <span>Display:</span>
                     <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>

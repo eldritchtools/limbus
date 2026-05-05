@@ -81,19 +81,19 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
     }
 
     return (
-        <div style={{ border: "1px #777 solid", borderRadius: "1rem", padding: "0.8rem 1rem 0.2rem 1rem" }}>
+        <div style={{ border: "1px var(--secondary-border-color) solid", borderRadius: "1rem", padding: "0.8rem 1rem 0.2rem 1rem" }}>
             {comment.parent_body && (
                 <div style={{ paddingBottom: "0.25rem" }}>
                     {comment.parent_deleted ?
                         <div style={{ display: "flex", flexDirection: "column", textAlign: "start", gap: "0.25rem" }}>
                             <span style={{ fontSize: "0.8rem" }}>Replying to</span>
-                            <div style={{ border: "1px #777 solid", borderRadius: "0.5rem", padding: "0.5rem", color: "#777" }}>
+                            <div style={{ border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem", padding: "0.5rem", color: "var(--disabled-text-color)" }}>
                                 <em>Comment deleted</em>
                             </div>
                         </div> :
                         <div style={{ display: "flex", flexDirection: "column", textAlign: "start", gap: "0.25rem" }}>
                             <span style={{ fontSize: "0.8rem" }}>Replying to <Username username={comment.parent_author} flair={comment.parent_flair} /></span>
-                            <div style={{ border: "1px #777 solid", borderRadius: "0.5rem", padding: "0.25rem", paddingLeft: "0.5rem" }}>
+                            <div style={{ border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem", padding: "0.25rem", paddingLeft: "0.5rem" }}>
                                 <MarkdownRenderer content={comment.parent_body} />
                             </div>
                         </div>}
@@ -173,16 +173,16 @@ export default function CommentSection({ targetType, targetId, ownerId, commentC
 
         {user ?
             <CommentInput targetType={targetType} targetId={targetId} onPost={onPost} /> :
-            <div style={{ color: "#aaa", fontWeight: "bold", textAlign: "center" }}>Login to create comments</div>
+            <div style={{ color: "var(--secondary-text-color)", fontWeight: "bold", textAlign: "center" }}>Login to create comments</div>
         }
 
         <div style={{ height: "0.5rem" }} />
 
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading...</p> :
+            <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>Loading...</p> :
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {comments.length === 0 ?
-                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                    <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>
                         {page === 1 ? "No comments yet." : "No more comments."}
                     </p> :
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

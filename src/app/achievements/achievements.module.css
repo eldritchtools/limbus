@@ -1,8 +1,8 @@
 .details {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--tertiary-border-color);
   border-radius: 6px;
-  color: #ddd;
+  color: var(--primary-text-color);
   padding: 0.3rem 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -15,7 +15,7 @@
   cursor: pointer;
   list-style: none;
   /* removes default triangle */
-  background-color: #2a2a2a;
+  background-color: var(--bg-input);
   padding: 0.3rem 1rem;
   border-radius: 6px;
   border-left: 4px solid #4cafef;
@@ -34,7 +34,7 @@
 }
 
 .summary:hover {
-  background-color: #333;
+  background-color: var(--bg-hover);
 }
 
 /* Remove default disclosure triangle in Safari */
@@ -52,16 +52,16 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
-  background-color: #252525;
+  background-color: var(--bg-input);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   margin-top: 0.3rem;
   text-align: start;
-  border-left: 3px solid #888;
+  border-left: 3px solid var(--secondary-border-color);
 }
 
 .subitem:hover {
-  background-color: #2f2f2f;
+  background-color: var(--bg-hover);
 }
 
 .checkboxContainer {
@@ -84,8 +84,8 @@
   left: 0;
   height: 16px;
   width: 16px;
-  background-color: #333;
-  border: 2px solid #555;
+  background-color: var(--bg-input);
+  border: 2px solid var(--secondary-border-color);
   border-radius: 4px;
   transition: all 0.2s ease;
 }

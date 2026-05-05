@@ -68,7 +68,7 @@
 }
 
 .cm-tooltip-autocomplete li[aria-selected="true"] {
-  border: 1px solid #ddd;
+  border: 1px solid var(--primary-border-color);
   border-radius: 4px;
   /* background: transparent; */
 }

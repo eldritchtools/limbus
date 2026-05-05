@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import BuildsSearchDisplay from "@/app/components/contentCardDisplays/BuildsSearchDisplay";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import BuildsSearchComponent, { prepareBuildFilters } from "@/app/components/search/BuildsSearchComponent";
 import { searchBuilds } from "@/app/database/builds";
 import { uiStrings } from "@/app/lib/uiStrings";
@@ -55,13 +56,13 @@ export default function SearchBuildsPage() {
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "1rem" }}>
         <h2 style={{ margin: 0 }}>Team Builds</h2>
         <BuildsSearchComponent key={searchParams.toString()} initialValues={filters} createLink={true} searchFunc={triggerSearch} />
-        <div style={{ border: "1px #777 solid" }} />
+        <HorizontalDivider />
 
         {loading ?
-            <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
+            <p className="title-text" style={{ textAlign: "center" }}>Loading builds...</p> :
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {builds.length === 0 ?
-                    <p style={{ color: "#aaa", fontweight: "bold", textAlign: "center" }}>
+                    <p className="title-text" style={{ textAlign: "center" }}>
                         {page === 1 ? uiStrings.noPublishedContent("builds") : uiStrings.noMoreContent("builds")}
                     </p> :
                     <BuildsSearchDisplay builds={builds} />

@@ -5,19 +5,19 @@
 }
 
 .dropdownButtonOption:hover {
-    background: #3f3f3f;
+    background: var(--bg-hover);
 }
 
 .dropdownMenu {
     position: absolute;
-    top: 100%, ;
-    background: #1a1a1a;
-    border: 1px solid #777;
+    top: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--secondary-border-color);
     border-radius: 4px;
     z-index: 10;
     max-height: 240px;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: #444 #1a1a1a;
+    scrollbar-color: var(--secondary-border-color) var(--bg-primary);
 }

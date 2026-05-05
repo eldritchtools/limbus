@@ -21,7 +21,7 @@
 .signupButton {
   background: none;
   border: none;
-  color: #ddd;
+  color: var(--primary-text-color);
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;

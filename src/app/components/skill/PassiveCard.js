@@ -1,4 +1,5 @@
 import KeywordIcon from "../icons/KeywordIcon";
+import NamePill from "../objects/NamePill";
 import DiffedText from "../texts/DiffedText";
 import ProcessedText from "../texts/ProcessedText";
 
@@ -29,11 +30,11 @@ export default function PassiveCard({ passive, mini = false, label, pre, backgro
     }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: mini ? "0.1rem" : "0.25rem", flexWrap: "wrap" }}>
-                <div style={{ borderRadius: "5px", backgroundColor: "grey", padding: "5px", color: "#ddd", textShadow: "black 1px 1px 5px", fontWeight: "bold" }}>{passive.name}</div>
+                <NamePill name={passive.name} />
                 {"condition" in passive ? <PassiveCost condition={passive.condition} iconSize={iconSize} /> : null}
             </div>
             {label ?
-                <div style={{ flex: "0 0 auto", color: "#aaa", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
+                <div style={{ flex: "0 0 auto", color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
                     {label}
                 </div> : null
             }

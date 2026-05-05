@@ -82,7 +82,7 @@ function GuideBase({ type, editorRef, onChange, guideValue, children }) {
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             Result:
             {guideValue ?
-                <div style={{ border: "1px #777 solid", padding: "0.5rem" }}>
+                <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.5rem" }}>
                     <MarkdownRenderer content={`{${type}:${guideValue}}`} />
                 </div> : null
             }

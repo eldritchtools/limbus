@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    color: #ddd;
+    color: var(--primary-text-color);
     transition: all 0.2s ease;
 }
 
@@ -12,9 +12,9 @@
 }
 
 .cardButton:hover:not(.cardButton.disabled) {
-    background: #3a3a3a;
+    background: var(--bg-hover);
     cursor: pointer;
-    color: #ddd;
+    color: var(--primary-text-color);
 }
 
 .cardButton.left {
@@ -31,5 +31,5 @@
 }
 
 .cardButton:visited {
-    color: #ddd;
+    color: var(--primary-text-color);
 }

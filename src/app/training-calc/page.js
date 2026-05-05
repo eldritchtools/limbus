@@ -124,7 +124,7 @@ export default function TrainingCalcPage() {
 
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>Totals:</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", gap: "0.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ textAlign: "center" }}>Cost</span>
                 <span style={{ textAlign: "center" }}>Source</span>
                 <span style={{ textAlign: "center" }}>Runs</span>
@@ -132,7 +132,7 @@ export default function TrainingCalcPage() {
                 <span>XP: {xp}</span>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <select value={xLux} onChange={e => setXLux(e.target.value)}>
-                        {Object.entries(xpLux).map(([k, v]) => <option key={k} value={k}>Lvl {v[0]}</option>)}
+                        {Object.entries(xpLux).map(([k, v]) => <option key={k} value={k}>Lvl {v[0]} XP Lux</option>)}
                     </select>
                     <label>
                         <input type="checkbox" checked={xSkip} onChange={e => setXSkip(e.target.checked)} />
@@ -147,7 +147,7 @@ export default function TrainingCalcPage() {
                 <span>Thread: {thread}</span>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <select value={tLux} onChange={e => setTLux(e.target.value)}>
-                        {Object.keys(threadLux).map(k => <option key={k} value={k}>Lvl {k}</option>)}
+                        {Object.keys(threadLux).map(k => <option key={k} value={k}>Lvl {k} Thread Lux</option>)}
                     </select>
                     <label>
                         <input type="checkbox" checked={tSkip} onChange={e => setTSkip(e.target.checked)} />

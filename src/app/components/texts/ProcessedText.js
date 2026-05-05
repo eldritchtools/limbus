@@ -1,5 +1,3 @@
-import React from "react";
-
 import { TextWithStatuses } from "@/app/lib/statusReplacement";
 
 const tagMap = {

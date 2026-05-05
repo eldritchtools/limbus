@@ -23,7 +23,7 @@ function Item({ type, data, note, index, isFirst, isLast, swapItems, removeItem,
         <div style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingRight: "1rem" }}>
             <button onClick={() => swapItems(index - 1)} disabled={isFirst}>∧</button>
             <button onClick={() => removeItem()}>
-                <div style={{ color: "#ff4848", fontWeight: "bold" }}>
+                <div style={{ color: uiColors.red, fontWeight: "bold" }}>
                     ✕
                 </div>
             </button>
@@ -222,7 +222,7 @@ export default function CollectionEditor({ mode, collectionId }) {
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <span style={{ fontSize: "1.2rem" }}>Short Description</span>
-        <span style={{ fontSize: "1rem", color: "#aaa" }}>
+        <span className="sub-text">
             This will be displayed in place of the full description when the curated list is displayed on search or discovery results.
         </span>
         <input type="text" value={shortDesc} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setShortDesc(e.target.value)} />
@@ -230,7 +230,7 @@ export default function CollectionEditor({ mode, collectionId }) {
         <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your curated list here..."} />
         </div>
-        {!isLocalId(collectionId) ? <>
+        {!isLocalId(collectionId) || (mode === "create" && user) ? <>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ fontSize: "1.2rem" }}>Contributions: </span>
                 <select value={contributions} onChange={e => setContributions(e.target.value)}>
@@ -238,7 +238,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                     <option value={"open"}>Open</option>
                 </select>
             </div>
-            <span style={{ fontSize: "1rem", color: "#aaa" }}>
+            <span className="sub-text">
                 Opening contributions allows other users to submit items which you can then review to add to your collection.
             </span>
         </> :
@@ -256,7 +256,7 @@ export default function CollectionEditor({ mode, collectionId }) {
             </div>
             {otherSettings ?
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                    <div style={{ fontSize: "0.8rem", color: "#aaa" }}>
+                    <div className="sub-text">
                         Hide from discovery related features (popular, new, random, etc). Can still be found via search or on profiles.
                     </div>
                     <label style={{ display: "flex", alignItems: "center" }}>
@@ -268,7 +268,7 @@ export default function CollectionEditor({ mode, collectionId }) {
             }
         </div>
         {user && !isPublished ?
-            <div style={{ color: "#aaa" }}>{uiStrings.drafts}</div> :
+            <div className="sub-text">{uiStrings.drafts}</div> :
             null
         }
         {isPublished ?

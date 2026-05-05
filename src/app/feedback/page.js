@@ -43,10 +43,10 @@ export default function FeedbackPage() {
         <div style={{
             width: "100%",
             maxWidth: "min(95vw, 500px)",
-            border: "1px solid #333",
+            border: "1px solid var(--secondary-border-color)",
             borderRadius: "0.75rem",
             padding: "1.5rem",
-            background: "#111",
+            background: "var(--bg-secondary)",
             boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
             boxSizing: "border-box"
         }}>
@@ -61,7 +61,17 @@ export default function FeedbackPage() {
 
                     <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
                         Type
-                        <select value={type} onChange={(e) => setType(e.target.value)} style={{ padding: "0.4rem", borderRadius: "0.4rem", border: "1px solid #333", background: "#000", color: "#ddd" }}>
+                        <select
+                            value={type}
+                            onChange={(e) => setType(e.target.value)}
+                            style={{
+                                padding: "0.4rem",
+                                borderRadius: "0.4rem",
+                                border: "1px solid var(--secondary-border-color)",
+                                background: "var(--bg-input)",
+                                color: "var(--primary-text-color)"
+                            }}
+                        >
                             <option value="bug">Bug</option>
                             <option value="suggestion">Suggestion</option>
                             <option value="other">Other</option>
@@ -78,9 +88,9 @@ export default function FeedbackPage() {
                             style={{
                                 padding: "0.5rem",
                                 borderRadius: "0.4rem",
-                                border: "1px solid #333",
-                                background: "#000",
-                                color: "#ddd",
+                                border: "1px solid var(--secondary-border-color)",
+                                background: "var(--bg-input)",
+                                color: "var(--primary-text-color)",
                                 resize: "vertical",
                             }}
                             required

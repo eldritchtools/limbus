@@ -11,6 +11,7 @@ import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import NoPrefetchLink from "@/app/components/NoPrefetchLink";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import Username from "@/app/components/user/Username";
 import UsernameWithTime from "@/app/components/user/UsernameWithTime";
 import { useAuth } from "@/app/database/authProvider";
@@ -28,7 +29,7 @@ function Submission({ submission, submissionIds, inList, handleApprove, handleRe
     }, [approved, rejected]);
 
     if (editing) {
-        return <div className={styles.submissionEditing} style={style}>
+        return <div className={`panel-container ${styles.submissionEditing}`} style={style}>
             <div>
                 Submitted by <Username username={submission.submitter.username} flair={submission.submitter.flair} clickable={false} />
             </div>
@@ -38,7 +39,7 @@ function Submission({ submission, submissionIds, inList, handleApprove, handleRe
             <div>
                 {submission.submitter_note}
             </div>
-            <span style={{ fontSize: "1rem", color: "#aaa" }}>
+            <span className="sub-text">
                 On approving a submission, the item will be added to your collection and all other submissions for the same item will be rejected. The description and ordering of items can be adjusted by editing the collection afterwards.
             </span>
             <div style={{ display: "flex" }}>
@@ -47,7 +48,7 @@ function Submission({ submission, submissionIds, inList, handleApprove, handleRe
             </div>
         </div>
     } else {
-        return <div className={styles.submission} style={style} onClick={() => { if (!inList && !approved && !rejected) setEditing(true) }}>
+        return <div className={`panel-container ${styles.submission}`} style={style} onClick={() => { if (!inList && !approved && !rejected) setEditing(true) }}>
             <div>
                 Submitted by <Username username={submission.submitter.username} flair={submission.submitter.flair} clickable={false} />
             </div>
@@ -80,7 +81,7 @@ function SubmissionSet({ type, data, submissions, inList, handleApprove, handleR
                     null
             }
             {inList ?
-                <span style={{ fontSize: "1rem", color: "#aaa" }}>
+                <span className="sub-text">
                     This item is already in this collection. Submissions can only be rejected.
                 </span> :
                 null
@@ -217,10 +218,10 @@ export default function ReviewCollectionPage({ params }) {
                     </div>
                 </div>
 
-                <div style={{ border: "1px #777 solid" }} />
+                <HorizontalDivider />
 
                 {submissionsSorted.length > 0 ? <>
-                    <span style={{ fontSize: "1rem", color: "#aaa" }}>
+                    <span className="sub-text">
                         Clicking on a submission will let you edit the description before approving it. Approving a submission will automatically reject all other submissions for the same build.
                     </span>
 
@@ -243,15 +244,15 @@ export default function ReviewCollectionPage({ params }) {
                         submitting={submitting}
                     />
                 </> :
-                    <span style={{ fontSize: "1rem", color: "#aaa", alignSelf: "center" }}>
+                    <span className="sub-text" style={{ alignSelf: "center" }}>
                         No pending submissions.
                     </span>
                 }
-                <div style={{ border: "1px #777 solid" }} />
+                <HorizontalDivider />
             </div>
 
             <div>
-                <NoPrefetchLink href={`/collections/${id}`} className="toggle-button" style={{ color: "#ddd", textDecoration: "none", fontSize: "1.2rem" }}>
+                <NoPrefetchLink href={`/collections/${id}`} className="toggle-button" style={{ color: "var(--primary-text-color)", textDecoration: "none", fontSize: "1.2rem" }}>
                     Return to collection
                 </NoPrefetchLink>
             </div>

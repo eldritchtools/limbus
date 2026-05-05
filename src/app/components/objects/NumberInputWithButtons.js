@@ -3,7 +3,7 @@ import NumberInput from "./NumberInput";
 function NumberInputWithButtons({ value, setValue, min = 1, max = 100, allowEmpty = false, vertical = false, inputStyle = {} }) {
     return <div style={{
         display: vertical ? "flex" : "inline-flex", flexDirection: vertical ? "column" : null,
-        alignItems: "center", border: "1px solid #444", borderRadius: "8px", padding: "4px"
+        alignItems: "center", border: "1px solid var(--secondary-border-color)", borderRadius: "8px", padding: "4px"
     }}>
         {vertical ?
             <button

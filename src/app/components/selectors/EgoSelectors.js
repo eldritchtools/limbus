@@ -11,7 +11,7 @@ import EgoIcon from "../icons/EgoIcon";
 import RarityIcon from "../icons/RarityIcon";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 
-import { affinityColorMapping } from "@/app/lib/colors";
+import { affinityColorMapping, uiColors } from "@/app/lib/colors";
 import { egoRanks, sinnerIdMapping } from "@/app/lib/constants";
 import { checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
@@ -48,7 +48,9 @@ export function EgoMenuSelector({ value, setValue, options, rank }) {
     const triggerRef = useRef(null);
 
     return <Select.Root value={value ? value.id : null} onValueChange={v => setValue(v)} open={isOpen} onOpenChange={setIsOpen}>
-        <Select.Trigger className={styles.egoMenuSelectorTrigger} ref={triggerRef} style={{ borderColor: value ? affinityColorMapping[value.affinity] : "#555" }}>
+        <Select.Trigger className={styles.egoMenuSelectorTrigger} ref={triggerRef}
+            style={{ borderColor: value?.awakeningType ? affinityColorMapping[value.awakeningType.affinity] : "var(--secondary-border-color)" }}
+        >
             {value ? <div {...(isTouchDevice() ? {} : getEgoTooltipProps(value.id))}
                 style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
                 <EgoIcon ego={value} banner={true} type={"awaken"} displayName={true} displayRarity={false} />
@@ -70,7 +72,7 @@ export function EgoMenuSelector({ value, setValue, options, rank }) {
                             </Select.Item>
                         )}
                         {value ? <Select.Item key={"cancel"} value={null} className={styles.egoMenuSelectorItem}>
-                            <div className={styles.egoMenuItemInner} style={{ height: "100%", width: "128px", justifyContent: "center", color: "#ff4848", fontSize: "3rem", fontWeight: "bold" }}>
+                            <div className={styles.egoMenuItemInner} style={{ height: "100%", width: "128px", justifyContent: "center", color: uiColors.red, fontSize: "3rem", fontWeight: "bold" }}>
                                 ✕
                             </div>
                         </Select.Item> : null}

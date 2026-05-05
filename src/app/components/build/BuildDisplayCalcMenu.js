@@ -56,7 +56,7 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", paddingBottom: "0.25rem" }}>
         <span style={{ textAlign: "center" }}>These computations only count the skill in isolation and do not consider most other effects such as statuses on the sinner/target, passives, resonance bonuses, and so on.<br />Any numbers shown are only meant to serve as a guide and may not be 100% accurate. Numbers with underlines have additional info that can be displayed with a tooltip. Errors can be reported in the Discord.</span>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0.25rem" }}>
+            <div className="panel-container" style={{ gap: "0.5rem", alignItems: "center", padding: "0.25rem" }}>
                 <span style={{ fontSize: "1.2rem" }}>Skill Info:</span>
                 <div style={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "repeat(2, auto)" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -121,7 +121,7 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
                 </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", border: "1px #777 solid", borderRadius: "0.5rem", padding: "0.25rem" }}>
+            <div className="panel-container" style={{ gap: "0.5rem", alignItems: "center", padding: "0.25rem" }}>
                 <span style={{ fontSize: "1.2rem" }}>Target Levels and Resists:</span>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
                     {valueComponent("offense level", "off", LEVEL_CAP)}

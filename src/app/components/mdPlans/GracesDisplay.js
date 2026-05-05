@@ -8,6 +8,7 @@ import { useData } from "../DataProvider";
 import GraceIcon from "../icons/GraceIcon";
 import Icon from "../icons/Icon";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
+import { HorizontalDivider } from "../objects/Dividers";
 
 function GraceComponent({ data, level, setLevel, setCurrentGrace, editable }) {
     const { isMobile } = useBreakpoint();
@@ -18,7 +19,7 @@ function GraceComponent({ data, level, setLevel, setCurrentGrace, editable }) {
         else setLevel(l);
     }
 
-    let componentClass = styles.graceComponent;
+    let componentClass = `panel-container ${styles.graceComponent}`;
     if (!editable) componentClass = `${componentClass} ${level > 0 ? styles.active : styles.inactive}`;
 
     return <div className={componentClass} onClick={setCurrentGrace} style={{ width: isMobile ? "150px" : "175px" }}>
@@ -70,7 +71,7 @@ export default function GracesDisplay({ graceLevels, setGraceLevels, editable = 
 
     if (mdDataLoading) return null;
 
-    return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem" }}>
         <div className={styles.graceGrid} style={{ gridTemplateColumns: isMobile ? "repeat(2, 150px)" : "repeat(5, 175px)" }}>
             {mdData.grace.sort((a, b) => a.index - b.index).map(grace =>
                 <GraceComponent
@@ -82,7 +83,7 @@ export default function GracesDisplay({ graceLevels, setGraceLevels, editable = 
                 />
             )}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", border: "1px #aaa solid", borderRadius: "1rem", padding: "0.5rem", alignItems: "center", width: "350px" }}>
+        <div className="panel-container" style={{ gap: "0.2rem", alignItems: "center", width: "350px" }}>
             {editable ? <>
                 <span>Set All Graces</span>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -91,7 +92,7 @@ export default function GracesDisplay({ graceLevels, setGraceLevels, editable = 
                     <button onClick={() => handleLevelSet(2)}>+</button>
                     <button onClick={() => handleLevelSet(3)}>++</button>
                 </div>
-                <div style={{ border: "1px #aaa solid", width: "100%", margin: "0.5rem" }} />
+                <HorizontalDivider />
             </> :
                 null
             }

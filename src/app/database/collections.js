@@ -1,5 +1,6 @@
-import { getSupabase } from "./connection"
+import { getSupabase } from "./connection";
 import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {
     query: "p_query",
@@ -24,10 +25,8 @@ const createParams = {
     tags: "p_tags"
 };
 
-const DEFAULT_PAGE_SIZE = 10;
-
 export async function searchCollections(params, page = 1, pageSize = null) {
-    return callRPC("search_collections_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("search_collections_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.collections.defaultPageSize));
 }
 
 export async function getCollection(id) {
@@ -56,7 +55,7 @@ export async function unpinCollectionComment(collectionId) {
 }
 
 export async function getSavedCollections(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_collections", paginateParams({p_user_id: user_id}, page, pageSize ?? DEFAULT_PAGE_SIZE));
+    return callRPC("get_saved_collections", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.collections.defaultPageSize));
 }
 
 export async function submitCollectionContribution(user_id, collection_id, target_type, target_id, note, submitter_note) {
@@ -101,27 +100,4 @@ export async function rejectCollectionSubmissionsForTarget(collection_id, target
         "reject_collection_submissions_for_target",
         { p_collection_id: collection_id, p_target_type: target_type, p_target_id: target_id }
     );
-}
-
-export async function getCollectionsForSitemap(page, count) {
-    const offset = (page - 1) * count;
-    const { data, error } = await getSupabase()
-        .from('collections')
-        .select('id, created_at, updated_at')
-        .eq('is_published', true)
-        .order('created_at', { ascending: true })
-        .range(offset, offset + count - 1);
-
-    if (error) throw (error);
-    return data;
-}
-
-export async function getCollectionsCountForSitemap() {
-    const { count, error } = await getSupabase()
-        .from('collections')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_published', true);
-
-    if (error) throw (error);
-    return count;
 }

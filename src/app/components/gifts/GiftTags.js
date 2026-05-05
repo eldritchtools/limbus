@@ -29,9 +29,9 @@ export function GiftTagLabels({ gift, full = false, enhanceLevel, setEnhanceLeve
                     {Array.from({ length: gift.names.length }, (_, index) =>
                         <div key={index}
                             style={{
-                                display: "flex", alignItems: "center", justifyContent: "center", border: "1px #aaa solid", padding: "4px",
+                                display: "flex", alignItems: "center", justifyContent: "center", border: "1px var(--primary-border-color) solid", padding: "4px",
                                 cursor: "pointer", transiton: "background-color 0.2s, border-color 0.2s",
-                                backgroundColor: enhanceLevel === index ? "#3f3f3f" : "#1f1f1f"
+                                backgroundColor: enhanceLevel === index ? "var(--bg-hover)" : "var(--bg-primary)"
                             }}
                             onClick={() => setEnhanceLevel(index)}
                         >
