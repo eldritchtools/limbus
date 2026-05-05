@@ -1,4 +1,4 @@
-import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
+import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Team Randomizer | Limbus Company Tools",
@@ -8,9 +8,9 @@ export const metadata = {
 const schema = {
     "@context": "https://schema.org",
     "@graph": [
-        getWebPageSchema({
-            title: "Team Randomizer",
-            description: "Randomize a team. Copy it into a Team Build if you like it.",
+        getAppSchema({
+            name: "Team Randomizer",
+            description: "Randomize a team. Copy it into a Team Build if you like it. For the game Limbus Company.",
             url: "https://limbus.eldritchtools.com/team-solver"
         })
     ]
