@@ -80,13 +80,6 @@ function LinksMenu() {
     </div>
 }
 
-const schema = {
-    "@context": "https://schema.org",
-    "@graph": [
-        getAppSchema()
-    ]
-};
-
 export default function Home() {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
@@ -131,7 +124,6 @@ export default function Home() {
     }, [identities, identitiesLoading, egos, egosLoading]);
 
     return <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", width: "100%", height: "100%" }}>
-        <JsonLd data={schema} />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.5rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
             <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
                 <span>Welcome to </span>

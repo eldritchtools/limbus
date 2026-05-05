@@ -23,20 +23,42 @@ export function getWebsiteSchema() {
     };
 }
 
-export function getAppSchema() {
+// export function getAppSchema() {
+//     return {
+//         "@type": "SoftwareApplication",
+//         "@id": "https://limbus.eldritchtools.com/#app",
+//         "name": "Limbus Company Tools",
+//         "url": "https://limbus.eldritchtools.com",
+//         "operatingSystem": "All",
+//         "applicationCategory": "GameApplication",
+//         "description": "Use tools for Limbus Company or view community-created team builds.",
+//         "author": {
+//             "@id": ORG_ID
+//         },
+//         "isPartOf": {
+//             "@id": SITE_ID
+//         }
+//     };
+// }
+
+export function getAppSchema({ url, name, description }) {
     return {
         "@type": "SoftwareApplication",
-        "@id": "https://limbus.eldritchtools.com/#app",
-        "name": "Limbus Company Tools",
-        "url": "https://limbus.eldritchtools.com",
+        "@id": `${url}#app`,
+        "name": name,
+        "url": url,
         "operatingSystem": "All",
         "applicationCategory": "GameApplication",
-        "description": "Use tools for Limbus Company or view community-created team builds.",
+        "description": description,
         "author": {
             "@id": ORG_ID
         },
         "isPartOf": {
             "@id": SITE_ID
+        },
+        "about": {
+            "@type": "VideoGame",
+            "name": "Limbus Company"
         }
     };
 }

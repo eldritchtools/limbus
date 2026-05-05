@@ -1,4 +1,4 @@
-import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
+import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Floor Planner | Limbus Company Tools",
@@ -8,9 +8,9 @@ export const metadata = {
 const schema = {
     "@context": "https://schema.org",
     "@graph": [
-        getWebPageSchema({
-            title: "Floor Planner",
-            description: "Quickly select floors to see what theme packs you can still go to.",
+        getAppSchema({
+            name: "Floor Planner",
+            description: "Quickly select floors to see what theme packs you can still go to for the game Limbus Company.",
             url: "https://limbus.eldritchtools.com/floor-planner"
         })
     ]
