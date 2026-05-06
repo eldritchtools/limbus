@@ -11,8 +11,8 @@ export async function generateMetadata({ params }) {
     }
 
     return {
-        title: ego.name ?? "E.G.O",
-        description: `Information for the E.G.O ${ego.name}`,
+        title: ego ?? "E.G.O",
+        description: `Information for the E.G.O ${ego}`,
         alternates: {
             canonical: `/egos/${id}`
         }

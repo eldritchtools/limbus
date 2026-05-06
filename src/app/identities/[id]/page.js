@@ -11,8 +11,8 @@ export async function generateMetadata({ params }) {
     }
 
     return {
-        title: identity.name ?? "Identity",
-        description: `Information for the identity ${identity.name}`,
+        title: identity ?? "Identity",
+        description: `Information for the identity ${identity}`,
         alternates: {
             canonical: `/identities/${id}`
         }

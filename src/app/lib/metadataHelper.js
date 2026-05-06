@@ -3,6 +3,13 @@ import { LRUCache } from "lru-cache";
 import { getSupabase } from "../database/connection";
 import { DATA_ROOT } from "../paths";
 
+let metadataIndexFallback;
+
+if (process.env.NODE_ENV === "development") {
+    metadataIndexFallback = await fetch(`${DATA_ROOT}/metadata_index.json`).then(r => r.json());
+} else {
+    metadataIndexFallback = (await import("@/generated/metadataIndex.json")).default;
+}
 
 const cache = new LRUCache({ max: 500, ttl: 1000 * 60 * 60 });
 
@@ -33,18 +40,30 @@ export const getBuildForMetadata = async id => getFromDatabase("builds", id);
 export const getCollectionForMetadata = async id => getFromDatabase("collections", id);
 export const getMdPlanForMetadata = async id => getFromDatabase("md_plans", id);
 
-const getJsonForMetadata = async (path) => {
-    console.log(`${DATA_ROOT}/${path}.json`);
-    const res = await fetch(`${DATA_ROOT}/${path}.json`, { next: { revalidate: 3600 } });
-    console.log(res);
-    const json = await res.json();
-    console.log(json);
-    return json;
+const getMetadataIndex = async () => {
+    const res = await fetch(`${DATA_ROOT}/metadata_index.json`, { next: { revalidate: 3600 } });
+
+    if (!res.ok) {
+        return metadataIndexFallback;
+    }
+
+    const text = await res.text();
+
+    try {
+        const json = JSON.parse(text);
+        return json;
+    } catch {
+        return metadataIndexFallback;
+    }
 }
 
-export const getIdentitiesForMetadata = async () => await getJsonForMetadata("identities_mini");
-export const getEgosForMetadata = async () => await getJsonForMetadata("egos_mini");
-export const getEncountersForMetadata = async () => await getJsonForMetadata("encounters");
+const getMetadataIndexData = async (type) => {
+    return (await getMetadataIndex())?.[type] ?? {};
+}
+
+export const getIdentitiesForMetadata = async () => await getMetadataIndexData("identities");
+export const getEgosForMetadata = async () => await getMetadataIndexData("egos");
+export const getEncountersForMetadata = async () => await getMetadataIndexData("encounters");
 
 export function cleanMetadataDescription(text = "") {
     if (!text) return "";
