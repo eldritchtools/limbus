@@ -2,16 +2,17 @@ import "./globals.css";
 import Script from "next/script";
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
+import Analytics from "./components/Analytics";
 import LayoutComponent from "./layoutComponent";
 import JsonLd, { getOrganizationSchema, getWebsiteSchema } from "./lib/jsonLd";
 
 export const metadata = {
-  metadataBase: new URL("https://limbus.eldritchtools.com"),
-  title: {
-    default: "Limbus Company Tools",
-    template: "%s | Limbus Company Tools",
-  },
-  description: "Community-driven tools for Limbus Company.",
+    metadataBase: new URL("https://limbus.eldritchtools.com"),
+    title: {
+        default: "Limbus Company Tools",
+        template: "%s | Limbus Company Tools",
+    },
+    description: "Community-driven tools for Limbus Company.",
 };
 
 const schema = {
@@ -23,6 +24,8 @@ const schema = {
 };
 
 export default function RootLayout({ children }) {
+    const gaId = process.env.NODE_ENV === 'production' ? 'G-HJ0SH2TDC8' : null;
+
     return (
         <html lang="en">
             <head>
@@ -41,6 +44,7 @@ export default function RootLayout({ children }) {
                 <JsonLd data={schema} />
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
+                {gaId && <Analytics gaId={gaId} />}
                 <ChunkErrorHandler />
                 <LayoutComponent>{children}</LayoutComponent>
             </body>
