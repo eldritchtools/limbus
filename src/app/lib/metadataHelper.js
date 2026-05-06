@@ -34,8 +34,11 @@ export const getCollectionForMetadata = async id => getFromDatabase("collections
 export const getMdPlanForMetadata = async id => getFromDatabase("md_plans", id);
 
 const getJsonForMetadata = async (path) => {
+    console.log(`${DATA_ROOT}/${path}.json`);
     const res = await fetch(`${DATA_ROOT}/${path}.json`, { next: { revalidate: 3600 } });
+    console.log(res);
     const json = await res.json();
+    console.log(json);
     return json;
 }
 
