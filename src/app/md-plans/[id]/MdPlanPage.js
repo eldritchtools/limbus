@@ -29,8 +29,7 @@ import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import useLocalState from "@/app/lib/useLocalState";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 
-export default function MdPlanPage({ params }) {
-    const { id } = React.use(params);
+export default function MdPlanPage({ id }) {
     const [giftsData, giftsLoading] = useData("gifts");
     const [plan, setPlan] = useState(null);
     const [identityIds, setIdentityIds] = useState([]);

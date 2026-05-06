@@ -1,4 +1,5 @@
 import EgosPage from "./EgosPage";
+import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
     return {
@@ -11,5 +12,16 @@ export function generateMetadata() {
 }
 
 export default function Page() {
-    return <EgosPage />;
+    return <>
+        <JsonLd data={{
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "E.G.Os",
+            "url": "https://limbus.eldritchtools.com/egos",
+            "isPartOf": {
+                "@id": "https://limbus.eldritchtools.com/#website"
+            }
+        }} />
+        <EgosPage />
+    </>;
 }

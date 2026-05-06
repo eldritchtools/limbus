@@ -1,4 +1,5 @@
 import BuildsPage from "./BuildsPage";
+import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
     return {
@@ -10,6 +11,20 @@ export function generateMetadata() {
     };
 }
 
+const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Team Builds",
+    "url": "https://limbus.eldritchtools.com/builds",
+    "isPartOf": {
+        "@id": "https://limbus.eldritchtools.com/#website"
+    }
+};
+
+
 export default function Page() {
-    return <BuildsPage />;
+    return <>
+        <JsonLd data={schema} />
+        <BuildsPage />
+    </>;
 }

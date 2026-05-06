@@ -22,7 +22,6 @@ import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
-import JsonLd from "../lib/jsonLd";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
@@ -250,15 +249,6 @@ export default function IdentitiesPage() {
     }, [identities, identitiesLoading]);
 
     return <>
-        <JsonLd data={{
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "Identities",
-            "url": "https://limbus.eldritchtools.com/identities",
-            "isPartOf": {
-                "@id": "https://limbus.eldritchtools.com/#website"
-            }
-        }} />
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
             <h2 style={{ margin: 0 }}>Identities</h2>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>

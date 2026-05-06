@@ -17,7 +17,6 @@ import TooltipTemplate from "@/app/components/tooltips/TooltipTemplate";
 import { searchBuilds } from "@/app/database/builds";
 import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constants";
-import JsonLd from "@/app/lib/jsonLd";
 import { constructSkillLabel } from "@/app/lib/skill";
 
 function NotesTab({ notes }) {
@@ -93,16 +92,6 @@ export default function EgoPage({ params }) {
     }
 
     return <>
-        <JsonLd data={{
-            "@context": "https://schema.org",
-            "@type": "Thing",
-            "@id": `https://limbus.eldritchtools.com/egos/${id}`,
-            "name": egoData.name,
-            "url": `https://limbus.eldritchtools.com/egos/${id}`,
-            "isPartOf": {
-                "@id": "https://limbus.eldritchtools.com/#website"
-            }
-        }} />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             <div style={{ display: "flex", flexDirection: "row", width: "100%", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "min(480px, 100%)" }}>

@@ -19,8 +19,7 @@ import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import useLocalState from "@/app/lib/useLocalState";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 
-export default function BuildPage({ params }) {
-    const { id } = React.use(params);
+export default function BuildPage({ id }) {
     const [build, setBuild] = useState(null);
     const [loading, setLoading] = useState(true);
 

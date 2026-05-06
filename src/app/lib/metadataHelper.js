@@ -14,7 +14,7 @@ async function getFromDatabase(table, id) {
 
     const { data, error } = await getSupabase()
         .from(table)
-        .select("id, title, body")
+        .select("id, title, body, created_at, updated_at, published_at, user:users ( username )")
         .eq("id", id)
         .maybeSingle();
 
@@ -26,8 +26,13 @@ async function getFromDatabase(table, id) {
         return { status: "not_found", data: null };
     }
 
-    cache.set(key, data);
-    return { status: "ok", data };
+    const result = {
+        ...data,
+        username: data?.user?.username ?? null,
+    };
+
+    cache.set(key, result);
+    return { status: "ok", data: result };
 }
 
 export const getBuildForMetadata = async id => getFromDatabase("builds", id);
