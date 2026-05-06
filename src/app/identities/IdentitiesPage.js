@@ -212,7 +212,7 @@ export default function IdentitiesPage() {
     const [identities, identitiesLoading] = useData("identities");
 
     const [searchString, setSearchString] = useState("");
-    const [filters, setFilters] = useState([]);
+    const [filters, setFilters] = useLocalState("idEgoFilters", []);
     const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "full");
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);

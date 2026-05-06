@@ -213,7 +213,7 @@ export default function EgosPage() {
     const [statuses, statusesLoading] = useData("statuses");
 
     const [searchString, setSearchString] = useState("");
-    const [filters, setFilters] = useState([]);
+    const [filters, setFilters] = useLocalState("idEgoFilters", []);
     const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "full");
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);
