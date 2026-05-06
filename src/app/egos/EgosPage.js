@@ -21,7 +21,6 @@ import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { ColoredResistance } from "../lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "../lib/constants";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
-import JsonLd from "../lib/jsonLd";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
@@ -253,15 +252,6 @@ export default function EgosPage() {
     }, [egos, egosLoading, statuses, statusesLoading]);
 
     return <>
-        <JsonLd data={{
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "E.G.Os",
-            "url": "https://limbus.eldritchtools.com/egos",
-            "isPartOf": {
-                "@id": "https://limbus.eldritchtools.com/#website"
-            }
-        }} />
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
             <h2 style={{ margin: 0 }}>E.G.Os</h2>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>

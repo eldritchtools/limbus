@@ -18,6 +18,7 @@
     "@codemirror/view": "^6.39.4",
     "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.36",
     "@heroicons/react": "^2.2.0",
+    "@next/third-parties": "^16.2.5",
     "@radix-ui/react-select": "^2.2.6",
     "@supabase/supabase-js": "^2.99.3",
     "dexie": "^4.3.0",

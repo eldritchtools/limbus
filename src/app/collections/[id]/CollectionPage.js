@@ -78,8 +78,7 @@ function ItemList({ items, viewMode, isMobile }) {
     }
 }
 
-export default function CollectionPage({ params }) {
-    const { id } = React.use(params);
+export default function CollectionPage({ id }) {
     const [collection, setCollection] = useState(null);
     const [loading, setLoading] = useState(true);
     const { isMobile } = useBreakpoint();

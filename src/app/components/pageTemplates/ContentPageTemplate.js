@@ -18,7 +18,6 @@ import UsernameWithTime from "../user/UsernameWithTime";
 
 import { useAuth } from "@/app/database/authProvider";
 import { isLocalId } from "@/app/database/localDB";
-import JsonLd from "@/app/lib/jsonLd";
 
 export function LoadingContentPageTemplate() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", fontSize: "1.5rem", fontWeight: "bold" }}>
@@ -85,25 +84,6 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
         </div>
 
     return <>
-        <JsonLd data={{
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "@id": `https://limbus.eldritchtools.com/${targetType}/${targetId}`,
-            "headline": content.title,
-            "url": `https://limbus.eldritchtools.com/${targetType}/${targetId}`,
-            "datePublished": content.published_at ?? content.created_at,
-            "dateModified": content.updated_at,
-            "author": {
-                "@type": "Person",
-                "name": content.username
-            },
-            "publisher": {
-                "@id": "https://limbus.eldritchtools.com/#organization"
-            },
-            "isPartOf": {
-                "@id": "https://limbus.eldritchtools.com/#website"
-            }
-        }} />
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
             <div onClick={handleBack}>
                 <button><BackSolid text={"Go Back"} /></button>

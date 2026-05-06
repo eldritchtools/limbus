@@ -23,24 +23,6 @@ export function getWebsiteSchema() {
     };
 }
 
-// export function getAppSchema() {
-//     return {
-//         "@type": "SoftwareApplication",
-//         "@id": "https://limbus.eldritchtools.com/#app",
-//         "name": "Limbus Company Tools",
-//         "url": "https://limbus.eldritchtools.com",
-//         "operatingSystem": "All",
-//         "applicationCategory": "GameApplication",
-//         "description": "Use tools for Limbus Company or view community-created team builds.",
-//         "author": {
-//             "@id": ORG_ID
-//         },
-//         "isPartOf": {
-//             "@id": SITE_ID
-//         }
-//     };
-// }
-
 export function getAppSchema({ url, name, description }) {
     return {
         "@type": "SoftwareApplication",
@@ -73,6 +55,28 @@ export function getWebPageSchema({ title, description, url }) {
             "@id": SITE_ID
         }
     };
+}
+
+export function getArticleSchema({ targetType, targetId, title, username, description, published_at, updated_at }) {
+    const result = {
+        "@type": "Article",
+        "@id": `https://limbus.eldritchtools.com/${targetType}/${targetId}`,
+        "headline": title,
+        "url": `https://limbus.eldritchtools.com/${targetType}/${targetId}`,
+        "publisher": {
+            "@id": "https://limbus.eldritchtools.com/#organization"
+        },
+        "isPartOf": {
+            "@id": "https://limbus.eldritchtools.com/#website"
+        }
+    }
+
+    if (published_at) result.datePublished = published_at;
+    if (updated_at) result.dateModified = updated_at;
+    if (username) result.author = { "@type": "Person", "name": username };
+    if (description) result.description = description;
+
+    return result
 }
 
 export default function JsonLd({ data }) {
