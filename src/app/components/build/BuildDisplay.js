@@ -31,9 +31,9 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
 
         <div className={styles.buildDisplay} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
             {Array.from({ length: 12 }, (_, index) => {
-                let egosDisplay = null;
-                if(egoIds && Array.isArray(egoIds)) {
-                    if(egoIds[index] && Array.isArray(egoIds[index])) {
+                let egosDisplay = Array.from({ length: 5 }, () => null);
+                if (egoIds && Array.isArray(egoIds)) {
+                    if (egoIds[index] && Array.isArray(egoIds[index])) {
                         egosDisplay = egoIds[index].map(id => egos[id] || null);
                     }
                 }
@@ -55,8 +55,8 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", alignSelf: "center" }}>
                             Skills: <SkillReplace counts={skillReplaces[index + 1] ?? "321"} />
                         </div> : null}
-                    {notes && notes[index] ? 
-                        <div style={{margin: "0 0.5rem"}}>
+                    {notes && notes[index] ?
+                        <div style={{ margin: "0 0.5rem" }}>
                             <MarkdownRenderer content={notes[index]} />
                         </div> : null}
                 </div>
