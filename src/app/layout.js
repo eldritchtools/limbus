@@ -1,5 +1,6 @@
 import "./globals.css";
 import Script from "next/script";
+import { Suspense } from "react";
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
 import Analytics from "./components/Analytics";
@@ -44,7 +45,7 @@ export default function RootLayout({ children }) {
                 <JsonLd data={schema} />
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
-                {gaId && <Analytics gaId={gaId} />}
+                {gaId && <Suspense fallback={<div/>}><Analytics gaId={gaId} /></Suspense>}
                 <ChunkErrorHandler />
                 <LayoutComponent>{children}</LayoutComponent>
             </body>
