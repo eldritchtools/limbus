@@ -1,5 +1,5 @@
 export const metadata = {
-    title: "Notifications | Limbus Company Tools",
+    title: "Notifications",
     description: "View your notifications"
 };
 

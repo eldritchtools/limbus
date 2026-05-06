@@ -1,5 +1,5 @@
 export const metadata = {
-    title: "Privacy Policy | Limbus Company Tools",
+    title: "Privacy Policy",
     description: "Privacy Policy"
 };
 

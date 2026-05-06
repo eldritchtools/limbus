@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "MD Events | Limbus Company Tools",
-    description: "View events that show up in Mirror Dungeons"
+    title: "MD Events",
+    description: "View events that show up in Mirror Dungeons",
+    alternates: {
+        canonical: "/md-events"
+    }
 };
 
 const schema = {

@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Daily Randomized Team | Limbus Company Tools",
-    description: "A daily randomized team for running mirror dungeons or other content"
+    title: "Daily Randomized Team",
+    description: "A daily randomized team for running mirror dungeons or other content",
+    alternates: {
+        canonical: "/daily-random"
+    }
 };
 
 const schema = {

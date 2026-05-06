@@ -2,11 +2,6 @@ import { Suspense } from "react";
 
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
-export const metadata = {
-    title: "Encounters | Limbus Company Tools",
-    description: "View details or relevant builds on various encounters"
-};
-
 const schema = {
     "@context": "https://schema.org",
     "@graph": [

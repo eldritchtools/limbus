@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "My Posts | Limbus Company Tools",
+  title: "My Posts",
   description: "View the user's content",
   robots: {
     index: false,

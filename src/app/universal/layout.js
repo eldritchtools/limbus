@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Universal Gifts & Gift Combos | Limbus Company Tools",
-    description: "View gifts & gift combos that are useful for any team in Mirror Dungeons"
+    title: "Universal Gifts & Gift Combos",
+    description: "View gifts & gift combos that are useful for any team in Mirror Dungeons.",
+    alternates: {
+        canonical: "/universal"
+    }
 };
 
 const schema = {

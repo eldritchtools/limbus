@@ -1,8 +1,11 @@
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Team Solver | Limbus Company Tools",
-    description: "Find a team that meets keyword or status requirements and fulfills the requested constraints."
+    title: "Team Solver",
+    description: "Find a team that meets keyword or status requirements and fulfills the requested constraints.",
+    alternates: {
+        canonical: "/team-solver"
+    }
 };
 
 const schema = {

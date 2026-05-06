@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Achievements | Limbus Company Tools",
-    description: "View and track achievement progress or tips"
+    title: "Achievements",
+    description: "View and track achievement progress or tips.",
+    alternates: {
+        canonical: "/achievements"
+    }
 };
 
 const schema = {

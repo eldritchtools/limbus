@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Reset Password | Limbus Company Tools",
+  title: "Reset Password",
   description: "Reset password",
   robots: {
     index: false,

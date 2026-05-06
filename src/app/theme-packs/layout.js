@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Theme Packs | Limbus Company Tools",
-    description: "View theme packs that show up in Mirror Dungeons"
+    title: "Theme Packs",
+    description: "View theme packs that show up in Mirror Dungeons",
+    alternates: {
+        canonical: "/theme-packs"
+    }
 };
 
 const schema = {

@@ -6,9 +6,12 @@ import LayoutComponent from "./layoutComponent";
 import JsonLd, { getOrganizationSchema, getWebsiteSchema } from "./lib/jsonLd";
 
 export const metadata = {
-    title: "Limbus Company Tools",
-    description: "Use different tools made for the game Limbus Company or view team builds created by other users.",
-    metadataBase: new URL("https://limbus.eldritchtools.com")
+  metadataBase: new URL("https://limbus.eldritchtools.com"),
+  title: {
+    default: "Limbus Company Tools",
+    template: "%s | Limbus Company Tools",
+  },
+  description: "Community-driven tools for Limbus Company.",
 };
 
 const schema = {

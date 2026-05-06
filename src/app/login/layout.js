@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Login | Limbus Company Tools",
+  title: "Login",
   description: "Login page",
   robots: {
     index: false,

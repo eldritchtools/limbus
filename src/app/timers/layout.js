@@ -1,8 +1,11 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
-    title: "Timers | Limbus Company Tools",
-    description: "Relevant timers for when content is ending or since content was released"
+    title: "Timers",
+    description: "Relevant timers for when content is ending or since content was released",
+    alternates: {
+        canonical: "/timers"
+    }
 };
 
 const schema = {
