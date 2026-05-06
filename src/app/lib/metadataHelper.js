@@ -3,13 +3,7 @@ import { LRUCache } from "lru-cache";
 import { getSupabase } from "../database/connection";
 import { DATA_ROOT } from "../paths";
 
-let metadataIndexFallback;
-
-if (process.env.NODE_ENV === "development") {
-    metadataIndexFallback = await fetch(`${DATA_ROOT}/metadata_index.json`).then(r => r.json());
-} else {
-    metadataIndexFallback = (await import("@/generated/metadataIndex.json")).default;
-}
+import metadataIndexFallback from "@/data/metadata_index.json";
 
 const cache = new LRUCache({ max: 500, ttl: 1000 * 60 * 60 });
 
