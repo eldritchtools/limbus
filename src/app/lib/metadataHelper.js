@@ -34,8 +34,7 @@ export const getCollectionForMetadata = async id => getFromDatabase("collections
 export const getMdPlanForMetadata = async id => getFromDatabase("md_plans", id);
 
 const getJsonForMetadata = async (path) => {
-    const base = process.env.NODE_ENV === "development" ? `http://localhost:3000${DATA_ROOT}` : DATA_ROOT;
-    const res = await fetch(`${base}/${path}.json`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${DATA_ROOT}/${path}.json`, { next: { revalidate: 3600 } });
     const json = await res.json();
     return json;
 }
