@@ -40,11 +40,9 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>Users can now submit their own ratings and reviews for {wrapLink("identities", "/identities")} and {wrapLink("E.G.Os", "/egos")} by clicking on the &quot;Community Rating&quot; tab below their respective stats. All submitted ratings are collated into the new {wrapLink("Community Rankings", "/rankings")} page where you can see all the identities and E.G.Os sorted by rank.</li>
                 <li>New {wrapLink("Site Customization", "/site-customization")} features allow users to change display settings on the site (colors, font, font size) or change how filter menus work.</li>
                 <li>An Encounters tab has been added to the builds page. Users can filter builds tagged with a specific encounter. This is the same as the builds tab that already exists in the encounters page, just more accessible.</li>
-                <li>All new extreme theme pack bosses and bosses for the new intervallo theme packs and story nodes have been added to the Encounters Page.</li>
-                <li>Added an exclusive gifts helper section to the {wrapLink("Floor Planner", "/floor-planner")} tool to help users in selecting theme packs.</li>
-                <li>Team {wrapLink("Solver", "/team-solver")} and {wrapLink("Randomizer", "/team-randomizer")} tools now support using the user&apos;s Company Data to set the Black/Whitelist. The toggle has also been changed to a show/hide toggle rather than an active/inactive toggle and the number of items on the list is now shown on the button.</li>
             </ul>
         </div> : null}
 

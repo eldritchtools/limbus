@@ -37,7 +37,7 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, userScore
                 position: "absolute", top: 5, right: 5,
                 padding: "2px 4px", borderRadius: "8px",
                 background: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(6px)",
-                fontWeight: "bold", fontSize: "1.2rem", lineHeight: 1
+                fontWeight: "bold", fontSize: "1.2rem", lineHeight: 1, color: "#ddd"
             }}>
                 #{rank}
             </div>
@@ -290,7 +290,15 @@ export default function CompanyPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Community Rankings</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>See how the community ranks the identities and E.G.Os in the game. These rankings are computed based on community submitted ratings. To rate something yourself, you can go to the respective identity or E.G.O page to submit a rating or leave a review. Please remember that everyone experiences the game differently. Your personal experience may be different from the community average. Be respectful when there are disagreements.</span>
+        <span style={{ maxWidth: "1000px", textAlign: "left" }}>
+            See how the community ranks the identities and E.G.Os in the game. Rankings are calculated from community-submitted ratings.
+            <br/> <br/>
+            To submit your own rating or leave a review, visit the respective identity or E.G.O page and check the &quot;Community Rating&quot; tab.
+            <br/> <br/>
+            Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
+            <br/> <br/>
+            This page is still an early version and may receive design overhauls and quality-of-life improvements over time. Feel free to share suggestions through the Discord server or the <NoPrefetchLink href={"/feedback"} className="text-link">feedback</NoPrefetchLink> page.
+        </span>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>

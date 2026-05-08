@@ -31,7 +31,7 @@ export default function StatsRadarChart({ type, globalData, userData, includeLab
 
     return <div style={{ position: "relative" }}>
         {includeLabels &&
-            <div {...getRatingHelpTooltipProps(type)} style={{ color: "var(--primary-text-color)", position: "absolute", top: 5, right: 5, zIndex: 1 }}>
+            <div {...getRatingHelpTooltipProps(type)} style={{ color: "var(--secondary-text-color)", position: "absolute", top: 5, right: 5, zIndex: 1 }}>
                 <InformationCircleIcon width={20 * scale} height={20 * scale} />
             </div>
         }

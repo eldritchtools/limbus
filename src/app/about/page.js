@@ -1,13 +1,36 @@
+import GithubButton from "./GithubButton";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import SocialsDisplay from "../components/user/SocialsDisplay";
 
 export default function AboutPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "1rem", lineHeight: "1.3" }}>
             <h2 style={{ margin: 0 }}>About this Site</h2>
-            <span>This is a community-driven site combining user-submitted posts, tools, and a reference database for the game Limbus Company.</span>
+            <span>This is an unofficial community-driven site combining user-submitted posts, tools, and a reference database for the game Limbus Company.</span>
             <span>Users can browse or share content such as team builds and md plans, use one of the many tools available on the site, or explore database pages covering game content.</span>
             <span>This site is currently maintained by one person, with support from the community as it continues to grow.</span>
+
+            <h2 style={{ margin: 0 }}>Site Links</h2>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+                <SocialsDisplay
+                    socials={[
+                        { type: "discord-server", value: "https://discord.gg/dukfUJnqTH" },
+                    ]}
+                    expandedDefault={true} button={true}
+                />
+                <GithubButton />
+            </div>
+
+            <h2 style={{ margin: 0 }}>Official Limbus Company Links</h2>
+            <SocialsDisplay
+                socials={[
+                    { type: "web", value: "https://limbuscompany.com/" },
+                    { type: "youtube", value: "@ProjectMoonOfficial" },
+                    { type: "twitter", value: "LimbusCompany_B" }
+                ]}
+                expandedDefault={true} button={true}
+            />
 
             <HorizontalDivider />
 
@@ -30,24 +53,24 @@ export default function AboutPage() {
 
             <details>
                 <summary>How often does the site update?</summary>
-                New content from the game is usually added within 24 hours of release, depending on my personal availability. 
-                <br/>
+                New content from the game is usually added within 24 hours of release, depending on my personal availability.
+                <br />
                 New features and other updates are added whenever they are ready and have no fixed schedule.
             </details>
 
             <details>
                 <summary>Do you work with creators?</summary>
-                Yes. The site is open to collaboration with creators. 
-                <br/>
-                Send me a message on Discord or use the <NoPrefetchLink href={"/feedback"} className="text-link">Contact</NoPrefetchLink> page. 
-                <br/>
+                Yes. The site is open to collaboration with creators.
+                <br />
+                Send me a message on Discord or use the <NoPrefetchLink href={"/feedback"} className="text-link">Contact</NoPrefetchLink> page.
+                <br />
                 You can also check out the <NoPrefetchLink href={"/supporters"} className="text-link">Supporters</NoPrefetchLink> page.
             </details>
 
             <details>
                 <summary>How can I support the site?</summary>
-                Sharing the site and contributing content is the best way to help. 
-                <br/>
+                Sharing the site and contributing content is the best way to help.
+                <br />
                 More ways to support the site may be added in the future once it grows further.
             </details>
         </div>
