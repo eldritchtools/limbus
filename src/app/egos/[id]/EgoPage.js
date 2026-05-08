@@ -22,7 +22,7 @@ import TooltipTemplate from "@/app/components/tooltips/TooltipTemplate";
 import Username from "@/app/components/user/Username";
 import { useAuth } from "@/app/database/authProvider";
 import { searchBuilds } from "@/app/database/builds";
-import { defaultReviewsPageSize, deleteReview, getItemAggregates, getOverallScore, getReviewScores, getUserReview, submitReview } from "@/app/database/reviews";
+import { defaultReviewsPageSize, deleteReview, getItemAggregates, getItemReviews, getOverallScore, getReviewScores, getUserReview, submitReview } from "@/app/database/reviews";
 import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constants";
 import { egoCriteria } from "@/app/lib/ratings";
