@@ -339,6 +339,7 @@ export default function IdentitiesPage() {
                     <div />
                     <div>
                         <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
+                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting.</div>
                     </div>
                 </div>
                 <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />

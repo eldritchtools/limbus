@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 import ColorPicker from "./ColorPicker";
-import Slider from "./Slider";
 import GiftIcon from "../components/icons/GiftIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
+import Slider from "../components/objects/Slider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
