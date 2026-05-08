@@ -95,7 +95,7 @@ function RankingDisplay({
                 },
                 strictFiltering
             )
-                .map(identity => [getScore(identity.id, identityReviews), getScore(identity.id, userIdentityReviews), identity])
+                .map(identity => [getScore(identity.id, identityReviews), getScore(identity.id, userIdentityReviews ?? {}), identity])
                 .sort(sortFunction)
             )
 
@@ -120,7 +120,7 @@ function RankingDisplay({
                 },
                 strictFiltering
             )
-                .map(ego => [getScore(ego.id, egoReviews), getScore(ego.id, userEgoReviews), ego])
+                .map(ego => [getScore(ego.id, egoReviews), getScore(ego.id, userEgoReviews ?? {}), ego])
                 .sort(sortFunction)
             )
 
@@ -181,7 +181,7 @@ function RankingDisplay({
                     <ItemDisplay
                         key={item.id} type={viewMode} item={item} rank={rank} rankingScore={cs}
                         communityScore={viewMode === "identity" ? identityReviews[item.id] : egoReviews[item.id]}
-                        userScore={viewMode === "identity" ? userIdentityReviews[item.id] : userEgoReviews[item.id]}
+                        userScore={viewMode === "identity" ? userIdentityReviews?.[item.id] : userEgoReviews?.[item.id]}
                     />
                 )}
             </div>
