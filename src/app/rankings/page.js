@@ -54,16 +54,16 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, userScore
 function RankingDisplay({
     viewMode, rankingMode,
     identities, egos,
-    identityReviews, userIdentityReviews,
-    egoReviews, userEgoReviews,
+    identityReviews, userIdentityReviews = {},
+    egoReviews, userEgoReviews = {},
     searchString, filters,
     strictFiltering, separateByPoint, globalRanking
 }) {
     const { isMobile } = useBreakpoint();
 
     const items = useMemo(() => {
-        if (viewMode === "identity" && (!identityReviews || !userIdentityReviews)) return [];
-        if (viewMode === "ego" && (!egoReviews || !userEgoReviews)) return [];
+        if (viewMode === "identity" && !identityReviews) return [];
+        if (viewMode === "ego" && !egoReviews) return [];
 
         const filtered = [];
         const rankableItems = [];
@@ -288,15 +288,17 @@ export default function CompanyPage() {
 
     if (loading || identitiesLoading || egosLoading) return <LoadingContentPageTemplate />
 
+    const userReviewProps = user ? { userIdentityReviews: userIdentityReviews, userEgoReviews: userEgoReviews } : {};
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Community Rankings</h2>
         <span style={{ maxWidth: "1000px", textAlign: "left" }}>
             See how the community ranks the identities and E.G.Os in the game. Rankings are calculated from community-submitted ratings.
-            <br/> <br/>
+            <br /> <br />
             To submit your own rating or leave a review, visit the respective identity or E.G.O page and check the &quot;Community Rating&quot; tab.
-            <br/> <br/>
+            <br /> <br />
             Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
-            <br/> <br/>
+            <br /> <br />
             This page is still an early version and may receive design overhauls and quality-of-life improvements over time. Feel free to share suggestions through the Discord server or the <NoPrefetchLink href={"/feedback"} className="text-link">feedback</NoPrefetchLink> page.
         </span>
 
@@ -345,8 +347,8 @@ export default function CompanyPage() {
         <RankingDisplay
             viewMode={viewMode} rankingMode={rankingMode}
             identities={identities} egos={egos}
-            identityReviews={identityReviews} userIdentityReviews={userIdentityReviews}
-            egoReviews={egoReviews} userEgoReviews={userEgoReviews}
+            identityReviews={identityReviews} egoReviews={egoReviews}
+            {...userReviewProps}
             searchString={searchString} filters={filters}
             strictFiltering={strictFiltering} separateByPoint={separateByPoint} globalRanking={globalRanking}
         />
