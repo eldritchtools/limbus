@@ -76,6 +76,7 @@ export default function BuildPage({ id }) {
             <BuildDisplayMenuCard>
                 <div>Display Type</div>
                 <DisplayTypeButton value={displayType} setValue={setDisplayType} />
+                <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os</span>
             </BuildDisplayMenuCard>
             <SinDistribution
                 identityIds={build.identity_ids}

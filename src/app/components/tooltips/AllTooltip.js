@@ -4,6 +4,8 @@ import GeneralTooltip from "./GeneralTooltip";
 import GiftTooltip from "./GiftTooltip";
 import IdentityTooltip from "./IdentityTooltip";
 import { MarkdownTooltip } from "./MarkdownTooltip";
+import RatingHelpTooltip from "./RatingHelpTooltip";
+import RatingTooltip from "./RatingTooltip";
 import StatusTooltip from "./StatusTooltip";
 import { ThemePackTooltip } from "./ThemePackTooltip";
 import TimerTooltip from "./TimerTooltip";
@@ -19,5 +21,7 @@ export default function AllTooltips() {
         <ThemePackTooltip />
         <TimerTooltip />
         <EncounterTooltip />
+        <RatingTooltip />
+        <RatingHelpTooltip />
     </>;
 }

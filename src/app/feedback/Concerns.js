@@ -18,6 +18,10 @@ const concerns = [
     {
         concern: "Why don't you use boss names for encounters? They can be a bit hard to find.",
         answer: "Story node or event ids are used to minimize the possibility of spoiling players who haven't reached those fights yet."
+    },
+    {
+        concern: "I want to sort identities or E.G.Os by hp, speed, resists, costs, etc",
+        answer: "In the identities or E.G.Os pages, click the \"Compare Mode Disabled\" button then select \"Advanced Compare Mode\". This will give you the option to filter and sort them by all sorts of different conditions."
     }
 ]
 

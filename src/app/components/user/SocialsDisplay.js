@@ -1,8 +1,9 @@
+"use client";
+
 import { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 
 import { SocialIcon } from "./userSocials";
-
 
 export default function SocialsDisplay({ socials, expandDirection = "row", align = "center", button = false, expandedDefault = false }) {
     const [expanded, setExpanded] = useState(expandedDefault);

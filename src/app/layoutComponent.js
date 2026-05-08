@@ -33,6 +33,7 @@ const paths = [
             { path: "/collections", title: "Collections" },
             { path: "/identities", title: "Identities" },
             { path: "/egos", title: "E.G.Os" },
+            { path: "/rankings", title: "Community Rankings" },
             { path: "/timers", title: "Timers" },
             { path: "/encounters", title: "Encounters" }
         ]

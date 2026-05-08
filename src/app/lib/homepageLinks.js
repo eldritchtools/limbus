@@ -12,6 +12,7 @@ export const homepageLinks = [
             { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
             { href: "/identities", title: "Identities", icon: "EgoErodeReplica" },
             { href: "/egos", title: "E.G.Os", icon: "ActivatedEgoPassive" },
+            { href: "/rankings", title: "Community Rankings", icon: "EgoAwakenDongrangRadiantDesire" },
             { href: "/timers", title: "Timers", icon: "TickTockTickTock" },
             { href: "/encounters", title: "Encounters", icon: "HugeIrritationAlly" }
         ]

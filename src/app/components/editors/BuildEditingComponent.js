@@ -174,6 +174,7 @@ export default function BuildEditingComponent({
                 <BuildDisplayMenuCard>
                     <div>Display Type</div>
                     <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
+                    <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os</span>
                 </BuildDisplayMenuCard> :
                 null
             }
