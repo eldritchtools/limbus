@@ -35,7 +35,7 @@ export default function StatsRadarChart({ type, globalData, userData, includeLab
                 <InformationCircleIcon width={20 * scale} height={20 * scale} />
             </div>
         }
-        <ResponsiveContainer width={(includeLabels ? 350 : 225) * scale} height={225 * scale}>
+        <ResponsiveContainer width={(includeLabels ? 325 : 200) * scale} height={200 * scale}>
             <RadarChart data={data}>
                 <PolarGrid
                     stroke="var(--secondary-text-color)"

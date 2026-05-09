@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import ReactTimeAgo from "react-time-ago";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import { useSkillData } from "@/app/components/dataHooks/skills";
@@ -10,22 +9,19 @@ import EgoIcon from "@/app/components/icons/EgoIcon";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import RarityIcon from "@/app/components/icons/RarityIcon";
 import SinnerIcon from "@/app/components/icons/SinnerIcon";
-import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
-import Slider from "@/app/components/objects/Slider";
-import StatsRadarChart from "@/app/components/ratings/RadarChart";
+import RatingComponent from "@/app/components/ratings/RatingComponent";
+import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
 import UptieSelector from "@/app/components/selectors/UptieSelector";
 import PassiveCard from "@/app/components/skill/PassiveCard";
 import SkillCard from "@/app/components/skill/SkillCard";
 import { getGeneralTooltipProps } from "@/app/components/tooltips/GeneralTooltip";
 import TooltipTemplate from "@/app/components/tooltips/TooltipTemplate";
-import Username from "@/app/components/user/Username";
 import { useAuth } from "@/app/database/authProvider";
 import { searchBuilds } from "@/app/database/builds";
-import { defaultReviewsPageSize, deleteReview, getItemAggregates, getItemReviews, getOverallScore, getReviewScores, getUserReview, submitReview } from "@/app/database/reviews";
+import { getItemAggregates, getUserReview } from "@/app/database/reviews";
 import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constants";
-import { egoCriteria } from "@/app/lib/ratings";
 import { constructSkillLabel } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
@@ -33,10 +29,7 @@ function RatingTab({ id, showReviews, setShowReviews }) {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [globalData, setGlobalData] = useState(null);
-    const [rating, setRating] = useState(null);
-    const [review, setReview] = useState("");
     const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
     const [refresh, setRefresh] = useState(true);
 
     useEffect(() => {
@@ -57,118 +50,18 @@ function RatingTab({ id, showReviews, setShowReviews }) {
     }, [user, id, refresh]);
 
     if (loading) return <span style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Loading Rating...</span>;
-
-    const rateButton =
-        user ?
-            <button onClick={() => {
-                if (userData) {
-                    setRating(getReviewScores(userData));
-                    setReview(userData.review_text ?? "");
-                } else {
-                    setRating(Array.from({ length: 5 }, () => 0))
-                    setReview("");
-                }
-            }}>
-                {userData ? "Edit Rating" : "Create Rating"}
-            </button> :
-            <span>Login to submit a rating</span>
-
-    const submitRating = async rating => {
-        setSubmitting(true);
-
-        const result = await submitReview({
-            itemType: "ego",
-            itemId: id,
-            criteria1: rating[0],
-            criteria2: rating[1],
-            criteria3: rating[2],
-            criteria4: rating[3],
-            criteria5: rating[4],
-            reviewText: review?.trim() || null,
-        });
-
-        setUserData(result);
-        setRating(null);
-        setReview("");
+    
+    const onChange = (newData) => {
+        setUserData(newData);
         setRefresh(true);
-        setSubmitting(false);
     }
 
-    const deleteRating = async () => {
-        setSubmitting(true);
-        await deleteReview({ itemType: "ego", itemId: id });
-        setRefresh(true);
-        setSubmitting(false);
-    }
+    const showReviewsButton =
+        globalData ?
+            <button onClick={() => setShowReviews(p => !p)}>{showReviews ? "Hide Reviews" : "Show Reviews"}</button> :
+            null
 
-
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", maxWidth: "100%" }}>
-        {globalData ?
-            <StatsRadarChart type={"ego"} globalData={globalData.rating} userData={rating ?? getReviewScores(userData)} /> :
-            <span>No ratings yet. Be the first to rate this E.G.O!</span>
-        }
-        {
-            rating ?
-                <>
-                    <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.2rem", textAlign: "center", alignItems: "center" }}>
-                        <span>Overall Rating</span>
-                        <span>{getOverallScore(rating).toFixed(2)}</span>
-                        {
-                            egoCriteria.map(({ label, desc }, i) => <React.Fragment key={label}>
-                                <div>
-                                    <span {...getGeneralTooltipProps(desc)} className="hover-text">{label}</span>
-                                </div>
-                                <Slider
-                                    value={rating[i]} onChange={v => setRating(p => p.map((pv, j) => i === j ? v : pv))}
-                                    min={0} max={10} step={1} compressed={true} sliderWidth={75}
-                                />
-                            </React.Fragment>)
-                        }
-                    </div>
-                    <span>Consider leaving a review</span>
-                    <div style={{ width: "100%" }}>
-                        <MarkdownEditorWrapper
-                            value={review}
-                            onChange={v => setReview(v)}
-                            placeholder={"Review for this E.G.O (optional)..."}
-                            mini={true} short={true}
-                        />
-                    </div>
-                    <div>
-                        <button onClick={() => { setRating(null); setReview(""); }} disabled={submitting}>Cancel</button>
-                        <button onClick={() => submitRating(rating)} disabled={submitting}>Submit Rating</button>
-                    </div>
-                </> :
-                <>
-                    {globalData ?
-                        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", textAlign: "center" }}>
-                            <span>Total Votes</span>
-                            <span>{globalData.votes}</span>
-                            <span>Overall Rating</span>
-                            <span>{getOverallScore(globalData.rating).toFixed(2)}</span>
-                            {
-                                egoCriteria.map(({ label }, i) => <React.Fragment key={label}>
-                                    <span>{label}</span>
-                                    <span>{globalData.rating[i].toFixed(2)}</span>
-                                </React.Fragment>)
-                            }
-                        </div> :
-                        null
-                    }
-                    <div>
-                        {user && userData &&
-                            <button onClick={deleteRating} disabled={submitting}>
-                                Delete Rating
-                            </button>
-                        }
-                        {rateButton}
-                        {globalData &&
-                            <button onClick={() => setShowReviews(p => !p)}>{showReviews ? "Hide Reviews" : "Show Reviews"}</button>
-                        }
-                    </div>
-                </>
-        }
-    </div >
+    return <RatingComponent type={"ego"} id={id} globalData={globalData} userData={userData} onChange={onChange} showReviewsButton={showReviewsButton} />
 }
 
 function NotesTab({ notes }) {
@@ -228,47 +121,11 @@ function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCo
 }
 
 function ReviewsTab({ id, setShowReviews }) {
-    const [page, setPage] = useState(1);
-    const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const loadReviews = async () => {
-            setLoading(true);
-            const fetchedReviews = await getItemReviews({ itemType: "ego", itemId: id, page: page });
-
-            setReviews(fetchedReviews);
-            setLoading(false);
-        }
-
-        loadReviews();
-    }, [page, id]);
-
-    if (loading)
-        return <span style={{ color: "var(--disabled-text-color)", textAlign: "center", minWidth: "min(480px, 100%)", flex: 1 }}>
-            Loading Reviews...
-        </span>;
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
         <div>
             <button onClick={() => setShowReviews(false)}>Hide Reviews</button>
         </div>
-        {
-            reviews.map(review => <div key={review.id} className="panel-container">
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <StatsRadarChart type={"ego"} userData={getReviewScores(review)} includeLabels={false} scale={.5} />
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                        <span>by <Username username={review.user?.username} data={review} /> • <ReactTimeAgo date={review.updated_at} locale="en-US" timeStyle="mini" /></span>
-                        <MarkdownRenderer content={review.review_text} />
-                    </div>
-                </div>
-            </div>)
-        }
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
-            <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-            {page}
-            <button className="page-button" disabled={reviews.length < defaultReviewsPageSize} onClick={() => setPage(p => p + 1)}>Next</button>
-        </div>
+        <ReviewsComponent type={"ego"} id={id} />
     </div>
 }
 

@@ -1,0 +1,128 @@
+import React, { useState } from "react";
+
+import StatsRadarChart from "./RadarChart";
+import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
+import Slider from "../objects/Slider";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
+
+import { useAuth } from "@/app/database/authProvider";
+import { deleteReview, getOverallScore, getReviewScores, submitReview } from "@/app/database/reviews";
+import { egoCriteria, identityCriteria } from "@/app/lib/ratings";
+
+export default function RatingComponent({ type, id, globalData, userData, onChange, showReviewsButton }) {
+    const { user } = useAuth();
+    const [rating, setRating] = useState(null);
+    const [review, setReview] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
+    const criteria = type === "identity" ? identityCriteria : egoCriteria;
+    const label = type === "identity" ? "identity" : "E.G.O";
+
+    const rateButton =
+        user ?
+            <button onClick={() => {
+                if (userData) {
+                    setRating(userData.rating ?? getReviewScores(userData));
+                    setReview(userData.review_text ?? "");
+                } else {
+                    setRating(Array.from({ length: 5 }, () => 0))
+                    setReview("");
+                }
+            }}>
+                {userData ? "Edit Rating" : "Create Rating"}
+            </button> :
+            <span>Login to submit a rating</span>
+
+    const submitRating = async rating => {
+        setSubmitting(true);
+
+        const result = await submitReview({
+            itemType: type,
+            itemId: id,
+            criteria1: rating[0],
+            criteria2: rating[1],
+            criteria3: rating[2],
+            criteria4: rating[3],
+            criteria5: rating[4],
+            reviewText: review?.trim() || null,
+        });
+
+        if(onChange) onChange(result);
+        setRating(null);
+        setReview("");
+        setSubmitting(false);
+    }
+
+    const deleteRating = async () => {
+        setSubmitting(true);
+        await deleteReview({ itemType: type, itemId: id });
+        if(onChange) onChange(null);
+        setSubmitting(false);
+    }
+
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", maxWidth: "100%" }}>
+        {globalData ?
+            <StatsRadarChart type={type} globalData={globalData.rating} userData={rating ?? userData?.rating ?? getReviewScores(userData)} /> :
+            <span>No ratings yet. Be the first to rate this {label}!</span>
+        }
+        {
+            rating ?
+                <>
+                    <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.2rem", textAlign: "center", alignItems: "center" }}>
+                        <span>Overall Rating</span>
+                        <span>{getOverallScore(rating).toFixed(2)}</span>
+                        {
+                            criteria.map(({ label, desc }, i) => <React.Fragment key={label}>
+                                <div>
+                                    <span {...getGeneralTooltipProps(desc)} className="hover-text">{label}</span>
+                                </div>
+                                <Slider
+                                    value={rating[i]} onChange={v => setRating(p => p.map((pv, j) => i === j ? v : pv))}
+                                    min={0} max={10} step={1} compressed={true} sliderWidth={75}
+                                />
+                            </React.Fragment>)
+                        }
+                    </div>
+                    <span>Consider leaving a review</span>
+                    <div style={{ width: "100%" }}>
+                        <MarkdownEditorWrapper
+                            value={review}
+                            onChange={v => setReview(v)}
+                            placeholder={`Review for this ${label} (optional)...`}
+                            mini={true} short={true}
+                        />
+                    </div>
+                    <div>
+                        <button onClick={() => { setRating(null); setReview(""); }} disabled={submitting}>Cancel</button>
+                        <button onClick={() => submitRating(rating)} disabled={submitting}>Submit Rating</button>
+                    </div>
+                </> :
+                <>
+                    {globalData ?
+                        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", textAlign: "center" }}>
+                            <span>Total Votes</span>
+                            <span>{globalData.votes}</span>
+                            <span>Overall Rating</span>
+                            <span>{getOverallScore(globalData.rating).toFixed(2)}</span>
+                            {
+                                criteria.map(({ label }, i) => <React.Fragment key={label}>
+                                    <span>{label}</span>
+                                    <span>{globalData.rating[i].toFixed(2)}</span>
+                                </React.Fragment>)
+                            }
+                        </div> :
+                        null
+                    }
+                    <div>
+                        {user && userData &&
+                            <button onClick={deleteRating} disabled={submitting}>
+                                Delete Rating
+                            </button>
+                        }
+                        {rateButton}
+                        {showReviewsButton}
+                    </div>
+                </>
+        }
+    </div >
+}
