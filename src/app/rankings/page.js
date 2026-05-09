@@ -56,7 +56,10 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, community
         [type, item, rank]
     )
 
-    if (!rank) return icon;
+    if (!rank)
+        return <div {...props} style={{ cursor: "pointer" }}>
+            {icon}
+        </div>;
 
     const scoreComponent = <span style={{ textAlign: "center" }}>Score: {rankingScore.toFixed(2)}</span>;
     const ratingsComponent = <span style={{ textAlign: "center" }}>User Ratings: {communityScore.votes}</span>;
