@@ -36,7 +36,6 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, community
     })
 
     const icon = useMemo(() => {
-
         return <div style={{ position: "relative", width: "100%" }}>
             {type === "identity" ?
                 <IdentityIcon identity={item} uptie={4} displayName={true} displayRarity={true} /> :
