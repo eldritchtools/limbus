@@ -25,7 +25,7 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, community
     const props = communityScore ? getRatingTooltipProps(type, communityScore, userScore) : {};
     const { openRatingModal } = useModal();
 
-    const getUserReviews = () => userReviewsRef.current;
+    const getUserReviews = () => userReviewsRef?.current;
     const getCommunityReviews = () => communityReviewsRef.current;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
