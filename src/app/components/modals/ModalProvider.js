@@ -7,6 +7,7 @@ import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
 import ModalContainer from "./ModalContainer";
+import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
 import SelectGiftModalContent from "./SelectGiftModalContent";
 import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
@@ -26,7 +27,8 @@ const MODAL_COMPONENTS = {
     "deleteComment": DeleteCommentModalContent,
     "updateHistory": UpdateHistoryModalContent,
     "choiceEvent": ChoiceEventModalContent,
-    "setFavoriteLinks": SetFavoriteLinksModalContent
+    "setFavoriteLinks": SetFavoriteLinksModalContent,
+    "rating": RatingModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -76,6 +78,10 @@ export function ModalProvider({ children }) {
         openModal("setFavoriteLinks", { currentList, setFavoriteLinks });
     }
 
+    const openRatingModal = ({ type, id, getCommunityReviews, getUserReviews, onChange }) => {
+        openModal("rating", { type, id, getCommunityReviews, getUserReviews, onChange });
+    }
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
@@ -91,6 +97,7 @@ export function ModalProvider({ children }) {
         openUpdateHistoryModal,
         openChoiceEventModal,
         openSetFavoriteLinksModal,
+        openRatingModal,
         closeModal
     }
 

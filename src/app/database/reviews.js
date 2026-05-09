@@ -66,7 +66,7 @@ export async function getUserReviewsByType({ userId, itemType }) {
 
     return Object.fromEntries(data.map(item => {
         const scores = getReviewScores(item);
-        return [item.item_id, { overallRating: getOverallScore(scores), rating: scores }]
+        return [item.item_id, { overallRating: getOverallScore(scores), rating: scores, review_text: item.review_text }]
     }));
 }
 
