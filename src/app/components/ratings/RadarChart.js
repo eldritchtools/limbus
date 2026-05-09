@@ -66,6 +66,7 @@ export default function StatsRadarChart({ type, globalData, userData, includeLab
                         fillOpacity={0.35}
                         strokeWidth={3}
                         strokeDasharray="5 4"
+                        animationDuration={250}
                     />
                 }
 
