@@ -1,5 +1,5 @@
 import { getSupabase } from "./connection";
-import { callRPC } from "./supabaseTemplates";
+import { callRPC, withRetry } from "./supabaseTemplates";
 
 export async function getNotifications(userId, limit = null) {
     let options = { p_user_id: userId };
@@ -8,22 +8,26 @@ export async function getNotifications(userId, limit = null) {
 }
 
 export async function setNotificationRead(id) {
-    const { data, error } = await getSupabase()
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', id);
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from('notifications')
+            .update({ is_read: true })
+            .eq('id', id);
 
-    if (error) throw error;
-    return data;
+        if (error) throw error;
+        return data;
+    });
 }
 
 export async function getUnreadNotificationsCount(userId) {
-    const { count, error } = await getSupabase()
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq('user_id', userId)
-        .eq('is_read', false);
+    return await withRetry(async () => {
+        const { count, error } = await getSupabase()
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq('user_id', userId)
+            .eq('is_read', false);
 
-    if (error) throw error;
-    return count ?? 0;
+        if (error) throw error;
+        return count ?? 0;
+    });
 }

@@ -1,29 +1,33 @@
 import { getSupabase } from "./connection";
-import { callRPC } from "./supabaseTemplates";
+import { callRPC, withRetry } from "./supabaseTemplates";
 
 async function getCompany(user) {
-    const { data, error } = await getSupabase()
-        .from("companies")
-        .select("*")
-        .eq('user_id', user.id)
-        .maybeSingle()
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("companies")
+            .select("*")
+            .eq('user_id', user.id)
+            .maybeSingle()
 
-    if (error) throw error;
-    return data;
+        if (error) throw error;
+        return data;
+    });
 }
 
 async function updateCompany(user, userData) {
-    const { data, error } = await getSupabase()
-        .from("companies")
-        .upsert({
-            user_id: user.id,
-            identities: userData.identities,
-            egos: userData.egos,
-            updated_at: new Date()
-        })
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("companies")
+            .upsert({
+                user_id: user.id,
+                identities: userData.identities,
+                egos: userData.egos,
+                updated_at: new Date()
+            })
 
-    if (error) throw error;
-    return data;
+        if (error) throw error;
+        return data;
+    });
 }
 
 async function getCompanyByUsername(username) {
