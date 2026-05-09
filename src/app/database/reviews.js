@@ -1,5 +1,5 @@
 import { getSupabase } from "./connection";
-import { callRPC } from "./supabaseTemplates";
+import { callRPC, withRetry } from "./supabaseTemplates";
 
 export const defaultReviewsPageSize = 20;
 
@@ -42,50 +42,60 @@ export function getOverallScore(scores) {
 }
 
 export async function getUserReview({ userId, itemType, itemId }) {
-    const { data, error } = await getSupabase()
-        .from("reviews")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("item_type", itemType)
-        .eq("item_id", itemId)
-        .maybeSingle();
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("reviews")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("item_type", itemType)
+            .eq("item_id", itemId)
+            .maybeSingle();
 
-    if (error && error.code !== "PGRST116") throw error;
+        if (error && error.code !== "PGRST116") throw error;
 
-    return data;
+        return data;
+    });
 }
 
 export async function getUserReviewsByType({ userId, itemType }) {
-    const { data, error } = await getSupabase()
-        .from("reviews")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("item_type", itemType)
+    try {
+        const data = await withRetry(async () => {
+            const { data, error } = await getSupabase()
+                .from("reviews")
+                .select("*")
+                .eq("user_id", userId)
+                .eq("item_type", itemType)
 
-    if (error) throw error;
+            if (error) throw error;
+            return data;
+        });
 
-    return Object.fromEntries(data.map(item => {
-        const scores = getReviewScores(item);
-        return [item.item_id, { overallRating: getOverallScore(scores), rating: scores, review_text: item.review_text }]
-    }));
+        return Object.fromEntries(data.map(item => {
+            const scores = getReviewScores(item);
+            return [item.item_id, { overallRating: getOverallScore(scores), rating: scores, review_text: item.review_text }]
+        }));
+    } catch (err) {
+        return {};
+    }
 }
 
 export async function getItemReviews({ itemType, itemId, page = 1, pageSize = defaultReviewsPageSize }) {
     const offset = (page - 1) * pageSize;
 
-    const { data, error } = await getSupabase()
-        .from("reviews")
-        .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, user:users ( username )`)
-        .eq("item_type", itemType)
-        .eq("item_id", itemId)
-        .not("review_text", "is", null)
-        .neq("review_text", "")
-        .order("updated_at", { ascending: false })
-        .range(offset, offset + pageSize - 1);
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("reviews")
+            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, user:users ( username )`)
+            .eq("item_type", itemType)
+            .eq("item_id", itemId)
+            .not("review_text", "is", null)
+            .neq("review_text", "")
+            .order("updated_at", { ascending: false })
+            .range(offset, offset + pageSize - 1);
 
-    if (error) throw error;
-
-    return data;
+        if (error) throw error;
+        return data;
+    });
 }
 
 function aggregateData(item) {
@@ -101,28 +111,43 @@ function aggregateData(item) {
 }
 
 export async function getItemAggregates({ itemType, itemId }) {
-    const { data, error } = await getSupabase()
-        .from("item_rating_aggregates")
-        .select("*")
-        .eq("item_type", itemType)
-        .eq("item_id", itemId)
-        .maybeSingle();
+    try {
+        const data = await withRetry(async () => {
+            const { data, error } = await getSupabase()
+                .from("item_rating_aggregates")
+                .select("*")
+                .eq("item_type", itemType)
+                .eq("item_id", itemId)
+                .maybeSingle();
 
-    if (error) throw error;
-    if (!data) return null;
-    return { votes: data.vote_count, rating: aggregateData(data) };
+            if (error) throw error;
+            return data;
+        });
+
+        if (!data) return null;
+        return { votes: data.vote_count, rating: aggregateData(data) };
+    } catch (err) {
+        return null;
+    }
 }
 
 export async function getAggregatesByType({ itemType }) {
-    const { data, error } = await getSupabase()
-        .from("item_rating_aggregates")
-        .select("*")
-        .eq("item_type", itemType)
+    try {
+        const data = await withRetry(async () => {
+            const { data, error } = await getSupabase()
+                .from("item_rating_aggregates")
+                .select("*")
+                .eq("item_type", itemType)
 
-    if (error) throw error;
+            if (error) throw error;
+            return data;
+        });
 
-    return Object.fromEntries(data.map(item => {
-        const scores = aggregateData(item);
-        return [item.item_id, { votes: item.vote_count, overallRating: getOverallScore(scores), rating: scores }]
-    }));
+        return Object.fromEntries(data.map(item => {
+            const scores = aggregateData(item);
+            return [item.item_id, { votes: item.vote_count, overallRating: getOverallScore(scores), rating: scores }]
+        }));
+    } catch (err) {
+        return {};
+    }
 }

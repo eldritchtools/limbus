@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback, useRef } from "react"
 
 import { useAuth } from "./authProvider";
 import { getSupabase } from './connection';
+import { withRetry } from "./supabaseTemplates";
 
 const RequestsCacheContext = createContext(null);
 
@@ -26,29 +27,34 @@ export function RequestsCacheProvider({ children }) {
     const fetchInteraction = async (table, targetType, ids) => {
         if (!user || ids.length === 0) return;
 
-        const { data, error } = await getSupabase()
-            .from(table)
-            .select("target_id")
-            .eq("target_type", targetType)
-            .in("target_id", ids)
-            .eq("user_id", user.id);
+        try {
+            const data = await withRetry(async () => {
+                const { data, error } = await getSupabase()
+                    .from(table)
+                    .select("target_id")
+                    .eq("target_type", targetType)
+                    .in("target_id", ids)
+                    .eq("user_id", user.id);
 
-        if (error) {
-            console.error(`Error loading ${table}`, error);
+                if (error) throw error;
+                return data
+            });
+
+            const [, setMap] = stateMap[table];
+
+            const result = new Set(data.map(r => r.target_id));
+            const update = {};
+
+            for (const id of ids) {
+                const key = makeKey(targetType, id);
+                update[key] = result.has(id);
+            }
+
+            setMap(prev => ({ ...prev, ...update }));
+        } catch (err) {
+            console.error(`Error loading ${table}`, err);
             return;
         }
-
-        const [, setMap] = stateMap[table];
-
-        const result = new Set(data.map(r => r.target_id));
-        const update = {};
-
-        for (const id of ids) {
-            const key = makeKey(targetType, id);
-            update[key] = result.has(id);
-        }
-
-        setMap(prev => ({ ...prev, ...update }));
     };
 
 
@@ -109,15 +115,19 @@ export function RequestsCacheProvider({ children }) {
         const current = map[key];
 
         if (current) {
-            await getSupabase()
-                .from(table)
-                .delete()
-                .eq("target_type", targetType)
-                .eq("target_id", targetId);
+            await withRetry(async () => {
+                await getSupabase()
+                    .from(table)
+                    .delete()
+                    .eq("target_type", targetType)
+                    .eq("target_id", targetId);
+            });
         } else {
-            await getSupabase()
-                .from(table)
-                .insert({ target_type: targetType, target_id: targetId });
+            await withRetry(async () => {
+                await getSupabase()
+                    .from(table)
+                    .insert({ target_type: targetType, target_id: targetId });
+            });
         }
 
         setMap(prev => ({ ...prev, [key]: !current }));

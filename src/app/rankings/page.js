@@ -11,6 +11,7 @@ import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import StatsRadarChart from "../components/ratings/RadarChart";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getRatingHelpTooltipProps } from "../components/tooltips/RatingHelpTooltip";
@@ -21,23 +22,21 @@ import { checkFilterMatch, filterByFilters } from "../lib/filter";
 import { egoCriteria, identityCriteria } from "../lib/ratings";
 import useLocalState from "../lib/useLocalState";
 
-function ItemDisplay({ type, item, rank, rankingScore, communityScore, communityReviewsRef, userScore, userReviewsRef, onChange }) {
-    const props = communityScore ? getRatingTooltipProps(type, communityScore, userScore) : {};
+function ItemDisplay({ type, item, rank, rankingScore, communityScore, communityReviewsRef, userScore, userReviewsRef, showBreakdown, onChange }) {
     const { openRatingModal } = useModal();
+    const { isMobile } = useBreakpoint();
 
+    const props = communityScore ? getRatingTooltipProps(type, communityScore, userScore) : {};
     const getUserReviews = () => userReviewsRef?.current;
     const getCommunityReviews = () => communityReviewsRef.current;
 
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
-        <div
-            {...props}
-            style={{ position: "relative", width: "100%", cursor: "pointer" }}
-            onClick={() => openRatingModal({
-                type: type, id: item.id,
-                // communityRating: communityScore, userScore: userScore,
-                getCommunityReviews: getCommunityReviews, getUserReviews: getUserReviews, onChange: onChange
-            })}
-        >
+    props.onClick = () => openRatingModal({
+        type: type, id: item.id,
+        getCommunityReviews: getCommunityReviews, getUserReviews: getUserReviews, onChange: onChange
+    })
+
+    const icon = useMemo(() => {
+        return <div style={{ position: "relative", width: "100%" }}>
             {type === "identity" ?
                 <IdentityIcon identity={item} uptie={4} displayName={true} displayRarity={true} /> :
                 <EgoIcon ego={item} type={"awaken"} displayName={true} displayRarity={true} />
@@ -52,12 +51,35 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, community
             </div>
             }
         </div>
-        {rank && <>
-            <span>Score: {rankingScore}</span>
-            <span>User Ratings: {communityScore.votes}</span>
-        </>
-        }
-    </div>
+    },
+        [type, item, rank]
+    )
+
+    if (!rank)
+        return <div {...props} style={{ cursor: "pointer" }}>
+            {icon}
+        </div>;
+
+    const scoreComponent = <span style={{ textAlign: "center" }}>Score: {rankingScore.toFixed(2)}</span>;
+    const ratingsComponent = <span style={{ textAlign: "center" }}>User Ratings: {communityScore.votes}</span>;
+    const size = isMobile ? 92 : 128;
+    const scale = isMobile ? 0.5 : 0.7;
+
+    if (showBreakdown)
+        return <div {...props}
+            style={{ display: "grid", gridTemplateColumns: `repeat(2, ${size}px)`, alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+        >
+            {icon}
+            <StatsRadarChart type={type} globalData={communityScore?.rating} userData={userScore?.rating} includeLabels={false} scale={scale} />
+            {ratingsComponent}
+            {scoreComponent}
+        </div>
+    else
+        return <div {...props} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", cursor: "pointer" }}>
+            {icon}
+            {scoreComponent}
+            {ratingsComponent}
+        </div>
 }
 
 function RankingDisplay({
@@ -67,7 +89,7 @@ function RankingDisplay({
     egoReviews, egoReviewsRef, userEgoReviews, userEgoReviewsRef,
     setIdentityReviews, setEgoReviews, setUserIdentityReviews, setUserEgoReviews,
     searchString, filters,
-    strictFiltering, separateByPoint, globalRanking
+    strictFiltering, separateByPoint, globalRanking, showBreakdown
 }) {
     const { isMobile } = useBreakpoint();
 
@@ -185,16 +207,23 @@ function RankingDisplay({
     ]);
 
     const onChange = async (id, x) => {
-        const modEntry = (global, user, delta) => {
+        const modEntry = (global, user, delta, converted = true) => {
             if (!user) return global;
 
-            const scores = getReviewScores(user);
-            const overall = getOverallScore(scores);
-            const votesBasis = (global?.votes ?? 0) + (delta > 0 ? 1 : 0);
+            const userScores = converted ? getReviewScores(user) : user.rating;
+            if (!global) {
+                return {
+                    votes: 1,
+                    rating: userScores,
+                    overallRating: getOverallScore(userScores)
+                }
+            }
+
+            const newRating = global.rating.map((score, i) => ((score * global.votes) + delta * userScores[i]) / (global.votes + delta));
             return {
-                votes: (global?.votes ?? 0) + 1 * delta,
-                rating: (global?.ratings ?? Array.from({ length: 5 }, () => 0)).map((score, i) => score + scores[i] / votesBasis * delta),
-                overallRating: (global?.overallRating ?? 0) + overall / votesBasis * delta
+                votes: global.votes + delta,
+                rating: newRating,
+                overallRating: getOverallScore(newRating)
             }
         }
 
@@ -205,7 +234,7 @@ function RankingDisplay({
                     return newObj;
                 });
 
-                const newReviews = modEntry(identityReviewsRef.current[id], userIdentityReviewsRef.current[id], -1);
+                const newReviews = modEntry(identityReviewsRef.current[id], userIdentityReviewsRef.current[id], -1, false);
                 if (newReviews.votes === 0) {
                     setIdentityReviews(p => {
                         const { [id]: rem, ...newObj } = p;
@@ -220,7 +249,7 @@ function RankingDisplay({
                     return newObj;
                 });
 
-                const newReviews = modEntry(egoReviewsRef.current[id], userEgoReviewsRef.current[id], -1);
+                const newReviews = modEntry(egoReviewsRef.current[id], userEgoReviewsRef.current[id], -1, false);
                 if (newReviews.votes === 0) {
                     setEgoReviews(p => {
                         const { [id]: rem, ...newObj } = p;
@@ -249,9 +278,17 @@ function RankingDisplay({
         }
     }
 
+    const itemWidth = isMobile ? 92 : 128;
+    const widthMultiplier = showBreakdown ? 2 : 1;
+
     const contentDisplay = () => {
-        const listToComponents = list =>
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
+        const listToComponents = (list, multiplier, bottomBorder) =>
+            <div style={{
+                display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${itemWidth * (multiplier ? widthMultiplier : 1)}px, 1fr))`,
+                width: "100%", gap: "0.5rem",
+                paddingBottom: bottomBorder ? "0.5rem" : null,
+                borderBottom: bottomBorder ? "2px var(--secondary-border-color) solid" : null
+            }}>
                 {list.map(([cs, , item, rank]) =>
                     <ItemDisplay
                         key={item.id} type={viewMode} item={item} rank={rank} rankingScore={cs}
@@ -259,27 +296,29 @@ function RankingDisplay({
                         communityReviewsRef={viewMode === "identity" ? identityReviewsRef : egoReviewsRef}
                         userScore={viewMode === "identity" ? userIdentityReviews?.[item.id] : userEgoReviews?.[item.id]}
                         userReviewsRef={viewMode === "identity" ? userIdentityReviewsRef : userEgoReviewsRef}
-                        onChange={x => onChange(item.id, x)}
+                        showBreakdown={showBreakdown} onChange={x => onChange(item.id, x)}
                     />
                 )}
             </div>
 
         if (separateByPoint) {
-            return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", alignItems: "center", justifyContent: "start", gap: "0.5rem", width: "100%" }}>
-                    {Object.entries(items)
-                        .filter(([threshold]) => threshold !== "none")
-                        .sort((a, b) => b[0] - a[0])
-                        .map(([threshold, list]) =>
-                            <React.Fragment key={threshold}>
-                                <span className="title-text">{threshold}{threshold === "10" ? "" : "+"}</span>
-                                {listToComponents(list)}
-                            </React.Fragment>
-                        )
-                    }
+            return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
+                {Object.entries(items)
+                    .filter(([threshold]) => threshold !== "none")
+                    .sort((a, b) => b[0] - a[0])
+                    .map(([threshold, list]) =>
+                        <React.Fragment key={threshold}>
+                            <div className="title-text" style={{ paddingBottom: "0.5rem", borderBottom: "2px var(--secondary-border-color) solid", textAlign: "center" }}>
+                                {threshold}{threshold === "10" ? "" : "+"}
+                            </div>
+                            {listToComponents(list, true, true)}
+                        </React.Fragment>
+                    )
+                }
+                <div className="title-text" style={{ paddingBottom: "0.5rem", borderBottom: "2px var(--secondary-border-color) solid", textAlign: "center" }}>
+                    Unranked
                 </div>
-                <span className="title-text">Unranked</span>
-                {("none" in items) && listToComponents(items["none"])}
+                {("none" in items) && listToComponents(items["none"], false, false)}
             </div>
         } else {
             const [ranked, unranked] = items.reduce(([r, u], item) => {
@@ -289,9 +328,9 @@ function RankingDisplay({
             }, [[], []]);
 
             return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-                {listToComponents(ranked)}
+                {listToComponents(ranked, true, false)}
                 <span className="title-text">Unranked</span>
-                {listToComponents(unranked)}
+                {listToComponents(unranked, false, false)}
             </div>
         }
     }
@@ -341,6 +380,7 @@ export default function CompanyPage() {
     const [strictFiltering, setStrictFiltering] = useLocalState("rankingStrictFiltering", false);
     const [separateByPoint, setSeparateByPoint] = useLocalState("rankingSeparateByPoint", false);
     const [globalRanking, setGlobalRanking] = useLocalState("rankingGlobalRanking", false);
+    const [showBreakdown, setShowBreakdown] = useLocalState("rankingShowBreakdown", false);
 
     useEffect(() => {
         if (loading) return;
@@ -386,7 +426,7 @@ export default function CompanyPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Community Rankings</h2>
         <span style={{ maxWidth: "1000px", textAlign: "left" }}>
-            See how the community ranks the identities and E.G.Os in the game. Rankings are calculated from community-submitted ratings.
+            See how the community ranks the identities and E.G.Os in the game. Rankings are calculated from community-submitted ratings at the time the page loads. Refresh if you want to update the rankings.
             <br /> <br />
             Click on the identity or E.G.O to submit your own rating or leave a review. You can also visit their respective pages and check the &quot;Community Rating&quot; tab.
             <br /> <br />
@@ -422,6 +462,14 @@ export default function CompanyPage() {
                     <input type="checkbox" checked={globalRanking} onChange={e => setGlobalRanking(e.target.checked)} />
                     <span className="hover-text">Use Global Rankings</span>
                 </label>
+                <div />
+                <label
+                    {...getGeneralTooltipProps("If checked, shows the breakdown of scores on all items.\nCaution: This may cause weaker devices to lag.")}
+                    style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+                >
+                    <input type="checkbox" checked={showBreakdown} onChange={e => setShowBreakdown(e.target.checked)} />
+                    <span className="hover-text">Show Score Breakdowns</span>
+                </label>
             </div>
 
             {viewMode === "identity" ?
@@ -445,7 +493,8 @@ export default function CompanyPage() {
             identityReviewsRef={identityReviewsRef} egoReviewsRef={egoReviewsRef}
             {...userReviewProps}
             searchString={searchString} filters={filters}
-            strictFiltering={strictFiltering} separateByPoint={separateByPoint} globalRanking={globalRanking}
+            strictFiltering={strictFiltering} separateByPoint={separateByPoint}
+            globalRanking={globalRanking} showBreakdown={showBreakdown}
         />
     </div>
 }

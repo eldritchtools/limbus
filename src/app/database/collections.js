@@ -1,5 +1,5 @@
 import { getSupabase } from "./connection";
-import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment, withRetry } from "./supabaseTemplates";
 import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {
@@ -60,27 +60,26 @@ export async function getSavedCollections(user_id, page = 1, pageSize = null) {
 
 export async function submitCollectionContribution(user_id, collection_id, target_type, target_id, note, submitter_note) {
     try {
-        const { data, error } = await getSupabase()
-            .from("collection_submissions")
-            .insert({
-                collection_id: collection_id,
-                target_type: target_type,
-                target_id: target_id,
-                note: note,
-                submitter_note: submitter_note,
-                submitted_by: user_id
-            });
+        return await withRetry(async () => {
+            const { error } = await getSupabase()
+                .from("collection_submissions")
+                .insert({
+                    collection_id: collection_id,
+                    target_type: target_type,
+                    target_id: target_id,
+                    note: note,
+                    submitter_note: submitter_note,
+                    submitted_by: user_id
+                });
 
-        if (error) throw error;
-        return "Success";
+            if (error?.code === "23505") return "You have a pending submission for this item on this collection.";
+            if (error) throw error;
 
+            return "Success";
+        });
     } catch (err) {
-        if (err.code === "23505") {
-            return "You have a pending submission for this item on this collection.";
-        } else {
-            return "Something went wrong while submitting.";
-        }
-    }
+        return "Something went wrong while submitting.";
+    };
 }
 
 export async function getCollectionSubmissions(id) {

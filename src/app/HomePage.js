@@ -30,8 +30,8 @@ function RecentAdditions() {
         </HoverBlocker>
 
     return <div
-        className={`${styles.recentAdditions} ${!blockHover ? styles.canHover : null}`}
-        onClick={!blockHover ? () => setOpen(p => !p) : null}
+        className={`${styles.recentAdditions} ${!blockHover && !open ? styles.canHover : null}`}
+        onClick={!blockHover && !open ? () => setOpen(p => !p) : null}
     >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem" }}>
             <span className="title-text">Recent Additions</span>
@@ -40,15 +40,17 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
-                <li>Users can now submit their own ratings and reviews for {wrapLink("identities", "/identities")} and {wrapLink("E.G.Os", "/egos")} by clicking on the &quot;Community Rating&quot; tab below their respective stats. All submitted ratings are collated into the new {wrapLink("Community Rankings", "/rankings")} page where you can see all the identities and E.G.Os sorted by rank.</li>
+                <li>Users can now submit their own ratings and reviews for {wrapLink("identities", "/identities")} and {wrapLink("E.G.Os", "/egos")} by clicking on the &quot;Community Rating&quot; tab below their respective stats. All submitted ratings are collated into the new {wrapLink("Community Rankings", "/rankings")} page where you can see all the identities and E.G.Os sorted by rank. Ratings and reviews can also be submitted through the Community Rankings page.</li>
                 <li>New {wrapLink("Site Customization", "/site-customization")} features allow users to change display settings on the site (colors, font, font size) or change how filter menus work.</li>
                 <li>An Encounters tab has been added to the builds page. Users can filter builds tagged with a specific encounter. This is the same as the builds tab that already exists in the encounters page, just more accessible.</li>
             </ul>
         </div> : null}
 
-        <span className="text-link" style={{ alignSelf: "center" }}>
-            {open ? "▴ Click to Collapse ▴" : "▾ Click to Expand ▾"}
-        </span>
+        {!open &&
+            <span className="text-link" style={{ alignSelf: "center" }}>
+                {open ? "▴ Click to Collapse ▴" : "▾ Click to Expand ▾"}
+            </span>
+        }
     </div>
 
 }

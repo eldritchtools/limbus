@@ -35,7 +35,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
             <h2 className="title-text" style={{ textAlign: "center" }}>{name}</h2>
             <RatingComponent type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} />
         </div>
-        <div style={{ minWidth: "min(480px, 100%)", flex: 1, overflowY: "auto" }}>
+        <div style={{ display: "flex", flexDirection: "column", minWidth: "min(480px, 90vw)", flex: 1, overflowY: "auto" }}>
             <h2 className="title-text">Reviews</h2>
             <ReviewsComponent type={type} id={id} />
         </div>
