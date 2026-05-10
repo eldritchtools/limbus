@@ -6,9 +6,11 @@ import StatsRadarChart from "./RadarChart";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 import Username from "../user/Username";
 
+import { useAuth } from "@/app/database/authProvider";
 import { defaultReviewsPageSize, getItemReviews, getReviewScores } from "@/app/database/reviews";
 
 export default function ReviewsComponent({ type, id, sortType }) {
+    const { user } = useAuth();
     const [page, setPage] = useState(1);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,8 +38,8 @@ export default function ReviewsComponent({ type, id, sortType }) {
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                     <StatsRadarChart type={"identity"} userData={getReviewScores(review)} includeLabels={false} scale={.5} />
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                        <div style={{display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap"}}>
-                            <BumpArrow reviewId={review.id} />
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap" }}>
+                            {user && <BumpArrow reviewId={review.id} />}
                             <span> by </span>
                             <Username username={review.user?.username} data={review} />
                             <span> • </span>
