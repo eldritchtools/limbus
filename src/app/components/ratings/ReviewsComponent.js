@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 
+import BumpArrow from "./BumpArrow";
 import StatsRadarChart from "./RadarChart";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 import Username from "../user/Username";
 
 import { defaultReviewsPageSize, getItemReviews, getReviewScores } from "@/app/database/reviews";
 
-export default function ReviewsComponent({type, id}) {
+export default function ReviewsComponent({ type, id, sortType }) {
     const [page, setPage] = useState(1);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,14 +16,14 @@ export default function ReviewsComponent({type, id}) {
     useEffect(() => {
         const loadReviews = async () => {
             setLoading(true);
-            const fetchedReviews = await getItemReviews({ itemType: type, itemId: id, page: page });
+            const fetchedReviews = await getItemReviews({ itemType: type, itemId: id, page: page, sortType: sortType });
 
             setReviews(fetchedReviews);
             setLoading(false);
         }
 
         loadReviews();
-    }, [type, id, page]);
+    }, [type, id, page, sortType]);
 
     if (loading)
         return <span style={{ color: "var(--disabled-text-color)", textAlign: "center", minWidth: "min(480px, 100%)", flex: 1 }}>
@@ -35,7 +36,13 @@ export default function ReviewsComponent({type, id}) {
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                     <StatsRadarChart type={"identity"} userData={getReviewScores(review)} includeLabels={false} scale={.5} />
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                        <span>by <Username username={review.user?.username} data={review} /> • <ReactTimeAgo date={review.updated_at} locale="en-US" timeStyle="mini" /></span>
+                        <div style={{display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap"}}>
+                            <BumpArrow reviewId={review.id} />
+                            <span> by </span>
+                            <Username username={review.user?.username} data={review} />
+                            <span> • </span>
+                            <ReactTimeAgo date={review.updated_at} locale="en-US" timeStyle="mini" />
+                        </div>
                         <MarkdownRenderer content={review.review_text} />
                     </div>
                 </div>

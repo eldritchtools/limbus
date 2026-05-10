@@ -22,6 +22,9 @@ create table public.reviews (
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now(),
 
+    bump_count integer not null default 0,
+    last_bumped_at timestamptz,
+
     unique(user_id, item_type, item_id)
 );
 
@@ -42,6 +45,18 @@ create table public.item_rating_aggregates (
 
 create index reviews_item_lookup_idx
 on public.reviews (item_type, item_id, updated_at desc);
+
+create index reviews_written_latest_idx
+on public.reviews (item_type, item_id, updated_at desc)
+where review_text is not null and length(trim(review_text)) > 0;
+
+create index reviews_written_active_idx
+on public.reviews (item_type, item_id, last_bumped_at desc)
+where review_text is not null and length(trim(review_text)) > 0;
+
+create index reviews_written_top_idx
+on public.reviews (item_type, item_id, bump_count desc, updated_at desc)
+where review_text is not null and length(trim(review_text)) > 0;
 
 create index reviews_user_lookup_idx
 on public.reviews (user_id);
@@ -92,8 +107,20 @@ returns trigger
 language plpgsql
 as $$
 begin
-    new.updated_at = now();
+
+    if
+        new.criteria_1 is distinct from old.criteria_1
+        or new.criteria_2 is distinct from old.criteria_2
+        or new.criteria_3 is distinct from old.criteria_3
+        or new.criteria_4 is distinct from old.criteria_4
+        or new.criteria_5 is distinct from old.criteria_5
+        or new.review_text is distinct from old.review_text
+    then
+        new.updated_at = now();
+    end if;
+
     return new;
+
 end;
 $$;
 
@@ -291,6 +318,98 @@ begin
     where item_type = p_item_type
       and item_id = p_item_id
       and vote_count <= 0;
+
+end;
+$$;
+
+create table public.user_bump_state (
+    user_id uuid primary key references auth.users(id) on delete cascade,
+    last_bump_at timestamptz
+);
+
+alter table public.user_bump_state enable row level security;
+
+create policy "users can view their own bump state"
+on public.user_bump_state
+for select
+using (
+    auth.uid() = user_id
+);
+
+create policy "users can create their own bump state"
+on public.user_bump_state
+for insert
+with check (
+    auth.uid() = user_id
+);
+
+create policy "users can update their own bump state"
+on public.user_bump_state
+for update
+using (
+    auth.uid() = user_id
+)
+with check (
+    auth.uid() = user_id
+);
+
+create or replace function public.bump_review(
+    p_review_id bigint
+)
+returns table (
+    success boolean,
+    last_bump_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    v_user_id uuid;
+    v_last_bump timestamptz;
+    v_now timestamptz := now();
+begin
+
+    v_user_id := auth.uid();
+
+    if v_user_id is null then
+        return query
+        select false, null::timestamptz;
+        return;
+    end if;
+
+    -- get cooldown state
+    select ub.last_bump_at
+    into v_last_bump
+    from public.user_bump_state ub
+    where ub.user_id = v_user_id;
+
+    -- cooldown check (10 min example)
+    if v_last_bump is not null
+       and v_now - v_last_bump < interval '10 minutes' then
+
+        return query
+        select false, v_last_bump;
+
+        return;
+    end if;
+
+    -- apply bump
+    update public.reviews
+    set
+        bump_count = bump_count + 1,
+        last_bumped_at = v_now
+    where id = p_review_id;
+
+    -- upsert user cooldown state
+    insert into public.user_bump_state (user_id, last_bump_at)
+    values (v_user_id, v_now)
+    on conflict (user_id)
+    do update set last_bump_at = v_now;
+
+    -- success response
+    return query
+    select true, v_now;
 
 end;
 $$;

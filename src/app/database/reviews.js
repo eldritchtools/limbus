@@ -79,19 +79,41 @@ export async function getUserReviewsByType({ userId, itemType }) {
     }
 }
 
-export async function getItemReviews({ itemType, itemId, page = 1, pageSize = defaultReviewsPageSize }) {
+export async function getItemReviews({ itemType, itemId, page = 1, pageSize = defaultReviewsPageSize, sortType = "latest" }) {
     const offset = (page - 1) * pageSize;
 
     return await withRetry(async () => {
-        const { data, error } = await getSupabase()
+        let query = getSupabase()
             .from("reviews")
-            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, user:users ( username )`)
+            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, last_bumped_at, bump_count, user:users ( username )`)
             .eq("item_type", itemType)
             .eq("item_id", itemId)
             .not("review_text", "is", null)
             .neq("review_text", "")
-            .order("updated_at", { ascending: false })
-            .range(offset, offset + pageSize - 1);
+
+        switch (sortType) {
+            case "active":
+                query = query
+                    .order("last_bumped_at", { ascending: false, nullsFirst: false })
+                    .order("updated_at", { ascending: false });
+                break;
+
+            case "top":
+                query = query
+                    .order("bump_count", { ascending: false })
+                    .order("updated_at", { ascending: false });
+                break;
+
+            case "latest":
+            default:
+                query = query
+                    .order("updated_at", { ascending: false });
+                break;
+        }
+
+        query = query.range(offset, offset + pageSize - 1);
+
+        const { data, error } = await query;
 
         if (error) throw error;
         return data;
@@ -150,4 +172,8 @@ export async function getAggregatesByType({ itemType }) {
     } catch (err) {
         return {};
     }
+}
+
+export async function bumpReview(reviewId) {
+    return callRPC("bump_review", { p_review_id: reviewId });
 }
