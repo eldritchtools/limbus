@@ -131,6 +131,8 @@ export default function HomePage() {
             </div>
             <p>
                 Limbus Company Tools is your hub to create and share team builds, discover strategies, and use our game database and interactive tools.
+                <br/> <br/>
+                Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize your experience.
             </p>
             <LinksMenu />
             <HomepageTimers />

@@ -1,0 +1,11 @@
+.bumpArrow {
+    all: unset;
+    transition: all 0.2s ease;
+    background: transparent;
+    width: 1rem;
+    height: 1rem;
+}
+
+.bumpArrow:hover {
+    filter: brightness(1.3);
+}

@@ -1,7 +1,7 @@
 export const identityCriteria = [
     {
         label: "Clashing",
-        desc: "How well it clashes"
+        desc: "How well it clashes, including the usefulness of special clashing mechanics (assist defense, ignore speed, etc)"
     },
     {
         label: "Damage",
@@ -13,7 +13,7 @@ export const identityCriteria = [
     },
     {
         label: "Utility",
-        desc: "How well it supports teammates, cripples enemies, enables niche strategies, or any other useful mechanics"
+        desc: "How well it supports teammates, cripples enemies, enables niche strategies or any other useful mechanics"
     },
     {
         label: "Usability",

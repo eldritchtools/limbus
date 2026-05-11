@@ -39,27 +39,23 @@ function UserStatus() {
         const refreshNotifications = async () => {
             setNotifs(await getNotifications(user.id, 5));
             setUnreadCount(await getUnreadNotificationsCount(user.id));
-        }
+        };
 
         refreshNotifications();
+        
+        const onFocus = () => refreshNotifications();
 
-        const channel = getSupabase()
-            .channel("notifications")
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "notifications",
-                    filter: `user_id=eq.${user.id}`,
-                },
-                () => {
-                    refreshNotifications();
-                }
-            )
-            .subscribe();
+        window.addEventListener("focus", onFocus);
 
-        return () => supabase.removeChannel(channel);
+        return () => {
+            window.removeEventListener("focus", onFocus);
+        };
+
+        // const interval = setInterval(() => {
+        //     refreshNotifications();
+        // }, 60000); // every 60s
+
+        // return () => clearInterval(interval);
     }, [user]);
 
     return loading ?

@@ -1,17 +1,153 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useBreakpoint } from "@eldritchtools/shared-components";
+import { useCallback, useMemo, useState } from "react";
 
+import { useSkillData } from "../dataHooks/skills";
 import { useData } from "../DataProvider";
+import Icon from "../icons/Icon";
+import KeywordIcon from "../icons/KeywordIcon";
 import RatingComponent from "../ratings/RatingComponent";
 import ReviewsComponent from "../ratings/ReviewsComponent";
+import PassiveCard from "../skill/PassiveCard";
+import SkillCard from "../skill/SkillCard";
 
-import { sinnerIdMapping } from "@/app/lib/constants";
+import { ColoredResistance } from "@/app/lib/colors";
+import { affinities, LEVEL_CAP, sinnerIdMapping } from "@/app/lib/constants";
+import { constructDefenseLevel, constructHp, constructSpeed } from "@/app/lib/identity";
+import { constructSkillLabel } from "@/app/lib/skill";
+import useLocalState from "@/app/lib/useLocalState";
+
+function IdentityDetails({ id }) {
+    const [identities, identitiesLoading] = useData("identities");
+    const { skills: skills, combatPassives: combatPassives, supportPassives: supportPassives } = useSkillData("identity", id, 4);
+
+    const componentList = useMemo(() => {
+        if (identitiesLoading || !skills || !combatPassives || !supportPassives) return [];
+        const data = identities[id];
+        const list = [];
+
+        list.push(<div key={list.length} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
+            <div>
+                {(data.skillKeywordList || []).map(x => <KeywordIcon key={x} id={x} />)}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <Icon path={"hp"} style={{ width: "32px", height: "32px" }} />
+                {constructHp(data, LEVEL_CAP)}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <Icon path={"speed"} style={{ width: "32px", height: "32px" }} />
+                {constructSpeed(data, 4)}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <Icon path={"defense level"} style={{ width: "32px", height: "32px" }} />
+                {constructDefenseLevel(data, LEVEL_CAP)}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <KeywordIcon id={"Slash"} />
+                <ColoredResistance resist={data.resists.slash} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <KeywordIcon id={"Pierce"} />
+                <ColoredResistance resist={data.resists.pierce} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <KeywordIcon id={"Blunt"} />
+                <ColoredResistance resist={data.resists.blunt} />
+            </div>
+        </div>);
+
+        [1, 2, 3, 4].forEach(tier => {
+            const sublist = data.skillTypes.filter(s => s.type.tier === tier);
+            if (sublist.length === 0) return;
+            sublist.forEach((skill, index) => {
+                if (!(skill.id in skills)) return;
+                list.push(<SkillCard
+                    key={list.length}
+                    skill={skills[skill.id].data}
+                    count={skill.num}
+                    label={constructSkillLabel("attack", tier, index)}
+                />);
+            })
+        });
+
+        data.defenseSkillTypes.forEach(skill => {
+            if (!(skill.id in skills)) return;
+            list.push(<SkillCard
+                key={list.length}
+                skill={skills[skill.id].data}
+                label={constructSkillLabel("defense")}
+            />);
+        })
+
+        combatPassives.forEach(passive => {
+            list.push(<PassiveCard key={list.length} passive={passive} label={constructSkillLabel("combat")} />)
+        });
+        supportPassives.forEach(passive => {
+            list.push(<PassiveCard key={list.length} passive={passive} label={constructSkillLabel("support")} />)
+        });
+
+        return list;
+    }, [identities, identitiesLoading, id, skills, combatPassives, supportPassives]);
+
+    if (identitiesLoading) return <div>Loading...</div>;
+
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        {componentList}
+    </div>
+}
+
+function EgoDetails({ id }) {
+    const [egos, egosLoading] = useData("egos");
+    const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } = useSkillData("ego", id, 4);
+
+    const componentList = useMemo(() => {
+        if (egosLoading || !awakeningSkills || !corrosionSkills || !passives) return [];
+        const data = egos[id];
+        const list = [];
+
+        list.push(<div key={list.length} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <span>Cost</span>
+                <span>Resist</span>
+            </div>
+            {affinities.map(affinity => <div key={affinity} style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <KeywordIcon id={affinity} />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    {affinity in data.cost ? data.cost[affinity] : <span style={{ color: "var(--disabled-text-color)" }}>0</span>}
+                    {<ColoredResistance resist={data.resists[affinity]} />}
+                </div>
+            </div>)}
+        </div>);
+
+        awakeningSkills.forEach(skill => {
+            list.push(<SkillCard key={list.length} skill={skill.data} label={constructSkillLabel("awakening")} />);
+        });
+
+        corrosionSkills.forEach(skill => {
+            list.push(<SkillCard key={list.length} skill={skill.data} label={constructSkillLabel("corrosion")} />);
+        });
+
+        passives.forEach(passive => {
+            list.push(<PassiveCard key={list.length} passive={passive} label={constructSkillLabel("passive")} />)
+        });
+
+        return list;
+    }, [egos, egosLoading, id, awakeningSkills, corrosionSkills, passives]);
+
+    if (egosLoading) return <div>Loading...</div>;
+
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        {componentList}
+    </div>
+}
 
 export default function RatingModalContent({ type, id, getCommunityReviews, getUserReviews, onChange }) {
     const [identities, identitiesLoading] = useData("identities_mini")
     const [egos, egosLoading] = useData("egos_mini");
     const [, updateCount] = useState(0);
+    const [tab, setTab] = useLocalState("ratingModalTab", "latest");
+    const { isDesktop } = useBreakpoint();
 
     const triggerRender = useCallback(() => { updateCount(p => p + 1) }, []);
 
@@ -30,14 +166,26 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
         (identitiesLoading ? "" : `[${sinnerIdMapping[identities[id].sinnerId]}] ${identities[id].name}`) :
         (egosLoading ? "" : `[${sinnerIdMapping[egos[id].sinnerId]}] ${egos[id].name}`)
 
-    return <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem", maxHeight: "80vh" }}>
-        <div style={{ maxWidth: "min(350px, 100%)" }}>
+    return <div style={{ display: "flex", flexDirection: isDesktop ? "row" : "column", alignItems: isDesktop ? null: "center", gap: "0.5rem", maxHeight: "80vh" }}>
+        <div style={{ maxWidth: "min(350px, 100%)", paddingBottom: "2rem" }}>
             <h2 className="title-text" style={{ textAlign: "center" }}>{name}</h2>
             <RatingComponent type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", minWidth: "min(480px, 90vw)", flex: 1, overflowY: "auto" }}>
-            <h2 className="title-text">Reviews</h2>
-            <ReviewsComponent type={type} id={id} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(320px, 90vw)", flex: 1 }}>
+            <div style={{ display: "flex", gap: "1rem" }}>
+                <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
+                <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
+                <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
+                <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>
+                    {type === "identity" ? "Identity " : "E.G.O "}Details
+                </div>
+            </div>
+            <div style={{ overflowY: "auto" }}>
+                {tab === "details" ?
+                    (type === "identity" ? <IdentityDetails id={id} /> : <EgoDetails id={id} />) :
+                    <ReviewsComponent type={type} id={id} sortType={tab} />
+                }
+            </div>
         </div>
     </div>
 }

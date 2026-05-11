@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
@@ -33,6 +33,23 @@ const MODAL_COMPONENTS = {
 
 export function ModalProvider({ children }) {
     const [stack, setStack] = useState([]);
+
+    useEffect(() => {
+        if (stack.length === 0) {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+            return;
+        }
+
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = "hidden";
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+        return () => {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        };
+    }, [stack.length]);
 
     const openModal = (type, props = {}) => {
         setStack(prev => [...prev, { type, props }]);
