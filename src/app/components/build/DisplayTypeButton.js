@@ -3,6 +3,8 @@ import DropdownButton from "../objects/DropdownButton";
 const options = {
     "names": "Icons with Names",
     "icons": "Icons Only",
+    "ids": "Identities Only",
+    "ego-comp": "E.G.Os Compressed",
     "stats": "Stats",
     "types": "Skill Types",
     "calc": "Clash/Damage Calc",

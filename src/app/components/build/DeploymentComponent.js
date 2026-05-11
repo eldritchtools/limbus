@@ -8,7 +8,7 @@ const deploymentComponentStyle = {
     justifyContent: "center",
     padding: 0,
     margin: 0,
-    containerType: "size",
+    // containerType: "size",
     fontSize: "clamp(0.6rem, 20cqw, 1.5rem)"
 }
 

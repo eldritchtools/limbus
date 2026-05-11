@@ -19,7 +19,7 @@ function Identity({ identity, displayType, sinnerId, uptie, level }) {
             <SinnerIcon num={sinnerId} style={{ width: "75%", height: "75%" }} />
         </div>
 
-    const props = { displayName: displayType === "names", displayRarity: true };
+    const props = { displayName: displayType === "names" || displayType === "ids", displayRarity: true };
     if (uptie) {
         props.uptie = uptie;
         props.displayUptie = true;
@@ -44,14 +44,16 @@ function Identity({ identity, displayType, sinnerId, uptie, level }) {
 }
 
 function Ego({ ego, displayType, rank, threadspin }) {
+    let aspectRatio = displayType === "ego-comp" ? "1/1" : "4/1";
+
     if (!ego)
-        return <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
-            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "18%", height: "auto" }} />
+        return <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
+            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: displayType === "ego-comp" ? "80%" : "18%", height: "auto" }} />
         </div>
 
-    const props = { banner: true, type: "awaken", displayName: displayType === "names", displayRarity: false };
+    const props = { banner: displayType !== "ego-comp", type: "awaken", displayName: displayType === "names", displayRarity: false };
     let tooltipId = ego.id;
-    if (threadspin) {
+    if (threadspin && displayType !== "ego-comp") {
         props.threadspin = threadspin;
         tooltipId = `${tooltipId}|${threadspin}`;
     }
@@ -59,11 +61,11 @@ function Ego({ ego, displayType, rank, threadspin }) {
     return displayType !== null ?
         (
             ego.upcoming ?
-                <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
+                <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
                     <EgoIcon ego={ego} {...props} />
                 </div> :
                 <LinkWithTooltip href={`/egos/${ego.id}`} tooltipProps={getEgoTooltipProps(tooltipId)}>
-                    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
+                    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
                         <EgoIcon ego={ego} {...props} />
                     </div>
                 </LinkWithTooltip>
@@ -74,7 +76,21 @@ function Ego({ ego, displayType, rank, threadspin }) {
 export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity, egos, uptie, level, threadspins, deploymentOrder, activeSinners }) {
     const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
 
-    return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", border: `1px ${deploymentColors[depType]} solid` }}>
+    if (displayType === "ids")
+        return <div style={{ display: "flex", flexDirection: "column", width: "100%", border: `1px ${deploymentColors[depType]} solid` }}>
+            <Identity
+                identity={identity}
+                displayType={displayType}
+                sinnerId={sinnerId}
+                uptie={uptie}
+                level={level}
+            />
+            <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
+        </div>
+
+    const columns = displayType === "ego-comp" ? "4fr 1fr" : "1fr 1fr";
+
+    return <div style={{ display: "grid", gridTemplateColumns: columns, width: "100%", border: `1px ${deploymentColors[depType]} solid` }}>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
             <Identity
                 identity={identity}
