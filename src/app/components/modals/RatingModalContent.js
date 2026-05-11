@@ -172,7 +172,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
             <RatingComponent type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(320px, 90vw)", flex: 1 }}>
-            <div style={{ display: "flex", gap: "1rem" }}>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
                 <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
                 <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
                 <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
