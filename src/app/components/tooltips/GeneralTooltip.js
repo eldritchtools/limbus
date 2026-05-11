@@ -18,7 +18,7 @@ const TOOLTIP_ID = "general-tooltip";
 
 function GeneralTooltipContent({ content }) {
     const { isMobile } = useBreakpoint();
-    return <div style={{ padding: "0.5rem", display: "block", maxWidth: isMobile ? "40ch" : "60ch", whiteSpace: "pre-wrap" }}>
+    return <div style={{ padding: "0.5rem", display: "block", maxWidth: isMobile ? "40ch" : "70ch", whiteSpace: "pre-wrap" }}>
         {tooltipContent[content] ?? content}
     </div>
 }

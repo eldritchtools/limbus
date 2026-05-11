@@ -1,23 +1,23 @@
 export const identityCriteria = [
     {
         label: "Clashing",
-        desc: "How well it clashes, including the usefulness of special clashing mechanics (assist defense, ignore speed, etc)"
+        desc: "How well it clashes, including the usefulness of clashing manipulation mechanics like assist defense and ignoring speed"
     },
     {
         label: "Damage",
-        desc: "How much damage it deals"
+        desc: "How much damage it can output"
     },
     {
         label: "Potential Impact",
-        desc: "How well it maintains or capitalizes on its keywords or main gimmicks and how valuable its impact is"
+        desc: "How well it maintains or capitalizes on its keywords or core gimmicks and how big the payoff is when utilized properly"
     },
     {
         label: "Utility",
-        desc: "How well it supports teammates, cripples enemies, enables niche strategies or any other useful mechanics"
+        desc: "How well it supports teammates (offensively or defensively), cripples enemies, or enables niche strategies"
     },
     {
         label: "Usability",
-        desc: "How easy it is to use (kit complexity, difficulty in setting up skill conditionals, whether it requires very specific teams/E.G.Os)"
+        desc: "How easy it is to use (kit complexity, difficulty in setting up skill conditionals, reliance on specific teams/E.G.Os)"
     }
 ]
 
@@ -28,11 +28,11 @@ export const egoCriteria = [
     },
     {
         label: "Damage",
-        desc: "How much damage it deals"
+        desc: "How much damage it can output"
     },
     {
         label: "Potential Impact",
-        desc: "How useful or impactful its primary effects are when used properly in a team that can capitalize on it"
+        desc: "How significant the payoff of its primary effects are when used properly in a team that can capitalize on it"
     },
     {
         label: "Utility",
