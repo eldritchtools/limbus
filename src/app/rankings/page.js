@@ -436,8 +436,6 @@ export default function CompanyPage() {
             <br /> <br />
             Click on the identity or E.G.O to submit your own rating or leave a review. You can also visit their respective pages and check the &quot;Community Rating&quot; tab.
             <br /> <br />
-            If you find a review helpful, informative, or insightful, you can bump it to help increase its visibility in the Active and Top tabs. Look for the arrow button near the start of the review.
-            <br /> <br />
             Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
             <br /> <br />
             This page is still an early version and may receive design overhauls and quality-of-life improvements over time. Feel free to share suggestions through the Discord server or the <NoPrefetchLink href={"/feedback"} className="text-link">feedback</NoPrefetchLink> page.
