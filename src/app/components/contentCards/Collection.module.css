@@ -31,6 +31,45 @@
     box-sizing: border-box;
 }
 
+.scrollContainer {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+}
+
+.scrollContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.track {
+    display: flex;
+    gap: 1rem;
+
+    transition: transform 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+.hoverHint:hover .track {
+    transform: translateX(-10px);
+}
+
+.hoverHint:not(:hover) .track {
+    transform: translateX(0);
+}
+
 .scrollContainer a {
     -webkit-user-drag: none;
+}
+
+.scrollable {
+    cursor: grab;
+}
+
+.scrollable:active {
+    cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .track {
+        transition: none;
+    }
 }
