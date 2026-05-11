@@ -146,7 +146,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
     const [identities, identitiesLoading] = useData("identities_mini")
     const [egos, egosLoading] = useData("egos_mini");
     const [, updateCount] = useState(0);
-    const [tab, setTab] = useLocalState("ratingModalTab", "latest");
+    const [tab, setTab, tabInitialized] = useLocalState("ratingModalTab", "latest");
     const { isDesktop } = useBreakpoint();
 
     const triggerRender = useCallback(() => { updateCount(p => p + 1) }, []);
@@ -183,7 +183,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
             <div style={{ overflowY: "auto" }}>
                 {tab === "details" ?
                     (type === "identity" ? <IdentityDetails id={id} /> : <EgoDetails id={id} />) :
-                    <ReviewsComponent type={type} id={id} sortType={tab} />
+                    (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} />)
                 }
             </div>
         </div>

@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import BuildDisplay from "@/app/components/build/BuildDisplay";
 import BuildDisplayMenuCard from "@/app/components/build/BuildDisplayMenuCard";
 import DisplayTypeButton from "@/app/components/build/DisplayTypeButton";
-import SinDistribution from "@/app/components/build/SinDistribution";
+import Distribution from "@/app/components/build/Distribution";
 import TeamCodeComponent from "@/app/components/build/TeamCodeComponent";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
@@ -78,7 +78,7 @@ export default function BuildPage({ id }) {
                 <DisplayTypeButton value={displayType} setValue={setDisplayType} />
                 <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os</span>
             </BuildDisplayMenuCard>
-            <SinDistribution
+            <Distribution
                 identityIds={build.identity_ids}
                 identityUpties={identityUpties}
                 deploymentOrder={build.deployment_order}

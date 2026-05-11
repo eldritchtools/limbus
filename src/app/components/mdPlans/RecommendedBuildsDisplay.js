@@ -7,7 +7,7 @@ import EventRolls from "./EventRolls";
 import BuildDisplay from "../build/BuildDisplay";
 import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DisplayTypeButton from "../build/DisplayTypeButton";
-import SinDistribution from "../build/SinDistribution";
+import Distribution from "../build/Distribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
 import TeamBuild from "../contentCards/TeamBuild";
 import KeywordIcon from "../icons/KeywordIcon";
@@ -98,7 +98,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                     <DisplayTypeButton value={displayType} setValue={setDisplayType} />
                     <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os</span>
                 </BuildDisplayMenuCard>
-                <SinDistribution
+                <Distribution
                     identityIds={build.identity_ids}
                     identityUpties={extraOpts.identityUpties}
                     deploymentOrder={build.deployment_order}

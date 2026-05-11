@@ -7,7 +7,7 @@ import styles from "../build/BuildDisplay.module.css";
 import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DeploymentComponent from "../build/DeploymentComponent";
 import DisplayTypeButton from "../build/DisplayTypeButton";
-import SinDistribution from "../build/SinDistribution";
+import Distribution from "../build/Distribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import RarityIcon from "../icons/RarityIcon";
@@ -213,7 +213,7 @@ export default function BuildEditingComponent({
                 null
             }
             {!minimalEditor ?
-                <SinDistribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
+                <Distribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
                 null
             }
             {includeEventRolls ?

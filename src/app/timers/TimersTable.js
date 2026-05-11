@@ -1,6 +1,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useState } from "react";
 
+import { kstToLocalTime } from "./timerFunc";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
 import { getTimerTooltipProps } from "../components/tooltips/TimerTooltip";
@@ -93,7 +94,7 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
         {...tooltipProps}
     >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: isMobile ? "0.2rem" : "0.5rem", width: style.width }}>
-            <span>{title}</span>
+            <span style={{ textAlign: "center", whiteSpace: "pre-wrap" }}>{title}</span>
             {src ? <BannerIcon path={src} style={style} /> : null}
         </div>
         <TimeComponent key={dateString} date={date} dateString={dateString} />
@@ -127,13 +128,15 @@ function getNextThurs() {
 }
 
 export default function TimersTable({ timers }) {
+    const timeLocal = kstToLocalTime("6AM");
+
     return <div style={{ display: "flex", flexDirection: "column", overflowX: "auto", maxWidth: "95vw", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         {timers?.season ?
             <TimerRow title={`Season ${getSeasonString(7)}`} src={timers.season.src} dateString={timers.season.endDate} /> :
             null
         }
-        <TimerRow title={"Daily Reset (6AM KST)"} date={getNextDay()} />
-        <TimerRow title={"Weekly Reset (6AM KST)"} date={getNextThurs()} />
+        <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} />
+        <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextThurs()} />
         {timers?.event ?
             <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} /> :
             null
@@ -158,11 +161,12 @@ export function HomepageTimers() {
     const { isMobile } = useBreakpoint();
 
     if (timersLoading) return null;
+    const timeLocal = kstToLocalTime("6AM");
 
     return <div style={{ display: "flex", flexWrap: "wrap", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flex: 1 }}>
-            <TimerRow title={"Daily Reset (6AM KST)"} date={getNextDay()} column={true} />
-            <TimerRow title={"Weekly Reset (6AM KST)"} date={getNextThurs()} column={true} />
+            <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} column={true} />
+            <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextThurs()} column={true} />
         </div>
         {timers?.event ?
             <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} column={true} tooltip={"event"} /> :
