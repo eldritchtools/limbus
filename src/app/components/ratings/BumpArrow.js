@@ -57,8 +57,8 @@ function getTooltipText(lastBumpAt) {
     const cooldownText = getCooldownText(lastBumpAt);
 
     return cooldownText
-        ? `Reviews can be "bumped" to give them higher priority in Active or Top.\n${cooldownText}`
-        : `Reviews can be "bumped" to give them higher priority in Active or Top.\nYou can bump one review every 10 minutes.`;
+        ? `Reviews can be "bumped" to give them higher priority in Active or Top.\nTo limit possible spam or abuse, bumps are limited to once every 10 minutes.\n${cooldownText}`
+        : `Reviews can be "bumped" to give them higher priority in Active or Top.\nTo limit possible spam or abuse, bumps are limited to once every 10 minutes.`;
 }
 
 export default function BumpArrow({ reviewId }) {

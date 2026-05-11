@@ -207,10 +207,10 @@ function RankingDisplay({
     ]);
 
     const onChange = async (id, x) => {
-        const modEntry = (global, user, delta, converted = true) => {
+        const modEntry = (global, user, delta) => {
             if (!user) return global;
 
-            const userScores = converted ? getReviewScores(user) : user.rating;
+            const userScores = user.rating ? user.rating : getReviewScores(user);
             if (!global) {
                 return {
                     votes: 1,
@@ -234,7 +234,7 @@ function RankingDisplay({
                     return newObj;
                 });
 
-                const newReviews = modEntry(identityReviewsRef.current[id], userIdentityReviewsRef.current[id], -1, false);
+                const newReviews = modEntry(identityReviewsRef.current[id], userIdentityReviewsRef.current[id], -1);
                 if (newReviews.votes === 0) {
                     setIdentityReviews(p => {
                         const { [id]: rem, ...newObj } = p;
@@ -249,7 +249,7 @@ function RankingDisplay({
                     return newObj;
                 });
 
-                const newReviews = modEntry(egoReviewsRef.current[id], userEgoReviewsRef.current[id], -1, false);
+                const newReviews = modEntry(egoReviewsRef.current[id], userEgoReviewsRef.current[id], -1);
                 if (newReviews.votes === 0) {
                     setEgoReviews(p => {
                         const { [id]: rem, ...newObj } = p;
@@ -315,10 +315,13 @@ function RankingDisplay({
                         </React.Fragment>
                     )
                 }
-                <div className="title-text" style={{ paddingBottom: "0.5rem", borderBottom: "2px var(--secondary-border-color) solid", textAlign: "center" }}>
-                    Unranked
-                </div>
-                {("none" in items) && listToComponents(items["none"], false, false)}
+                {items["none"]?.length > 0 && <>
+                    <div className="title-text" style={{ paddingBottom: "0.5rem", borderBottom: "2px var(--secondary-border-color) solid", textAlign: "center" }}>
+                        Unranked
+                    </div>
+                    {("none" in items) && listToComponents(items["none"], false, false)}
+                </>
+                }
             </div>
         } else {
             const [ranked, unranked] = items.reduce(([r, u], item) => {
@@ -329,8 +332,11 @@ function RankingDisplay({
 
             return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
                 {listToComponents(ranked, true, false)}
-                <span className="title-text">Unranked</span>
-                {listToComponents(unranked, false, false)}
+                {unranked.length > 0 && <>
+                    <span className="title-text">Unranked</span>
+                    {listToComponents(unranked, false, false)}
+                </>
+                }
             </div>
         }
     }
