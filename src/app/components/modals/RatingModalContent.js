@@ -147,7 +147,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
     const [egos, egosLoading] = useData("egos_mini");
     const [, updateCount] = useState(0);
     const [tab, setTab] = useLocalState("ratingModalTab", "latest");
-    const { isMobile } = useBreakpoint();
+    const { isDesktop } = useBreakpoint();
 
     const triggerRender = useCallback(() => { updateCount(p => p + 1) }, []);
 
@@ -166,12 +166,12 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
         (identitiesLoading ? "" : `[${sinnerIdMapping[identities[id].sinnerId]}] ${identities[id].name}`) :
         (egosLoading ? "" : `[${sinnerIdMapping[egos[id].sinnerId]}] ${egos[id].name}`)
 
-    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "center" : null, gap: "0.5rem", maxHeight: "80vh" }}>
+    return <div style={{ display: "flex", flexDirection: isDesktop ? "row" : "column", alignItems: isDesktop ? null: "center", gap: "0.5rem", maxHeight: "80vh" }}>
         <div style={{ maxWidth: "min(350px, 100%)", paddingBottom: "2rem" }}>
             <h2 className="title-text" style={{ textAlign: "center" }}>{name}</h2>
             <RatingComponent type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 90vw)", flex: 1 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(320px, 90vw)", flex: 1 }}>
             <div style={{ display: "flex", gap: "1rem" }}>
                 <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
                 <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
