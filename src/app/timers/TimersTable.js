@@ -1,7 +1,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useState } from "react";
 
-import { kstToLocalTime } from "./timerFunc";
+import { getNextDay, getNextDayOfWeek, kstToLocalTime } from "./timerFunc";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
 import { getTimerTooltipProps } from "../components/tooltips/TimerTooltip";
@@ -46,9 +46,15 @@ function padDigit(num) {
     return num.toString().padStart(2, "0");
 }
 
-function TimeString({ date }) {
+export function TimeString({ date }) {
     const { d, h, m, s } = useCountdown(date);
     return <span>{padDigit(d)}:{padDigit(h)}:{padDigit(m)}:{padDigit(s)}</span>;
+}
+
+export function isDaysAway(date, days) {
+    const diff = date.getTime() - Date.now();
+    if(diff < 0) return false;
+    return Math.floor(diff / DAY) >= days;
 }
 
 function TimeComponent({ date, dateString }) {
@@ -101,32 +107,6 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
     </div>
 }
 
-function getNextDay() {
-    const SHIFT = 3 * 60 * 60 * 1000; // 6AM KST
-
-    const adjusted = new Date((new Date()).getTime() + SHIFT);
-
-    adjusted.setUTCHours(0, 0, 0, 0);
-    adjusted.setUTCDate(adjusted.getUTCDate() + 1);
-
-    return new Date(adjusted.getTime() - SHIFT);
-}
-
-function getNextThurs() {
-    const SHIFT = 3 * 60 * 60 * 1000; // 6AM KST
-
-    const adjusted = new Date((new Date()).getTime() + SHIFT);
-    const currentDay = adjusted.getUTCDay();
-
-    let diff = (4 - currentDay + 7) % 7;
-    if (diff === 0) diff = 7;
-
-    adjusted.setUTCDate(adjusted.getUTCDate() + diff);
-    adjusted.setUTCHours(0, 0, 0, 0);
-
-    return new Date(adjusted.getTime() - SHIFT);
-}
-
 export default function TimersTable({ timers }) {
     const timeLocal = kstToLocalTime("6AM");
 
@@ -136,7 +116,7 @@ export default function TimersTable({ timers }) {
             null
         }
         <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} />
-        <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextThurs()} />
+        <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} />
         {timers?.event ?
             <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} /> :
             null
@@ -166,7 +146,7 @@ export function HomepageTimers() {
     return <div style={{ display: "flex", flexWrap: "wrap", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flex: 1 }}>
             <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} column={true} />
-            <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextThurs()} column={true} />
+            <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={true} />
         </div>
         {timers?.event ?
             <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} column={true} tooltip={"event"} /> :

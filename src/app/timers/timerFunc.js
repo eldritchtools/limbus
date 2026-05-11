@@ -1,3 +1,29 @@
+export function getNextDay() {
+    const SHIFT = 3 * 60 * 60 * 1000; // 6AM KST
+
+    const adjusted = new Date((new Date()).getTime() + SHIFT);
+
+    adjusted.setUTCHours(0, 0, 0, 0);
+    adjusted.setUTCDate(adjusted.getUTCDate() + 1);
+
+    return new Date(adjusted.getTime() - SHIFT);
+}
+
+export function getNextDayOfWeek(dayOfWeek) {
+    const SHIFT = 3 * 60 * 60 * 1000; // 6AM KST
+
+    const adjusted = new Date((new Date()).getTime() + SHIFT);
+    const currentDay = adjusted.getUTCDay();
+
+    let diff = (dayOfWeek - currentDay + 7) % 7;
+    if (diff === 0) diff = 7;
+
+    adjusted.setUTCDate(adjusted.getUTCDate() + diff);
+    adjusted.setUTCHours(0, 0, 0, 0);
+
+    return new Date(adjusted.getTime() - SHIFT);
+}
+
 export function kstToLocalTime(str) {
     const hour12 = parseInt(str.match(/\d+/)[0]);
 
