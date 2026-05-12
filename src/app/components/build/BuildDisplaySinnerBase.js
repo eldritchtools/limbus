@@ -19,7 +19,7 @@ function Identity({ identity, displayType, sinnerId, uptie, level }) {
             <SinnerIcon num={sinnerId} style={{ width: "75%", height: "75%" }} />
         </div>
 
-    const props = { displayName: displayType === "names" || displayType === "ids", displayRarity: true };
+    const props = { displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp", displayRarity: true };
     if (uptie) {
         props.uptie = uptie;
         props.displayUptie = true;
