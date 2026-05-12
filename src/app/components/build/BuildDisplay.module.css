@@ -10,10 +10,18 @@
   grid-template-columns: repeat(6, 1fr);
 }
 
+.buildDisplay.idsOnly {
+  grid-template-columns: repeat(12, 1fr);
+}
+
 /* Medium screens: switch to 4 columns */
 @container (max-width: 1399px) {
   .buildDisplay {
     grid-template-columns: repeat(4, 1fr);
+  }
+  .buildDisplay.idsOnly {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 1200px;
   }
 }
 
@@ -22,6 +30,10 @@
   .buildDisplay {
     grid-template-columns: repeat(3, 1fr);
   }
+  .buildDisplay.idsOnly {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 800px;
+  }
 }
 
 /* Mobile fallback: 1–2 columns */
@@ -29,11 +41,17 @@
   .buildDisplay {
     grid-template-columns: repeat(2, 1fr);
   }
+  .buildDisplay.idsOnly {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @container (max-width: 299px) {
   .buildDisplay {
     grid-template-columns: 1fr;
+  }
+  .buildDisplay.idsOnly {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

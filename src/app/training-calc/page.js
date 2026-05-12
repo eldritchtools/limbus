@@ -3,6 +3,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useRef, useState } from "react";
 
+import LuxTable from "./LuxTable";
 import SelectedTable from "./SelectedTable";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -206,5 +207,7 @@ export default function TrainingCalcPage() {
             identityOptions={identities}
             egoOptions={egos}
         />
+
+        <LuxTable />
     </div>;
 }

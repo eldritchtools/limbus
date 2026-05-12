@@ -29,7 +29,7 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
             null
         }
 
-        <div className={styles.buildDisplay} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
+        <div className={`${styles.buildDisplay} ${displayType === "ids" || displayType === "ego-comp" ? styles.idsOnly : null}`} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
             {Array.from({ length: 12 }, (_, index) => {
                 let egosDisplay = Array.from({ length: 5 }, () => null);
                 if (egoIds && Array.isArray(egoIds)) {

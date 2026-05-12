@@ -238,12 +238,15 @@ export default function MdPlanPage({ id }) {
             }
 
             <div style={{ display: "flex", flexDirection: "column", paddingRight: "0.5rem", gap: "0.5rem", width: "100%" }}>
-                <span style={{ fontSize: "1.2rem" }}>Description</span>
-                <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
-                    <div>
-                        <MarkdownRenderer content={plan.body} />
+                {plan?.body?.length > 0 && <>
+                    <span style={{ fontSize: "1.2rem" }}>Description</span>
+                    <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
+                        <div>
+                            <MarkdownRenderer content={plan.body} />
+                        </div>
                     </div>
-                </div>
+                </>
+                }
             </div>
 
             <HorizontalDivider />

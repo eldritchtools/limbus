@@ -144,7 +144,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
         activeSinners={activeSinners}
     />
 
-    if (["names", "icons"].includes(displayType)) return baseComponent;
+    if (["names", "icons", "ids", "ego-comp"].includes(displayType)) return baseComponent;
 
     const identityData = identity?.upcoming ? null : identity;
     const egosData = egos.map(x => x?.upcoming ? null : x);

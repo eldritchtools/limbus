@@ -17,7 +17,8 @@ export function StatusDropdownSelector({ selected, setSelected, isMulti = false,
             acc[id] = {
                 value: id,
                 label: <Status status={statuses[id]} includeTooltip={true} />,
-                name: statuses[id].name
+                name: statuses[id].name,
+                desc: statuses[id].desc ?? ""
             };
             return acc;
         }, {}),
@@ -37,7 +38,7 @@ export function StatusDropdownSelector({ selected, setSelected, isMulti = false,
         selected={selected}
         setSelected={setSelected}
         placeholder={"Search Statuses..."}
-        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+        filterFunction={(candidate, input) => checkFilterMatch(input, [candidate.data.name, candidate.data.desc])}
         isMulti={isMulti}
         styles={styles}
         excludeMode={excludeMode}

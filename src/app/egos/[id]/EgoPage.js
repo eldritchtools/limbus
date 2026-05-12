@@ -50,7 +50,7 @@ function RatingTab({ id, showReviews, setShowReviews }) {
     }, [user, id, refresh]);
 
     if (loading) return <span style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Loading Rating...</span>;
-    
+
     const onChange = (newData) => {
         setUserData(newData);
         setRefresh(true);
@@ -121,15 +121,15 @@ function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCo
 }
 
 function ReviewsTab({ id, setShowReviews }) {
-    const [tab, setTab] = useLocalState("ratingTab", "latest");
+    const [tab, setTab, tabInitialized] = useLocalState("ratingTab", "latest");
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
-        <div style={{display: "flex", alignItems: "center", gap: "1rem"}}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <button onClick={() => setShowReviews(false)}>Hide Reviews</button>
             <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
             <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
             <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
         </div>
-        <ReviewsComponent type={"ego"} id={id} sortType={tab} />
+        {tabInitialized && <ReviewsComponent type={"ego"} id={id} sortType={tab} />}
     </div>
 }
 

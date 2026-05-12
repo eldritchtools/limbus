@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "./Collection.module.css";
 import NoPrefetchLink from "../NoPrefetchLink";
@@ -18,8 +18,9 @@ import UsernameWithTime from "../user/UsernameWithTime";
 import { useAuth } from "@/app/database/authProvider";
 
 export default function Collection({ collection, complete = true }) {
-    const [blockHover, setBlockHover] = useState(false);
     const { user } = useAuth();
+    const [blockHover, setBlockHover] = useState(false);
+    const [isScrollable, setIsScrollable] = useState(false);
 
     const ref = useRef(null);
     const isDragging = useRef(false);
@@ -28,35 +29,63 @@ export default function Collection({ collection, complete = true }) {
     const moved = useRef(false);
 
     const scrollProps = {
-        ref: ref,
-        onMouseDown: (e) => {
+        ref,
+
+        onPointerDown: (e) => {
+            if (!ref.current) return;
+
             isDragging.current = true;
             moved.current = false;
 
-            startX.current = e.pageX - (ref.current?.offsetLeft || 0);
-            scrollLeft.current = ref.current?.scrollLeft || 0;
+            ref.current.setPointerCapture(e.pointerId);
+
+            document.body.style.userSelect = "none";
+
+            startX.current = e.clientX;
+            scrollLeft.current = ref.current.scrollLeft;
         },
-        onMouseLeave: () => isDragging.current = false,
-        onMouseUp: () => isDragging.current = false,
-        onMouseMove: e => {
+
+        onPointerMove: (e) => {
             if (!isDragging.current || !ref.current) return;
 
-            const x = e.pageX - (ref.current.offsetLeft || 0);
-            const walk = x - startX.current;
-
-            if (Math.abs(walk) > 5) {
-                moved.current = true; // 👈 mark as drag
-            }
+            const x = e.clientX;
+            const walk = (x - startX.current) * 1.5;
+            if (Math.abs(walk) > 5) moved.current = true;
 
             ref.current.scrollLeft = scrollLeft.current - walk;
         },
-        onClickCapture: e => {
+
+        onPointerUp: (e) => {
+            isDragging.current = false;
+            document.body.style.userSelect = "";
+
+            if (ref.current) ref.current.releasePointerCapture(e.pointerId);
+        },
+
+        onPointerCancel: () => {
+            isDragging.current = false;
+            document.body.style.userSelect = "";
+        },
+
+        onClickCapture: (e) => {
             if (moved.current) {
                 e.preventDefault();
                 e.stopPropagation();
             }
         }
-    }
+    };
+
+    useEffect(() => {
+        const checkScrollable = () => {
+            if (!ref.current) return;
+            setIsScrollable(ref.current.scrollWidth > ref.current.clientWidth);
+        };
+
+        checkScrollable();
+        const resizeObserver = new ResizeObserver(checkScrollable);
+        if (ref.current) resizeObserver.observe(ref.current);
+        return () => resizeObserver.disconnect();
+    }, []);
 
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
@@ -70,8 +99,12 @@ export default function Collection({ collection, complete = true }) {
                 {collection.short_desc}
             </div>
             {collection.items.length > 0 ?
-                <div className={styles.scrollContainer} style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin", width: "100%" }} {...scrollProps}>
-                    <div style={{ display: "flex", gap: "1rem" }}>
+                <div
+                    className={`${styles.scrollContainer} ${isScrollable ? styles.scrollable : ""} ${isScrollable ? styles.hoverHint : ""}`}
+                    style={{ paddingLeft: "1rem", overflowX: "auto", width: "100%" }}
+                    {...scrollProps}
+                >
+                    <div className={styles.track} style={{ display: "flex" }}>
                         {collection.items.map(item =>
                             item.type === "build" ?
                                 <HoverBlocker key={item.data.id} setBlockHover={setBlockHover}>

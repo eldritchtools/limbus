@@ -360,7 +360,7 @@ function RankingDropdown({ viewMode, rankingMode, setRankingMode }) {
     return <DropdownButton value={rankingMode} setValue={setRankingMode} options={options} />
 }
 
-export default function CompanyPage() {
+export default function RankingsPage() {
     const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");

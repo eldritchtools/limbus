@@ -107,11 +107,13 @@ export default function CollectionPage({ id }) {
         actions={["like", "save", "edit", "delete", "contribute", "review"]}
     >
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <span style={{ fontSize: "1.2rem" }}>Description</span>
-
-            <div>
-                <MarkdownRenderer content={collection.body} />
-            </div>
+            {collection?.body?.length > 0 && <>
+                <span style={{ fontSize: "1.2rem" }}>Description</span>
+                <div>
+                    <MarkdownRenderer content={collection.body} />
+                </div>
+            </>
+            }
 
             <HorizontalDivider />
 
