@@ -22,6 +22,15 @@ import { checkFilterMatch, filterByFilters } from "../lib/filter";
 import { egoCriteria, identityCriteria } from "../lib/ratings";
 import useLocalState from "../lib/useLocalState";
 
+const MIN_RATINGS_MAPPING = {
+    0: 0,
+    1: 10,
+    2: 25,
+    3: 50,
+    4: 100,
+    5: 250
+}
+
 function ItemDisplay({ type, item, rank, rankingScore, communityScore, communityReviewsRef, userScore, userReviewsRef, showBreakdown, onChange }) {
     const { openRatingModal } = useModal();
     const { isMobile } = useBreakpoint();
@@ -55,13 +64,15 @@ function ItemDisplay({ type, item, rank, rankingScore, communityScore, community
         [type, item, rank]
     )
 
+    const ratingsComponent = <span style={{ textAlign: "center" }}>User Ratings: {communityScore?.votes ?? 0}</span>;
+
     if (!rank)
-        return <div {...props} style={{ cursor: "pointer" }}>
+        return <div {...props} style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}>
             {icon}
+            {ratingsComponent}
         </div>;
 
     const scoreComponent = <span style={{ textAlign: "center" }}>Score: {rankingScore.toFixed(2)}</span>;
-    const ratingsComponent = <span style={{ textAlign: "center" }}>User Ratings: {communityScore.votes}</span>;
     const size = isMobile ? 92 : 128;
     const scale = isMobile ? 0.5 : 0.7;
 
@@ -88,7 +99,7 @@ function RankingDisplay({
     identityReviews, identityReviewsRef, userIdentityReviews, userIdentityReviewsRef,
     egoReviews, egoReviewsRef, userEgoReviews, userEgoReviewsRef,
     setIdentityReviews, setEgoReviews, setUserIdentityReviews, setUserEgoReviews,
-    searchString, filters,
+    searchString, filters, minRatings,
     strictFiltering, separateByPoint, globalRanking, showBreakdown
 }) {
     const { isMobile } = useBreakpoint();
@@ -99,6 +110,7 @@ function RankingDisplay({
 
         const filtered = [];
         const rankableItems = [];
+        const unrankedItems = new Set();
         const ranks = {};
 
         const getScore = rankingMode === "overall" ?
@@ -127,19 +139,32 @@ function RankingDisplay({
                 },
                 strictFiltering
             )
-                .map(identity => [getScore(identity.id, identityReviews), getScore(identity.id, userIdentityReviews ?? {}), identity])
+                .map(identity => {
+                    if (!(identity.id in identityReviews) || identityReviews[identity.id].votes < MIN_RATINGS_MAPPING[minRatings])
+                        return [null, getScore(identity.id, userIdentityReviews ?? {}), identity]
+                    else
+                        return [getScore(identity.id, identityReviews), getScore(identity.id, userIdentityReviews ?? {}), identity]
+                })
                 .sort(sortFunction)
             )
 
+            const items = [];
             if (globalRanking) {
                 Object.keys(identities).forEach(id => {
-                    if (id in identityReviews) rankableItems.push([getScore(id, identityReviews), id]);
+                    if (id in identityReviews) items.push([getScore(id, identityReviews), id]);
                 })
             } else {
                 filtered.forEach(([cs, , identity]) => {
-                    if (cs !== null) rankableItems.push([cs, identity.id]);
+                    if (cs !== null) items.push([cs, identity.id]);
                 })
             }
+
+            items.forEach(([sc, id]) => {
+                if (!(id in identityReviews) || identityReviews[id].votes < MIN_RATINGS_MAPPING[minRatings])
+                    unrankedItems.add(id);
+                else
+                    rankableItems.push([sc, id]);
+            });
         }
 
         if (viewMode === "ego") {
@@ -152,19 +177,32 @@ function RankingDisplay({
                 },
                 strictFiltering
             )
-                .map(ego => [getScore(ego.id, egoReviews), getScore(ego.id, userEgoReviews ?? {}), ego])
+                .map(ego => {
+                    if (!(ego.id in egoReviews) || egoReviews[ego.id].votes < MIN_RATINGS_MAPPING[minRatings])
+                        return [null, getScore(ego.id, userEgoReviews ?? {}), ego]
+                    else
+                        return [getScore(ego.id, egoReviews), getScore(ego.id, userEgoReviews ?? {}), ego]
+                })
                 .sort(sortFunction)
             )
 
+            const items = [];
             if (globalRanking) {
                 Object.keys(egos).forEach(id => {
-                    if (id in egoReviews) rankableItems.push([getScore(id, egoReviews), id]);
+                    if (id in egoReviews) items.push([getScore(id, egoReviews), id]);
                 })
             } else {
                 filtered.forEach(([cs, , ego]) => {
-                    if (cs !== null) rankableItems.push([cs, ego.id]);
+                    if (cs !== null) items.push([cs, ego.id]);
                 })
             }
+
+            items.forEach(([sc, id]) => {
+                if (!(id in egoReviews) || egoReviews[id].votes < MIN_RATINGS_MAPPING[minRatings])
+                    unrankedItems.add(id);
+                else
+                    rankableItems.push([sc, id]);
+            });
         }
 
         rankableItems.sort((a, b) => b[0] - a[0]);
@@ -202,7 +240,7 @@ function RankingDisplay({
         identities, egos, viewMode, rankingMode,
         identityReviews, userIdentityReviews,
         egoReviews, userEgoReviews,
-        strictFiltering, searchString,
+        strictFiltering, searchString, minRatings,
         filters, separateByPoint, globalRanking
     ]);
 
@@ -366,6 +404,7 @@ export default function RankingsPage() {
     const [egos, egosLoading] = useData("egos");
     const [viewMode, setViewMode] = useLocalState("rankingViewMode", "identity");
     const [rankingMode, setRankingMode] = useState("overall");
+    const [minRatings, setMinRatings] = useLocalState("rankingMinRatings", 2);
 
     const [identityReviews, setIdentityReviews] = useState(null);
     const [egoReviews, setEgoReviews] = useState(null);
@@ -431,7 +470,7 @@ export default function RankingsPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Community Rankings</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "left" }}>
+        <p style={{ maxWidth: "1000px", textAlign: "left" }}>
             See how the community ranks the identities and E.G.Os in the game. Rankings are calculated from community-submitted ratings at the time the page loads. Refresh if you want to update the rankings.
             <br /> <br />
             Click on the identity or E.G.O to submit your own rating or leave a review. You can also visit their respective pages and check the &quot;Community Rating&quot; tab.
@@ -439,15 +478,28 @@ export default function RankingsPage() {
             Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
             <br /> <br />
             This page is still an early version and may receive design overhauls and quality-of-life improvements over time. Feel free to share suggestions through the Discord server or the <NoPrefetchLink href={"/feedback"} className="text-link">feedback</NoPrefetchLink> page.
-        </span>
+        </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>
                 <span style={{ textAlign: 'end' }}>Search:</span>
                 <input type="text" placeholder="Search..." value={searchString} onChange={(e) => setSearchString(e.target.value)} />
-                <span {...getRatingHelpTooltipProps(viewMode)} className="hover-text" style={{ textAlign: 'end' }}>Ranking:</span>
+                <div style={{ display: "flex", justifyContent: "end" }}>
+                    <span {...getRatingHelpTooltipProps(viewMode)} className="hover-text" style={{ textAlign: 'end' }}>Ranking:</span>
+                </div>
                 <div>
                     <RankingDropdown viewMode={viewMode} rankingMode={rankingMode} setRankingMode={setRankingMode} />
+                </div>
+                <span {...getGeneralTooltipProps("Minimum number of ratings needed to be ranked")} className="hover-text" style={{ textAlign: 'end' }}>Min Ratings:</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <input
+                        type="range" min={0} max={5} step={1} value={minRatings}
+                        onChange={(e) => setMinRatings(Number(e.target.value))}
+                        style={{ width: "100px" }}
+                    />
+                    <span>
+                        {MIN_RATINGS_MAPPING[minRatings] ? `${MIN_RATINGS_MAPPING[minRatings]}+ Ratings` : "Any"}
+                    </span>
                 </div>
                 <div />
                 <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
@@ -455,7 +507,7 @@ export default function RankingsPage() {
                     Separate by Point Thresholds
                 </label>
                 <div />
-                <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <label style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.2rem" }}>
                     <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
                     Strict Filtering
                     <span className="sub-text">(Require all selected filters)</span>
@@ -498,7 +550,7 @@ export default function RankingsPage() {
             setIdentityReviews={setIdentityReviews} setEgoReviews={setEgoReviews}
             identityReviewsRef={identityReviewsRef} egoReviewsRef={egoReviewsRef}
             {...userReviewProps}
-            searchString={searchString} filters={filters}
+            searchString={searchString} filters={filters} minRatings={minRatings}
             strictFiltering={strictFiltering} separateByPoint={separateByPoint}
             globalRanking={globalRanking} showBreakdown={showBreakdown}
         />
