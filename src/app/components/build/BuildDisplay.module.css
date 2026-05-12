@@ -21,6 +21,7 @@
   }
   .buildDisplay.idsOnly {
     grid-template-columns: repeat(6, 1fr);
+    max-width: 1200px;
   }
 }
 
@@ -31,6 +32,7 @@
   }
   .buildDisplay.idsOnly {
     grid-template-columns: repeat(4, 1fr);
+    max-width: 800px;
   }
 }
 

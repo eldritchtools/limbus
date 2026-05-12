@@ -113,7 +113,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             <BuildDisplayMenuCard>
                 <div>Display Type</div>
                 <DisplayTypeButton value={displayType} setValue={setDisplayType} />
-                <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os</span>
+                <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
             </BuildDisplayMenuCard>
             <Distribution
                 identityIds={identityIds}
