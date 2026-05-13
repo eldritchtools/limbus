@@ -200,7 +200,7 @@ function ReviewerDisplay({
 
     const items = useMemo(() => {
         return rankingsFilter({
-            type: "both", reviews: selected === user.id ? userReviews : selectedUserReviews,
+            type: "both", reviews: user && selected === user.id ? userReviews : selectedUserReviews,
             rankingMode, identities, egos,
             filters, searchString, globalRanking, strictFiltering, separateByPoint,
             userReviews
@@ -215,7 +215,7 @@ function ReviewerDisplay({
     if (loading) return <LoadingContentPageTemplate />;
 
     if (selected) {
-        const additionalProps = selected === user.id ?
+        const additionalProps = user && selected === user.id ?
             {
                 modalOnChange: (id, x) => modalOnChange(id, x, {
                     reviewsRef, userReviewsRef, setReviews, setUserReviews
@@ -234,7 +234,7 @@ function ReviewerDisplay({
                 <button onClick={() => { setSelected(null); setUsername(null); setSelectedReview(null); }}>Go Back</button>
                 <h2 className="title-text">{username}&apos;s Ranking</h2>
             </div>
-            {selected === user.id &&
+            {user && selected === user.id &&
                 <span className="sub-text" style={{textAlign: "center"}}>
                     When viewing your own ranking, you can see the global ranking and submit your own ratings.
                 </span>}
@@ -269,7 +269,9 @@ function ReviewerDisplay({
                 onKeyDown={e => { if (e.key === 'Enter') searchUser(userInput); }}
             />
             <button onClick={() => searchUser(userInput)} disabled={loading}>Search</button>
-            <button onClick={() => { setSelected(user.id); setUsername(profile.username); setMessage(""); }}>View my Ranking</button>
+            {user && 
+                <button onClick={() => { setSelected(user.id); setUsername(profile.username); setMessage(""); }}>View my Ranking</button>
+            }
         </div>
         <div className="sub-text" style={{ color: uiColors.red }}>{message}</div>
         <h2 className="title-text">or choose from the most popular reviewers</h2>
