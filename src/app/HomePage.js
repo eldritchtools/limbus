@@ -34,7 +34,7 @@ function RecentAdditions() {
         onClick={!blockHover && !open ? () => setOpen(p => !p) : null}
     >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem" }}>
-            <span className="title-text">Recent Additions</span>
+            <span className="title-text">What&apos;s New</span>
             <span className="sub-text">Most notable changes in case you missed them.</span>
         </div>
 
@@ -140,7 +140,7 @@ export default function HomePage() {
             <RecentAdditions />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>
                 <div className={styles.panelContainer} style={{ alignItems: "start", gap: "0.5rem" }}>
-                    <h3 style={{ margin: 0 }}>Latest Additions</h3>
+                    <h3 style={{ margin: 0 }}>Latest Identities and E.G.Os</h3>
                     {identitiesLoading || egosLoading ? "Loading..." :
                         <div style={{ maxWidth: "100%", overflowX: "auto", overflowY: "hidden", scrollbarWidth: "thin" }}>
                             <div style={{ display: "flex", gap: "0.5rem" }}>

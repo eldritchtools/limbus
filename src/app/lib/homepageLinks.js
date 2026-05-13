@@ -5,16 +5,21 @@ import NoPrefetchLink from "../components/NoPrefetchLink";
 
 export const homepageLinks = [
     {
-        category: "General",
+        category: "Community",
         links: [
             { href: "/builds", title: "Team Builds", newHref: "/builds/new", icon: "WideAreaRampage" },
             { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new", icon: "IndexPrescriptDon_0" },
             { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
+            { href: "/rankings", title: "Community Rankings", icon: "EgoAwakenDongrangRadiantDesire" }
+        ]
+    },
+    {
+        category: "Database",
+        links: [
             { href: "/identities", title: "Identities", icon: "EgoErodeReplica" },
             { href: "/egos", title: "E.G.Os", icon: "ActivatedEgoPassive" },
-            { href: "/rankings", title: "Community Rankings", icon: "EgoAwakenDongrangRadiantDesire" },
-            { href: "/timers", title: "Timers", icon: "TickTockTickTock" },
-            { href: "/encounters", title: "Encounters", icon: "HugeIrritationAlly" }
+            { href: "/encounters", title: "Encounters", icon: "HugeIrritationAlly" },
+            { href: "/timers", title: "Timers", icon: "TickTockTickTock" }
         ]
     },
     {
@@ -28,7 +33,7 @@ export const homepageLinks = [
         ]
     },
     {
-        category: "Utility Tools",
+        category: "Tools",
         links: [
             { href: "/daily-random", title: "Daily Randomized Team", icon: "Cycle" },
             { href: "/training-calc", title: "Dispense and Training Calculator", icon: "ResultEnhancement" },

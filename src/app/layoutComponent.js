@@ -27,15 +27,19 @@ TimeAgo.addDefaultLocale(en);
 const paths = [
     { path: "/", title: "Home" },
     {
-        title: "General", subpaths: [
+        title: "Community", subpaths: [
             { path: "/builds", title: "Team Builds" },
             { path: "/md-plans", title: "MD Plans" },
             { path: "/collections", title: "Collections" },
+            { path: "/rankings", title: "Community Rankings" }
+        ]
+    },
+    {
+        title: "Database", subpaths: [
             { path: "/identities", title: "Identities" },
             { path: "/egos", title: "E.G.Os" },
-            { path: "/rankings", title: "Community Rankings" },
-            { path: "/timers", title: "Timers" },
-            { path: "/encounters", title: "Encounters" }
+            { path: "/encounters", title: "Encounters" },
+            { path: "/timers", title: "Timers" }
         ]
     },
     {
@@ -58,7 +62,7 @@ const paths = [
         ]
     },
     {
-        title: "Utility Tools", subpaths: [
+        title: "Tools", subpaths: [
             { path: "/daily-random", title: "Daily Randomized Team" },
             { path: "/training-calc", title: "Dispense and Training Calculator" },
             { path: "/team-solver", title: "Team Solver" },
