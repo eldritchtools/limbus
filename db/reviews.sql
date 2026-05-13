@@ -413,3 +413,40 @@ begin
 
 end;
 $$;
+
+create materialized view public.user_review_stats as
+select
+    r.user_id,
+    u.username,
+    count(*) as total_reviews,
+    coalesce(sum(r.bump_count), 0) as total_bumps,
+    coalesce(avg(r.bump_count), 0) as avg_bumps_per_review
+from public.reviews r
+join public.users u on u.id = r.user_id
+where r.review_text is not null and length(trim(r.review_text)) > 0
+group by r.user_id, u.username;
+
+create unique index user_review_stats_user_id_idx
+on public.user_review_stats (user_id);
+
+create index user_review_stats_total_bumps_idx
+on public.user_review_stats (total_bumps desc);
+
+create or replace function public.refresh_user_review_stats()
+returns void
+language plpgsql
+security definer
+as $$
+begin
+    refresh materialized view concurrently public.user_review_stats;
+end;
+$$;
+
+select cron.schedule(
+    'refresh-user-review-stats',
+    '*/30 * * * *',
+    $$ select public.refresh_user_review_stats(); $$
+);
+
+grant select on public.user_review_stats to anon;
+grant select on public.user_review_stats to authenticated;

@@ -1,24 +1,22 @@
 "use client";
 
-import { useBreakpoint } from "@eldritchtools/shared-components";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+import RankingDisplay from "./RankingDisplay";
+import { rankingsFilter } from "./rankingsFilter";
 import { useData } from "../components/DataProvider";
-import EgoIcon from "../components/icons/EgoIcon";
-import IdentityIcon from "../components/icons/IdentityIcon";
-import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
-import StatsRadarChart from "../components/ratings/RadarChart";
+import Review from "../components/ratings/Review";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getRatingHelpTooltipProps } from "../components/tooltips/RatingHelpTooltip";
-import { getRatingTooltipProps } from "../components/tooltips/RatingTooltip";
 import { useAuth } from "../database/authProvider";
-import { getAggregatesByType, getOverallScore, getReviewScores, getUserReviewsByType } from "../database/reviews";
-import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import { getAggregatesByType, getOverallScore, getPopularReviewers, getReviewScores, getUserReviews } from "../database/reviews";
+import { getUserDataFromUsername } from "../database/users";
+import { uiColors } from "../lib/colors";
 import { egoCriteria, identityCriteria } from "../lib/ratings";
 import useLocalState from "../lib/useLocalState";
 
@@ -31,69 +29,7 @@ const MIN_RATINGS_MAPPING = {
     5: 250
 }
 
-function ItemDisplay({ type, item, rank, rankingScore, communityScore, communityReviewsRef, userScore, userReviewsRef, showBreakdown, onChange }) {
-    const { openRatingModal } = useModal();
-    const { isMobile } = useBreakpoint();
-
-    const props = communityScore ? getRatingTooltipProps(type, communityScore, userScore) : {};
-    const getUserReviews = () => userReviewsRef?.current;
-    const getCommunityReviews = () => communityReviewsRef.current;
-
-    props.onClick = () => openRatingModal({
-        type: type, id: item.id,
-        getCommunityReviews: getCommunityReviews, getUserReviews: getUserReviews, onChange: onChange
-    })
-
-    const icon = useMemo(() => {
-        return <div style={{ position: "relative", width: "100%" }}>
-            {type === "identity" ?
-                <IdentityIcon identity={item} uptie={4} displayName={true} displayRarity={true} /> :
-                <EgoIcon ego={item} type={"awaken"} displayName={true} displayRarity={true} />
-            }
-            {rank && <div style={{
-                position: "absolute", top: 5, right: 5,
-                padding: "2px 4px", borderRadius: "8px",
-                background: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(6px)",
-                fontWeight: "bold", fontSize: "1.2rem", lineHeight: 1, color: "#ddd"
-            }}>
-                #{rank}
-            </div>
-            }
-        </div>
-    },
-        [type, item, rank]
-    )
-
-    const ratingsComponent = <span style={{ textAlign: "center" }}>User Ratings: {communityScore?.votes ?? 0}</span>;
-
-    if (!rank)
-        return <div {...props} style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}>
-            {icon}
-            {ratingsComponent}
-        </div>;
-
-    const scoreComponent = <span style={{ textAlign: "center" }}>Score: {rankingScore.toFixed(2)}</span>;
-    const size = isMobile ? 92 : 128;
-    const scale = isMobile ? 0.5 : 0.7;
-
-    if (showBreakdown)
-        return <div {...props}
-            style={{ display: "grid", gridTemplateColumns: `repeat(2, ${size}px)`, alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-        >
-            {icon}
-            <StatsRadarChart type={type} globalData={communityScore?.rating} userData={userScore?.rating} includeLabels={false} scale={scale} />
-            {ratingsComponent}
-            {scoreComponent}
-        </div>
-    else
-        return <div {...props} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", cursor: "pointer" }}>
-            {icon}
-            {scoreComponent}
-            {ratingsComponent}
-        </div>
-}
-
-function RankingDisplay({
+function GlobalRankingDisplay({
     viewMode, rankingMode,
     identities, egos,
     identityReviews, identityReviewsRef, userIdentityReviews, userIdentityReviewsRef,
@@ -102,141 +38,12 @@ function RankingDisplay({
     searchString, filters, minRatings,
     strictFiltering, separateByPoint, globalRanking, showBreakdown
 }) {
-    const { isMobile } = useBreakpoint();
-
-    const items = useMemo(() => {
-        if (viewMode === "identity" && !identityReviews) return [];
-        if (viewMode === "ego" && !egoReviews) return [];
-
-        const filtered = [];
-        const rankableItems = [];
-        const unrankedItems = new Set();
-        const ranks = {};
-
-        const getScore = rankingMode === "overall" ?
-            ((id, reviewList) => id in reviewList ? reviewList[id].overallRating : null) :
-            ((id, reviewList) => id in reviewList ? reviewList[id].rating[rankingMode] : null)
-
-        const sortFunction = ([ca, ua, xa], [cb, ub, xb]) => {
-            if (ca === cb) {
-                if (ua === ub) return xa.sinnerId === xb.sinnerId ? xb.id.localeCompare(xa.id) : xa.sinnerId - xb.sinnerId;
-                if (ua === null) return 1;
-                if (ub === null) return -1;
-                return ub - ua;
-            }
-            if (ca === null) return 1;
-            if (cb === null) return -1;
-            return cb - ca;
-        }
-
-        if (viewMode === "identity") {
-            filtered.push(...filterByFilters("identity",
-                Object.values(identities),
-                filters,
-                identity => {
-                    if (searchString.length > 0 && !checkFilterMatch(searchString, identity.name)) return false;
-                    return true;
-                },
-                strictFiltering
-            )
-                .map(identity => {
-                    if (!(identity.id in identityReviews) || identityReviews[identity.id].votes < MIN_RATINGS_MAPPING[minRatings])
-                        return [null, getScore(identity.id, userIdentityReviews ?? {}), identity]
-                    else
-                        return [getScore(identity.id, identityReviews), getScore(identity.id, userIdentityReviews ?? {}), identity]
-                })
-                .sort(sortFunction)
-            )
-
-            const items = [];
-            if (globalRanking) {
-                Object.keys(identities).forEach(id => {
-                    if (id in identityReviews) items.push([getScore(id, identityReviews), id]);
-                })
-            } else {
-                filtered.forEach(([cs, , identity]) => {
-                    if (cs !== null) items.push([cs, identity.id]);
-                })
-            }
-
-            items.forEach(([sc, id]) => {
-                if (!(id in identityReviews) || identityReviews[id].votes < MIN_RATINGS_MAPPING[minRatings])
-                    unrankedItems.add(id);
-                else
-                    rankableItems.push([sc, id]);
-            });
-        }
-
-        if (viewMode === "ego") {
-            filtered.push(...filterByFilters("ego",
-                Object.values(egos),
-                filters,
-                ego => {
-                    if (searchString.length > 0 && !checkFilterMatch(searchString, ego.name)) return false;
-                    return true;
-                },
-                strictFiltering
-            )
-                .map(ego => {
-                    if (!(ego.id in egoReviews) || egoReviews[ego.id].votes < MIN_RATINGS_MAPPING[minRatings])
-                        return [null, getScore(ego.id, userEgoReviews ?? {}), ego]
-                    else
-                        return [getScore(ego.id, egoReviews), getScore(ego.id, userEgoReviews ?? {}), ego]
-                })
-                .sort(sortFunction)
-            )
-
-            const items = [];
-            if (globalRanking) {
-                Object.keys(egos).forEach(id => {
-                    if (id in egoReviews) items.push([getScore(id, egoReviews), id]);
-                })
-            } else {
-                filtered.forEach(([cs, , ego]) => {
-                    if (cs !== null) items.push([cs, ego.id]);
-                })
-            }
-
-            items.forEach(([sc, id]) => {
-                if (!(id in egoReviews) || egoReviews[id].votes < MIN_RATINGS_MAPPING[minRatings])
-                    unrankedItems.add(id);
-                else
-                    rankableItems.push([sc, id]);
-            });
-        }
-
-        rankableItems.sort((a, b) => b[0] - a[0]);
-
-        let currentRank, lastScore;
-        for (let i = 0; i < rankableItems.length; i++) {
-            if (rankableItems[i][0] !== lastScore) {
-                currentRank = i + 1;
-                lastScore = rankableItems[i][0];
-            }
-
-            ranks[rankableItems[i][1]] = currentRank;
-        }
-
-        for (let i = 0; i < filtered.length; i++) {
-            filtered[i].push(ranks[filtered[i][2].id] ?? null);
-        }
-
-        if (separateByPoint) {
-            return filtered.reduce((acc, item) => {
-                if (item[0] === null) {
-                    if ("none" in acc) acc["none"].push(item);
-                    else acc["none"] = [item];
-                } else {
-                    const t = Math.floor(item[0]);
-                    if (t in acc) acc[t].push(item);
-                    else acc[t] = [item]
-                }
-                return acc;
-            }, {});
-        }
-
-        return filtered;
-    }, [
+    const items = useMemo(() => rankingsFilter({
+        type: viewMode, identityReviews, egoReviews,
+        rankingMode, identities, egos, minRatings: MIN_RATINGS_MAPPING[minRatings],
+        filters, searchString, globalRanking, strictFiltering, separateByPoint,
+        userIdentityReviews, userEgoReviews
+    }), [
         identities, egos, viewMode, rankingMode,
         identityReviews, userIdentityReviews,
         egoReviews, userEgoReviews,
@@ -316,74 +123,157 @@ function RankingDisplay({
         }
     }
 
-    const itemWidth = isMobile ? 92 : 128;
-    const widthMultiplier = showBreakdown ? 2 : 1;
-
-    const contentDisplay = () => {
-        const listToComponents = (list, multiplier, bottomBorder) =>
-            <div style={{
-                display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${itemWidth * (multiplier ? widthMultiplier : 1)}px, 1fr))`,
-                width: "100%", gap: "0.5rem",
-                paddingBottom: bottomBorder ? "0.5rem" : null,
-                borderBottom: bottomBorder ? "2px var(--secondary-border-color) solid" : null
-            }}>
-                {list.map(([cs, , item, rank]) =>
-                    <ItemDisplay
-                        key={item.id} type={viewMode} item={item} rank={rank} rankingScore={cs}
-                        communityScore={viewMode === "identity" ? identityReviews[item.id] : egoReviews[item.id]}
-                        communityReviewsRef={viewMode === "identity" ? identityReviewsRef : egoReviewsRef}
-                        userScore={viewMode === "identity" ? userIdentityReviews?.[item.id] : userEgoReviews?.[item.id]}
-                        userReviewsRef={viewMode === "identity" ? userIdentityReviewsRef : userEgoReviewsRef}
-                        showBreakdown={showBreakdown} onChange={x => onChange(item.id, x)}
-                    />
-                )}
-            </div>
-
-        if (separateByPoint) {
-            return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
-                {Object.entries(items)
-                    .filter(([threshold]) => threshold !== "none")
-                    .sort((a, b) => b[0] - a[0])
-                    .map(([threshold, list]) =>
-                        <React.Fragment key={threshold}>
-                            <div className="title-text" style={{ paddingBottom: "0.5rem", borderBottom: "2px var(--secondary-border-color) solid", textAlign: "center" }}>
-                                {threshold}{threshold === "10" ? "" : "+"}
-                            </div>
-                            {listToComponents(list, true, true)}
-                        </React.Fragment>
-                    )
-                }
-                {items["none"]?.length > 0 && <>
-                    <div className="title-text" style={{ paddingBottom: "0.5rem", borderBottom: "2px var(--secondary-border-color) solid", textAlign: "center" }}>
-                        Unranked
-                    </div>
-                    {("none" in items) && listToComponents(items["none"], false, false)}
-                </>
-                }
-            </div>
-        } else {
-            const [ranked, unranked] = items.reduce(([r, u], item) => {
-                if (item[0] === null) u.push(item);
-                else r.push(item);
-                return [r, u];
-            }, [[], []]);
-
-            return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-                {listToComponents(ranked, true, false)}
-                {unranked.length > 0 && <>
-                    <span className="title-text">Unranked</span>
-                    {listToComponents(unranked, false, false)}
-                </>
-                }
-            </div>
-        }
-    }
-
     if (viewMode === "identity" && !identityReviews) return <span>Loading...</span>;
     if (viewMode === "ego" && !egoReviews) return <span>Loading...</span>;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
-        {contentDisplay()}
+        <RankingDisplay
+            viewMode={viewMode} items={items} modalOnChange={onChange}
+            reviews={viewMode === "identity" ? identityReviews : egoReviews}
+            reviewsRef={viewMode === "identity" ? identityReviewsRef : egoReviewsRef}
+            userReviews={viewMode === "identity" ? userIdentityReviews : userEgoReviews}
+            userReviewsRef={viewMode === "identity" ? userIdentityReviewsRef : userEgoReviewsRef}
+            showBreakdown={showBreakdown}
+            separateByPoint={separateByPoint}
+        />
+    </div>
+}
+
+function ReviewerDisplay({
+    rankingMode, identities, egos,
+    userIdentityReviews, userEgoReviews,
+    searchString, filters,
+    strictFiltering, separateByPoint, globalRanking, showBreakdown
+}) {
+    const [reviewers, setReviewers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selected, setSelected] = useState(null);
+    const [username, setUsername] = useState(null);
+    const [reviews, setReviews] = useState({});
+    const [userInput, setUserInput] = useState("");
+    const [message, setMessage] = useState("");
+    const [selectedReview, setSelectedReview] = useState(null);
+
+    useEffect(() => {
+        if (!loading || reviewers.length > 0) return;
+        const loadReviewers = async () => {
+            const result = await getPopularReviewers();
+            setReviewers(result.filter(x => x.username && x.total_bumps > 0));
+            setLoading(false);
+        }
+
+        loadReviewers();
+    }, [loading, reviewers]);
+
+    useEffect(() => {
+        if (!selected) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setReviews([]);
+            return;
+        }
+
+        const loadReviews = async () => {
+            const result = await getUserReviews({ userId: selected });
+            const processedResult = Object.entries(result).reduce((acc, [id, review]) => {
+                acc[id] = {...review, votes: 1};
+                return acc;
+            }, {});
+            setReviews(processedResult);
+            setLoading(false);
+        }
+
+        loadReviews();
+    }, [selected]);
+
+    const searchUser = async () => {
+        setLoading(true);
+        const user = await getUserDataFromUsername(userInput, "id");
+        if (user) {
+            setSelected(user.id);
+            setUsername(userInput);
+            setMessage("");
+        } else {
+            setMessage("Username not found!")
+            setLoading(false);
+        }
+    }
+
+    const items = useMemo(() => {
+        const [identityReviews, egoReviews] = Object.entries(reviews).reduce(([idDict, egoDict], [itemId, next]) => {
+            if (next.item_type === "identity") idDict[itemId] = next;
+            else egoDict[itemId] = next;
+            return [idDict, egoDict];
+        }, [[], []]);
+
+        return rankingsFilter({
+            type: "users", identityReviews, egoReviews,
+            rankingMode, identities, egos,
+            filters, searchString, globalRanking, strictFiltering, separateByPoint,
+            userIdentityReviews, userEgoReviews
+        })
+    }, [
+        reviews,
+        identities, egos, rankingMode,
+        userIdentityReviews, userEgoReviews,
+        strictFiltering, searchString,
+        filters, separateByPoint, globalRanking
+    ]);
+
+    const userReviews = useMemo(() => ({ ...userIdentityReviews, ...userEgoReviews }), [userIdentityReviews, userEgoReviews]);
+
+    if (loading) return <LoadingContentPageTemplate />;
+
+    if (selected)
+        return <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
+                <button onClick={() => { setSelected(null); setUsername(null); setSelectedReview(null); }}>Go Back</button>
+                <h2 className="title-text">{username}&apos;s Ranking</h2>
+            </div>
+
+            {selectedReview &&
+                <Review
+                    key={selectedReview.id}
+                    reviewData={selectedReview}
+                    backReview={selectedReview}
+                    usernameOverride={username}
+                    expanded={true}
+                />
+            }
+
+            <RankingDisplay
+                items={items} onClick={review => setSelectedReview(review)}
+                reviews={reviews}
+                userReviews={userReviews}
+                showBreakdown={showBreakdown}
+                separateByPoint={separateByPoint}
+            />
+        </div>
+
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+        <h2 className="title-text">Input a user:</h2>
+        <div style={{ display: "flex", gap: "0.2rem" }}>
+            <input
+                value={userInput}
+                onChange={e => setUserInput(e.target.value)}
+                placeholder={"Username..."}
+                onKeyDown={e => { if (e.key === 'Enter') searchUser(); }}
+            />
+            <button onClick={searchUser} disabled={loading}>Search</button>
+        </div>
+        <div className="sub-text" style={{ color: uiColors.red }}>{message}</div>
+        <h2 className="title-text">or select from the most popular reviewers</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "0.5rem", width: "min(1300px, 100%)" }}>
+            {reviewers.map(reviewer =>
+                <div key={reviewer.user_id} className="text-link"
+                    onClick={() => {
+                        setSelected(reviewer.user_id);
+                        setUsername(reviewer.username);
+                        setLoading(true);
+                    }}>
+                    {reviewer.username}
+                </div>
+            )}
+        </div>
     </div>
 }
 
@@ -437,20 +327,20 @@ export default function RankingsPage() {
                 setIdentityReviews(reviews);
 
                 if (user) {
-                    const userReviews = await getUserReviewsByType({ userId: user.id, itemType: "identity" })
+                    const userReviews = await getUserReviews({ userId: user.id, itemType: "identity" })
                     setUserIdentityReviews(userReviews);
                 }
             }
 
             fetchReviews();
-        } else {
+        } else if (viewMode === "ego") {
             if (egoReviews) return;
             const fetchReviews = async () => {
                 const reviews = await getAggregatesByType({ itemType: "ego" });
                 setEgoReviews(reviews);
 
                 if (user) {
-                    const userReviews = await getUserReviewsByType({ userId: user.id, itemType: "ego" })
+                    const userReviews = await getUserReviews({ userId: user.id, itemType: "ego" })
                     setUserEgoReviews(userReviews);
                 }
             }
@@ -467,6 +357,13 @@ export default function RankingsPage() {
         setUserIdentityReviews: setUserIdentityReviews, setUserEgoReviews: setUserEgoReviews
     } :
         {};
+
+    const filterCategories =
+        viewMode === "identity" ?
+            ["identityTier", "sinner", "status", "affinity", "skillType"] :
+            viewMode === "ego" ?
+                ["egoTier", "sinner", "status", "affinity", "atkType"] :
+                ["identityTier", "egoTier", "sinner", "status", "affinity", "atkType"]
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
         <h2 style={{ margin: 0 }}>Community Rankings</h2>
@@ -491,11 +388,11 @@ export default function RankingsPage() {
                     <RankingDropdown viewMode={viewMode} rankingMode={rankingMode} setRankingMode={setRankingMode} />
                 </div>
                 <span {...getGeneralTooltipProps("Minimum number of ratings needed to be ranked")} className="hover-text" style={{ textAlign: 'end' }}>Min Ratings:</span>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", filter: viewMode === "reviewer" ? "brightness(0.5)" : null }}>
                     <input
                         type="range" min={0} max={5} step={1} value={minRatings}
                         onChange={(e) => setMinRatings(Number(e.target.value))}
-                        style={{ width: "100px" }}
+                        style={{ width: "100px" }} disabled={viewMode === "reviewer"}
                     />
                     <span>
                         {MIN_RATINGS_MAPPING[minRatings] ? `${MIN_RATINGS_MAPPING[minRatings]}+ Ratings` : "Any"}
@@ -530,29 +427,37 @@ export default function RankingsPage() {
                 </label>
             </div>
 
-            {viewMode === "identity" ?
-                <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} /> :
-                <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
-            }
+            <IconsSelector type={"column"} categories={filterCategories} values={filters} setValues={setFilters} />
         </div>
 
         <h2 style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${viewMode === "identity" ? "active" : ""}`} onClick={() => setViewMode("identity")}>Identities</div>
             <div className={`tab-header ${viewMode === "ego" ? "active" : ""}`} onClick={() => setViewMode("ego")}>E.G.Os</div>
+            <div className={`tab-header ${viewMode === "reviewer" ? "active" : ""}`} onClick={() => setViewMode("reviewer")}>Reviewers</div>
         </h2>
 
         <HorizontalDivider />
 
-        <RankingDisplay
-            viewMode={viewMode} rankingMode={rankingMode}
-            identities={identities} egos={egos}
-            identityReviews={identityReviews} egoReviews={egoReviews}
-            setIdentityReviews={setIdentityReviews} setEgoReviews={setEgoReviews}
-            identityReviewsRef={identityReviewsRef} egoReviewsRef={egoReviewsRef}
-            {...userReviewProps}
-            searchString={searchString} filters={filters} minRatings={minRatings}
-            strictFiltering={strictFiltering} separateByPoint={separateByPoint}
-            globalRanking={globalRanking} showBreakdown={showBreakdown}
-        />
+        {viewMode === "identity" || viewMode === "ego" ?
+            <GlobalRankingDisplay
+                viewMode={viewMode} rankingMode={rankingMode}
+                identities={identities} egos={egos}
+                identityReviews={identityReviews} egoReviews={egoReviews}
+                setIdentityReviews={setIdentityReviews} setEgoReviews={setEgoReviews}
+                identityReviewsRef={identityReviewsRef} egoReviewsRef={egoReviewsRef}
+                {...userReviewProps}
+                searchString={searchString} filters={filters} minRatings={minRatings}
+                strictFiltering={strictFiltering} separateByPoint={separateByPoint}
+                globalRanking={globalRanking} showBreakdown={showBreakdown}
+            /> :
+            <ReviewerDisplay
+                rankingMode={rankingMode}
+                identities={identities} egos={egos}
+                {...userReviewProps}
+                searchString={searchString} filters={filters}
+                strictFiltering={strictFiltering} separateByPoint={separateByPoint}
+                globalRanking={globalRanking} showBreakdown={showBreakdown}
+            />
+        }
     </div>
 }

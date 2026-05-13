@@ -49,7 +49,7 @@ function Container({ category, keyword, titlePrefix, searchString, includeDesc, 
 
     if (gifts.length === 0) return null;
 
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
             {keyword && <KeywordIcon id={keyword} />}
             {titlePrefix ?
@@ -61,7 +61,7 @@ function Container({ category, keyword, titlePrefix, searchString, includeDesc, 
             }
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", width: "100%", justifyContent: "center" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
             {gifts}
         </div>
     </div>
