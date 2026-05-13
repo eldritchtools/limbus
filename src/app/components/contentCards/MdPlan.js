@@ -52,7 +52,7 @@ function IconGrid({ identityIds, egoIds, scale }) {
 }
 
 
-export default function MdPlan({ plan, complete = true, clickable = true }) {
+export default function MdPlan({ plan, complete = true, clickable = true, styleOverride = {} }) {
     const [blockHover, setBlockHover] = useState(false);
 
     // const { isMobile } = useBreakpoint();
@@ -79,7 +79,7 @@ export default function MdPlan({ plan, complete = true, clickable = true }) {
         return null;
     }, [plan, scale]);
 
-    return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={{ width: width }}>
+    return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={{ width: width, ...styleOverride }}>
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 
         <div className={styles.mdPlanContent} style={{ width: width }}>

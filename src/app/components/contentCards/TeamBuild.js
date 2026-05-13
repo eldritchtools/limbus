@@ -25,7 +25,7 @@ function getSizes(size, isMobile) {
     return null;
 }
 
-export default function TeamBuild({ build, size, complete = true, clickable = true }) {
+export default function TeamBuild({ build, size, complete = true, clickable = true, styleOverride = {} }) {
     const [blockHover, setBlockHover] = useState(false);
 
     const extraProps = {};
@@ -43,7 +43,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
-    return <div className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null}`} style={{ width: sizes.width }}>
+    return <div className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null}`} style={{ width: sizes.width, ...styleOverride }}>
         {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} /> : null}
 
         {build.keyword_ids.length > 0 ?
