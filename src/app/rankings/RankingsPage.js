@@ -87,15 +87,19 @@ function GlobalRankingDisplay({
     searchString, filters, minRatings,
     strictFiltering, separateByPoint, globalRanking, showBreakdown
 }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
+
     const items = useMemo(() => rankingsFilter({
         type: viewMode, reviews, userReviews,
         rankingMode, identities, egos, minRatings: MIN_RATINGS_MAPPING[minRatings],
-        filters, searchString, globalRanking, strictFiltering, separateByPoint
+        filters, searchString, globalRanking, strictFiltering, separateByPoint,
+        altNames: altNamesLoading ? null : altNames
     }), [
         identities, egos, viewMode, rankingMode,
         reviews, userReviews,
         strictFiltering, searchString, minRatings,
-        filters, separateByPoint, globalRanking
+        filters, separateByPoint, globalRanking,
+        altNames, altNamesLoading
     ]);
 
     const onChange = (id, x) => modalOnChange(id, x, {
@@ -123,6 +127,7 @@ function ReviewerDisplay({
     strictFiltering, separateByPoint, globalRanking, showBreakdown,
     username, setUsername
 }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
     const { user, profile } = useAuth();
     const [reviewers, setReviewers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -202,13 +207,14 @@ function ReviewerDisplay({
             type: "both", reviews: user && selected === user.id ? userReviews : selectedUserReviews,
             rankingMode, identities, egos,
             filters, searchString, globalRanking, strictFiltering, separateByPoint,
-            userReviews
+            userReviews, altNames: altNamesLoading ? null : altNames
         })
     }, [
         selectedUserReviews, selected, user, userReviews,
         identities, egos, rankingMode,
         strictFiltering, searchString,
-        filters, separateByPoint, globalRanking
+        filters, separateByPoint, globalRanking,
+        altNames, altNamesLoading
     ]);
 
     if (loading) return <LoadingContentPageTemplate />;

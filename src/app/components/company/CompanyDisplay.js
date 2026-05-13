@@ -17,7 +17,7 @@ import { getCompany, getCompanyByUsername, updateCompany } from "@/app/database/
 import { getLocalStore } from "@/app/database/localDB";
 import { bitsetFunctions } from "@/app/lib/bitset";
 import { sinnerIdMapping } from "@/app/lib/constants";
-import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
+import { buildSearchStrings, checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 import useLocalState from "@/app/lib/useLocalState";
 
 const itemOwned = (bitsets, item) => bitsetFunctions.hasFlag(bitsets[item.sinnerId - 1], Number(item.id.slice(-2)) - 1);
@@ -67,6 +67,7 @@ function EgoDisplay({ ego, egoBitsets, setEgoBitsets, editable }) {
 }
 
 function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, setEgoBitsets, identities, egos, editable, setForceSave, saveString }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
     const [activeTab, setActiveTab] = useLocalState("companyActiveTab", "both");
     const [ownedFilter, setOwnedFilter] = useLocalState("companyOwnedFilter", "both");
     const [separateSinners, setSeparateSinners] = useLocalState("companySeparateSinners", false);
@@ -89,7 +90,7 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 Object.values(identities),
                 filters,
                 identity => {
-                    if (searchString.length > 0 && !checkFilterMatch(searchString, identity.name)) return false;
+                    if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(identity, altNamesLoading ? null : altNames))) return false;
                     if (ownedFilter === "yes" && !itemOwned(identityBitsets, identity)) return false;
                     if (ownedFilter === "no" && itemOwned(identityBitsets, identity)) return false;
                     return true;
@@ -103,7 +104,7 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 Object.values(egos),
                 filters,
                 ego => {
-                    if (searchString.length > 0 && !checkFilterMatch(searchString, ego.name)) return false;
+                    if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames))) return false;
                     if (ownedFilter === "yes" && !itemOwned(egoBitsets, ego)) return false;
                     if (ownedFilter === "no" && itemOwned(egoBitsets, ego)) return false;
                     return true;
@@ -121,7 +122,7 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
         }
 
         return filtered;
-    }, [identityBitsets, egoBitsets, identities, egos, activeTab, ownedFilter, separateSinners, strictFiltering, searchString, filters]);
+    }, [identityBitsets, egoBitsets, identities, egos, activeTab, ownedFilter, separateSinners, strictFiltering, searchString, filters, altNames, altNamesLoading]);
 
     const contentDisplay = () => {
         const listToComponents = list =>

@@ -5,15 +5,17 @@ import { useState } from "react";
 import egoStyles from "./EgoSelectors.module.css";
 import IconsSelector from "./IconsSelector";
 import identityStyles from "./IdentitySelectors.module.css";
+import { useData } from "../DataProvider";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
 import { egoRankMapping } from "@/app/lib/constants";
-import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
+import { buildSearchStrings, checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 
 export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, includeSelectedFirst = false }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
     const [mode, setMode] = useState(identityOptions ? "id" : "ego");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
@@ -23,10 +25,14 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
 
         if (mode === "id") {
             const prefiltered = Object.entries(identityOptions).filter(([id]) => !identityIds.includes(id)).map(([, data]) => data);
-            result = filterByFilters("identity", prefiltered, filters, data => searchString.length === 0 || checkFilterMatch(searchString, data.name));
+            result = filterByFilters("identity", prefiltered, filters, 
+                data => searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(data, altNamesLoading ? null : altNames))
+            );
         } else {
             const prefiltered = Object.entries(egoOptions).filter(([id]) => !egoIds.some(list => list.includes(id))).map(([, data]) => data);
-            result = filterByFilters("ego", prefiltered, filters, data => searchString.length === 0 || checkFilterMatch(searchString, data.name));
+            result = filterByFilters("ego", prefiltered, filters, 
+                data => searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(data, altNamesLoading ? null : altNames))
+            );
         }
 
         result = result.sort((a, b) => a.sinnerId === b.sinnerId ? b.id.localeCompare(a.id) : a.sinnerId - b.sinnerId);
@@ -57,7 +63,7 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
                 </div>
             )
         }
-    }, [mode, identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, searchString, filters, includeSelectedFirst]);
+    }, [mode, identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, searchString, filters, includeSelectedFirst, altNames, altNamesLoading]);
 
     return <div className="panel-container" style={{ gap: "0.5rem", width: "100%" }}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", paddingLeft: "1rem" }}>

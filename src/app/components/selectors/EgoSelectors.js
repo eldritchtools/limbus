@@ -13,11 +13,12 @@ import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 
 import { affinityColorMapping, uiColors } from "@/app/lib/colors";
 import { egoRanks, sinnerIdMapping } from "@/app/lib/constants";
-import { checkFilterMatch } from "@/app/lib/filter";
+import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
 export function EgoDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, excludeMode }) {
     const [egos, loading] = useData("egos_mini");
+    const [altNames, altNamesLoading] = useData("alt_names");
 
     const optionsMapped = useMemo(() => loading ? [] : Object.entries(egos).reduce((acc, [id, ego]) => {
         acc[id] = {
@@ -26,10 +27,10 @@ export function EgoDropdownSelector({ selected, setSelected, isMulti = false, st
                 <EgoIcon id={ego.id} type={"awaken"} displayName={false} scale={0.125} />
                 <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[ego.sinnerId]}] {ego.name}</span>
             </div>,
-            searchStrings: [ego.name, sinnerIdMapping[ego.sinnerId]]
+            searchStrings: buildSearchStrings(ego, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [egos, loading]);
+    }, {}), [egos, altNames, loading, altNamesLoading]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}

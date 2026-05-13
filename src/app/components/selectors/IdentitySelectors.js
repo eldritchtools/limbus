@@ -13,12 +13,13 @@ import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
 import { uiColors } from "@/app/lib/colors";
 import { sinnerIdMapping } from "@/app/lib/constants";
-import { checkFilterMatch } from "@/app/lib/filter";
+import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
 
 export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, excludeMode }) {
     const [identities, loading] = useData("identities_mini");
+    const [altNames, altNamesLoading] = useData("alt_names");
 
     const optionsMapped = useMemo(() => loading ? {} : Object.entries(identities).reduce((acc, [id, identity]) => {
         acc[id] = {
@@ -27,10 +28,10 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
                 <IdentityIcon id={identity.id} uptie={4} displayName={false} scale={0.125} />
                 <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[identity.sinnerId]}] {identity.name}</span>
             </div>,
-            searchStrings: [identity.name, sinnerIdMapping[identity.sinnerId]]
+            searchStrings: buildSearchStrings(identity, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [identities, loading]);
+    }, {}), [identities, altNames, loading, altNamesLoading]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}
@@ -45,6 +46,7 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
 }
 
 export function IdentityMenuSelector({ value, setValue, options, num }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
     const [filter, setFilter] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
@@ -52,9 +54,9 @@ export function IdentityMenuSelector({ value, setValue, options, num }) {
     const filtered = useMemo(() => {
         if (!filter) return options;
         return options.filter((opt) =>
-            opt.name.toLowerCase().includes(filter.toLowerCase())
+            checkFilterMatch(filter, buildSearchStrings(opt, altNamesLoading ? null : altNames))
         );
-    }, [filter, options]);
+    }, [filter, altNames, altNamesLoading, options]);
 
     const handleOpenChange = (open) => {
         setIsOpen(open);

@@ -14,7 +14,7 @@ import SocialsDisplay from "@/app/components/user/SocialsDisplay";
 import { getUserReviews } from "@/app/database/reviews";
 import { getUserDataFromUsername } from "@/app/database/users";
 import { contentConfig } from "@/app/lib/contentConfig";
-import { checkFilterMatch } from "@/app/lib/filter";
+import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { uiStrings } from "@/app/lib/uiStrings";
 
 export default function ProfilePage({ params, sp_tab, sp_page }) {
@@ -25,6 +25,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
 
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");
+    const [altNames, altNamesLoading] = useData("alt_names");
     const [userId, setUserId] = useState(null);
     const [content, setContent] = useState([]);
     const [reviews, setReviews] = useState(null);
@@ -134,7 +135,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
                 .filter(([, review]) => {
                     if (reviewSearch.length === 0) return true;
                     const data = String(review.item_id)[0] === "1" ? identities[review.item_id] : egos[review.item_id];
-                    return checkFilterMatch(reviewSearch, data.name);
+                    return checkFilterMatch(reviewSearch, buildSearchStrings(data, altNamesLoading ? null : altNames));
                 })
                 .sort((a, b) => b[1].bump_count - a[1].bump_count)
                 .map(([, review]) =>

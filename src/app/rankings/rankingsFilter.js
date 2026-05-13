@@ -1,9 +1,10 @@
-import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
 
 export function rankingsFilter({
     type, reviews, userReviews,
     rankingMode, identities, egos, minRatings = 0,
-    filters, searchString, globalRanking, strictFiltering, separateByPoint
+    filters, searchString, globalRanking, strictFiltering, separateByPoint,
+    altNames
 }) {
     if (!reviews) return [];
 
@@ -37,7 +38,7 @@ export function rankingsFilter({
             Object.values(identities),
             filters,
             identity => {
-                if (searchString.length > 0 && !checkFilterMatch(searchString, identity.name)) return false;
+                if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(identity, altNames))) return false;
                 return true;
             },
             strictFiltering
@@ -75,7 +76,7 @@ export function rankingsFilter({
             Object.values(egos),
             filters,
             ego => {
-                if (searchString.length > 0 && !checkFilterMatch(searchString, ego.name)) return false;
+                if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(ego, altNames))) return false;
                 return true;
             },
             strictFiltering
