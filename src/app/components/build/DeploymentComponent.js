@@ -8,35 +8,41 @@ const deploymentComponentStyle = {
     justifyContent: "center",
     padding: 0,
     margin: 0,
-    // containerType: "size",
-    fontSize: "clamp(0.6rem, 20cqw, 1.5rem)"
+    width: "100%",
+    aspectRatio: "4/1",
+    containerType: "size",
+    borderRadius: "0.5rem"
+}
+
+const innerStyle = {
+    fontSize: "clamp(0.6rem, 15cqw, 1.5rem)"
 }
 
 export default function DeploymentComponent({ depType, depIndex, setOrder, sinnerId }) {
     if (depType === "none") {
         if (setOrder)
             return <button onClick={() => setOrder(p => [...p, sinnerId])} style={deploymentComponentStyle}>
-                <span>Deploy</span>
+                <span style={innerStyle}>Deploy</span>
             </button>;
         else
             return <div style={deploymentComponentStyle} />;
     } else if (depType === "active") {
         if (setOrder)
             return <button onClick={() => setOrder(p => p.filter(x => x !== sinnerId))} style={deploymentComponentStyle}>
-                <span style={{ color: deploymentColors.active }}>Active {depIndex}</span>
+                <span style={{ ...innerStyle, color: deploymentColors.active }}>Active {depIndex}</span>
             </button>;
         else
             return <div style={deploymentComponentStyle}>
-                <span style={{ color: deploymentColors.active }}>Active {depIndex}</span>
+                <span style={{ ...innerStyle, color: deploymentColors.active }}>Active {depIndex}</span>
             </div>;
     } else if (depType === "backup") {
         if (setOrder)
             return <button onClick={() => setOrder(p => p.filter(x => x !== sinnerId))} style={deploymentComponentStyle}>
-                <span style={{ color: deploymentColors.backup }}>Backup {depIndex}</span>
+                <span style={{ ...innerStyle, color: deploymentColors.backup }}>Backup {depIndex}</span>
             </button>;
         else
             return <div style={deploymentComponentStyle}>
-                <span style={{ color: deploymentColors.backup }}>Backup {depIndex}</span>
+                <span style={{ ...innerStyle, color: deploymentColors.backup }}>Backup {depIndex}</span>
             </div>
     } else {
         return null;

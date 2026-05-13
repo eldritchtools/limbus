@@ -132,7 +132,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
             return checkFilterMatch(searchString, egos[id].name);
     }
 
-    return <div style={{ height: "min(90vh, 1250px)", overflowY: "auto", overflowX: "auto", maxWidth: "95vw", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
+    return <div style={{ height: "min(90vh, 600px)", overflowY: "auto", overflowX: "auto", maxWidth: "95vw", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", paddingLeft: "0.5rem" }}>
             Search:
             <input value={searchString} onChange={e => setSearchString(e.target.value)} />

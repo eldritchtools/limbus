@@ -53,8 +53,8 @@ export function EgoMenuSelector({ value, setValue, options, rank }) {
             style={{ borderColor: value?.awakeningType ? affinityColorMapping[value.awakeningType.affinity] : "var(--secondary-border-color)" }}
         >
             {value ? <div {...(isTouchDevice() ? {} : getEgoTooltipProps(value.id))}
-                style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: "4/1" }}>
-                <EgoIcon ego={value} banner={true} type={"awaken"} displayName={true} displayRarity={false} />
+                style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "99%" }}>
+                <EgoIcon ego={value} banner={true} type={"awaken"} displayName={true} displayRarity={false} style={{width: "100%", height: "99%", borderRadius: "0.5rem"}}/>
             </div> : <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "18%", height: "auto" }} />
             </div>}

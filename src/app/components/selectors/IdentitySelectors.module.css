@@ -11,6 +11,7 @@
     margin: 0;
     background: var(--bg-input);
     border: 1px solid var(--secondary-border-color);
+    border-radius: 0.5rem;
 }
 
 .identityMenuSelectorTrigger:hover {
