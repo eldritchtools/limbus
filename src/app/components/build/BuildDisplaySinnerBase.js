@@ -48,7 +48,7 @@ function Ego({ ego, displayType, rank, threadspin }) {
 
     if (!ego)
         return <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
-            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: displayType === "ego-comp" ? "80%" : "18%", height: "auto" }} />
+            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: displayType === "ego-comp" ? "65%" : "18%", height: "auto" }} />
         </div>
 
     const props = { banner: displayType !== "ego-comp", type: "awaken", displayName: displayType === "names", displayRarity: false, style: {borderRadius: ".5rem"} };
