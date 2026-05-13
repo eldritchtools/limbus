@@ -149,7 +149,7 @@ function ReviewerDisplay({
         if (!selected) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedUserReviews([]);
-            
+
             const params = new URLSearchParams();
             params.set("tab", "reviewer");
 
@@ -236,7 +236,7 @@ function ReviewerDisplay({
             </div>
             {selected === user.id &&
                 <span className="sub-text" style={{textAlign: "center"}}>
-                    When viewing your own ranking, you can see the global ranking and submit your own.
+                    When viewing your own ranking, you can see the global ranking and submit your own ratings.
                 </span>}
 
             {selectedReview &&
