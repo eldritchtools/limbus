@@ -158,7 +158,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
                         <div className="title-text" style={{textAlign: "center"}}>
                             No ratings with reviews. Go to Ranking to see all ratings. 
                         </div> :
-                        { reviewComponents }
+                        reviewComponents
                 }
             </div>
         }
