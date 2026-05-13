@@ -49,8 +49,8 @@ export default function Review({ type, reviewData, backReview, frontReview, user
     }, [reviewData, identities, identitiesLoading, egos, egosLoading, expanded]);
 
     const dataProp = {};
-    if(backReview) dataProp.globalData = getReviewScores(backReview);
-    if(frontReview) dataProp.userData = getReviewScores(frontReview);
+    if (backReview) dataProp.globalData = getReviewScores(backReview);
+    if (frontReview) dataProp.userData = getReviewScores(frontReview);
 
     return <div className="panel-container">
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", alignItems: isMobile ? "center" : "start" }}>
@@ -69,7 +69,12 @@ export default function Review({ type, reviewData, backReview, frontReview, user
                     <span> • </span>
                     <ReactTimeAgo date={reviewData.updated_at} locale="en-US" timeStyle="mini" />
                 </div>
-                <MarkdownRenderer content={reviewData.review_text} />
+                {reviewData.review_text && reviewData.review_text.length > 0 ?
+                    <MarkdownRenderer content={reviewData.review_text} /> :
+                    <div className="sub-text">
+                        No review provided.
+                    </div>
+                }
             </div>
         </div>
     </div>

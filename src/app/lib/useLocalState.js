@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-export default function useLocalState(key, defaultValue) {
-    const [state, setState] = useState(defaultValue);
-    const [initialized, setInitialized] = useState(false);
+export default function useLocalState(key, defaultValue, override) {
+    const [state, setState] = useState(override ?? defaultValue);
+    const [initialized, setInitialized] = useState(override ? true : false);
 
     useEffect(() => {
+        if(override) return;
+        
         try {
             const stored = localStorage.getItem(key);
             
@@ -18,7 +20,7 @@ export default function useLocalState(key, defaultValue) {
         } catch (error) {
             setState(defaultValue);
         }
-    }, [key, defaultValue]);
+    }, [key, defaultValue, override]);
 
     const setLocalState = useCallback(
         (value) => {

@@ -33,6 +33,7 @@ ADD CONSTRAINT youtube_id_format CHECK (
 ALTER TABLE public.builds
 ADD CONSTRAINT title_length CHECK (char_length(title) BETWEEN 3 AND 100);
 
+CREATE INDEX idx_builds_user_id ON public.builds (user_id);
 CREATE INDEX idx_builds_created_at ON public.builds (created_at DESC);
 CREATE INDEX idx_builds_like_count ON public.builds (like_count DESC);
 CREATE INDEX idx_builds_score_created_at ON public.builds (score DESC, created_at DESC);

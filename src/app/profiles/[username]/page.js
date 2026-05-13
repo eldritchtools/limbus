@@ -11,6 +11,7 @@ export async function generateMetadata({ params }) {
     };
 }
 
-export default function Page({ params }) {
-    return <ProfilePage params={params} />;
+export default async function Page({ params, searchParams }) {
+    const sp = await searchParams;
+    return <ProfilePage params={params} sp_tab={sp.tab} sp_page={sp.page ? Number(sp.page) : undefined} />;
 }
