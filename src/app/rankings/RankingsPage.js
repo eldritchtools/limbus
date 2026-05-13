@@ -121,15 +121,14 @@ function ReviewerDisplay({
     setReviews, setUserReviews,
     searchString, filters,
     strictFiltering, separateByPoint, globalRanking, showBreakdown,
-    initUsername
+    username, setUsername
 }) {
     const { user, profile } = useAuth();
     const [reviewers, setReviewers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState(null);
-    const [username, setUsername] = useState(null);
     const [selectedUserReviews, setSelectedUserReviews] = useState({});
-    const [userInput, setUserInput] = useState("");
+    const [userInput, setUserInput] = useState(username ?? "");
     const [message, setMessage] = useState("");
     const [selectedReview, setSelectedReview] = useState(null);
     const router = useRouter();
@@ -191,12 +190,12 @@ function ReviewerDisplay({
     }, [setLoading, setSelected, setUsername, setMessage]);
 
     useEffect(() => {
-        if(initUsername && initUsername.length > 0) {
+        if(!selected && username && username.length > 0) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setUserInput(initUsername);
-            searchUser(initUsername);
+            setUserInput(username);
+            searchUser(username);
         }
-    }, [initUsername, searchUser])
+    }, [username, selected, searchUser])
 
     const items = useMemo(() => {
         return rankingsFilter({
@@ -327,7 +326,7 @@ export default function RankingsPage({tab, username}) {
     const [globalRanking, setGlobalRanking] = useLocalState("rankingGlobalRanking", false);
     const [showBreakdown, setShowBreakdown] = useLocalState("rankingShowBreakdown", false);
 
-    const router = useRouter();
+    const [reviewerUsername, setReviewerUsername] = useState(username ?? "");
 
     useEffect(() => {
         if (loading) return;
@@ -482,7 +481,7 @@ export default function RankingsPage({tab, username}) {
                 searchString={searchString} filters={filters}
                 strictFiltering={strictFiltering} separateByPoint={separateByPoint}
                 globalRanking={globalRanking} showBreakdown={showBreakdown}
-                initUsername={username}
+                username={reviewerUsername} setUsername={setReviewerUsername}
             />
         }
     </div>
