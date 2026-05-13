@@ -57,22 +57,25 @@ export async function getUserReview({ userId, itemType, itemId }) {
     });
 }
 
-export async function getUserReviewsByType({ userId, itemType }) {
+export async function getUserReviews({ userId, itemType }) {
     try {
         const data = await withRetry(async () => {
-            const { data, error } = await getSupabase()
+            let query = getSupabase()
                 .from("reviews")
                 .select("*")
                 .eq("user_id", userId)
-                .eq("item_type", itemType)
 
+            if(itemType) 
+                query = query.eq("item_type", itemType);
+
+            const { data, error } = await query;
             if (error) throw error;
             return data;
         });
 
         return Object.fromEntries(data.map(item => {
             const scores = getReviewScores(item);
-            return [item.item_id, { overallRating: getOverallScore(scores), rating: scores, review_text: item.review_text }]
+            return [item.item_id, { ...item, overallRating: getOverallScore(scores), rating: scores, review_text: item.review_text }]
         }));
     } catch (err) {
         return {};
@@ -176,4 +179,17 @@ export async function getAggregatesByType({ itemType }) {
 
 export async function bumpReview(reviewId) {
     return callRPC("bump_review", { p_review_id: reviewId });
+}
+
+export async function getPopularReviewers() {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("user_review_stats")
+            .select("*")
+            .order("total_bumps", { ascending: false })
+            .limit(50)
+
+        if (error) throw error;
+        return data;
+    });
 }

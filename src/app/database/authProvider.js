@@ -30,6 +30,7 @@ export function AuthProvider({ children }) {
 
             if (error) throw error;
             setProfile(data);
+            if(!data?.username) router.push("/login/setup");
         } catch (err) {
             console.error(err);
         } finally {

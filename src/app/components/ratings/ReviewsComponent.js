@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
-import ReactTimeAgo from "react-time-ago";
 
-import BumpArrow from "./BumpArrow";
-import StatsRadarChart from "./RadarChart";
-import MarkdownRenderer from "../markdown/MarkdownRenderer";
-import Username from "../user/Username";
+import Review from "./Review";
 
 import { useAuth } from "@/app/database/authProvider";
-import { defaultReviewsPageSize, getItemReviews, getReviewScores } from "@/app/database/reviews";
+import { defaultReviewsPageSize, getItemReviews } from "@/app/database/reviews";
 
 export default function ReviewsComponent({ type, id, sortType }) {
     const { user } = useAuth();
@@ -39,21 +35,7 @@ export default function ReviewsComponent({ type, id, sortType }) {
             </span>
         }
         {
-            reviews.map(review => <div key={review.id} className="panel-container">
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <StatsRadarChart type={"identity"} userData={getReviewScores(review)} includeLabels={false} scale={.5} />
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap" }}>
-                            {user && <BumpArrow reviewId={review.id} />}
-                            <span> by </span>
-                            <Username username={review.user?.username} data={review} />
-                            <span> • </span>
-                            <ReactTimeAgo date={review.updated_at} locale="en-US" timeStyle="mini" />
-                        </div>
-                        <MarkdownRenderer content={review.review_text} />
-                    </div>
-                </div>
-            </div>)
+            reviews.map(review => <Review key={review.id} type={type} reviewData={review} backReview={review} />)
         }
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
             <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>

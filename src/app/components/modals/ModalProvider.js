@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
@@ -33,6 +34,13 @@ const MODAL_COMPONENTS = {
 
 export function ModalProvider({ children }) {
     const [stack, setStack] = useState([]);
+
+    const pathname = usePathname();
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setStack([]);
+    }, [pathname]);
 
     useEffect(() => {
         if (stack.length === 0) {

@@ -21,7 +21,7 @@ import { constructDefenseLevel, constructHp, constructSpeed } from "@/app/lib/id
 import { constructSkillLabel } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
-function IdentityDetails({ id, onClose }) {
+function IdentityDetails({ id }) {
     const [identities, identitiesLoading] = useData("identities");
     const { skills: skills, combatPassives: combatPassives, supportPassives: supportPassives } = useSkillData("identity", id, 4);
     const router = useRouter();
@@ -59,7 +59,7 @@ function IdentityDetails({ id, onClose }) {
                 <KeywordIcon id={"Blunt"} />
                 <ColoredResistance resist={data.resists.blunt} />
             </div>
-            <button onClick={() => { router.push(`/identities/${id}`); onClose(); }}>Go to page</button>
+            <button onClick={() => { router.push(`/identities/${id}`); }}>Go to page</button>
         </div>);
 
         [1, 2, 3, 4].forEach(tier => {
@@ -93,7 +93,7 @@ function IdentityDetails({ id, onClose }) {
         });
 
         return list;
-    }, [identities, identitiesLoading, id, skills, combatPassives, supportPassives, router, onClose]);
+    }, [identities, identitiesLoading, id, skills, combatPassives, supportPassives, router]);
 
     if (identitiesLoading) return <div>Loading...</div>;
 
@@ -102,7 +102,7 @@ function IdentityDetails({ id, onClose }) {
     </div>
 }
 
-function EgoDetails({ id, onClose }) {
+function EgoDetails({ id }) {
     const [egos, egosLoading] = useData("egos");
     const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } = useSkillData("ego", id, 4);
     const router = useRouter();
@@ -124,7 +124,7 @@ function EgoDetails({ id, onClose }) {
                     {<ColoredResistance resist={data.resists[affinity]} />}
                 </div>
             </div>)}
-            <button onClick={() => { router.push(`/egos/${id}`); onClose(); }}>Go to page</button>
+            <button onClick={() => { router.push(`/egos/${id}`); }}>Go to page</button>
         </div>);
 
         awakeningSkills.forEach(skill => {
@@ -140,7 +140,7 @@ function EgoDetails({ id, onClose }) {
         });
 
         return list;
-    }, [egos, egosLoading, id, awakeningSkills, corrosionSkills, passives, router, onClose]);
+    }, [egos, egosLoading, id, awakeningSkills, corrosionSkills, passives, router]);
 
     if (egosLoading) return <div>Loading...</div>;
 
@@ -157,7 +157,7 @@ function BuildsTab({ builds }) {
     </div>
 }
 
-export default function RatingModalContent({ type, id, getCommunityReviews, getUserReviews, onChange, onClose }) {
+export default function RatingModalContent({ type, id, getCommunityReviews, getUserReviews, onChange }) {
     const [identities, identitiesLoading] = useData("identities_mini")
     const [egos, egosLoading] = useData("egos_mini");
     const [, updateCount] = useState(0);
@@ -213,7 +213,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
             </div>
             <div style={isDesktop ? { overflowY: "auto", flex: 1, minHeight: 0 } : {}}>
                 {tab === "details" ?
-                    (type === "identity" ? <IdentityDetails id={id} onClose={onClose} /> : <EgoDetails id={id} onClose={onClose} />) :
+                    (type === "identity" ? <IdentityDetails id={id} /> : <EgoDetails id={id} />) :
                     (tab === "builds" ?
                         <BuildsTab builds={builds} /> :
                         (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} />)
