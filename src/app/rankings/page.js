@@ -29,110 +29,85 @@ const MIN_RATINGS_MAPPING = {
     5: 250
 }
 
+async function modalOnChange(id, x, {
+    reviewsRef, userReviewsRef, setReviews, setUserReviews
+}) {
+    const modEntry = (global, user, delta) => {
+        if (!user) return global;
+
+        const userScores = user.rating ? user.rating : getReviewScores(user);
+        if (!global) {
+            return {
+                votes: 1,
+                rating: userScores,
+                overallRating: getOverallScore(userScores)
+            }
+        }
+
+        const newRating = global.rating.map((score, i) => ((score * global.votes) + delta * userScores[i]) / (global.votes + delta));
+        return {
+            votes: global.votes + delta,
+            rating: newRating,
+            overallRating: getOverallScore(newRating)
+        }
+    }
+
+    if (x === null) {
+        setUserReviews(p => {
+            const { [id]: rem, ...newObj } = p;
+            return newObj;
+        });
+
+        const newReviews = modEntry(reviewsRef.current[id], userReviewsRef.current[id], -1);
+        if (newReviews.votes === 0) {
+            setReviews(p => {
+                const { [id]: rem, ...newObj } = p;
+                return newObj;
+            });
+        } else {
+            setReviews(p => ({ ...p, [id]: newReviews }));
+        }
+        return;
+    }
+
+    const scores = getReviewScores(x);
+    setUserReviews(p => ({ ...p, [id]: { overallRating: getOverallScore(scores), rating: scores } }));
+    setReviews(p => ({
+        ...p, [id]:
+            modEntry(modEntry(reviewsRef.current[id], userReviewsRef.current[id], -1), x, 1)
+    }));
+}
+
 function GlobalRankingDisplay({
     viewMode, rankingMode,
     identities, egos,
-    identityReviews, identityReviewsRef, userIdentityReviews, userIdentityReviewsRef,
-    egoReviews, egoReviewsRef, userEgoReviews, userEgoReviewsRef,
-    setIdentityReviews, setEgoReviews, setUserIdentityReviews, setUserEgoReviews,
+    reviews, reviewsRef, userReviews, userReviewsRef,
+    setReviews, setUserReviews,
     searchString, filters, minRatings,
     strictFiltering, separateByPoint, globalRanking, showBreakdown
 }) {
     const items = useMemo(() => rankingsFilter({
-        type: viewMode, identityReviews, egoReviews,
+        type: viewMode, reviews, userReviews,
         rankingMode, identities, egos, minRatings: MIN_RATINGS_MAPPING[minRatings],
-        filters, searchString, globalRanking, strictFiltering, separateByPoint,
-        userIdentityReviews, userEgoReviews
+        filters, searchString, globalRanking, strictFiltering, separateByPoint
     }), [
         identities, egos, viewMode, rankingMode,
-        identityReviews, userIdentityReviews,
-        egoReviews, userEgoReviews,
+        reviews, userReviews,
         strictFiltering, searchString, minRatings,
         filters, separateByPoint, globalRanking
     ]);
 
-    const onChange = async (id, x) => {
-        const modEntry = (global, user, delta) => {
-            if (!user) return global;
-
-            const userScores = user.rating ? user.rating : getReviewScores(user);
-            if (!global) {
-                return {
-                    votes: 1,
-                    rating: userScores,
-                    overallRating: getOverallScore(userScores)
-                }
-            }
-
-            const newRating = global.rating.map((score, i) => ((score * global.votes) + delta * userScores[i]) / (global.votes + delta));
-            return {
-                votes: global.votes + delta,
-                rating: newRating,
-                overallRating: getOverallScore(newRating)
-            }
-        }
-
-        if (x === null) {
-            if (viewMode === "identity") {
-                setUserIdentityReviews(p => {
-                    const { [id]: rem, ...newObj } = p;
-                    return newObj;
-                });
-
-                const newReviews = modEntry(identityReviewsRef.current[id], userIdentityReviewsRef.current[id], -1);
-                if (newReviews.votes === 0) {
-                    setIdentityReviews(p => {
-                        const { [id]: rem, ...newObj } = p;
-                        return newObj;
-                    });
-                } else {
-                    setIdentityReviews(p => ({ ...p, [id]: newReviews }));
-                }
-            } else {
-                setUserEgoReviews(p => {
-                    const { [id]: rem, ...newObj } = p;
-                    return newObj;
-                });
-
-                const newReviews = modEntry(egoReviewsRef.current[id], userEgoReviewsRef.current[id], -1);
-                if (newReviews.votes === 0) {
-                    setEgoReviews(p => {
-                        const { [id]: rem, ...newObj } = p;
-                        return newObj;
-                    });
-                } else {
-                    setEgoReviews(p => ({ ...p, [id]: newReviews }));
-                }
-            }
-            return;
-        }
-
-        const scores = getReviewScores(x);
-        if (viewMode === "identity") {
-            setUserIdentityReviews(p => ({ ...p, [id]: { overallRating: getOverallScore(scores), rating: scores } }));
-            setIdentityReviews(p => ({
-                ...p, [id]:
-                    modEntry(modEntry(identityReviewsRef.current[id], userIdentityReviewsRef.current[id], -1), x, 1)
-            }));
-        } else {
-            setUserEgoReviews(p => ({ ...p, [id]: { overallRating: getOverallScore(scores), rating: scores } }));
-            setEgoReviews(p => ({
-                ...p, [id]:
-                    modEntry(modEntry(egoReviewsRef.current[id], userEgoReviewsRef.current[id], -1), x, 1)
-            }));
-        }
-    }
-
-    if (viewMode === "identity" && !identityReviews) return <span>Loading...</span>;
-    if (viewMode === "ego" && !egoReviews) return <span>Loading...</span>;
+    const onChange = (id, x) => modalOnChange(id, x, {
+        reviewsRef, userReviewsRef, setReviews, setUserReviews
+    });
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
         <RankingDisplay
             viewMode={viewMode} items={items} modalOnChange={onChange}
-            reviews={viewMode === "identity" ? identityReviews : egoReviews}
-            reviewsRef={viewMode === "identity" ? identityReviewsRef : egoReviewsRef}
-            userReviews={viewMode === "identity" ? userIdentityReviews : userEgoReviews}
-            userReviewsRef={viewMode === "identity" ? userIdentityReviewsRef : userEgoReviewsRef}
+            reviews={reviews}
+            reviewsRef={reviewsRef}
+            userReviews={userReviews}
+            userReviewsRef={userReviewsRef}
             showBreakdown={showBreakdown}
             separateByPoint={separateByPoint}
         />
@@ -141,15 +116,17 @@ function GlobalRankingDisplay({
 
 function ReviewerDisplay({
     rankingMode, identities, egos,
-    userIdentityReviews, userEgoReviews,
+    reviews, reviewsRef, userReviews, userReviewsRef,
+    setReviews, setUserReviews,
     searchString, filters,
     strictFiltering, separateByPoint, globalRanking, showBreakdown
 }) {
+    const { user, profile } = useAuth();
     const [reviewers, setReviewers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState(null);
     const [username, setUsername] = useState(null);
-    const [reviews, setReviews] = useState({});
+    const [selectedUserReviews, setSelectedUserReviews] = useState({});
     const [userInput, setUserInput] = useState("");
     const [message, setMessage] = useState("");
     const [selectedReview, setSelectedReview] = useState(null);
@@ -168,17 +145,17 @@ function ReviewerDisplay({
     useEffect(() => {
         if (!selected) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setReviews([]);
+            setSelectedUserReviews([]);
             return;
         }
 
         const loadReviews = async () => {
             const result = await getUserReviews({ userId: selected });
             const processedResult = Object.entries(result).reduce((acc, [id, review]) => {
-                acc[id] = {...review, votes: 1};
+                acc[id] = { ...review, votes: 1 };
                 return acc;
             }, {});
-            setReviews(processedResult);
+            setSelectedUserReviews(processedResult);
             setLoading(false);
         }
 
@@ -187,9 +164,9 @@ function ReviewerDisplay({
 
     const searchUser = async () => {
         setLoading(true);
-        const user = await getUserDataFromUsername(userInput, "id");
-        if (user) {
-            setSelected(user.id);
+        const fetched = await getUserDataFromUsername(userInput, "id");
+        if (fetched) {
+            setSelected(fetched.id);
             setUsername(userInput);
             setMessage("");
         } else {
@@ -199,36 +176,45 @@ function ReviewerDisplay({
     }
 
     const items = useMemo(() => {
-        const [identityReviews, egoReviews] = Object.entries(reviews).reduce(([idDict, egoDict], [itemId, next]) => {
-            if (next.item_type === "identity") idDict[itemId] = next;
-            else egoDict[itemId] = next;
-            return [idDict, egoDict];
-        }, [[], []]);
-
         return rankingsFilter({
-            type: "users", identityReviews, egoReviews,
+            type: "both", reviews: selected === user.id ? userReviews : selectedUserReviews,
             rankingMode, identities, egos,
             filters, searchString, globalRanking, strictFiltering, separateByPoint,
-            userIdentityReviews, userEgoReviews
+            userReviews
         })
     }, [
-        reviews,
+        selectedUserReviews, selected, user, userReviews,
         identities, egos, rankingMode,
-        userIdentityReviews, userEgoReviews,
         strictFiltering, searchString,
         filters, separateByPoint, globalRanking
     ]);
 
-    const userReviews = useMemo(() => ({ ...userIdentityReviews, ...userEgoReviews }), [userIdentityReviews, userEgoReviews]);
-
     if (loading) return <LoadingContentPageTemplate />;
 
-    if (selected)
+    if (selected) {
+        const additionalProps = selected === user.id ?
+            {
+                modalOnChange: (id, x) => modalOnChange(id, x, {
+                    reviewsRef, userReviewsRef, setReviews, setUserReviews
+                }),
+                reviews: reviews,
+                reviewsRef: reviewsRef,
+                userReviewsRef: userReviewsRef
+            } :
+            {
+                onClick: review => setSelectedReview(review),
+                reviews: selectedUserReviews
+            }
+
         return <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
                 <button onClick={() => { setSelected(null); setUsername(null); setSelectedReview(null); }}>Go Back</button>
                 <h2 className="title-text">{username}&apos;s Ranking</h2>
             </div>
+            {selected === user.id &&
+                <span className="sub-text" style={{textAlign: "center"}}>
+                    When viewing your own ranking, you can see the global ranking and submit your own.
+                </span>}
 
             {selectedReview &&
                 <Review
@@ -241,13 +227,14 @@ function ReviewerDisplay({
             }
 
             <RankingDisplay
-                items={items} onClick={review => setSelectedReview(review)}
-                reviews={reviews}
+                items={items}
+                {...additionalProps}
                 userReviews={userReviews}
                 showBreakdown={showBreakdown}
                 separateByPoint={separateByPoint}
             />
         </div>
+    }
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
         <h2 className="title-text">Input a user:</h2>
@@ -259,6 +246,7 @@ function ReviewerDisplay({
                 onKeyDown={e => { if (e.key === 'Enter') searchUser(); }}
             />
             <button onClick={searchUser} disabled={loading}>Search</button>
+            <button onClick={() => { setSelected(user.id); setUsername(profile.username); setMessage(""); }}>View my Ranking</button>
         </div>
         <div className="sub-text" style={{ color: uiColors.red }}>{message}</div>
         <h2 className="title-text">or select from the most popular reviewers</h2>
@@ -296,19 +284,16 @@ export default function RankingsPage() {
     const [rankingMode, setRankingMode] = useState("overall");
     const [minRatings, setMinRatings] = useLocalState("rankingMinRatings", 2);
 
-    const [identityReviews, setIdentityReviews] = useState(null);
-    const [egoReviews, setEgoReviews] = useState(null);
-    const identityReviewsRef = useRef(identityReviews);
-    const egoReviewsRef = useRef(egoReviews);
-    useEffect(() => { identityReviewsRef.current = identityReviews }, [identityReviews]);
-    useEffect(() => { egoReviewsRef.current = egoReviews }, [egoReviews]);
+    const [identityReviewsLoaded, setIdentityReviewsLoaded] = useState(false);
+    const [egoReviewsLoaded, setEgoReviewsLoaded] = useState(false);
 
-    const [userIdentityReviews, setUserIdentityReviews] = useState(null);
-    const [userEgoReviews, setUserEgoReviews] = useState(null);
-    const userIdentityReviewsRef = useRef(userIdentityReviews);
-    const userEgoReviewsRef = useRef(userEgoReviews);
-    useEffect(() => { userIdentityReviewsRef.current = userIdentityReviews }, [userIdentityReviews]);
-    useEffect(() => { userEgoReviewsRef.current = userEgoReviews }, [userEgoReviews]);
+    const [reviews, setReviews] = useState(null);
+    const reviewsRef = useRef(reviews);
+    useEffect(() => { reviewsRef.current = reviews }, [reviews]);
+
+    const [userReviews, setUserReviews] = useState(null);
+    const userReviewsRef = useRef(userReviews);
+    useEffect(() => { userReviewsRef.current = userReviews }, [userReviews]);
 
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useLocalState("rankingFilters", []);
@@ -320,41 +305,47 @@ export default function RankingsPage() {
     useEffect(() => {
         if (loading) return;
 
-        if (viewMode === "identity") {
-            if (identityReviews) return;
-            const fetchReviews = async () => {
-                const reviews = await getAggregatesByType({ itemType: "identity" });
-                setIdentityReviews(reviews);
+        if (viewMode === "identity" || viewMode === "reviewer") {
+            if (!identityReviewsLoaded) {
+                const fetchReviews = async () => {
+                    const reviews = await getAggregatesByType({ itemType: "identity" });
+                    setReviews(p => ({ ...p, ...reviews }));
 
-                if (user) {
-                    const userReviews = await getUserReviews({ userId: user.id, itemType: "identity" })
-                    setUserIdentityReviews(userReviews);
+                    if (user) {
+                        const userReviews = await getUserReviews({ userId: user.id, itemType: "identity" })
+                        setUserReviews(p => ({ ...p, ...userReviews }));
+                    }
+                    setIdentityReviewsLoaded(true);
                 }
+
+                fetchReviews();
             }
-
-            fetchReviews();
-        } else if (viewMode === "ego") {
-            if (egoReviews) return;
-            const fetchReviews = async () => {
-                const reviews = await getAggregatesByType({ itemType: "ego" });
-                setEgoReviews(reviews);
-
-                if (user) {
-                    const userReviews = await getUserReviews({ userId: user.id, itemType: "ego" })
-                    setUserEgoReviews(userReviews);
-                }
-            }
-
-            fetchReviews();
         }
-    }, [viewMode, loading, identityReviews, egoReviews, user]);
+
+        if (viewMode === "ego" || viewMode === "reviewer") {
+            if (!egoReviewsLoaded) {
+                const fetchReviews = async () => {
+                    const reviews = await getAggregatesByType({ itemType: "ego" });
+                    setReviews(p => ({ ...p, ...reviews }));
+
+                    if (user) {
+                        const userReviews = await getUserReviews({ userId: user.id, itemType: "ego" })
+                        setUserReviews(p => ({ ...p, ...userReviews }));
+                    }
+                    setEgoReviewsLoaded(true);
+                }
+
+                fetchReviews();
+            }
+        }
+    }, [viewMode, loading, identityReviewsLoaded, egoReviewsLoaded, user]);
 
     if (loading || identitiesLoading || egosLoading) return <LoadingContentPageTemplate />
 
     const userReviewProps = user ? {
-        userIdentityReviews: userIdentityReviews, userEgoReviews: userEgoReviews,
-        userIdentityReviewsRef: userIdentityReviewsRef, userEgoReviewsRef: userEgoReviewsRef,
-        setUserIdentityReviews: setUserIdentityReviews, setUserEgoReviews: setUserEgoReviews
+        userReviews: userReviews,
+        userReviewsRef: userReviewsRef,
+        setUserReviews: setUserReviews
     } :
         {};
 
@@ -442,9 +433,7 @@ export default function RankingsPage() {
             <GlobalRankingDisplay
                 viewMode={viewMode} rankingMode={rankingMode}
                 identities={identities} egos={egos}
-                identityReviews={identityReviews} egoReviews={egoReviews}
-                setIdentityReviews={setIdentityReviews} setEgoReviews={setEgoReviews}
-                identityReviewsRef={identityReviewsRef} egoReviewsRef={egoReviewsRef}
+                reviews={reviews} setReviews={setReviews} reviewsRef={reviewsRef}
                 {...userReviewProps}
                 searchString={searchString} filters={filters} minRatings={minRatings}
                 strictFiltering={strictFiltering} separateByPoint={separateByPoint}
@@ -453,6 +442,7 @@ export default function RankingsPage() {
             <ReviewerDisplay
                 rankingMode={rankingMode}
                 identities={identities} egos={egos}
+                reviews={reviews} setReviews={setReviews} reviewsRef={reviewsRef}
                 {...userReviewProps}
                 searchString={searchString} filters={filters}
                 strictFiltering={strictFiltering} separateByPoint={separateByPoint}

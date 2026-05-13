@@ -13,7 +13,7 @@ export default function RankingItemDisplay({ type, item, rank, rankingScore, com
 
     const props = communityScore ? getRatingTooltipProps(type, communityScore, userScore) : {};
     const getUserReviews = () => userReviewsRef?.current;
-    const getCommunityReviews = () => communityReviewsRef.current;
+    const getCommunityReviews = () => communityReviewsRef?.current;
 
     if(onClick)
         props.onClick = () => onClick();

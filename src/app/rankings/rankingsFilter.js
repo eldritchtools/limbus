@@ -1,13 +1,11 @@
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
 
 export function rankingsFilter({
-    type, identityReviews, egoReviews,
+    type, reviews, userReviews,
     rankingMode, identities, egos, minRatings = 0,
-    filters, searchString, globalRanking, strictFiltering, separateByPoint,
-    userIdentityReviews, userEgoReviews
+    filters, searchString, globalRanking, strictFiltering, separateByPoint
 }) {
-    if ((type === "identity" || type === "reviewer") && !identityReviews) return [];
-    if ((type === "ego" || type === "reviewer") && !egoReviews) return [];
+    if (!reviews) return [];
 
     const filtered = [];
     const rankableItems = [];
@@ -21,8 +19,8 @@ export function rankingsFilter({
     const sortFunction = ([ca, ua, xa], [cb, ub, xb]) => {
         if (ca === cb) {
             if (ua === ub) {
-                if(xa.sinnerId !== xb.sinnerId) return xa.sinnerId - xb.sinnerId;
-                if(xa.id[0] === xb.id[0]) return xb.id.localeCompare(xa.id);
+                if (xa.sinnerId !== xb.sinnerId) return xa.sinnerId - xb.sinnerId;
+                if (xa.id[0] === xb.id[0]) return xb.id.localeCompare(xa.id);
                 return xa.id[0] === "1" ? -1 : 1;
             }
             if (ua === null) return 1;
@@ -34,7 +32,7 @@ export function rankingsFilter({
         return cb - ca;
     }
 
-    if (type === "identity" || type === "users") {
+    if (type === "identity" || type === "both") {
         const newList = filterByFilters("identity",
             Object.values(identities),
             filters,
@@ -45,16 +43,16 @@ export function rankingsFilter({
             strictFiltering
         )
             .map(identity => {
-                if (!(identity.id in identityReviews) || identityReviews[identity.id].votes < minRatings)
-                    return [null, getScore(identity.id, userIdentityReviews ?? {}), identity]
+                if (!(identity.id in reviews) || reviews[identity.id].votes < minRatings)
+                    return [null, getScore(identity.id, userReviews ?? {}), identity]
                 else
-                    return [getScore(identity.id, identityReviews), getScore(identity.id, userIdentityReviews ?? {}), identity]
+                    return [getScore(identity.id, reviews), getScore(identity.id, userReviews ?? {}), identity]
             })
 
         const items = [];
         if (globalRanking) {
             Object.keys(identities).forEach(id => {
-                if (id in identityReviews) items.push([getScore(id, identityReviews), id]);
+                if (id in reviews) items.push([getScore(id, reviews), id]);
             })
         } else {
             newList.forEach(([cs, , identity]) => {
@@ -63,7 +61,7 @@ export function rankingsFilter({
         }
 
         items.forEach(([sc, id]) => {
-            if (!(id in identityReviews) || identityReviews[id].votes < minRatings)
+            if (!(id in reviews) || reviews[id].votes < minRatings)
                 unrankedItems.add(id);
             else
                 rankableItems.push([sc, id]);
@@ -72,7 +70,7 @@ export function rankingsFilter({
         filtered.push(...newList);
     }
 
-    if (type === "ego" || type === "users") {
+    if (type === "ego" || type === "both") {
         const newList = filterByFilters("ego",
             Object.values(egos),
             filters,
@@ -83,16 +81,16 @@ export function rankingsFilter({
             strictFiltering
         )
             .map(ego => {
-                if (!(ego.id in egoReviews) || egoReviews[ego.id].votes < minRatings)
-                    return [null, getScore(ego.id, userEgoReviews ?? {}), ego]
+                if (!(ego.id in reviews) || reviews[ego.id].votes < minRatings)
+                    return [null, getScore(ego.id, userReviews ?? {}), ego]
                 else
-                    return [getScore(ego.id, egoReviews), getScore(ego.id, userEgoReviews ?? {}), ego]
+                    return [getScore(ego.id, reviews), getScore(ego.id, userReviews ?? {}), ego]
             })
 
         const items = [];
         if (globalRanking) {
             Object.keys(egos).forEach(id => {
-                if (id in egoReviews) items.push([getScore(id, egoReviews), id]);
+                if (id in reviews) items.push([getScore(id, reviews), id]);
             })
         } else {
             newList.forEach(([cs, , ego]) => {
@@ -101,7 +99,7 @@ export function rankingsFilter({
         }
 
         items.forEach(([sc, id]) => {
-            if (!(id in egoReviews) || egoReviews[id].votes < minRatings)
+            if (!(id in reviews) || reviews[id].votes < minRatings)
                 unrankedItems.add(id);
             else
                 rankableItems.push([sc, id]);
