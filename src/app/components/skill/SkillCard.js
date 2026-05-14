@@ -65,9 +65,11 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                     }
                 </span>
                 <span style={{ display: "flex", gap: "0" }}>
-                    {skill.coins.map((coin, i) =>
-                        <Icon key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} style={coinStyle} />
-                    )}
+                    {
+                        skill.coins.map((coin, i) =>
+                            <Icon key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} style={coinStyle} />
+                        )
+                    }
                 </span>
             </span>
             <span style={pillStyle}>
@@ -78,10 +80,10 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                 {constructOffDefLevel(skill, level)}
             </span>
             {includeSkillValues ? <>
-                <span style={pillStyle} {...getGeneralTooltipProps("Assumes all conditionals. Use Display Type in a Team Build for a more detailed calculation.")}>
+                <span style={pillStyle} {...getGeneralTooltipProps("Assumes all conditionals except for crits against a target with defense level equal to the offense level of the skill.\nUse the calculator in Display Type in a Team Build for a more detailed calculation.")}>
                     Clash: {skillValues.min[0]}-{skillValues.max[0]}
                 </span>
-                <span style={pillStyle} {...getGeneralTooltipProps("Assumes all conditionals. Use Display Type in a Team Build for a more detailed calculation.")}>
+                <span style={pillStyle} {...getGeneralTooltipProps("Assumes all conditionals except for crits against a target with defense level equal to the offense level of the skill.\nUse the calculator in Display Type in a Team Build for a more detailed calculation.")}>
                     Damage: {skillValues.min[1]}-{skillValues.max[1]}
                 </span>
             </> : null

@@ -18,7 +18,7 @@ export default function TrainingCalcPage() {
 
     const [selected, setSelected] = useState([]);
     const [starts, setStarts] = useState({ default: { level: 1, uptie: "unowned" } });
-    const [targets, setTargets] = useState({ default: { level: LEVEL_CAP, uptie: 4 } });
+    const [targets, setTargets] = useState({ default: { level: LEVEL_CAP, uptie: 5 } });
 
     const [xLux, setXLux] = useState(Object.keys(xpLux).at(-1));
     const [xSkip, setXSkip] = useState(false);
@@ -27,6 +27,7 @@ export default function TrainingCalcPage() {
     const [tBonus, setTBonus] = useState(false);
     const [md, setMd] = useState(Object.keys(mdCrates).at(-1));
     const [pass, setPass] = useState(false);
+    const [sc, setSC] = useState("shard");
 
     const [initializing, setInitializing] = useState(true);
     const saveTimeout = useRef(null);
@@ -47,6 +48,7 @@ export default function TrainingCalcPage() {
             if (data.tBonus) setTBonus(data.tBonus);
             if (data.md) setMd(data.md);
             if (data.pass) setPass(data.pass);
+            if (data.sc) setSC(data.sc);
         }
 
         getLocalStore("trainingCalc").get("main").then(handleData);
@@ -59,7 +61,7 @@ export default function TrainingCalcPage() {
             const data = {
                 id: "main",
                 selected, starts, targets,
-                xLux, xSkip, tLux, tSkip, tBonus, md, pass
+                xLux, xSkip, tLux, tSkip, tBonus, md, pass, sc
             }
 
             await getLocalStore("trainingCalc").save(data);
@@ -76,7 +78,7 @@ export default function TrainingCalcPage() {
         }, 1000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [initializing, selected, starts, targets, xLux, xSkip, tLux, tSkip, tBonus, md, pass]);
+    }, [initializing, selected, starts, targets, xLux, xSkip, tLux, tSkip, tBonus, md, pass, sc]);
 
     const selectItem = id => {
         setSelected(p => [...p, id]);
@@ -88,6 +90,7 @@ export default function TrainingCalcPage() {
         let xp = 0;
         let thread = 0;
         let shard = 0;
+        let spinchain = 0;
 
         selected.forEach(id => {
             if (`${id}`[0] === "1") {
@@ -97,20 +100,33 @@ export default function TrainingCalcPage() {
 
                 let startUptie = starts[id].uptie ?? starts.default.uptie;
                 if (startUptie === "unowned") startUptie = 0;
+                let uptie = Math.min(targets[id].uptie ?? targets.default.uptie, identities[id].maxThreadspin ?? 4);
 
-                const [t, s] = getUptieCost('0'.repeat(identities[id].rank), startUptie, targets[id].uptie ?? targets.default.uptie);
+                const [t, s, sc] = getUptieCost('0'.repeat(identities[id].rank), startUptie, uptie);
 
                 thread += t;
                 shard += s;
+                spinchain += sc;
             } else {
                 let startUptie = starts[id].uptie ?? starts.default.uptie;
                 if (startUptie === "unowned") startUptie = 0;
-                const [t, s] = getUptieCost(egos[id].rank, startUptie, targets[id].uptie ?? targets.default.uptie);
+                let uptie = Math.min(targets[id].uptie ?? targets.default.uptie, egos[id].maxThreadspin ?? 4);
+
+                const [t, s, sc] = getUptieCost(egos[id].rank, startUptie, uptie);
 
                 thread += t;
                 shard += s;
+                spinchain += sc;
             }
         });
+
+        if (sc === "thread") {
+            thread += spinchain * 2;
+        } else if (sc === "nshard") {
+            shard += spinchain * 2;
+        } else {
+            shard += spinchain;
+        }
 
         const xpPerRun = xpLux[xLux][xSkip ? 2 : 1];
         const xpRuns = Math.ceil(xp / xpPerRun);
@@ -174,9 +190,24 @@ export default function TrainingCalcPage() {
                     </label>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span>Shards per MD: {Math.round(shardsPerRun * 100)/100}</span>
+                    <span>Shards per MD: {Math.round(shardsPerRun * 100) / 100}</span>
                     <span>Runs: {shardRuns}</span>
                     <span>Modules: {shardModules}</span>
+                </div>
+                <span>Spinchains: {spinchain}</span>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <select value={sc} onChange={e => setSC(e.target.value)}>
+                        <option value={"shard"}>Sinner Shard</option>
+                        <option value={"nshard"}>Non-Sinner Shard</option>
+                        <option value={"ushard"}>Uptie/TS-only Shard</option>
+                        <option value={"thread"}>Thread</option>
+                    </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    {sc === "thread" ?
+                        <span>Threads per Spinchain: 2</span> :
+                        <span>Shards per Spinchain: {sc === "nshard" ? 2 : 1}</span>
+                    }
                 </div>
             </div>
         </div>;
@@ -186,7 +217,7 @@ export default function TrainingCalcPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h2 style={{ margin: 0 }}>Dispenser and Training Calculator</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Compute how many tickets, threads, and shards you need to dispense, level, and uptie everything needed.<br/>Note that the number of runs may not be exact due to excess xp when using training tickets or the randomness of shards from crates.</span>
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Compute how many tickets, threads, and shards you need to dispense, level, and uptie everything needed.<br />Note that the number of runs may not be exact due to excess xp when using training tickets or the randomness of shards from crates.</span>
 
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center" }}>
             <SelectedTable

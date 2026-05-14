@@ -125,6 +125,7 @@ export default function BuildEditingComponent({
                                                     setValue={v => setEgoThreadspin(v, index, rank)}
                                                     allowEmpty={true}
                                                     emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
+                                                    maxUptie={egos[egoIds[index][rank]]?.maxThreadspin ?? 4}
                                                 />)}
                                         </div>
                                         {skillReplaces ?

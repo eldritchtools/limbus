@@ -143,7 +143,7 @@ export default function EgoPage({ params }) {
     const [compareMode, setCompareMode] = useState(false);
     const [showReviews, setShowReviews] = useState(false);
 
-    const egoData = egosLoading ? null : egos[id];
+    const egoData = useMemo(() => egosLoading ? null : egos[id], [id, egos, egosLoading]);
     const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } = useSkillData("ego", id, preuptie);
     const { awakeningSkills, corrosionSkills, passives, notes } = useSkillData("ego", id, uptie);
 
@@ -154,6 +154,12 @@ export default function EgoPage({ params }) {
 
         if (activeTab === "builds" && !builds) fetchBuilds();
     }, [activeTab, builds, id])
+
+    useEffect(() => {
+        if(!egoData) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if(egoData.maxThreadspin) setUptie(egoData.maxThreadspin);
+    }, [egoData]);
 
     if (egosLoading) return null;
 
@@ -187,11 +193,11 @@ export default function EgoPage({ params }) {
                         <SinnerIcon num={egoData.sinnerId} style={{ width: "40px", height: "40px" }} />
                         Threadspin: {compareMode ?
                             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <UptieSelector value={preuptie} setValue={handleSetPreuptie} />
+                                <UptieSelector value={preuptie} setValue={handleSetPreuptie} maxUptie={egoData.maxThreadspin ?? 4} />
                                 ➔
-                                <UptieSelector value={uptie} setValue={handleSetUptie} />
+                                <UptieSelector value={uptie} setValue={handleSetUptie} maxUptie={egoData.maxThreadspin ?? 4} />
                             </div> :
-                            <UptieSelector value={uptie} setValue={handleSetUptie} bottomOption={"compare mode"} />
+                            <UptieSelector value={uptie} setValue={handleSetUptie} bottomOption={"compare mode"} maxUptie={egoData.maxThreadspin ?? 4} />
                         }
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>

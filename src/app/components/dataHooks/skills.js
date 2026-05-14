@@ -36,7 +36,8 @@ function compileSupportPassives(skillData, uptie) {
 
 function compileEgoPassives(skillData, threadspin) {
     if (threadspin < 2) return [];
-    return skillData.passiveList;
+    if (threadspin < 5) return [skillData.passiveList[0]];
+    return [skillData.passiveList[1]];
 }
 
 export function useSkillData(type, ids, tiers) {

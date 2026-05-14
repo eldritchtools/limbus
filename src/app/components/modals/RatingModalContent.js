@@ -104,7 +104,8 @@ function IdentityDetails({ id }) {
 
 function EgoDetails({ id }) {
     const [egos, egosLoading] = useData("egos");
-    const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } = useSkillData("ego", id, 4);
+    const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } = 
+        useSkillData("ego", id, egosLoading ? 4 : (egos[id].maxThreadspin ?? 4));
     const router = useRouter();
 
     const componentList = useMemo(() => {

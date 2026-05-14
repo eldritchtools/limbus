@@ -492,7 +492,7 @@ export default function EgoComparisonAdvanced({ egos, displayType, separateSinne
     const [sortAscending, setSortAscending] = useState(true);
     const [grouped, setGrouped] = useState(true);
 
-    const skillData = useSkillData("ego", egos.map(([id]) => id), egos.map(() => 4))
+    const skillData = useSkillData("ego", egos.map(([id]) => id), egos.map(([,ego]) => ego.maxThreadspin ?? 4))
 
     const egoListToItems = list => list.reduce((acc, [id, ego]) => {
         if (compareType === "stats") {

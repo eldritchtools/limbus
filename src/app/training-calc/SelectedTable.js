@@ -10,6 +10,18 @@ import { LEVEL_CAP } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
 import { getLevelCost, getUptieCost } from "../lib/training";
 
+function UptieSelectorWrapper({id, identities, egos, value, setValue, bottomOption}) {
+    const data = `${id}`[0] === "1" ? identities[id] : egos[id];
+    if(!data) return null;
+
+    return <UptieSelector 
+        value={Number.isInteger(value) ? Math.min(value, data.maxThreadspin ?? 4) : value}
+        setValue={setValue}
+        bottomOption={bottomOption}
+        maxUptie={data.maxThreadspin ?? 4}
+    />
+}
+
 export default function SelectedTable({ identities, egos, selected, setSelected, starts, setStarts, targets, setTargets }) {
     const [searchString, setSearchString] = useState("");
 
@@ -24,22 +36,27 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
 
             let startUptie = starts[id].uptie ?? starts.default.uptie;
             if (startUptie === "unowned") startUptie = 0;
+            let uptie = Math.min(targets[id].uptie ?? targets.default.uptie, identities[id].maxThreadspin ?? 4);
 
-            const [t, s] = getUptieCost('0'.repeat(identities[id].rank), startUptie, targets[id].uptie ?? targets.default.uptie);
+            const [t, s, sc] = getUptieCost('0'.repeat(identities[id].rank), startUptie, uptie);
 
             return <React.Fragment>
                 <span>XP: {xp}</span>
                 <span>Thread: {t}</span>
                 <span>Shards: {s}</span>
+                {sc > 0 && <span>Spinchains: {sc}</span>}
             </React.Fragment>
         } else {
             let startUptie = starts[id].uptie ?? starts.default.uptie;
             if (startUptie === "unowned") startUptie = 0;
-            const [t, s] = getUptieCost(egos[id].rank, startUptie, targets[id].uptie ?? targets.default.uptie);
+            let uptie = Math.min(targets[id].uptie ?? targets.default.uptie, egos[id].maxThreadspin ?? 4);
+
+            const [t, s, sc] = getUptieCost(egos[id].rank, startUptie, uptie);
 
             return <React.Fragment>
                 <span>Thread: {t}</span>
                 <span>Shards: {s}</span>
+                {sc > 0 && <span>Spinchains: {sc}</span>}
             </React.Fragment>
         }
     }
@@ -66,7 +83,8 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             /> :
                             null
                     }
-                    <UptieSelector
+                    <UptieSelectorWrapper
+                        id={id} identities={identities} egos={egos}
                         value={starts[id].uptie ?? starts.default.uptie}
                         setValue={v => setStarts(p => ({ ...p, [id]: { ...p[id], uptie: v } }))}
                         bottomOption={"unowned"}
@@ -84,7 +102,8 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             /> :
                             null
                     }
-                    <UptieSelector
+                    <UptieSelectorWrapper
+                        id={id} identities={identities} egos={egos}
                         value={targets[id].uptie ?? targets.default.uptie}
                         setValue={v => setTargets(p => ({ ...p, [id]: { ...p[id], uptie: v } }))}
                     />
@@ -162,6 +181,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                                 setValue={v => setStarts(p => ({ ...p, default: { ...p.default, uptie: v } }))}
                                 bottomOption={"unowned"}
                                 bottomDisplay={<span></span>}
+                                maxUptie={5}
                             />
                         </div>
                     </td>
@@ -175,6 +195,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             <UptieSelector
                                 value={targets.default.uptie}
                                 setValue={v => setTargets(p => ({ ...p, default: { ...p.default, uptie: v } }))}
+                                maxUptie={5}
                             />
                         </div>
                     </td>
