@@ -10,7 +10,7 @@ export default function MdPlansSearchDisplay({ plans, complete = true, clickOver
         gap: isMobile ? "0.2rem" : "0.5rem", justifyContent: "center"
     }}>
         {plans.map(plan => <div key={plan.id} onClick={clickOverride ? () => clickOverride(plan) : undefined}>
-            <MdPlan plan={plan} complete={complete} clickable={!clickOverride} />
+            <MdPlan plan={plan} complete={complete} clickable={!clickOverride} styleOverride={{ height: "100%" }} />
         </div>)}
     </div>
 }

@@ -20,7 +20,7 @@ import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { ColoredResistance } from "../lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "../lib/constants";
-import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
@@ -90,6 +90,7 @@ function EgoCard({ ego }) {
 }
 
 function EgoList({ egos, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedSeasons, compareMode }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
     const { isMobile } = useBreakpoint();
 
     const list = useMemo(() => {
@@ -101,13 +102,13 @@ function EgoList({ egos, searchString, filters, displayType, separateSinners, st
             "ego",
             Object.values(egos),
             combinedFilters,
-            ego => searchString.length === 0 || checkFilterMatch(searchString, ego.name),
+            ego => searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames)),
             strictFiltering
         )
             .map(x => [x.id, x])
             .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
-        [egos, searchString, filters, selectedStatuses, selectedSeasons, strictFiltering]);
+        [egos, searchString, filters, selectedStatuses, selectedSeasons, strictFiltering, altNames, altNamesLoading]);
 
     if (compareMode === "basic") {
         return <EgoComparisonBasic />

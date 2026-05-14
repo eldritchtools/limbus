@@ -21,7 +21,7 @@ import { StatusDropdownSelector } from "../components/selectors/StatusSelectors"
 import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getSeasonString, sinnerIdMapping } from "../lib/constants";
-import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
@@ -90,6 +90,7 @@ function IdentityCard({ identity }) {
 }
 
 function IdentityList({ identities, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedFactionTags, selectedSeasons, compareMode }) {
+    const [altNames, altNamesLoading] = useData("alt_names");
     const { isMobile } = useBreakpoint();
 
     const list = useMemo(() => {
@@ -102,13 +103,13 @@ function IdentityList({ identities, searchString, filters, displayType, separate
             "identity",
             Object.values(identities),
             combinedFilters,
-            identity => searchString.length === 0 || checkFilterMatch(searchString, identity.name),
+            identity => searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(identity, altNamesLoading ? null : altNames)),
             strictFiltering
         )
             .map(x => [x.id, x])
             .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
-        [identities, searchString, filters, selectedStatuses, selectedFactionTags, selectedSeasons, strictFiltering]);
+        [identities, searchString, filters, selectedStatuses, selectedFactionTags, selectedSeasons, strictFiltering, altNames, altNamesLoading]);
 
     if (compareMode === "basic") {
         return <IdentityComparisonBasic />

@@ -96,19 +96,21 @@ export default function BuildEditingComponent({
                             {Array.from({ length: 12 }, (_, index) => {
                                 const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, index + 1);
                                 return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid` }}>
-                                        <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid`, borderRadius: "0.5rem" }}>
+                                        <div style={{ gridColumn: "1", gridRow: "1 / 5" }}>
                                             <IdentityMenuSelector value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} options={identityOptions[index + 1]} num={index + 1} />
+                                        </div>
+                                        <div style={{ gridColumn: "1", gridRow: "5", alignItems: "stretch", justifyContent: "stretch" }}>
                                             {!minimalEditor ?
                                                 <DeploymentComponent depType={depType} depIndex={depIndex} setOrder={setDeploymentOrder} sinnerId={index + 1} /> :
                                                 replaceDeployment?.[index]
                                             }
                                         </div>
-                                        <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
-                                            {Array.from({ length: 5 }, (_, rank) =>
-                                                <EgoMenuSelector key={rank} value={egos[egoIds[index][rank]] || null} setValue={v => setEgoId(v, index, rank)} options={egoOptions[index + 1][rank]} rank={rank} />
-                                            )}
-                                        </div>
+                                        {Array.from({ length: 5 }, (_, rank) =>
+                                            <div key={rank} style={{ gridColumn: "2", gridRow: rank + 1 }}>
+                                                <EgoMenuSelector value={egos[egoIds[index][rank]] || null} setValue={v => setEgoId(v, index, rank)} options={egoOptions[index + 1][rank]} rank={rank} />
+                                            </div>
+                                        )}
                                     </div>
                                     {additionalToggle ? <>
                                         <div style={{ display: "flex" }}>
@@ -123,6 +125,7 @@ export default function BuildEditingComponent({
                                                     setValue={v => setEgoThreadspin(v, index, rank)}
                                                     allowEmpty={true}
                                                     emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
+                                                    maxUptie={egos[egoIds[index][rank]]?.maxThreadspin ?? 4}
                                                 />)}
                                         </div>
                                         {skillReplaces ?
@@ -174,7 +177,7 @@ export default function BuildEditingComponent({
                 <BuildDisplayMenuCard>
                     <div>Display Type</div>
                     <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
-                    <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
+                    <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
                 </BuildDisplayMenuCard> :
                 null
             }

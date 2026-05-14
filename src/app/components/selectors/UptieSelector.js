@@ -8,7 +8,7 @@ import TierIcon from "../icons/TierIcon";
 
 import { uiColors } from "@/app/lib/colors";
 
-function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, bottomOption = null }) {
+function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, bottomOption = null, maxUptie = 4 }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const triggerRef = useRef(null);
@@ -30,11 +30,11 @@ function UptieSelector({ value, setValue, allowEmpty = false, emptyIcon = null, 
         </Select.Trigger>
 
         <Select.Portal>
-            <Select.Content className={styles.uptieSelectorContent} style={{ width: allowEmpty ? "12.5rem" : "10rem" }} position="popper">
+            <Select.Content className={styles.uptieSelectorContent} style={{ width: `${(maxUptie + (allowEmpty ? 1 : 0)) * 2.5}rem` }} position="popper">
                 <Select.Viewport>
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div className={styles.uptieSelectorGrid} style={{ gridTemplateColumns: `repeat(${allowEmpty ? 5 : 4}, 1fr)` }}>
-                            {[1, 2, 3, 4].map((option) =>
+                        <div className={styles.uptieSelectorGrid} style={{ gridTemplateColumns: `repeat(${maxUptie + (allowEmpty ? 1 : 0)}, 1fr)` }}>
+                            {Array.from({length: maxUptie}, (x, i) => i+1).map((option) =>
                                 <Select.Item key={option} value={option} className={styles.uptieSelectorItem}>
                                     <div className={styles.uptieItemInner}>
                                         <TierIcon tier={option} scaleY={1.2} />

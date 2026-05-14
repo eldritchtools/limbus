@@ -19,7 +19,7 @@ function Identity({ identity, displayType, sinnerId, uptie, level }) {
             <SinnerIcon num={sinnerId} style={{ width: "75%", height: "75%" }} />
         </div>
 
-    const props = { displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp", displayRarity: true };
+    const props = { displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp", displayRarity: true, style: {borderRadius: ".5rem"} };
     if (uptie) {
         props.uptie = uptie;
         props.displayUptie = true;
@@ -48,10 +48,10 @@ function Ego({ ego, displayType, rank, threadspin }) {
 
     if (!ego)
         return <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
-            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: displayType === "ego-comp" ? "80%" : "18%", height: "auto" }} />
+            <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: displayType === "ego-comp" ? "65%" : "18%", height: "auto" }} />
         </div>
 
-    const props = { banner: displayType !== "ego-comp", type: "awaken", displayName: displayType === "names", displayRarity: false };
+    const props = { banner: displayType !== "ego-comp", type: "awaken", displayName: displayType === "names", displayRarity: false, style: {borderRadius: ".5rem"} };
     let tooltipId = ego.id;
     if (threadspin && displayType !== "ego-comp") {
         props.threadspin = threadspin;
@@ -77,7 +77,7 @@ export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity
     const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
 
     if (displayType === "ids")
-        return <div style={{ display: "flex", flexDirection: "column", width: "100%", border: `1px ${deploymentColors[depType]} solid` }}>
+        return <div style={{ display: "flex", flexDirection: "column", width: "100%", border: `1px ${deploymentColors[depType]} solid`, borderRadius: ".5rem" }}>
             <Identity
                 identity={identity}
                 displayType={displayType}
@@ -90,7 +90,7 @@ export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity
 
     const columns = displayType === "ego-comp" ? "4fr 1fr" : "1fr 1fr";
 
-    return <div style={{ display: "grid", gridTemplateColumns: columns, width: "100%", border: `1px ${deploymentColors[depType]} solid` }}>
+    return <div style={{ display: "grid", gridTemplateColumns: columns, width: "100%", border: `1px ${deploymentColors[depType]} solid`, borderRadius: ".5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
             <Identity
                 identity={identity}

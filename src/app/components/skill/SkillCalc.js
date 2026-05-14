@@ -29,6 +29,7 @@ function computeSkill(skill, opts) {
     let offDefLevel = skill.offDefLevel;
     let lastCoinBonuses = [];
     let typeConvert = 0;
+    let coins = [...skill.coins];
 
     const evaluateValue = value => {
         if (typeof value === 'number')
@@ -64,7 +65,11 @@ function computeSkill(skill, opts) {
                     clashBonus += bonus.value;
                     break;
                 case "coin":
-                    coinPowerBonus += bonus.value;
+                    if (bonus.extra?.cond === "tolastcoin") {
+                        lastCoinBonuses.push(bonus);
+                    } else {
+                        coinPowerBonus += bonus.value;
+                    }
                     break;
                 case "damage":
                     if (bonus.extra.cond === "tolastcoin") {
@@ -84,6 +89,9 @@ function computeSkill(skill, opts) {
                 case "skilllevel":
                     offDefLevel += bonus.value;
                     break;
+                case "addcoin":
+                    coins.splice(bonus.extra.num-1, 0, ...Array(bonus.value).fill(coins[bonus.extra.num-1]));
+                    break;
                 default:
                     break;
             }
@@ -98,7 +106,7 @@ function computeSkill(skill, opts) {
     }
     resistMultiplier += (offDefLevel - (opts.target.def ?? LEVEL_CAP)) / (Math.abs(offDefLevel - (opts.target.def ?? LEVEL_CAP)) + 25);
 
-    let [clash, damage] = skill.coins.reduce(([clash, damage, roll], coin, coinIndex) => {
+    let [clash, damage] = coins.reduce(([clash, damage, roll], coin, coinIndex) => {
         let coinPower = skill.coinPower + coinPowerBonus;
         let coinDamageMultiplier = damageMultiplier;
         let coinReuseDamageMultiplier = 1; // directly multiplied, start as 1
@@ -207,6 +215,8 @@ function computeSkill(skill, opts) {
                         }
                     } else if (bonus.type === "base" || bonus.type === "final") {
                         newRoll += bonus.value;
+                    } else if (bonus.type === "coin") {
+                        coinPower += bonus.value;
                     }
                 });
             }
@@ -244,6 +254,7 @@ function computeSkill(skill, opts) {
             let finalDamage = damage;
             endBonuses.forEach(bonus => {
                 if (bonus.type === "damage" && bonus.extra.op === "mul") {
+                    if (bonus.extra.cond === "crit" && !skill.applyCrits) return;
                     let addedDamage = damage * evaluateValue(bonus.value);
                     if ("max" in bonus.extra) addedDamage = Math.min(addedDamage, bonus.extra["max"]);
                     finalDamage += addedDamage * (opts.target[bonus.extra.type] ?? 1);
@@ -253,7 +264,7 @@ function computeSkill(skill, opts) {
             newDamage += finalDamage;
         }
 
-        const lastCoinWithoutReuse = coinIndex === skill.coins.length - 1;
+        const lastCoinWithoutReuse = coinIndex === coins.length - 1;
         simulateCoin(false, false, lastCoinWithoutReuse && coinReuses + (skill.applyCrits ? critReuses : 0) + headReuses === 0);
         let reuses = coinReuses + (skill.applyCrits ? critReuses : 0);
         headReuses = headReuses + (skill.applyCrits ? headCritReuses : 0);
@@ -473,7 +484,7 @@ function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
 }
 
 function EgoSkillCalc({ egos, threadspins, level = LEVEL_CAP, opts }) {
-    const egosList = useMemo(() => egos.map((ego, i) => [ego, threadspins?.[i] ?? 4, egoRanks[i]]).filter(([ego]) => ego), [egos, threadspins]);
+    const egosList = useMemo(() => egos.map((ego, i) => [ego, threadspins?.[i] ?? ego?.maxThreadspin ?? 4, egoRanks[i]]).filter(([ego]) => ego), [egos, threadspins]);
     const skillData = useSkillData("ego", egosList.map(([ego]) => ego.id), egosList.map(([, threadspin]) => threadspin));
 
     const list = egosList

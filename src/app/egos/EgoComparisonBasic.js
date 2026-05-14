@@ -16,7 +16,7 @@ import { constructSkillLabel } from "../lib/skill";
 import { selectStyleVariable } from "../styles/selectStyle";
 
 function ComparisonCard({ ego }) {
-    const [uptie, setUptie] = useState(4);
+    const [uptie, setUptie] = useState(ego.maxThreadspin ?? 4);
     const { awakeningSkills, corrosionSkills, passives } = useSkillData("ego", ego.id, uptie);
 
     const components = useMemo(() => {
@@ -40,7 +40,7 @@ function ComparisonCard({ ego }) {
                 <span>{sinnerIdMapping[ego.sinnerId]}</span>
                 <span>{ego.name}</span>
             </div>
-            <UptieSelector value={uptie} setValue={setUptie} />
+            <UptieSelector value={uptie} setValue={setUptie} maxUptie={ego.maxThreadspin ?? 4} />
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
             <EgoIcon ego={ego} type={"awaken"} displayName={false} displayRarity={false} size={128} />

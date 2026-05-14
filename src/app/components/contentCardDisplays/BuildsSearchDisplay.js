@@ -26,7 +26,7 @@ export default function BuildsSearchDisplay({ builds, complete = true, clickOver
 
         <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${sizeMapping[size]}px)`, gap: "1rem", justifyContent: "center" }}>
             {builds.map(build => <div key={build.id} onClick={clickOverride ? () => clickOverride(build) : undefined}>
-                <TeamBuild build={build} size={size} complete={complete} clickable={!clickOverride} />
+                <TeamBuild build={build} size={size} complete={complete} clickable={!clickOverride} styleOverride={{ height: "100%" }} />
             </div>)}
         </div>
     </div>

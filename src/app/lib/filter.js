@@ -1,3 +1,4 @@
+import { sinnerIdMapping } from "./constants";
 import { filterCategories } from "../components/selectors/IconsSelector";
 
 export function normalizeString(str) {
@@ -12,6 +13,13 @@ export function checkFilterMatch(str, searchStrings = []) {
         if (normalizeString(search[i]).includes(normStr)) return true;
     }
     return false;
+}
+
+export function buildSearchStrings(item, altNames) {
+    if(altNames)
+        return [item.name, sinnerIdMapping[item.sinnerId], ...(altNames[item.id] ?? [])];
+    else
+        return [item.name, sinnerIdMapping[item.sinnerId]];
 }
 
 const keywordStatusMapping = {
