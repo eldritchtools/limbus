@@ -40,10 +40,10 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>A {wrapLink("Reviewers", "/rankings?tab=reviewer")} tab has been added to the Community Rankings page allowing people to view the rankings and reviews of specific users. Viewing your own ratings lets you see everything you have and haven&apos;t rated.</li>
+                <li>A large amount of alternative names have been added to most identities and E.G.Os. They should come up in search bars when searching for those names. The initial set is primarily NPCs that ids are based on, Abno names, and some commonly used abbreviations. Shorter versions of names that are just mashups of the original name plus the sinner name may be excluded since you can already search for them with the original name. Feel free to suggest more if you try something that doesn&apos;t show up.</li>
                 <li>New display types (Identities Only and E.G.Os Compressed) have been added to builds if people prefer a less cluttered view. The sin distribution section has been upgraded to keyword/sin distribution.</li>
                 <li>Users can now submit their own ratings and reviews for {wrapLink("identities", "/identities")} and {wrapLink("E.G.Os", "/egos")} by clicking on the &quot;Community Rating&quot; tab below their respective stats. All submitted ratings are collated into the new {wrapLink("Community Rankings", "/rankings")} page where you can see all the identities and E.G.Os sorted by rank. Ratings and reviews can also be submitted through the Community Rankings page.</li>
-                <li>New {wrapLink("Site Customization", "/site-customization")} features allow users to change display settings on the site (colors, font, font size) or change how filter menus work.</li>
-                <li>An Encounters tab has been added to the builds page. Users can filter builds tagged with a specific encounter. This is the same as the builds tab that already exists in the encounters page, just more accessible.</li>
             </ul>
         </div> : null}
 
