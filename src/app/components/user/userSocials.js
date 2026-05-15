@@ -1,4 +1,4 @@
-import { FaDiscord, FaEnvelope, FaGlobe, FaReddit, FaTwitch, FaYoutube } from "react-icons/fa";
+import { FaDiscord, FaEnvelope, FaGlobe, FaReddit, FaTwitch, FaYoutube, FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiBluesky, SiKofi, SiPatreon, SiSteam, SiTiktok } from "react-icons/si";
 
@@ -93,6 +93,14 @@ export const socialsData = {
         iconColor: "#00adee",
         placeholder: "id/username or profiles/1234567890",
         href: value => `https://steamcommunity.com/${value}`,
+    },
+    "github": {
+        label: "GitHub",
+        validator: /^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)(?:\/(?=.{1,100}$)(?![.-])(?!.*\.\.)([A-Za-z0-9._-]+)(?<![.-]))?$/,
+        icon: FaGithub,
+        iconColor: "#181717",
+        placeholder: "username",
+        href: value => `https://github.com/${value}`,
     },
     "ko-fi": {
         label: "Ko-fi",

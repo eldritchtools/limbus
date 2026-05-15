@@ -125,13 +125,11 @@ export default function HomePage() {
 
     return <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", width: "100%", height: "100%" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.5rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
-            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                <span>Welcome to </span>
-                <h1 style={{ display: "inline", fontSize: "inherit" }}>Limbus Company Tools</h1>
-                <span>, Manager!</span>
-            </div>
+            <h1 style={{marginTop: "0.25rem", marginBottom: "0.25rem"}}>Limbus Company Tools</h1>
             <p>
-                Limbus Company Tools is your hub to create and share team builds, discover strategies, and use our game database and interactive tools.
+                Welcome, Manager!
+                <br/> <br/>
+                Limbus Company Tools is a hub for sharing team builds and Mirror Dungeon plans. View an Identities and E.G.Os database complete with community ratings and reviews. Use calculators, planners, team randomizers, and other reference tools for the game.
                 <br/> <br/>
                 Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize your experience.
             </p>

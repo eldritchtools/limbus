@@ -83,33 +83,33 @@ const paths = [
 ]
 
 const description = <span>
-    Limbus Company Tools is a community-driven website combining user-submitted content, tools, and reference resources for the game Limbus Company.
+    Limbus Company Tools is a community-driven website for users to share and discover team builds and Mirror Dungeon plans, view an Identities and E.G.Os database complete with community ratings and reviews, use Mirror Dungeon reference pages with an Achievemenet Tracker, or use tools such as calculators, solvers, randomizers, and planners.
 </span>;
 
-function Announcement() {
-    const [hidden, setHidden] = useState(false);
+// function Announcement() {
+//     const [hidden, setHidden] = useState(false);
 
-    if (hidden) return null;
+//     if (hidden) return null;
 
-    return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
-        <div style={{ backgroundColor: "var(--bg-hover)", borderRadius: "1rem", border: "1px solid var(--secondary-border-color)", maxWidth: "1200px", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
-            <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
-                    <span style={{ lineHeight: "1.3" }}>
-                        Announcement! On May 13-14, the site&apos;s database provider is having a partial maintenance of its systems. The site will continue running as normal, but some database related actions may randomly fail at times. I&apos;ve added some automated handling of these issues, but they may not catch all cases. If any issues happen during this period, please refresh the page and try again. Thank you!
-                    </span>
-                </div>
+//     return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
+//         <div style={{ backgroundColor: "var(--bg-hover)", borderRadius: "1rem", border: "1px solid var(--secondary-border-color)", maxWidth: "1200px", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
+//             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+//                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
+//                     <span style={{ lineHeight: "1.3" }}>
+//                         Announcement
+//                     </span>
+//                 </div>
 
-                <button
-                    style={{ background: "none", border: "none", color: "var(--secondary-text-color)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold" }}
-                    onClick={() => setHidden(true)}
-                >
-                    ✕
-                </button>
-            </div>
-        </div>
-    </div>;
-}
+//                 <button
+//                     style={{ background: "none", border: "none", color: "var(--secondary-text-color)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold" }}
+//                     onClick={() => setHidden(true)}
+//                 >
+//                     ✕
+//                 </button>
+//             </div>
+//         </div>
+//     </div>;
+// }
 
 
 export default function LayoutComponent({ children }) {
@@ -135,7 +135,7 @@ export default function LayoutComponent({ children }) {
                 >
                     <DataProvider>
                         <ModalProvider>
-                            <Announcement />
+                            {/* <Announcement /> */}
                             {children}
                             <AllTooltips />
                         </ModalProvider>

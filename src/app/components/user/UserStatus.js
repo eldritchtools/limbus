@@ -8,7 +8,6 @@ import NoPrefetchLink from "../NoPrefetchLink";
 import Notification from "../objects/Notification";
 
 import { useAuth } from "@/app/database/authProvider";
-import { getSupabase } from "@/app/database/connection";
 import { getNotifications, getUnreadNotificationsCount } from "@/app/database/notifications";
 
 function UserStatus() {
@@ -50,12 +49,6 @@ function UserStatus() {
         return () => {
             window.removeEventListener("focus", onFocus);
         };
-
-        // const interval = setInterval(() => {
-        //     refreshNotifications();
-        // }, 60000); // every 60s
-
-        // return () => clearInterval(interval);
     }, [user]);
 
     return loading ?

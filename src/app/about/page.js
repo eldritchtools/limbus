@@ -1,4 +1,3 @@
-import GithubButton from "./GithubButton";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import SocialsDisplay from "../components/user/SocialsDisplay";
@@ -8,18 +7,23 @@ export default function AboutPage() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "1rem", lineHeight: "1.3" }}>
             <h2 style={{ margin: 0 }}>About this Site</h2>
             <span>This is an unofficial community-driven site combining user-submitted posts, tools, and a reference database for the game Limbus Company.</span>
-            <span>Users can browse or share content such as team builds and md plans, use one of the many tools available on the site, or explore database pages covering game content.</span>
+            <span>Users can browse or share content such as team builds and Mirror Dungeon plans, use one of the many tools available on the site, or explore database pages covering game content.</span>
             <span>This site is currently maintained by one person, with support from the community as it continues to grow.</span>
 
             <h2 style={{ margin: 0 }}>Site Links</h2>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 <SocialsDisplay
                     socials={[
                         { type: "discord-server", value: "https://discord.gg/dukfUJnqTH" },
+                        { type: "github", value: "eldritchtools/limbus" },
+                        { type: "email", "value": "contact@eldritchtools.com" },
+                        { type: "youtube", value: "@EldritchPlays" },
+                        { type: "twitter", value: "EldritchTools" },
+                        { type: "ko-fi", value: "J3J31IBV7N" }
+
                     ]}
                     expandedDefault={true} button={true}
                 />
-                <GithubButton />
             </div>
 
             <h2 style={{ margin: 0 }}>Official Limbus Company Links</h2>
