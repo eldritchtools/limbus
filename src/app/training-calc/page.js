@@ -216,8 +216,10 @@ export default function TrainingCalcPage() {
     if (identitiesLoading || egosLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h2 style={{ margin: 0 }}>Dispenser and Training Calculator</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Compute how many tickets, threads, and shards you need to dispense, level, and uptie everything needed.<br />Note that the number of runs may not be exact due to excess xp when using training tickets or the randomness of shards from crates.</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Dispenser and Training Calculator</h1>
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>
+            Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os. Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of shards from crate rewards.
+        </span>
 
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center" }}>
             <SelectedTable

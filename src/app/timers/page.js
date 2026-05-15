@@ -90,8 +90,10 @@ export default function TimersPage() {
     const local12 = kstToLocalTime("12PM");
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h2 style={{ margin: 0 }}>Timers</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Timers for relevant dates in the game.</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Timers</h1>
+        <span className="sub-text" style={{ textAlign: "center" }}>
+            Timers for ongoing content, including countdowns for event endings and time since past releases of Identities and E.G.Os.
+        </span>
 
         <h3 style={{ margin: 0 }}>Time Until (10AM KST • {local10} local):</h3>
         <TimersTable timers={timers} />

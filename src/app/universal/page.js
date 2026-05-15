@@ -91,15 +91,13 @@ export default function UniversalGiftsPage() {
     const props = { searchString, includeDesc, hideUnfiltered };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
-        <h2 style={{ margin: 0 }}>Universal Gifts & Gift Combos</h2>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Universal Gifts & Gift Combos</h1>
         <p style={{ maxWidth: "1000px", textAlign: "left" }}>
-            These are gifts or gift combos that have benefits for all or most team compositions. The combos especially are useful when running MD Extreme or for challenge runs. They can still be useful but are not necessary for MD Infinity.
+            These are gifts and combos that have benefits for most team compositions in Mirror Dungeons. Gift combos are especially useful for infinity, extreme, or challenge runs.
             <br /> <br />
-            I have tried to order them by relevance for each category, but this varies between team compositions and different situations, so take the ordering with a grain of salt. I have deprioritized gifts that have conditions that aren&apos;t always achievable like killing enemies. Consider the first few in a list as generally worth aiming for, while the rest are nice to have depending on your team.
+            Items are loosely ordered by relevance within each category, but this varies significantly depending on team composition and situation, so the ordering should be taken as a rough guide rather than a strict ranking. Gifts with unreliable conditions are placed lower on the list.
             <br /> <br />
-            Note that some of these gifts require going to certain theme packs that may lock you from going after other more useful gifts. Use your discretion when planning out your runs. 
-            <br /> <br />
-            Gifts from hidden bosses or theme packs and EX gifts are excluded since they cannot be obtained by normal means.
+            Some gifts require specific theme packs that may prevent you from obtaining other gifts. Use your discretion when planning routes. Gifts from hidden bosses or theme packs and EX gifts are excluded since they cannot be obtained by normal means.
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>

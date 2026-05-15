@@ -156,9 +156,9 @@ export default function EgoPage({ params }) {
     }, [activeTab, builds, id])
 
     useEffect(() => {
-        if(!egoData) return;
+        if (!egoData) return;
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        if(egoData.maxThreadspin) setUptie(egoData.maxThreadspin);
+        if (egoData.maxThreadspin) setUptie(egoData.maxThreadspin);
     }, [egoData]);
 
     if (egosLoading) return null;
@@ -184,10 +184,15 @@ export default function EgoPage({ params }) {
                 <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "min(480px, 100%)" }}>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem", width: "100%" }}>
                         <RarityIcon rarity={egoData.rank.toLowerCase()} style={{ display: "inline", height: "2rem" }} />
-                        <div style={{ display: "flex", flexDirection: "column", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center" }}>
-                            <span>{sinnerIdMapping[egoData.sinnerId]}</span>
-                            <span>{egoData.name}</span>
-                        </div>
+                        <h1 style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: 0 }}>
+                            <span style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+                                {sinnerIdMapping[egoData.sinnerId]}
+                            </span>
+
+                            <span style={{ fontSize: "1.25rem", fontWeight: 700, textAlign: "center" }}>
+                                {egoData.name}
+                            </span>
+                        </h1>
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem", justifyContent: "center", padding: "0.5rem" }}>
                         <SinnerIcon num={egoData.sinnerId} style={{ width: "40px", height: "40px" }} />

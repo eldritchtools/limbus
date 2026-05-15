@@ -248,10 +248,15 @@ export default function IdentityPage({ params }) {
                 <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "min(480px, 100%)" }}>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem", width: "100%" }}>
                         <RarityIcon rarity={identityData.rank} style={{ display: "inline", height: "2rem" }} />
-                        <div style={{ display: "flex", flexDirection: "column", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center", textAlign: "center" }}>
-                            <span>{sinnerIdMapping[identityData.sinnerId]}</span>
-                            <span>{identityData.name}</span>
-                        </div>
+                        <h1 style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: 0 }}>
+                            <span style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+                                {sinnerIdMapping[identityData.sinnerId]}
+                            </span>
+
+                            <span style={{ fontSize: "1.25rem", fontWeight: 700, textAlign: "center" }}>
+                                {identityData.name}
+                            </span>
+                        </h1>
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem", justifyContent: "center", padding: "0.5rem" }}>
                         <SinnerIcon num={identityData.sinnerId} style={{ width: "40px", height: "40px" }} />

@@ -160,8 +160,12 @@ export default function SiteCustomizationPage() {
         display: "flex", flexDirection: "column", alignItems: "stretch", gap: "1rem",
         justifySelf: "center", width: "100%", maxWidth: "min(1000px, 95vw)", boxSizing: "border-box"
     }}>
-        <h2 style={{ margin: 0 }}>Site Customization</h2>
-        <span>Customize various parts of the site to your liking. All settings are saved locally even when logged in. More options will be added here over time. If you have an idea, consider suggesting it on the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0, textAlign: "center" }}>Site Customization</h1>
+        <span style={{ textAlign: "center" }}>Customize site settings and appearance preferences.</span>
+        <div className="sub-text">
+            Settings are saved locally on your device and persist even when logged in.
+            <br/> <br/>
+            More customization options will be added over time. Suggestions can be submitted via the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.</div>
 
         <SettingContainer
             name={"Favorite Links"}

@@ -397,16 +397,17 @@ export default function RankingsPage({tab, username}) {
                 ["identityTier", "egoTier", "sinner", "status", "affinity", "atkType"]
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-        <h2 style={{ margin: 0 }}>Community Rankings</h2>
-        <p style={{ maxWidth: "1000px", textAlign: "left" }}>
-            See how the community ranks the identities and E.G.Os in the game. Rankings are calculated from community-submitted ratings at the time the page loads. Refresh if you want to update the rankings.
-            <br /> <br />
-            Click on the identity or E.G.O to submit your own rating or leave a review. You can also visit their respective pages and check the &quot;Community Rating&quot; tab.
-            <br /> <br />
-            Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
-            <br /> <br />
-            This page is still an early version and may receive design overhauls and quality-of-life improvements over time. Feel free to share suggestions through the Discord server or the <NoPrefetchLink href={"/feedback"} className="text-link">feedback</NoPrefetchLink> page.
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Community Rankings</h1>
+        <p style={{ maxWidth: "1000px", margin: 0 }}>
+            View community rankings of Identities and E.G.O based on user ratings and reviews.
         </p>
+        <div className="sub-text">
+            Click on an Identity or E.G.O to submit your own rating or leave a review.
+            <br/> <br/>
+            Rankings are based on community-submitted ratings when the page loads. Refresh to update results.
+            <br/> <br/>
+            Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
+        </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>

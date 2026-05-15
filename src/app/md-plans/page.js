@@ -4,7 +4,7 @@ import JsonLd from "../lib/jsonLd";
 export function generateMetadata() {
     return {
         title: "MD Plans",
-        description: "Browse MD Plans shared by users",
+        description: "Browse and discover Mirror Dungeon plans shared by the Limbus Company community.",
         alternates: {
             canonical: "/md-plans"
         }

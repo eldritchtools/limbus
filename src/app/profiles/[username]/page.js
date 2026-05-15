@@ -4,7 +4,7 @@ export async function generateMetadata({ params }) {
     const { username } = await params;
     return {
         title: `${username}'s Profile`,
-        description: "View a user's profile and content",
+        description: "View user profile information and shared content.",
         alternates: {
             canonical: `/profiles/${username}`
         }

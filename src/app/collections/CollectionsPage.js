@@ -61,9 +61,9 @@ export default function CollectionsPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
-        <h2 style={{ margin: 0 }}>Collections</h2>
-        <div>
-            Collections are lists of builds and md plans managed by users. Some collections may be open to contributions from other users.
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Collections</h1>
+        <div className="sub-text">
+            Browse community collections of team builds and Mirror Dungeon plans. Some collections may be open to contributions from other users.
         </div>
         <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />

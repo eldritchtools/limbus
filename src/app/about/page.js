@@ -5,10 +5,14 @@ import SocialsDisplay from "../components/user/SocialsDisplay";
 export default function AboutPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "1rem", lineHeight: "1.3" }}>
-            <h2 style={{ margin: 0 }}>About this Site</h2>
-            <span>This is an unofficial community-driven site combining user-submitted posts, tools, and a reference database for the game Limbus Company.</span>
-            <span>Users can browse or share content such as team builds and Mirror Dungeon plans, use one of the many tools available on the site, or explore database pages covering game content.</span>
-            <span>This site is currently maintained by one person, with support from the community as it continues to grow.</span>
+            <h1 style={{ fontSize: "1.75rem", margin: 0 }}>About this Site</h1>
+            <p>
+                Limbus Company Tools is an unofficial fan-made project created for the Limbus Company community.
+                <br/> <br/>
+                It provides tools, reference databases, and community features to support gameplay planning and experimentation.
+                <br/> <br/>
+                This site is independently maintained by a single developer, with feedback and support from the community as it continues to grow.
+            </p>
 
             <h2 style={{ margin: 0 }}>Site Links</h2>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>

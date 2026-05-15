@@ -2,7 +2,7 @@ import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Theme Packs",
-    description: "View theme packs that show up in Mirror Dungeons",
+    description: "Browse theme packs available in Limbus Company Mirror Dungeons.",
     alternates: {
         canonical: "/theme-packs"
     }
@@ -13,7 +13,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "Theme Packs",
-            description: "View theme packs that show up in Mirror Dungeons",
+            description: "Browse theme packs available in Limbus Company Mirror Dungeons.",
             url: "https://limbus.eldritchtools.com/theme-packs"
         })
     ]

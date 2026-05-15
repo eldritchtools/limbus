@@ -254,7 +254,8 @@ export default function EgosPage() {
 
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
-            <h2 style={{ margin: 0 }}>E.G.Os</h2>
+            <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.Os</h1>
+            <div className="sub-text">Browse all E.G.Os in Limbus Company.</div>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                     <span style={{ textAlign: 'end' }}>Search:</span>

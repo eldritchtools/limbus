@@ -226,8 +226,11 @@ export default function FloorPlannerPage() {
     if (themePacksLoading || floorPacksLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
-        <h2 style={{ margin: 0 }}>Floor Planner</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool is made to be used as a quick way to view and plan theme pack options per floor. If you want to create and share a floor plan, please create an <NoPrefetchLink className="text-link" href="/md-plans/new">MD Plan</NoPrefetchLink> instead. You can also copy a floor plan you made here into an MD Plan using the button below. Additionally, the exclusive gifts helper displays the list of all theme pack exclusive gifts and the list of theme packs needed to get the ones you&apos;ve selected.</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Floor Planner</h1>
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Plan Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.</span>
+        <div className="sub-text">
+            You can transfer your floor plan into a full MD Plan using the button below.
+        </div>
         <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
             <label>
                 <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
@@ -244,7 +247,9 @@ export default function FloorPlannerPage() {
                 </select>
             </label>
             <button onClick={clear}>Clear</button>
-            <button onClick={() => setShowExclusiveHelper(p => !p)}>{showExclusiveHelper ? "Hide " : "Show "}Exclusive Gifts Helper</button>
+            <button {...getGeneralTooltipProps("Find recommended theme packs based on the exclusive gifts you want to get.")} onClick={() => setShowExclusiveHelper(p => !p)}>
+                {showExclusiveHelper ? "Hide " : "Show "}Exclusive Gifts Helper
+            </button>
             <button onClick={copyToMdPlan}>Copy to MD Plan</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${size})`, justifyContent: "center", width: "100%", gap: "0.5rem" }}>

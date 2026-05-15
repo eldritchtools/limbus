@@ -2,7 +2,7 @@ import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Timers",
-    description: "Relevant timers for when content is ending or since content was released",
+    description: "Timers for content end dates and time since releases in Limbus Company.",
     alternates: {
         canonical: "/timers"
     }
@@ -13,7 +13,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "Timers",
-            description: "Relevant timers for when content is ending or since content was released",
+            description: "Timers for content end dates and time since releases in Limbus Company.",
             url: "https://limbus.eldritchtools.com/timers"
         })
     ]
