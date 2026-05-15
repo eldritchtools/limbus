@@ -1,28 +1,40 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { getLocalStore } from "../database/localDB";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 
-function Container({ category, keyword, titlePrefix, searchString, includeDesc, hideUnfiltered }) {
+function Container({ category, keyword, titlePrefix, searchString, includeDesc, hideUnfiltered, tracking, setTracking }) {
     const { isMobile } = useBreakpoint();
     const [giftsData, giftsLoading] = useData("gifts");
 
     const gifts = useMemo(() => {
         if (giftsLoading) return [];
         const result = [];
+        const markedList = [];
 
-        const constructGift = (id, additionalText, filtered) => {
-            const filterStyle = !filtered ? { filter: "brightness(0.4)" } : {};
-            return <div key={id} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "60px" : "100px", ...filterStyle }}>
-                <Gift id={id} includeTooltip={true} scale={isMobile ? .6 : 1} />
+        const constructGift = (id, additionalText, filtered, marked) => {
+            const filterStyle = !filtered || marked ? { filter: "brightness(0.4)" } : {};
+
+            const toggleGift = tracking ?
+                () => {
+                    const newSet = new Set(tracking);
+                    if (marked) newSet.delete(Number(id));
+                    else newSet.add(Number(id));
+                    setTracking(newSet);
+                } :
+                null;
+
+            return <div key={id} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: isMobile ? "60px" : "100px", ...filterStyle }} onClick={toggleGift}>
+                <Gift id={id} includeTooltip={true} scale={isMobile ? .6 : 1} expandable={!tracking} />
                 <span style={{ whiteSpace: "pre-wrap" }}>{additionalText}</span>
             </div>
         }
@@ -36,16 +48,24 @@ function Container({ category, keyword, titlePrefix, searchString, includeDesc, 
             const labels = [giftData.names[0]];
             if (includeDesc) labels.push(giftData.search_desc);
 
+            const marked = tracking ? tracking.has(giftId) : false;
+
             if (searchString.length > 0 && !checkFilterMatch(searchString, labels)) {
                 if (hideUnfiltered) return;
-                result.push(constructGift(giftId, additionalText, false));
+                if (marked)
+                    markedList.push(constructGift(giftId, additionalText, false, marked))
+                else
+                    result.push(constructGift(giftId, additionalText, false, marked));
             } else {
-                result.push(constructGift(giftId, additionalText, true));
+                if (marked)
+                    markedList.push(constructGift(giftId, additionalText, true, marked))
+                else
+                    result.push(constructGift(giftId, additionalText, true, marked));
             }
         })
 
-        return result;
-    }, [category, searchString, includeDesc, hideUnfiltered, giftsData, giftsLoading, isMobile]);
+        return [...result, ...markedList];
+    }, [category, searchString, includeDesc, hideUnfiltered, giftsData, giftsLoading, isMobile, tracking, setTracking]);
 
     if (gifts.length === 0) return null;
 
@@ -67,8 +87,8 @@ function Container({ category, keyword, titlePrefix, searchString, includeDesc, 
     </div>
 }
 
-function Category({ keyword, category, titlePrefix, searchString, includeDesc, hideUnfiltered }) {
-    const props = { searchString, includeDesc, hideUnfiltered };
+function Category({ keyword, category, titlePrefix, searchString, includeDesc, hideUnfiltered, tracking, setTracking }) {
+    const props = { searchString, includeDesc, hideUnfiltered, tracking, setTracking };
 
     if (category.sections)
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -85,10 +105,64 @@ export default function UniversalGiftsPage() {
     const [searchString, setSearchString] = useState("");
     const [includeDesc, setIncludeDesc] = useLocalState("universalIncludeDesc", false);
     const [hideUnfiltered, setHideUnfiltered] = useLocalState("universalHideUnfiltered", false);
+    const [tracking, setTracking] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const saveTimeout = useRef(null);
+
+    useEffect(() => {
+        if (loading) {
+            getLocalStore("universalTracking").get("main").then(x => {
+                setLoading(false);
+                if (!x) return;
+                setTracking(new Set(x.gifts));
+            });
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        if (loading || !tracking) return;
+
+        const saveData = async () => {
+            const data = { id: "main", gifts: [...tracking] };
+            if (data.gifts.length === 0)
+                getLocalStore("universalTracking").remove("main");
+            else
+                getLocalStore("universalTracking").save(data);
+        };
+
+        clearTimeout(saveTimeout.current);
+
+        saveTimeout.current = setTimeout(async () => {
+            try {
+                await saveData();
+            } catch (err) {
+                console.error("Unable to persist data.");
+            }
+        }, 1000);
+
+        return () => clearTimeout(saveTimeout.current);
+    }, [tracking, loading]);
+
+    const toggleTracking = () => {
+        if (tracking) {
+            setTracking(null);
+            return;
+        }
+
+        getLocalStore("universalTracking").get("main").then(x => {
+            if (x) setTracking(new Set(x.gifts));
+            else setTracking(new Set());
+        });
+    }
+
+    const resetTracking = () => {
+        setTracking(new Set());
+        getLocalStore("universalTracking").remove("main");
+    }
 
     if (universalGiftsLoading) return <LoadingContentPageTemplate />;
 
-    const props = { searchString, includeDesc, hideUnfiltered };
+    const props = { searchString, includeDesc, hideUnfiltered, tracking, setTracking };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Universal Gifts & Gift Combos</h1>
@@ -118,6 +192,18 @@ export default function UniversalGiftsPage() {
                     Hide unfiltered gifts
                 </label>
             </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "0.25rem" }}>
+            <button onClick={() => toggleTracking()}>
+                {tracking === null ? "Activate Tracking Mode" : "Deactivate Tracking Mode"}
+            </button>
+            {
+                tracking ? <>
+                    <button onClick={() => resetTracking()}>Reset Tracking</button>
+                </> :
+                    null
+            }
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", justifyContent: "center" }}>
