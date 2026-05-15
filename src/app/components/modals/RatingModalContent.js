@@ -217,7 +217,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
                     (type === "identity" ? <IdentityDetails id={id} /> : <EgoDetails id={id} />) :
                     (tab === "builds" ?
                         <BuildsTab builds={builds} /> :
-                        (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} />)
+                        (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} userReview={review} />)
                     )
                 }
             </div>

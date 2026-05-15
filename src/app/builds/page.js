@@ -4,7 +4,7 @@ import JsonLd from "../lib/jsonLd";
 export function generateMetadata() {
     return {
         title: "Team Builds",
-        description: "Browse team builds shared by users.",
+        description: "Browse and discover team builds shared by the Limbus Company community.",
         alternates: {
             canonical: "/builds"
         }

@@ -7,7 +7,7 @@ export async function generateMetadata({ searchParams }) {
     const { category, encounter } = await searchParams;
 
     let title = "Encounters";
-    let description = "View details or relevant builds on various encounters.";
+    let description = "View details for encounters in Limbus Company, including related team builds and community discussion.";
     if (category && encounter) {
         const encounters = await getEncountersForMetadata();
         if (category in encounters && encounter in encounters[category]) {
@@ -30,7 +30,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "Encounters",
-            description: "View details or relevant builds on various encounters.",
+            description: "View details for encounters in Limbus Company, including related team builds and community discussion.",
             url: "https://limbus.eldritchtools.com/encounters"
         })
     ]

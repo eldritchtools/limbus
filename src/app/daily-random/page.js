@@ -12,6 +12,7 @@ import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentP
 import { commentsTargetIds } from "../lib/commentsTargetIds";
 import { keywords } from "../lib/constants";
 import { constructTeamCode } from "../lib/teamCodeEncoding";
+import { kstToLocalTime } from "../timers/timerFunc";
 
 function getResetDate(offsetDays = 0) {
     const base = new Date();
@@ -131,8 +132,9 @@ export default function DailyRandomizedPage() {
     if (identitiesLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h2 style={{ margin: 0 }}>Daily Randomized Team</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>A randomized team every day to use in MD or other content. The team changes every day at 6AM KST (the same daily reset as the game).</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Daily Randomized Team</h1>
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Get a new randomized team each day for Mirror Dungeon and other content.</span>
+        <div className="sub-text">Resets daily at 6AM KST ({kstToLocalTime("6AM")} local) (same schedule as the in-game reset).</div>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                 <h3 style={{ margin: 0 }}>Today&apos;s Team ({dateStr})</h3>

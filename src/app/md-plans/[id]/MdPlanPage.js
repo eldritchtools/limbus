@@ -101,7 +101,6 @@ export default function MdPlanPage({ id }) {
         }
 
         getLocalStore("mdPlanTracking").get(id).then(x => {
-            console.log(x);
             if (x) setTracking({ gifts: new Set(x.gifts), themePacks: new Set(x.themePacks) });
             else setTracking({ gifts: new Set(), themePacks: new Set() });
         });

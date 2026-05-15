@@ -2,7 +2,7 @@ import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "E.G.O Gifts",
-    description: "View E.G.O Gifts that show up in Mirror Dungeons",
+    description: "Browse E.G.O Gifts available in Limbus Company Mirror Dungeons.",
     alternates: {
         canonical: "/gifts"
     }
@@ -13,7 +13,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "E.G.O Gifts",
-            description: "View E.G.O Gifts that show up in Mirror Dungeons",
+            description: "Browse E.G.O Gifts available in Limbus Company Mirror Dungeons.",
             url: "https://limbus.eldritchtools.com/gifts"
         })
     ]

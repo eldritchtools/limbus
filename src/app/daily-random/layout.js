@@ -2,7 +2,7 @@ import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Daily Randomized Team",
-    description: "A daily randomized team for running mirror dungeons or other content",
+    description: "Get a daily randomized team for Mirror Dungeon and other content in Limbus Company.",
     alternates: {
         canonical: "/daily-random"
     }
@@ -13,7 +13,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "Daily Randomized Team",
-            description: "A daily randomized team for running mirror dungeons or other content",
+            description: "Get a daily randomized team for Mirror Dungeon and other content in Limbus Company.",
             url: "https://limbus.eldritchtools.com/daily-random"
         })
     ]

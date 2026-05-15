@@ -303,8 +303,10 @@ export default function TeamSolverPage() {
     if (identitiesLoading || initializing) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h2 style={{ margin: 0 }}>Team Solver</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>This tool allows you to generate teams with enough deployed identities that include the set keywords or statuses. You can fix identities or prevent sinners from being used in the builder below. You can also blacklist or whitelist identities from being selected. When you are done, you can hit solve and let it find teams that fit the conditions provided! If you like a team, Create Build will send you to the create a Team Build page with that team. Any settings you change are saved locally, but solved teams are not saved.</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Solver</h1>
+        <span style={{ maxWidth: "1000px", textAlign: "start" }}>
+            Generate teams that satisfy keyword or status requirements while following specified constraints. You can fix identities, restrict sinners, or use whitelist and blacklist options to guide the solver. If you like a result, you can export it directly into a Team Build.
+        </span>
 
         <h3 style={{ margin: 0 }}>Solver Settings</h3>
         <h4 style={{ margin: 0 }}>Sinner Settings (fix or disable sinners)</h4>
@@ -441,7 +443,11 @@ export default function TeamSolverPage() {
         </> : null
         }
 
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>The tool can take quite a while to find solutions if the requirements are strict. The first few teams will be relatively fast if they exist, but the rest may take a while to be found. Try switching to the faster search mode if it takes a while. Variety increases variety of teams that will appear if there are a lot of them to avoid getting all the same builds with just 1-2 differing identities, but the results will always have some level of randomness to them. The solver will only use identities that match at least one of the requirements.</span>
+        <span style={{ maxWidth: "1000px", textAlign: "left" }}>
+            The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. You can switch between Balanced, Faster, and Variety modes depending on whether you prefer speed or more varied results. Only identities that match at least one of your requirements will be considered.
+        </span>
+
+
 
         <h3 style={{ margin: 0 }}>Results</h3>
 

@@ -162,7 +162,7 @@ export default function FusionsPage() {
     if (giftsLoading) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", justifyContent: "center" }}>
-        <h2 style={{ alignSelf: "center", margin: 0 }}>Fusion Recipes</h2>
+        <h1 style={{ fontSize: "1.75rem", alignSelf: "center", margin: 0 }}>Fusion Recipes</h1>
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "0.5rem", alignItems: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>

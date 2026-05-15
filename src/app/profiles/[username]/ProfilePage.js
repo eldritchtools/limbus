@@ -187,7 +187,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
     return <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: isDesktop ? "90%" : "100%" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-                <h2 style={{ marginBottom: "0" }}>{parsedUsername}</h2>
+                <h1 style={{ fontSize: "1.75rem", marginBottom: "0" }}>{parsedUsername}</h1>
                 <div><em>{flair}</em></div>
                 {socials.length > 0 ? <SocialsDisplay socials={socials} /> : null}
                 <div style={{ width: isDesktop ? "70%" : "90%" }}> <MarkdownRenderer content={description} /></div>

@@ -25,7 +25,7 @@ import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constant
 import { constructSkillLabel } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
-function RatingTab({ id, showReviews, setShowReviews }) {
+function RatingTab({ id, showReviews, setShowReviews, setUserReview }) {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [globalData, setGlobalData] = useState(null);
@@ -41,13 +41,14 @@ function RatingTab({ id, showReviews, setShowReviews }) {
             const globalData = await getItemAggregates({ itemType: "ego", itemId: id });
 
             setUserData(userData);
+            setUserReview(userData);
             setGlobalData(globalData);
             setRefresh(false);
             setLoading(false);
         }
 
         fetchData();
-    }, [user, id, refresh]);
+    }, [user, id, refresh, setUserReview]);
 
     if (loading) return <span style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Loading Rating...</span>;
 
@@ -120,7 +121,7 @@ function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCo
     </div>
 }
 
-function ReviewsTab({ id, setShowReviews }) {
+function ReviewsTab({ id, setShowReviews, userReview }) {
     const [tab, setTab, tabInitialized] = useLocalState("ratingTab", "latest");
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -129,7 +130,7 @@ function ReviewsTab({ id, setShowReviews }) {
             <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
             <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
         </div>
-        {tabInitialized && <ReviewsComponent type={"ego"} id={id} sortType={tab} />}
+        {tabInitialized && <ReviewsComponent type={"ego"} id={id} sortType={tab} userReview={userReview} />}
     </div>
 }
 
@@ -142,6 +143,7 @@ export default function EgoPage({ params }) {
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
     const [showReviews, setShowReviews] = useState(false);
+    const [userReview, setUserReview] = useState(null);
 
     const egoData = useMemo(() => egosLoading ? null : egos[id], [id, egos, egosLoading]);
     const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } = useSkillData("ego", id, preuptie);
@@ -156,9 +158,9 @@ export default function EgoPage({ params }) {
     }, [activeTab, builds, id])
 
     useEffect(() => {
-        if(!egoData) return;
+        if (!egoData) return;
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        if(egoData.maxThreadspin) setUptie(egoData.maxThreadspin);
+        if (egoData.maxThreadspin) setUptie(egoData.maxThreadspin);
     }, [egoData]);
 
     if (egosLoading) return null;
@@ -184,10 +186,15 @@ export default function EgoPage({ params }) {
                 <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", width: "min(480px, 100%)" }}>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem", width: "100%" }}>
                         <RarityIcon rarity={egoData.rank.toLowerCase()} style={{ display: "inline", height: "2rem" }} />
-                        <div style={{ display: "flex", flexDirection: "column", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center" }}>
-                            <span>{sinnerIdMapping[egoData.sinnerId]}</span>
-                            <span>{egoData.name}</span>
-                        </div>
+                        <h1 style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: 0 }}>
+                            <span style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+                                {sinnerIdMapping[egoData.sinnerId]}
+                            </span>
+
+                            <span style={{ fontSize: "1.25rem", fontWeight: 700, textAlign: "center" }}>
+                                {egoData.name}
+                            </span>
+                        </h1>
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem", justifyContent: "center", padding: "0.5rem" }}>
                         <SinnerIcon num={egoData.sinnerId} style={{ width: "40px", height: "40px" }} />
@@ -266,14 +273,14 @@ export default function EgoPage({ params }) {
                             activeTab === "notes" ?
                                 <NotesTab notes={notes} /> :
                                 activeTab === "rating" ?
-                                    <RatingTab id={id} showReviews={showReviews} setShowReviews={setShowReviews} /> :
+                                    <RatingTab id={id} showReviews={showReviews} setShowReviews={setShowReviews} setUserReview={setUserReview} /> :
                                     <BuildsTab builds={builds} />
                         }
                     </div>
                 </div>
 
                 {showReviews ?
-                    <ReviewsTab id={id} setShowReviews={setShowReviews} /> :
+                    <ReviewsTab id={id} setShowReviews={setShowReviews} userReview={userReview} /> :
                     <SkillsTab
                         awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
                         corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}

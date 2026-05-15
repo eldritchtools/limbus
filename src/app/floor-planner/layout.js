@@ -2,7 +2,7 @@ import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Floor Planner",
-    description: "Quickly select floors to see what theme packs you can still go to.",
+    description: "Plan Limbus Company Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.",
     alternates: {
         canonical: "/floor-planner"
     }
@@ -13,7 +13,7 @@ const schema = {
     "@graph": [
         getAppSchema({
             name: "Floor Planner",
-            description: "Quickly select floors to see what theme packs you can still go to for the game Limbus Company.",
+            description: "Plan Limbus Company Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.",
             url: "https://limbus.eldritchtools.com/floor-planner"
         })
     ]

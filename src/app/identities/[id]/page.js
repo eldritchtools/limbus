@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
 
     return {
         title: identity ?? "Identity",
-        description: `Information for the identity ${identity}`,
+        description: `Identity details for ${identity} in Limbus Company, including stats, effects, notes, and usage information.`,
         alternates: {
             canonical: `/identities/${id}`
         }

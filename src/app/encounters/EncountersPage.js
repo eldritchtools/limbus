@@ -136,8 +136,9 @@ export default function EncountersPage() {
     if (encountersLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>Encounters</h2>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Check out details for various encounters in the game. This is an early version of this page. More encounters, details, and QoL will gradually be added to this page over time. Feel free to suggest encounters you want to see added or prioritized.</span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Encounters</h1>
+        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Browse encounter details, related team builds, and community comments.</span>
+        <div className="sub-text">This is an early version of this page. More encounters, details, and quality-of-life improvements will gradually be added to this page over time. Suggestions for encounters to prioritize are welcome.</div>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>

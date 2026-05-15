@@ -1,6 +1,6 @@
 export const metadata = {
     title: "Supporters",
-    description: "Learn about Limbus Company Tools's supporters."
+    description: "Supporters of Limbus Company Tools."
 };
 
 export default function SupportersLayout({ children }) {

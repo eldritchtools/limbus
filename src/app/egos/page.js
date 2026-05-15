@@ -4,7 +4,7 @@ import JsonLd from "../lib/jsonLd";
 export function generateMetadata() {
     return {
         title: "E.G.Os",
-        description: "Browse information on E.G.Os.",
+        description: "Browse all E.G.Os in Limbus Company with advanced search, filters, and comparison tools.",
         alternates: {
             canonical: "/egos"
         }

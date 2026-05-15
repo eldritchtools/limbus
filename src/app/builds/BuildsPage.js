@@ -162,7 +162,8 @@ export default function BuildsPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
-        <h2 style={{ margin: 0 }}>Team Builds</h2>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Builds</h1>
+        <div className="sub-text">Browse community-shared team builds.</div>
         <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>

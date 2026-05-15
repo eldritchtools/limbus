@@ -125,7 +125,7 @@ export default function GiftsPage() {
     const updatedGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.updated), [giftsData, giftsLoading]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>E.G.O Gifts</h2>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.O Gifts</h1>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>

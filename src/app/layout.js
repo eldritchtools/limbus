@@ -11,7 +11,7 @@ export const metadata = {
         default: "Limbus Company Tools",
         template: "%s | Limbus Company Tools",
     },
-    description: "Community-driven tools for Limbus Company.",
+    description: "Limbus Company tools for team builds, Mirror Dungeon planning, Identity and E.G.O database with user ratings, achievement tracking, calculators, and planners."
 };
 
 const schema = {

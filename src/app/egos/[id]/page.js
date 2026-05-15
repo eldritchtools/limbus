@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
 
     return {
         title: ego ?? "E.G.O",
-        description: `Information for the E.G.O ${ego}`,
+        description: `E.G.O details for ${ego} in Limbus Company, including stats, effects, notes, and usage information.`,
         alternates: {
             canonical: `/egos/${id}`
         }

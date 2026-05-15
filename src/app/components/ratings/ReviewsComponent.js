@@ -5,8 +5,8 @@ import Review from "./Review";
 import { useAuth } from "@/app/database/authProvider";
 import { defaultReviewsPageSize, getItemReviews } from "@/app/database/reviews";
 
-export default function ReviewsComponent({ type, id, sortType }) {
-    const { user } = useAuth();
+export default function ReviewsComponent({ type, id, sortType, userReview }) {
+    const { user, profile } = useAuth();
     const [page, setPage] = useState(1);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,6 +29,9 @@ export default function ReviewsComponent({ type, id, sortType }) {
         </span>;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
+        {userReview?.review_text &&
+            <Review type={type} reviewData={userReview} backReview={userReview} usernameOverride={profile?.username} />
+        }
         {user &&
             <span className="sub-text" style={{ textAlign: "center" }}>
                 If you find a review helpful, you can bump it to help increase its visibility in the Active and Top tabs. Look for the arrow button near the start of the review.

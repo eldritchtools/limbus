@@ -367,7 +367,7 @@ export default function AchievementsPage() {
                 setSaveStatus("error");
                 setChanged(false);
             }
-        }, 5000);
+        }, 3000);
 
         return () => clearTimeout(saveTimeout.current);
     }, [tracking, points, additionalPoints, achievementsPre, dataLoading, changed, user]);
@@ -397,7 +397,13 @@ export default function AchievementsPage() {
     if (achievementsLoading || dataLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
-        <h2 style={{ margin: 0 }}>MD Achievements Tracker</h2>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Mirror Dungeon Achievements Tracker</h1>
+        <p>
+            Track Mirror Dungeon (MD) achievement progress and view details and tips for each achievement.
+        </p>
+        <div className="sub-text">
+            Progress saves automatically after a short period of inactivity.
+        </div>
         <div>Progress is automatically saved after a few seconds of inactivity.</div>
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>

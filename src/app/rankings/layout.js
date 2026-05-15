@@ -4,7 +4,7 @@ import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Community Rankings",
-    description: "See how the community ranks identities and E.G.Os",
+    description: "View community rankings of Limbus Company's Identities and E.G.O based on user ratings and reviews.",
     alternates: {
         canonical: "/rankings"
     }
@@ -15,7 +15,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "Community Rankings",
-            description: "See how the community ranks identities and E.G.Os",
+            description: "View community rankings of Limbus Company's Identities and E.G.O based on user ratings and reviews.",
             url: "https://limbus.eldritchtools.com/rankings"
         })
     ]

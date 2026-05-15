@@ -4,7 +4,7 @@ import JsonLd from "../lib/jsonLd";
 export function generateMetadata() {
     return {
         title: "Collections",
-        description: "Browse collections of content managed by users.",
+        description: "Browse community collections of team builds and Mirror Dungeon plans in Limbus Company.",
         alternates: {
             canonical: "/collections"
         }
