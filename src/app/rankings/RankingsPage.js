@@ -72,7 +72,7 @@ async function modalOnChange(id, x, {
     }
 
     const scores = getReviewScores(x);
-    setUserReviews(p => ({ ...p, [id]: { overallRating: getOverallScore(scores), rating: scores } }));
+    setUserReviews(p => ({ ...p, [id]: { ...x, overallRating: getOverallScore(scores), rating: scores } }));
     setReviews(p => ({
         ...p, [id]:
             modEntry(modEntry(reviewsRef.current[id], userReviewsRef.current[id], -1), x, 1)
