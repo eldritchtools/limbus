@@ -4,14 +4,17 @@ import { useEffect } from 'react';
 
 import { useAuth } from '@/app/database/authProvider';
 import { localStores } from '@/app/database/localDB';
+import { triggerSignUpGAEvent } from '@/app/lib/gaEvents';
+import useLocalState from '@/app/lib/useLocalState';
 
 export default function AuthCallback() {
     const router = useRouter();
     const { user, profile, loading, refreshProfile } = useAuth();
+    const [gaSent, setGASent, gaSentInitialized] = useLocalState("signUpGASent", false);
 
     useEffect(() => {
         // wait for AuthProvider to finish loading
-        if (loading) return;
+        if (loading || !gaSentInitialized) return;
 
         // if still no user after loading, auth failed or expired
         if (!user) {
@@ -21,6 +24,10 @@ export default function AuthCallback() {
 
         // If user has no profile, they’re new → setup flow
         if (!profile || !profile.username || profile.username.trim().length === 0) {
+            if (!gaSent) {
+                triggerSignUpGAEvent(user.app_metadata?.provider ?? "");
+                setGASent(true);
+            }
             (async () => router.replace('/login/setup'))();
             return;
         }
@@ -42,7 +49,7 @@ export default function AuthCallback() {
         }
 
         checkLocalData();
-    }, [loading, user, profile, router, refreshProfile]);
+    }, [loading, user, profile, router, refreshProfile, gaSent, setGASent, gaSentInitialized]);
 
     return <p style={{ textAlign: 'center', marginTop: '2rem' }}>Authenticating...</p>;
 }

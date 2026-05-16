@@ -19,6 +19,7 @@ import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
 import { bitsetFunctions } from "../lib/bitset";
 import { egoRankMapping } from "../lib/constants";
+import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import { constructTeamCode } from "../lib/teamCodeEncoding";
 
 export default function TeamRandomizerPage() {
@@ -147,6 +148,7 @@ export default function TeamRandomizerPage() {
     }
 
     const triggerRandomize = () => {
+        triggerToolUsedGAEvent("Team Randomizer");
         if (randomizeIdentities) {
             const idOptions = wbMode === "w" ?
                 wbList.filter(x => `${x}`[0] === "1") :
@@ -304,7 +306,7 @@ export default function TeamRandomizerPage() {
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Randomizer</h1>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>
             Generate randomized teams using customizable settings like fixed units, whitelist, and blacklist options.
-            <br/> <br/>
+            <br /> <br />
             You can export a generated team directly into a Team Build if you want to save or share it.
         </span>
         <div style={{ width: "100%" }}>

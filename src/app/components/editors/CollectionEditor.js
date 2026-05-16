@@ -16,6 +16,7 @@ import { getCollection, insertCollection, updateCollection } from "@/app/databas
 import { isLocalId } from "@/app/database/localDB";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { uiStrings } from "@/app/lib/uiStrings";
 
 function Item({ type, data, note, index, isFirst, isLast, swapItems, removeItem, setItemNote, username, flair }) {
@@ -188,6 +189,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 router.push(`/collections/${data}`);
             } else {
                 const data = await insertCollection(collectionData);
+                triggerPostCreateGAEvent("collection")
                 router.push(`/collections/${data}`);
             }
         } else {

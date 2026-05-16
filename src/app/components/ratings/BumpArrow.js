@@ -6,6 +6,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import { useAuth } from "@/app/database/authProvider";
 import { bumpReview } from "@/app/database/reviews";
 import { uiColors } from "@/app/lib/colors";
+import { triggerReviewBumpGAEvent } from "@/app/lib/gaEvents";
 
 const COOLDOWN_MS = 5 * 60 * 1000;
 let lastBumpAt = null;
@@ -62,7 +63,7 @@ function getTooltipText(lastBumpAt) {
         : `Bump this review to increase its visibility in the Active and Top tabs.\nBumps are limited to once every 5 minutes.`;
 }
 
-export default function BumpArrow({ reviewId, count, userId }) {
+export default function BumpArrow({ reviewId, count, userId, itemId }) {
     const { user } = useAuth();
     const [status, setStatus] = useState("idle");
     const [hovered, setHovered] = useState(false);
@@ -83,7 +84,10 @@ export default function BumpArrow({ reviewId, count, userId }) {
 
         // update global cooldown state
         if (res.last_bump_at) setLastBumpAt(res.last_bump_at);
-        if (res.success) setBumpAdd(p => p + 1);
+        if (res.success) {
+            setBumpAdd(p => p + 1);
+            triggerReviewBumpGAEvent(itemId, user.id, reviewId, userId);
+        }
 
         setStatus(res.success ? "success" : "cooldown");
         setTimeout(() => setStatus("idle"), 800);

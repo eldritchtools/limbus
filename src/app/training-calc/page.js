@@ -10,6 +10,7 @@ import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentP
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
 import { getLocalStore } from "../database/localDB";
 import { LEVEL_CAP } from "../lib/constants";
+import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import { getLevelCost, getUptieCost, mdCrates, threadLux, xpLux } from "../lib/training";
 
 export default function TrainingCalcPage() {
@@ -32,6 +33,7 @@ export default function TrainingCalcPage() {
     const [initializing, setInitializing] = useState(true);
     const saveTimeout = useRef(null);
     const { isMobile } = useBreakpoint();
+    const [firstSave, setFirstSave] = useState(true);
 
     useEffect(() => {
         if (!initializing) return;
@@ -65,6 +67,11 @@ export default function TrainingCalcPage() {
             }
 
             await getLocalStore("trainingCalc").save(data);
+
+            if(firstSave) {
+                triggerToolUsedGAEvent("Training Calculator");
+                setFirstSave(false);
+            }
         };
 
         clearTimeout(saveTimeout.current);
@@ -78,7 +85,7 @@ export default function TrainingCalcPage() {
         }, 1000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [initializing, selected, starts, targets, xLux, xSkip, tLux, tSkip, tBonus, md, pass, sc]);
+    }, [initializing, selected, starts, targets, xLux, xSkip, tLux, tSkip, tBonus, md, pass, sc, firstSave]);
 
     const selectItem = id => {
         setSelected(p => [...p, id]);

@@ -73,11 +73,11 @@ export default function Review({ type, reviewData, backReview, frontReview, user
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "350px" }}>
                     {label}
                     <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={true} scale={1} />
-                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} userId={reviewData.user_id} />
+                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} userId={reviewData.user_id} itemId={reviewData.item_id} />
                 </div> :
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "175px" }}>
                     <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={false} scale={.5} />
-                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} userId={reviewData.user_id} />
+                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} userId={reviewData.user_id} itemId={reviewData.item_id} />
                 </div>
             }
             <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>

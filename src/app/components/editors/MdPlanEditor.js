@@ -29,6 +29,7 @@ import { createMdPlan, getMdPlan, updateMdPlan } from "@/app/database/mdPlans";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -224,6 +225,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 router.push(`/md-plans/${data}`);
             } else {
                 const data = await createMdPlan(planData);
+                triggerPostCreateGAEvent("md_plan")
                 router.push(`/md-plans/${data}`);
             }
         } else {

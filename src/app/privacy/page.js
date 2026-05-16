@@ -1,5 +1,7 @@
 "use client";
 
+import NoPrefetchLink from "../components/NoPrefetchLink";
+
 export default function PrivacyPage() {
     return (
         <main style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem", lineHeight: 1.6 }}>
@@ -24,11 +26,13 @@ export default function PrivacyPage() {
 
             <h2>Cookies and analytics</h2>
             <p>
-                We use Google Analytics to understand how users interact with the website.
+                We use Google Analytics to understand how users interact with the website. This includes tracking specific actions (like tool usage or sign-ups) to help us improve our services.
             </p>
             <p>
-                Google Analytics may use cookies and collect information such as pages visited, device and browser type,
-                approximate location (based on IP address), and usage patterns. This data is used only for analytics and site improvement.
+                Google Analytics may use cookies and collect information such as pages visited, device and browser type, approximate location (based on IP address), and usage patterns. You can learn more about how Google collects and processes this data at <NoPrefetchLink href={"https://www.google.com/policies/privacy/partners/"} className="text-link">How Google uses information from sites or apps that use our services</NoPrefetchLink>.
+            </p>
+            <p>
+                This data is used only for analytics and site improvement and does not include information that identifies you personally.
             </p>
 
             <h2>Third-party services</h2>

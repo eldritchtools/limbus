@@ -14,6 +14,7 @@ import { getAchievementsProgress, updateAchievementsProgress } from "../database
 import { useAuth } from "../database/authProvider";
 import { localStores } from "../database/localDB";
 import { uiColors } from "../lib/colors";
+import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import useLocalState from "../lib/useLocalState";
 
 function Achievement({ achievement, tracking, setAchievementTracking, isSmall }) {
@@ -246,6 +247,7 @@ export default function AchievementsPage() {
     const [lastSaved, setLastSaved] = useState(null);
     const [saveStatus, setSaveStatus] = useState("idle");
     const saveTimeout = useRef(null);
+    const [firstSave, setFirstSave] = useState(true);
 
     const { isDesktop } = useBreakpoint();
 
@@ -352,6 +354,10 @@ export default function AchievementsPage() {
             } else {
                 await localStores["achievements"].save({ ...data, id: "main" });
             }
+            if(firstSave) {
+                setFirstSave(false);
+                triggerToolUsedGAEvent("Achievement Tracker");
+            }
         };
 
         clearTimeout(saveTimeout.current);
@@ -370,7 +376,7 @@ export default function AchievementsPage() {
         }, 3000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [tracking, points, additionalPoints, achievementsPre, dataLoading, changed, user]);
+    }, [tracking, points, additionalPoints, achievementsPre, dataLoading, changed, user, firstSave]);
 
     const xp = useMemo(() => {
         if (!additionalPoints || isNaN(additionalPoints)) return points;

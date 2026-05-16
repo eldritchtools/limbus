@@ -24,6 +24,7 @@ import { getLocalStore } from "../database/localDB";
 import { bitsetFunctions } from "../lib/bitset";
 import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
+import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 
 function ResultComponent({ identities, result, keywordTargets, statusTargets, router, isMobile }) {
     const counts = Object.fromEntries(keywords.slice(0, 7).map(kw => [kw, 0]));
@@ -189,6 +190,7 @@ export default function TeamSolverPage() {
             setResults([]);
             setSolving(true);
             setExecuted(true);
+            triggerToolUsedGAEvent("Team Solver");
 
             const worker = new Worker(new URL("./solver.js", import.meta.url));
             workerRef.current = worker;

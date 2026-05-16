@@ -17,6 +17,7 @@ import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -161,6 +162,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 router.push(`/builds/${data}`);
             } else {
                 const data = await insertBuild(buildData);
+                triggerPostCreateGAEvent("build")
                 router.push(`/builds/${data}`);
             }
         } else {
