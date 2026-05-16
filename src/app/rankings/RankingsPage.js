@@ -6,7 +6,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import RankingDisplay from "./RankingDisplay";
 import { rankingsFilter } from "./rankingsFilter";
 import { useData } from "../components/DataProvider";
-import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -125,92 +124,94 @@ function ReviewerDisplay({
     setReviews, setUserReviews,
     searchString, filters,
     strictFiltering, separateByPoint, globalRanking, showBreakdown,
-    username, setUsername
+    username
 }) {
     const [altNames, altNamesLoading] = useData("alt_names");
     const { user, profile } = useAuth();
-    const [reviewers, setReviewers] = useState([]);
+    const [topReviewers, setTopReviewers] = useState([]);
+    const [otherReviewers, setOtherReviewers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selected, setSelected] = useState(null);
     const [selectedUserReviews, setSelectedUserReviews] = useState({});
     const [userInput, setUserInput] = useState(username ?? "");
     const [message, setMessage] = useState("");
     const [selectedReview, setSelectedReview] = useState(null);
     const router = useRouter();
 
+    const reviewersMapping = useMemo(() => {
+        const mapping = {};
+        topReviewers.forEach(reviewer => {mapping[reviewer.username] = reviewer.user_id});
+        otherReviewers.forEach(reviewer => {mapping[reviewer.username] = reviewer.user_id});
+        return mapping;
+    }, [topReviewers, otherReviewers]);
+
     useEffect(() => {
-        if (!loading || reviewers.length > 0) return;
+        if (!loading || topReviewers.length > 0) return;
         const loadReviewers = async () => {
             const result = await getPopularReviewers();
-            setReviewers(result.filter(x => x.username && x.total_bumps > 0));
+            setTopReviewers(result.filter(x => x.username && x.total_bumps > 0));
             setLoading(false);
         }
 
         loadReviewers();
-    }, [loading, reviewers]);
+    }, [loading, topReviewers]);
 
     useEffect(() => {
-        if (!selected) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (!username) {
             setSelectedUserReviews([]);
-
-            const params = new URLSearchParams();
-            params.set("tab", "reviewer");
-
-            window.history.replaceState(window.history.state, "", `/rankings?${params.toString()}`);
             return;
         }
 
+        setUserInput(username);
+
         const loadReviews = async () => {
-            const result = await getUserReviews({ userId: selected });
+            let userId = reviewersMapping[username];
+            if (!userId) {
+                const fetched = await getUserDataFromUsername(username, "id");
+                if(fetched) {
+                    setOtherReviewers(p => ([...p, {user_id: fetched.id, username: username}]));
+                    userId = fetched.id;
+                    setUserInput(username);
+                    setMessage("");
+                } else {
+                    setMessage("Username not found!")
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            const result = await getUserReviews({ userId });
             const processedResult = Object.entries(result).reduce((acc, [id, review]) => {
                 acc[id] = { ...review, votes: 1 };
                 return acc;
             }, {});
+
             setSelectedUserReviews(processedResult);
-
-            const params = new URLSearchParams();
-            params.set("tab", "reviewer");
-            params.set("username", username)
-
-            window.history.replaceState(window.history.state, "", `/rankings?${params.toString()}`);
-            
             setLoading(false);
         }
 
         loadReviews();
-    }, [selected, username, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [username, router]);
 
-    const searchUser = useCallback(async (username) => {
-        setLoading(true);
-        const fetched = await getUserDataFromUsername(username, "id");
-        if (fetched) {
-            setSelected(fetched.id);
-            setUsername(username);
-            setMessage("");
-        } else {
-            setMessage("Username not found!")
-            setLoading(false);
-        }
-    }, [setLoading, setSelected, setUsername, setMessage]);
+    const setSelectedUser = async (username) => {
+        const params = new URLSearchParams();
+        params.set("tab", "reviewer");
+        if (username) params.set("username", username);
 
-    useEffect(() => {
-        if(!selected && username && username.length > 0) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setUserInput(username);
-            searchUser(username);
-        }
-    }, [username, selected, searchUser])
+        router.push(`/rankings?${params.toString()}`, { scroll: false });
+    }
+
+    const selectedId = useMemo(() => reviewersMapping[username], [reviewersMapping, username]);
 
     const items = useMemo(() => {
         return rankingsFilter({
-            type: "both", reviews: user && selected === user.id ? userReviews : selectedUserReviews,
+            type: "both", reviews: user && selectedId === user.id ? userReviews : selectedUserReviews,
             rankingMode, identities, egos,
             filters, searchString, globalRanking, strictFiltering, separateByPoint,
             userReviews, altNames: altNamesLoading ? null : altNames
         })
     }, [
-        selectedUserReviews, selected, user, userReviews,
+        selectedUserReviews, selectedId, user, userReviews,
         identities, egos, rankingMode,
         strictFiltering, searchString,
         filters, separateByPoint, globalRanking,
@@ -219,8 +220,8 @@ function ReviewerDisplay({
 
     if (loading) return <LoadingContentPageTemplate />;
 
-    if (selected) {
-        const additionalProps = user && selected === user.id ?
+    if (selectedId) {
+        const additionalProps = user && selectedId === user.id ?
             {
                 modalOnChange: (id, x) => modalOnChange(id, x, {
                     reviewsRef, userReviewsRef, setReviews, setUserReviews
@@ -236,11 +237,11 @@ function ReviewerDisplay({
 
         return <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
-                <button onClick={() => { setSelected(null); setUsername(null); setSelectedReview(null); }}>Go Back</button>
+                <button onClick={() => { setSelectedUser(null); setSelectedReview(null); }}>Go Back</button>
                 <h2 className="title-text">{username}&apos;s Ranking</h2>
             </div>
-            {user && selected === user.id &&
-                <span className="sub-text" style={{textAlign: "center"}}>
+            {user && selectedId === user.id &&
+                <span className="sub-text" style={{ textAlign: "center" }}>
                     When viewing your own ranking, you can see the global ranking and submit your own ratings.
                 </span>}
 
@@ -271,21 +272,20 @@ function ReviewerDisplay({
                 value={userInput}
                 onChange={e => setUserInput(e.target.value)}
                 placeholder={"Username..."}
-                onKeyDown={e => { if (e.key === 'Enter') searchUser(userInput); }}
+                onKeyDown={e => { if (e.key === 'Enter') setSelectedUser(userInput); }}
             />
-            <button onClick={() => searchUser(userInput)} disabled={loading}>Search</button>
-            {user && 
-                <button onClick={() => { setSelected(user.id); setUsername(profile.username); setMessage(""); }}>View my Ranking</button>
+            <button onClick={() => setSelectedUser(userInput)} disabled={loading}>Search</button>
+            {user &&
+                <button onClick={() => { setSelectedUser(profile.username); setMessage(""); }}>View my Ranking</button>
             }
         </div>
         <div className="sub-text" style={{ color: uiColors.red }}>{message}</div>
         <h2 className="title-text">or choose from the most popular reviewers</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "0.5rem", width: "min(1300px, 100%)" }}>
-            {reviewers.map(reviewer =>
+            {topReviewers.map(reviewer =>
                 <div key={reviewer.user_id} className="text-link"
                     onClick={() => {
-                        setSelected(reviewer.user_id);
-                        setUsername(reviewer.username);
+                        setSelectedUser(reviewer.username);
                         setLoading(true);
                     }}>
                     {reviewer.username}
@@ -306,11 +306,11 @@ function RankingDropdown({ viewMode, rankingMode, setRankingMode }) {
     return <DropdownButton value={rankingMode} setValue={setRankingMode} options={options} />
 }
 
-export default function RankingsPage({tab, username}) {
+export default function RankingsPage({ tab, username }) {
     const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");
-    const [viewMode, setViewMode] = useLocalState("rankingViewMode", "identity", tab);
+    const [storedViewMode, setStoredViewMode] = useLocalState("rankingViewMode", "identity");
     const [rankingMode, setRankingMode] = useState("overall");
     const [minRatings, setMinRatings] = useLocalState("rankingMinRatings", 2);
 
@@ -332,7 +332,9 @@ export default function RankingsPage({tab, username}) {
     const [globalRanking, setGlobalRanking] = useLocalState("rankingGlobalRanking", false);
     const [showBreakdown, setShowBreakdown] = useLocalState("rankingShowBreakdown", false);
 
-    const [reviewerUsername, setReviewerUsername] = useState(username ?? "");
+    const router = useRouter();
+
+    const viewMode = useMemo(() => tab ?? storedViewMode, [tab, storedViewMode]);
 
     useEffect(() => {
         if (loading) return;
@@ -373,11 +375,12 @@ export default function RankingsPage({tab, username}) {
     }, [viewMode, loading, identityReviewsLoaded, egoReviewsLoaded, user]);
 
     const changeTab = tab => {
-        setViewMode(tab);
+        setStoredViewMode(tab);
         const params = new URLSearchParams();
         params.set('tab', String(tab));
 
-        window.history.replaceState(window.history.state, "", `/rankings?${params.toString()}`);
+        router.push(`/rankings?${params.toString()}`, { scroll: false });
+        // window.history.replaceState(window.history.state, "", `/rankings?${params.toString()}`);
     }
 
     if (loading || identitiesLoading || egosLoading) return <LoadingContentPageTemplate />
@@ -403,9 +406,9 @@ export default function RankingsPage({tab, username}) {
         </p>
         <div className="sub-text">
             Click on an Identity or E.G.O to submit your own rating or leave a review.
-            <br/> <br/>
+            <br /> <br />
             Rankings are based on community-submitted ratings when the page loads. Refresh to update results.
-            <br/> <br/>
+            <br /> <br />
             Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
         </div>
 
@@ -488,7 +491,7 @@ export default function RankingsPage({tab, username}) {
                 searchString={searchString} filters={filters}
                 strictFiltering={strictFiltering} separateByPoint={separateByPoint}
                 globalRanking={globalRanking} showBreakdown={showBreakdown}
-                username={reviewerUsername} setUsername={setReviewerUsername}
+                username={username}
             />
         }
     </div>

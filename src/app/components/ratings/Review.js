@@ -1,4 +1,6 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import ReactTimeAgo from "react-time-ago";
 
 import BumpArrow from "./BumpArrow";
@@ -7,17 +9,19 @@ import { useData } from "../DataProvider";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
+import { useModal } from "../modals/ModalProvider";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import Username from "../user/Username";
 
-import { useAuth } from "@/app/database/authProvider";
 import { getReviewScores } from "@/app/database/reviews";
 import { sinnerIdMapping } from "@/app/lib/constants";
 
 export default function Review({ type, reviewData, backReview, frontReview, usernameOverride, expanded }) {
-    const { user } = useAuth();
     const [identities, identitiesLoading] = useData("identities", reviewData.item_type === "identity");
     const [egos, egosLoading] = useData("egos", reviewData.item_type === "ego");
     const { isMobile } = useBreakpoint();
+    const { clearModals } = useModal();
+    const router = useRouter();
 
     const label = useMemo(() => {
         if (!expanded) return null;
@@ -51,7 +55,18 @@ export default function Review({ type, reviewData, backReview, frontReview, user
     const dataProp = {};
     if (backReview) dataProp.globalData = getReviewScores(backReview);
     if (frontReview) dataProp.userData = getReviewScores(frontReview);
-console.log(reviewData);
+
+    const username = useMemo(() => usernameOverride ?? reviewData.user?.username, [usernameOverride, reviewData]);
+
+    const goToRanking = () => {
+        const params = new URLSearchParams();
+        params.set("tab", "reviewer");
+        params.set("username", username);
+
+        router.push(`/rankings?${params.toString()}`);
+        clearModals();
+    }
+
     return <div className="panel-container">
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", alignItems: isMobile ? "center" : "start" }}>
             {expanded ?
@@ -68,9 +83,17 @@ console.log(reviewData);
             <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap" }}>
                     <span>by </span>
-                    <Username username={usernameOverride ?? reviewData.user?.username} data={reviewData} />
+                    <Username username={username} data={reviewData} />
                     <span> • </span>
                     <ReactTimeAgo date={reviewData.updated_at} locale="en-US" timeStyle="mini" />
+                    <button
+                        className="text-link"
+                        style={{ border: "transparent", background: "transparent", padding: 0 }}
+                        {...getGeneralTooltipProps("Go to the user's ranking")}
+                        onClick={goToRanking}
+                    >
+                        ➔
+                    </button>
                 </div>
                 {reviewData.review_text && reviewData.review_text.length > 0 ?
                     <MarkdownRenderer content={reviewData.review_text} /> :
