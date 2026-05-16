@@ -225,7 +225,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 router.push(`/md-plans/${data}`);
             } else {
                 const data = await createMdPlan(planData);
-                triggerPostCreateGAEvent("md_plan")
+                triggerPostCreateGAEvent("md_plan");
                 router.push(`/md-plans/${data}`);
             }
         } else {
@@ -257,6 +257,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             }
 
             if (mode === "edit") planData.id = Number(mdPlanId);
+            else triggerPostCreateGAEvent("md_plan");
 
             const data = await contentConfig.md_plans.local.save(planData);
             router.push(`/md-plans/${data}`);

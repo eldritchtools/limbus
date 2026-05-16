@@ -189,7 +189,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 router.push(`/collections/${data}`);
             } else {
                 const data = await insertCollection(collectionData);
-                triggerPostCreateGAEvent("collection")
+                triggerPostCreateGAEvent("collection");
                 router.push(`/collections/${data}`);
             }
         } else {
@@ -208,6 +208,7 @@ export default function CollectionEditor({ mode, collectionId }) {
             }
 
             if (mode === "edit") collectionData.id = Number(collectionId);
+            else triggerPostCreateGAEvent("collection");
 
             const data = await contentConfig.collections.local.save(collectionData)
             router.push(`/collections/${data}`);

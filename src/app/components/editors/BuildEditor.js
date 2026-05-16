@@ -187,6 +187,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             }
 
             if (mode === "edit") buildData.id = Number(buildId);
+            else triggerPostCreateGAEvent("build");
 
             const data = await contentConfig.builds.local.save(buildData)
             router.push(`/builds/${data}`);
