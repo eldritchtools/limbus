@@ -53,6 +53,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         if (mode === "edit") {
             const handleBuild = build => {
                 if (!build) router.back();
+                if (build.user_id && build.user_id !== user.id) router.back();
                 if (build.username || isLocalId(buildId)) {
                     setTitle(build.title);
                     setBody(build.body);
@@ -93,7 +94,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     }, [mode, buildId, router, user]);
 
     useEffect(() => {
-        if(!initTeamCode) return;
+        if (!initTeamCode) return;
         const parseResult = parseTeamCode(initTeamCode);
         if (!parseResult) return;
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -134,7 +135,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             return;
         }
 
-        const extraOpts = encodeBuildExtraOpts({identityUpties, identityLevels, egoThreadspins, sinnerNotes});
+        const extraOpts = encodeBuildExtraOpts({ identityUpties, identityLevels, egoThreadspins, sinnerNotes });
 
         setSaving(true);
         if (user) {

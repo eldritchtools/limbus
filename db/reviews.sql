@@ -353,7 +353,7 @@ with check (
     auth.uid() = user_id
 );
 
-create or replace function public.bump_review(
+create or replace function public.bump_review_v2(
     p_review_id bigint
 )
 returns table (
@@ -368,11 +368,32 @@ declare
     v_user_id uuid;
     v_last_bump timestamptz;
     v_now timestamptz := now();
+    v_owner_id uuid;
 begin
 
     v_user_id := auth.uid();
 
     if v_user_id is null then
+        return query
+        select false, null::timestamptz;
+        return;
+    end if;
+
+    -- get review owner (for self-bump prevention)
+    select user_id
+    into v_owner_id
+    from public.reviews
+    where id = p_review_id;
+
+    -- invalid review safety check
+    if v_owner_id is null then
+        return query
+        select false, null::timestamptz;
+        return;
+    end if;
+
+    -- block self-bump
+    if v_owner_id = v_user_id then
         return query
         select false, null::timestamptz;
         return;
@@ -386,7 +407,7 @@ begin
 
     -- cooldown check (10 min example)
     if v_last_bump is not null
-       and v_now - v_last_bump < interval '10 minutes' then
+       and v_now - v_last_bump < interval '5 minutes' then
 
         return query
         select false, v_last_bump;

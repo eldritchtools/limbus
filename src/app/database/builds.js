@@ -47,7 +47,7 @@ export async function searchBuilds(params, page = 1, pageSize = null) {
 }
 
 export async function getBuild(id, forEdit = false) {
-    return callRPC("get_build_v4", { p_build_id: id, p_for_edit: forEdit });
+    return callRPC("get_build_v5", { p_build_id: id, p_for_edit: forEdit });
 }
 
 export async function insertBuild(params) {

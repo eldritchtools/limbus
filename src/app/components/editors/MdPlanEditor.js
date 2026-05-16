@@ -90,6 +90,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
         if (mode === "edit") {
             const handleMdPlan = mdPlan => {
                 if (!mdPlan) router.back();
+                if (mdPlan.user_id && mdPlan.user_id !== user.id) router.back();
                 if (mdPlan.username || isLocalId(mdPlanId)) {
                     setTitle(mdPlan.title);
                     setBody(mdPlan.body);

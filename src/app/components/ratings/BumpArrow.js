@@ -3,10 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./BumpArrow.module.css";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
+import { useAuth } from "@/app/database/authProvider";
 import { bumpReview } from "@/app/database/reviews";
 import { uiColors } from "@/app/lib/colors";
 
-const COOLDOWN_MS = 10 * 60 * 1000;
+const COOLDOWN_MS = 5 * 60 * 1000;
 let lastBumpAt = null;
 let listeners = new Set();
 
@@ -37,7 +38,7 @@ function useBumpCooldown() {
         return subscribe(setLastBumpAtState);
     }, []);
 
-    return isOnCooldown(lastBumpAt);
+    return () => isOnCooldown(lastBumpAt);
 }
 
 function getCooldownText(lastBumpAt) {
@@ -57,19 +58,21 @@ function getTooltipText(lastBumpAt) {
     const cooldownText = getCooldownText(lastBumpAt);
 
     return cooldownText
-        ? `Reviews can be "bumped" to increase their visibility in the Active and Top tabs.\nTo limit possible spam or abuse, bumps are limited to once every 10 minutes.\n${cooldownText}`
-        : `Reviews can be "bumped" to increase their visibility in the Active and Top tabs.\nTo limit possible spam or abuse, bumps are limited to once every 10 minutes.`;
+        ? `Bump this review to increase its visibility in the Active and Top tabs.\nBumps are limited to once every 5 minutes.\n${cooldownText}`
+        : `Bump this review to increase its visibility in the Active and Top tabs.\nBumps are limited to once every 5 minutes.`;
 }
 
-export default function BumpArrow({ reviewId }) {
+export default function BumpArrow({ reviewId, count }) {
+    const { user } = useAuth();
     const [status, setStatus] = useState("idle");
     const [hovered, setHovered] = useState(false);
     const [, setTick] = useState(0);
     const [tooltip, setTooltip] = useState(getTooltipText(lastBumpAt));
+    const [bumpAdd, setBumpAdd] = useState(0);
     const onCooldown = useBumpCooldown();
 
     async function handleClick() {
-        if (onCooldown) {
+        if (onCooldown()) {
             setStatus("cooldown");
             setTimeout(() => setStatus("idle"), 600);
             return;
@@ -79,7 +82,8 @@ export default function BumpArrow({ reviewId }) {
         if (Array.isArray(res)) res = res[0];
 
         // update global cooldown state
-        setLastBumpAt(res.last_bump_at);
+        if (res.last_bump_at) setLastBumpAt(res.last_bump_at);
+        if (res.success) setBumpAdd(p => p + 1);
 
         setStatus(res.success ? "success" : "cooldown");
         setTimeout(() => setStatus("idle"), 800);
@@ -104,9 +108,13 @@ export default function BumpArrow({ reviewId }) {
             ? uiColors.green
             : status === "cooldown"
                 ? uiColors.red
-                : "#a1a1aa";
+                : "var(--secondary-text-color)";
 
-    return (
+    let opacity = 0;
+    if(count || bumpAdd)
+        opacity = Math.min(0.25 + 0.75 * ((count + bumpAdd) / 10), 1);
+
+    return <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
         <button
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
@@ -114,14 +122,18 @@ export default function BumpArrow({ reviewId }) {
             onClick={handleClick}
             style={{
                 color,
-                cursor: onCooldown ? "not-allowed" : "pointer",
-                opacity: (onCooldown && status === "idle") ? 0.5 : 1,
+                cursor: onCooldown() || !user ? "not-allowed" : "pointer",
+                opacity: ((onCooldown() && status === "idle") || !user) ? 0.5 : 1,
             }}
             className={styles.bumpArrow}
+            disabled={!user}
         >
             <svg viewBox="6 6 12 12" fill="currentColor">
                 <path d="M12 6l5 5h-3v7h-4v-7H7z" />
             </svg>
         </button>
-    );
+        <span style={{ opacity: opacity }}>
+            {count + bumpAdd}
+        </span>
+    </div>
 }

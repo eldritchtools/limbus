@@ -122,6 +122,7 @@ export default function CollectionEditor({ mode, collectionId }) {
         if (mode === "edit") {
             const handleCollection = collection => {
                 if (!collection) router.back();
+                if (collection.user_id && collection.user_id !== user.id) router.back();
                 if (collection.username || isLocalId(collectionId)) {
                     setTitle(collection.title);
                     setBody(collection.body);

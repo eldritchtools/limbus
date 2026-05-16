@@ -449,7 +449,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_build_v4(
+CREATE OR REPLACE FUNCTION public.get_build_v5(
   p_build_id UUID,
   p_for_edit BOOLEAN DEFAULT FALSE
 )
@@ -485,6 +485,7 @@ BEGIN
   IF p_for_edit THEN
     SELECT jsonb_build_object(
       'id', b.id,
+      'user_id', u.id,
       'username', u.username,
       'user_flair', u.flair,
       'title', b.title,
@@ -507,7 +508,7 @@ BEGIN
     LEFT JOIN public.build_tags bt ON b.id = bt.build_id
     LEFT JOIN public.tags t ON bt.tag_id = t.id
     WHERE b.id = p_build_id
-    GROUP BY b.id, u.username, u.flair;
+    GROUP BY b.id, u.id, u.username, u.flair;
 
   ELSE
     SELECT jsonb_build_object(
