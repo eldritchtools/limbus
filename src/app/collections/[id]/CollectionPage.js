@@ -104,7 +104,7 @@ export default function CollectionPage({ id }) {
 
     return <ContentPageTemplate
         targetType={"collection"} targetId={id} content={collection}
-        actions={["like", "save", "edit", "delete", "contribute", "review"]}
+        actions={["like", "save", "share", "edit", "delete", "contribute", "review"]}
     >
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {collection?.body?.length > 0 && <>

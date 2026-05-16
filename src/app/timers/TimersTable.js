@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getNextDay, getNextDayOfWeek, kstToLocalTime } from "./timerFunc";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
+import { VerticalDivider } from "../components/objects/Dividers";
 import { getTimerTooltipProps } from "../components/tooltips/TimerTooltip";
 import { getSeasonString } from "../lib/constants";
 
@@ -95,12 +96,11 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
     return <div
         style={{
             display: "flex", alignItems: "center",
-            flexDirection: column ? "column" : "row", flex: 1, justifyContent: "center",
-            pointerEvents: "none"
+            flexDirection: column ? "column" : "row", flex: 1, justifyContent: "center"
         }}
         {...tooltipProps}
     >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem", width: style.width }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem", width: style.width, pointerEvents: "none" }}>
             <span style={{ textAlign: "center", whiteSpace: "pre-wrap" }}>{title}</span>
             {src ? <BannerIcon path={src} style={style} /> : null}
         </div>

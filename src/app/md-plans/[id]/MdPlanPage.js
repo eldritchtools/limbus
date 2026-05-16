@@ -204,7 +204,7 @@ export default function MdPlanPage({ id }) {
 
     return <ContentPageTemplate
         targetType={"md_plan"} targetId={id} content={plan}
-        actions={["like", "save", "edit", "delete"]}
+        actions={["like", "save", "share", "edit", "delete"]}
     >
         <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
             <span style={{ fontSize: "1.2rem" }}>Difficulty: {mdDiffculties[plan.difficulty].name}</span>

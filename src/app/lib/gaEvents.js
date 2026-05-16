@@ -26,8 +26,8 @@ export function triggerSignUpGAEvent(method) {
     triggerGAEvent("sign_up", { method });
 }
 
-export function triggerShareGAEvent(method, content_type, post_id) {
-    triggerGAEvent("share", { method, content_type, post_id })
+export function triggerShareGAEvent(content_type, post_id) {
+    triggerGAEvent("share", { content_type, post_id })
 }
 
 export function triggerPostCreateGAEvent(content_type) {
