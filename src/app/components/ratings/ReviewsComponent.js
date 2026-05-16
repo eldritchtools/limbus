@@ -34,7 +34,7 @@ export default function ReviewsComponent({ type, id, sortType, userReview }) {
         }
         {user &&
             <span className="sub-text" style={{ textAlign: "center" }}>
-                If you find a review helpful, you can bump it to help increase its visibility in the Active and Top tabs. Look for the arrow button near the start of the review.
+                If you find a review helpful, you can bump it to help increase its visibility in the Active and Top tabs.
             </span>
         }
         {

@@ -178,7 +178,7 @@ export async function getAggregatesByType({ itemType }) {
 }
 
 export async function bumpReview(reviewId) {
-    return callRPC("bump_review", { p_review_id: reviewId });
+    return callRPC("bump_review_v2", { p_review_id: reviewId });
 }
 
 export async function getPopularReviewers() {

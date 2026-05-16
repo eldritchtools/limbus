@@ -121,7 +121,7 @@ export default function BuildEditingComponent({
                                             {Array.from({ length: 5 }, (_, rank) =>
                                                 <UptieSelector
                                                     key={rank}
-                                                    value={egoThreadspins[index][rank]}
+                                                    value={egoThreadspins?.[index]?.[rank] ?? null}
                                                     setValue={v => setEgoThreadspin(v, index, rank)}
                                                     allowEmpty={true}
                                                     emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}

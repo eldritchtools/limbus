@@ -129,7 +129,11 @@ export default function ReviewCollectionPage({ params }) {
         if (isLocalId(id) || !user) router.back();
 
         const handleCollection = collection => {
-            if (!collection) router.back();
+            if (!collection || (collection.user_id && collection.user_id !== user.id)) {
+                router.back();
+                return;
+            }
+            
             if (collection.username) {
                 setCollection(collection);
                 setCollectionLoading(false);

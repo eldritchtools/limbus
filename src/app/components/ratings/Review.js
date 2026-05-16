@@ -55,16 +55,19 @@ export default function Review({ type, reviewData, backReview, frontReview, user
     return <div className="panel-container">
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", alignItems: isMobile ? "center" : "start" }}>
             {expanded ?
-                <div style={{ display: "flex", flexDirection: "column", width: "350px" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "350px" }}>
                     {label}
                     <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={true} scale={1} />
+                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} />
                 </div> :
-                <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={false} scale={.5} />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "175px" }}>
+                    <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={false} scale={.5} />
+                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} />
+                </div>
             }
             <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap" }}>
-                    {user && <BumpArrow reviewId={reviewData.id} />}
-                    <span> by </span>
+                    <span>by </span>
                     <Username username={usernameOverride ?? reviewData.user?.username} data={reviewData} />
                     <span> • </span>
                     <ReactTimeAgo date={reviewData.updated_at} locale="en-US" timeStyle="mini" />
