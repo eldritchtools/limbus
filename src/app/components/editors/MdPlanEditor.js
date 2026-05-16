@@ -87,13 +87,14 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
     const { isMobile } = useBreakpoint();
 
     useEffect(() => {
+        if(!loading) return;
         if (mode === "edit") {
             const handleMdPlan = mdPlan => {
                 if (!mdPlan || (mdPlan.user_id && mdPlan.user_id !== user.id)) {
                     router.back();
                     return;
                 }
-                
+
                 if (mdPlan.username || isLocalId(mdPlanId)) {
                     setTitle(mdPlan.title);
                     setBody(mdPlan.body);
@@ -130,7 +131,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                     router.push(`/md-plans/${mdPlanId}`);
                 });
         }
-    }, [mode, mdPlanId, router, user]);
+    }, [mode, mdPlanId, loading, router, user]);
 
     const keywordOptions = useMemo(() => mdDataLoading ? [] :
         Object.keys(mdData.startGiftPool).map(x => ({
@@ -448,8 +449,8 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
             <span className="sub-text">Create the recommended team build.</span>
             <RecommendedSpecBuildDisplay
-                identityIds={identityIds} setIdentityIds={setIdentityIds}
-                egoIds={egoIds} setEgoIds={setEgoIds}
+                identityIds={identityIds} setIdentityIds={identityIds => {setIdentityIds(identityIds.filter(x => x && x !== ""));}}
+                egoIds={egoIds} setEgoIds={egoIds => {setEgoIds(egoIds.flat().filter(x => x && x !== ""));}}
                 extraOpts={extraOpts} setExtraOpts={setExtraOpts}
                 editable={true}
             />

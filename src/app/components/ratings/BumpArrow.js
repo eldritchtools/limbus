@@ -62,7 +62,7 @@ function getTooltipText(lastBumpAt) {
         : `Bump this review to increase its visibility in the Active and Top tabs.\nBumps are limited to once every 5 minutes.`;
 }
 
-export default function BumpArrow({ reviewId, count }) {
+export default function BumpArrow({ reviewId, count, userId }) {
     const { user } = useAuth();
     const [status, setStatus] = useState("idle");
     const [hovered, setHovered] = useState(false);
@@ -114,6 +114,8 @@ export default function BumpArrow({ reviewId, count }) {
     if(count || bumpAdd)
         opacity = Math.min(0.25 + 0.75 * ((count + bumpAdd) / 10), 1);
 
+    let disabled = !user || user.id === userId;
+
     return <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
         <button
             onMouseEnter={() => setHovered(true)}
@@ -122,11 +124,11 @@ export default function BumpArrow({ reviewId, count }) {
             onClick={handleClick}
             style={{
                 color,
-                cursor: onCooldown || !user ? "not-allowed" : "pointer",
-                opacity: ((onCooldown && status === "idle") || !user) ? 0.5 : 1,
+                cursor: onCooldown || disabled ? "not-allowed" : "pointer",
+                opacity: ((onCooldown && status === "idle") || disabled) ? 0.5 : 1,
             }}
             className={styles.bumpArrow}
-            disabled={!user}
+            disabled={disabled}
         >
             <svg viewBox="6 6 12 12" fill="currentColor">
                 <path d="M12 6l5 5h-3v7h-4v-7H7z" />

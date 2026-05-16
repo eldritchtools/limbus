@@ -119,6 +119,7 @@ export default function CollectionEditor({ mode, collectionId }) {
     const router = useRouter();
 
     useEffect(() => {
+        if(!loading) return;
         if (mode === "edit") {
             const handleCollection = collection => {
                 if (!collection || (collection.user_id && collection.user_id !== user.id)) {
@@ -149,7 +150,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                     router.push(`/collections/${collectionId}`);
                 });
         }
-    }, [mode, collectionId, router, user]);
+    }, [mode, collectionId, loading, router, user]);
 
     const handleSave = async (isPublished) => {
         if (title === "") {

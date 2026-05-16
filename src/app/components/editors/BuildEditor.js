@@ -50,6 +50,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [identitiesMini, identitiesMiniLoading] = useData("identities_mini");
 
     useEffect(() => {
+        if(!loading) return;
         if (mode === "edit") {
             const handleBuild = build => {
                 if (!build || (build.user_id && build.user_id !== user.id)) {
@@ -94,7 +95,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                     router.push(`/builds/${buildId}`);
                 });
         }
-    }, [mode, buildId, router, user]);
+    }, [mode, buildId, loading, router, user]);
 
     useEffect(() => {
         if (!initTeamCode) return;
