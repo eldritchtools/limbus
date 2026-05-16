@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { getNextDay, getNextDayOfWeek, kstToLocalTime } from "./timerFunc";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
-import DragContainer from "../components/objects/DragContainer";
 import { getTimerTooltipProps } from "../components/tooltips/TimerTooltip";
 import { getSeasonString } from "../lib/constants";
 

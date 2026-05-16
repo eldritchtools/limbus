@@ -92,9 +92,9 @@ export default function TimersPage() {
     const local12 = kstToLocalTime("12PM");
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Timers</h1>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Timers and Roadmap</h1>
         <span className="sub-text" style={{ textAlign: "center" }}>
-            Timers for ongoing content, including countdowns for event endings and time since past releases of Identities and E.G.Os.
+            Timers for content, seasonal roadmap, and time since past releases of Identities and E.G.Os.
         </span>
 
         <h3 style={{ margin: 0 }}>Time Until (10AM KST • {local10} local):</h3>

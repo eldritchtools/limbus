@@ -39,10 +39,10 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
 
     const teamCode = useMemo(
         // additional guard in case react resets the data
-        () => dataConverted && identityIds.length === 12 ?
-            constructTeamCode(identityIds, egoIds, extraOpts.deploymentOrder ?? []) :
+        () => dataConverted && identitiesConverted.length === 12 ?
+            constructTeamCode(identitiesConverted, egoIds, extraOpts.deploymentOrder ?? []) :
             null,
-        [identityIds, egoIds, extraOpts, dataConverted]
+        [identitiesConverted, egoIds, extraOpts, dataConverted]
     );
 
     useEffect(() => {

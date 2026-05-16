@@ -39,7 +39,7 @@ const paths = [
             { path: "/identities", title: "Identities" },
             { path: "/egos", title: "E.G.Os" },
             { path: "/encounters", title: "Encounters" },
-            { path: "/timers", title: "Timers" }
+            { path: "/timers", title: "Timers and Roadmap" }
         ]
     },
     {
