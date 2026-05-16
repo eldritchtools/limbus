@@ -10,8 +10,9 @@ import { getRatingTooltipProps } from "../components/tooltips/RatingTooltip";
 export default function RankingItemDisplay({ type, item, rank, rankingScore, communityScore, communityReviewsRef, userScore, userReviewsRef, showBreakdown, onClick, modalOnChange }) {
     const { openRatingModal } = useModal();
     const { isMobile } = useBreakpoint();
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
-    const props = communityScore ? getRatingTooltipProps(type, communityScore, userScore) : {};
+    const props = communityScore && !isTouchDevice ? getRatingTooltipProps(type, communityScore, userScore) : {};
     const getUserReviews = () => userReviewsRef?.current;
     const getCommunityReviews = () => communityReviewsRef?.current;
 
