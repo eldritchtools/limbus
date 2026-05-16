@@ -3,9 +3,11 @@
 import { useMemo } from "react";
 
 import DaysSinceTable from "./DaysSinceTable";
+import Roadmap from "./Roadmap";
 import { kstToLocalTime } from "./timerFunc";
 import TimersTable from "./TimersTable";
 import { useData } from "../components/DataProvider";
+import DragContainer from "../components/objects/DragContainer";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { keywords } from "../lib/constants";
 
@@ -96,7 +98,14 @@ export default function TimersPage() {
         </span>
 
         <h3 style={{ margin: 0 }}>Time Until (10AM KST • {local10} local):</h3>
-        <TimersTable timers={timers} />
+        <DragContainer style={{ width: "max-content", maxWidth: "100%" }}>
+            <TimersTable timers={timers} />
+        </DragContainer>
+
+        <h3 style={{ margin: 0 }}>Season Roadmap:</h3>
+        <DragContainer>
+            <Roadmap />
+        </DragContainer>
 
         <h3 style={{ margin: 0 }}>Days Since (12PM KST • {local12} local):</h3>
         <DaysSinceTable entries={entries} identities={identities} egos={egos} />

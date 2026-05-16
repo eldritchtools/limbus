@@ -12,6 +12,7 @@ import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
 import { useModal } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
+import DragContainer from "./components/objects/DragContainer";
 import { useSiteCustomization } from "./components/SiteCustomizationProvider";
 import { getHomepagePosts } from "./database/homepage";
 import styles from "./homepage.module.css";
@@ -125,12 +126,12 @@ export default function HomePage() {
 
     return <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", width: "100%", height: "100%" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.5rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
-            <h1 style={{marginTop: "0.25rem", marginBottom: "0.25rem"}}>Limbus Company Tools</h1>
+            <h1 style={{ marginTop: "0.25rem", marginBottom: "0.25rem" }}>Limbus Company Tools</h1>
             <p>
                 Welcome, Manager!
-                <br/> <br/>
+                <br /> <br />
                 Limbus Company Tools is a hub for sharing team builds and Mirror Dungeon plans. View an Identities and E.G.Os database complete with community ratings and reviews. Use calculators, planners, team randomizers, and other reference tools for the game.
-                <br/> <br/>
+                <br /> <br />
                 Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize your experience.
             </p>
             <LinksMenu />
@@ -140,7 +141,7 @@ export default function HomePage() {
                 <div className={styles.panelContainer} style={{ alignItems: "start", gap: "0.5rem" }}>
                     <h3 style={{ margin: 0 }}>Latest Identities and E.G.Os</h3>
                     {identitiesLoading || egosLoading ? "Loading..." :
-                        <div style={{ maxWidth: "100%", overflowX: "auto", overflowY: "hidden", scrollbarWidth: "thin" }}>
+                        <DragContainer>
                             <div style={{ display: "flex", gap: "0.5rem" }}>
                                 {latest.map(([date, list]) =>
                                     <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
@@ -149,21 +150,21 @@ export default function HomePage() {
                                             {list.map(obj => obj.id[0] === "1" ?
                                                 (obj.upcoming ?
                                                     <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} />
+                                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
                                                     </div> :
                                                     <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
                                                         <div style={{ width: "128px", height: "128px" }}>
-                                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} />
+                                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
                                                         </div>
                                                     </NoPrefetchLink>
                                                 ) :
                                                 (obj.upcoming ?
                                                     <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} />
+                                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
                                                     </div> :
                                                     <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
                                                         <div style={{ width: "128px", height: "128px" }}>
-                                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} />
+                                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
                                                         </div>
                                                     </NoPrefetchLink>
                                                 )
@@ -172,7 +173,7 @@ export default function HomePage() {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </DragContainer>
                     }
                 </div>
                 <div className={styles.panelContainer} style={{ "gap": "0.2rem" }}>
@@ -207,11 +208,11 @@ export default function HomePage() {
                             The most popular builds. Updated once every four hours.
                         </div>
                         {popular.length > 0 ?
-                            <div style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin" }}>
+                            <DragContainer style={{ paddingLeft: "1rem" }}>
                                 <div style={{ display: "flex", gap: "1rem" }}>
                                     {popular.map(build => <TeamBuild key={build.id} build={build} size={"S"} complete={false} />)}
                                 </div>
-                            </div> : "Loading..."
+                            </DragContainer> : "Loading..."
                         }
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
@@ -223,11 +224,11 @@ export default function HomePage() {
                             The newest builds submitted by managers.
                         </div>
                         {newest.length > 0 ?
-                            <div style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin" }}>
+                            <DragContainer style={{ paddingLeft: "1rem" }}>
                                 <div style={{ display: "flex", gap: "1rem" }}>
                                     {newest.map(build => <TeamBuild key={build.id} build={build} size={"S"} complete={false} />)}
                                 </div>
-                            </div> : "Loading..."
+                            </DragContainer> : "Loading..."
                         }
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
@@ -239,11 +240,11 @@ export default function HomePage() {
                             A random build with at least 1 like is added to this list every hour and the oldest is rotated out.
                         </div>
                         {showcase.length > 0 ?
-                            <div style={{ paddingLeft: "1rem", overflowX: "auto", scrollbarWidth: "thin" }}>
+                            <DragContainer style={{ paddingLeft: "1rem" }}>
                                 <div style={{ display: "flex", gap: "1rem" }}>
                                     {showcase.map(build => <TeamBuild key={build.id} build={build} size={"S"} complete={false} />)}
                                 </div>
-                            </div> : "Loading..."
+                            </DragContainer> : "Loading..."
                         }
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
@@ -255,11 +256,11 @@ export default function HomePage() {
                             The newest md plans submitted by managers.
                         </div>
                         {mdplans.length > 0 ?
-                            <div style={{ overflowX: "auto", scrollbarWidth: "thin" }}>
+                            <DragContainer>
                                 <div style={{ display: "flex", gap: "1rem" }}>
                                     {mdplans.map(plan => <MdPlan key={plan.id} plan={plan} complete={false} />)}
                                 </div>
-                            </div> : "Loading..."
+                            </DragContainer> : "Loading..."
                         }
                     </div>
                 </div>
