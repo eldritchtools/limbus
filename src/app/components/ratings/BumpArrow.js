@@ -38,7 +38,7 @@ function useBumpCooldown() {
         return subscribe(setLastBumpAtState);
     }, []);
 
-    return () => isOnCooldown(lastBumpAt);
+    return isOnCooldown(lastBumpAt);
 }
 
 function getCooldownText(lastBumpAt) {
@@ -72,7 +72,7 @@ export default function BumpArrow({ reviewId, count }) {
     const onCooldown = useBumpCooldown();
 
     async function handleClick() {
-        if (onCooldown()) {
+        if (onCooldown) {
             setStatus("cooldown");
             setTimeout(() => setStatus("idle"), 600);
             return;
@@ -122,8 +122,8 @@ export default function BumpArrow({ reviewId, count }) {
             onClick={handleClick}
             style={{
                 color,
-                cursor: onCooldown() || !user ? "not-allowed" : "pointer",
-                opacity: ((onCooldown() && status === "idle") || !user) ? 0.5 : 1,
+                cursor: onCooldown || !user ? "not-allowed" : "pointer",
+                opacity: ((onCooldown && status === "idle") || !user) ? 0.5 : 1,
             }}
             className={styles.bumpArrow}
             disabled={!user}
