@@ -2,6 +2,7 @@ export const encounterCategoryLabels = {
     "md": "Mirror Dungeon",
     "reflectrial": "Reflectrial",
     "story": "Story",
+    "luxcavation": "Luxcavation"
     // "rr": "Refraction Railway"
 };
 
@@ -9,7 +10,8 @@ export function encounterToOption(id, name) {
     return {
         value: id,
         label: <span>{name} <span className="sub-text">({id})</span></span>,
-        name: name
+        name: name,
+        altName: id
     };
 }
 
