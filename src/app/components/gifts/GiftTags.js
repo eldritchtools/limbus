@@ -2,9 +2,11 @@ import React from "react";
 import Select from "react-select";
 
 import Gift from "./Gift";
+import DropdownSelectorWithExclusion from "../selectors/DropdownSelectorWithExclusion";
 
 import { giftTagColors } from "@/app/lib/colors";
-import { selectStyleVariable } from "@/app/styles/selectStyle";
+import { checkFilterMatch } from "@/app/lib/filter";
+import { selectStyle, selectStyleVariable } from "@/app/styles/selectStyle";
 
 export function GiftTagStrips({ gift, scale }) {
     const scaledSize = { width: `${12 * scale}px`, height: `${4 * scale}px` };
@@ -74,7 +76,7 @@ export function GiftTagLabels({ gift, full = false, enhanceLevel, setEnhanceLeve
     </React.Fragment>
 }
 
-export function GiftTagFilterSelector({ tagFilter, setTagFilter }) {
+export function GiftTagFilterSelector({ tagFilter, setTagFilter, excludeMode }) {
     const options = [
         { value: "Enhanceable", label: <span style={{ color: giftTagColors.enhanceable }}>Enhanceable</span> },
         { value: "Ingredient", label: <span style={{ color: giftTagColors.ingredient }}>Ingredient</span> },
@@ -87,11 +89,22 @@ export function GiftTagFilterSelector({ tagFilter, setTagFilter }) {
         { value: "Blessed", label: <span style={{ color: giftTagColors.blessed }}>Blessed</span> },
     ]
 
-    return <Select
-        isClearable={true}
+    // return <Select
+    //     isClearable={true}
+    //     options={options}
+    //     value={tagFilter ? options.find(x => x.value === tagFilter) : null}
+    //     onChange={x => setTagFilter(x ? x.value : null)}
+    //     styles={selectStyleVariable}
+    // />
+
+    return <DropdownSelectorWithExclusion
         options={options}
-        value={tagFilter ? options.find(x => x.value === tagFilter) : null}
-        onChange={x => setTagFilter(x ? x.value : null)}
-        styles={selectStyleVariable}
-    />
+        selected={tagFilter}
+        setSelected={setTagFilter}
+        placeholder={"Select Tag..."}
+        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.value)}
+        isMulti={true}
+        styles={selectStyle}
+        excludeMode={excludeMode}
+    />;
 }

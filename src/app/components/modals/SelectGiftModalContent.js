@@ -8,12 +8,14 @@ import { HorizontalDivider } from "../objects/Dividers";
 import IconsSelector from "../selectors/IconsSelector";
 
 import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
+import useLocalState from "@/app/lib/useLocalState";
 
 export default function SelectGiftModalContent({ title, getChoiceList, showSearch = false, onSelectGift, forcedFilter }) {
     const [giftsData, giftsLoading] = useData("gifts");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
-    const [tagFilter, setTagFilter] = useState(null);
+    const [strictFiltering, setStrictFiltering] = useLocalState("giftsStrictFiltering", false);
+    const [tagFilters, setTagFilters] = useState([]);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
     const [, updateCount] = useState(0);
     const { isMobile } = useBreakpoint();
@@ -28,11 +30,7 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
         }, 0);
     }
 
-    const combinedFilters = [...filters];
-    if (tagFilter) {
-        if (tagFilterExcluding) combinedFilters.push(["tag", `-${tagFilter}`]);
-        else combinedFilters.push(["tag", tagFilter]);
-    }
+    const combinedFilters = [...filters, ...tagFilters.map(tag => ["tag", tag])];
 
     const searchGiftList = giftsLoading ? [] : filterByFilters(
         "gift",
@@ -42,7 +40,8 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
             if (forcedFilter && !forcedFilter(gift)) return false;
             if (searchString.length > 0 && !checkFilterMatch(searchString, [gift.names[0], gift.search_desc])) return false;
             return true;
-        }
+        },
+        strictFiltering
     )
 
     if (giftsLoading) return <div />
@@ -87,7 +86,15 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
                             </div>
                         </div>
                         <div style={{ textAlign: "start" }}>
-                            <GiftTagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
+                            <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
+                        </div>
+                        <div />
+                        <div>
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                                <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                                Strict Tag Filtering
+                                <span className="sub-text">(Require all selected tags)</span>
+                            </label>
                         </div>
                     </div>
 

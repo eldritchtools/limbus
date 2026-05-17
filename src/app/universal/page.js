@@ -108,6 +108,7 @@ export default function UniversalGiftsPage() {
     const [tracking, setTracking] = useState(null);
     const [loading, setLoading] = useState(true);
     const saveTimeout = useRef(null);
+    const [firstSave, setFirstSave] = useState(true);
 
     useEffect(() => {
         if (loading) {
@@ -123,6 +124,11 @@ export default function UniversalGiftsPage() {
         if (loading || !tracking) return;
 
         const saveData = async () => {
+            if (firstSave) {
+                triggerToolUsedGAEvent("Universal Tracking");
+                setFirstSave(false);
+            }
+
             const data = { id: "main", gifts: [...tracking] };
             if (data.gifts.length === 0)
                 getLocalStore("universalTracking").remove("main");
@@ -141,7 +147,7 @@ export default function UniversalGiftsPage() {
         }, 1000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [tracking, loading]);
+    }, [tracking, loading, firstSave]);
 
     const toggleTracking = () => {
         if (tracking) {
