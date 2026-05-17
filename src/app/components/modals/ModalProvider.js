@@ -111,6 +111,10 @@ export function ModalProvider({ children }) {
         setStack(prev => prev.slice(0, -1));
     };
 
+    const clearModals = () => {
+        setStack([]);
+    }
+
     const exportFunctions = {
         openGiftModal,
         openSelectBuildModal,
@@ -123,7 +127,8 @@ export function ModalProvider({ children }) {
         openChoiceEventModal,
         openSetFavoriteLinksModal,
         openRatingModal,
-        closeModal
+        closeModal,
+        clearModals
     }
 
     return <ModalContext.Provider value={exportFunctions}>

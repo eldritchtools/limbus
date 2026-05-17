@@ -1,0 +1,41 @@
+.scrollContainer {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+    overflow-x: auto; 
+    width: 100%;
+}
+
+.scrollContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollContainer a {
+    -webkit-user-drag: none;
+}
+
+.scrollable {
+    cursor: grab;
+}
+
+.scrollable:active {
+    cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .container {
+        transition: none;
+    }
+}
+
+.container {
+    transition: transform 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+.hoverHint:hover .container {
+    transform: translateX(-10px);
+}
+
+.hoverHint:not(:hover) .container {
+    transform: translateX(0);
+}

@@ -10,7 +10,6 @@ import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
-import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -18,6 +17,7 @@ import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import useLocalState from "../lib/useLocalState";
 
 function FloorSelector({ value, setValue, options, isSmall }) {
@@ -186,6 +186,7 @@ export default function FloorPlannerPage() {
     const [selectedFloors, setSelectedFloors] = useLocalState("floorPlannerFloors", new Array(15).fill(null));
     const [difficulty, setDifficulty] = useLocalState("floorPlannerDifficulty", "E");
     const [showExclusiveHelper, setShowExclusiveHelper] = useLocalState("floorPlannerShowExclusiveHelper", false);
+    const [firstSelect, setFirstSelect] = useState(true);
 
     const router = useRouter();
 
@@ -205,6 +206,10 @@ export default function FloorPlannerPage() {
 
     const setSelectedFloor = (value, index) => {
         setSelectedFloors(selectedFloors.map((f, i) => i === index ? value : f));
+        if(firstSelect) {
+            setFirstSelect(false);
+            triggerToolUsedGAEvent("Floor Planner");
+        }
     }
 
     const getOptions = floor => {

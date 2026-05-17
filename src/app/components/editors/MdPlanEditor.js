@@ -29,6 +29,7 @@ import { createMdPlan, getMdPlan, updateMdPlan } from "@/app/database/mdPlans";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -87,13 +88,14 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
     const { isMobile } = useBreakpoint();
 
     useEffect(() => {
+        if(!loading) return;
         if (mode === "edit") {
             const handleMdPlan = mdPlan => {
                 if (!mdPlan || (mdPlan.user_id && mdPlan.user_id !== user.id)) {
                     router.back();
                     return;
                 }
-                
+
                 if (mdPlan.username || isLocalId(mdPlanId)) {
                     setTitle(mdPlan.title);
                     setBody(mdPlan.body);
@@ -130,7 +132,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                     router.push(`/md-plans/${mdPlanId}`);
                 });
         }
-    }, [mode, mdPlanId, router, user]);
+    }, [mode, mdPlanId, loading, router, user]);
 
     const keywordOptions = useMemo(() => mdDataLoading ? [] :
         Object.keys(mdData.startGiftPool).map(x => ({
@@ -223,6 +225,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 router.push(`/md-plans/${data}`);
             } else {
                 const data = await createMdPlan(planData);
+                triggerPostCreateGAEvent("md_plan");
                 router.push(`/md-plans/${data}`);
             }
         } else {
@@ -254,6 +257,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             }
 
             if (mode === "edit") planData.id = Number(mdPlanId);
+            else triggerPostCreateGAEvent("md_plan");
 
             const data = await contentConfig.md_plans.local.save(planData);
             router.push(`/md-plans/${data}`);
@@ -448,8 +452,8 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
             <span className="sub-text">Create the recommended team build.</span>
             <RecommendedSpecBuildDisplay
-                identityIds={identityIds} setIdentityIds={setIdentityIds}
-                egoIds={egoIds} setEgoIds={setEgoIds}
+                identityIds={identityIds} setIdentityIds={identityIds => {setIdentityIds(identityIds.filter(x => x && x !== ""));}}
+                egoIds={egoIds} setEgoIds={egoIds => {setEgoIds(egoIds.flat().filter(x => x && x !== ""));}}
                 extraOpts={extraOpts} setExtraOpts={setExtraOpts}
                 editable={true}
             />

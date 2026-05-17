@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 
 import StatsRadarChart from "./RadarChart";
+import { useData } from "../DataProvider";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import Slider from "../objects/Slider";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
 import { deleteReview, getOverallScore, getReviewScores, submitReview } from "@/app/database/reviews";
+import { triggerReviewSubmitGAEvent } from "@/app/lib/gaEvents";
 import { egoCriteria, identityCriteria } from "@/app/lib/ratings";
 
 export default function RatingComponent({ type, id, globalData, userData, onChange, showReviewsButton }) {
+    const [identities] = useData("identities_mini", "type" === "identity");
+    const [egos] = useData("egos_mini", "type" === "ego");
     const { user } = useAuth();
     const [rating, setRating] = useState(null);
     const [review, setReview] = useState("");
@@ -47,6 +51,7 @@ export default function RatingComponent({ type, id, globalData, userData, onChan
             reviewText: review?.trim() || null,
         });
 
+        triggerReviewSubmitGAEvent(id, (type === "identity" ? identities?.[id]?.name : egos?.[id]?.name) ?? "");
         if(onChange) onChange(result);
         setRating(null);
         setReview("");

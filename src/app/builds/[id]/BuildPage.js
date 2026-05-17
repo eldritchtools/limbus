@@ -59,7 +59,7 @@ export default function BuildPage({ id }) {
     return <ContentPageTemplate
         targetType={"build"} targetId={id} content={build}
         titleIcons={build.keyword_ids.map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
-        actions={["like", "save", "edit", "delete"]}
+        actions={["like", "save", "share", "edit", "delete"]}
     >
         <BuildDisplay
             identityIds={build.identity_ids}

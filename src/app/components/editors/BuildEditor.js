@@ -17,6 +17,7 @@ import { isLocalId } from "@/app/database/localDB";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -50,6 +51,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [identitiesMini, identitiesMiniLoading] = useData("identities_mini");
 
     useEffect(() => {
+        if(!loading) return;
         if (mode === "edit") {
             const handleBuild = build => {
                 if (!build || (build.user_id && build.user_id !== user.id)) {
@@ -94,7 +96,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                     router.push(`/builds/${buildId}`);
                 });
         }
-    }, [mode, buildId, router, user]);
+    }, [mode, buildId, loading, router, user]);
 
     useEffect(() => {
         if (!initTeamCode) return;
@@ -160,6 +162,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 router.push(`/builds/${data}`);
             } else {
                 const data = await insertBuild(buildData);
+                triggerPostCreateGAEvent("build")
                 router.push(`/builds/${data}`);
             }
         } else {
@@ -184,6 +187,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             }
 
             if (mode === "edit") buildData.id = Number(buildId);
+            else triggerPostCreateGAEvent("build");
 
             const data = await contentConfig.builds.local.save(buildData)
             router.push(`/builds/${data}`);

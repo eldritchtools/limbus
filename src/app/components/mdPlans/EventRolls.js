@@ -26,7 +26,8 @@ export default function EventRolls({ identityIds, identityUpties, deploymentOrde
         const addToAcc = () => {
             identity.skillTypes.forEach(skill => {
                 if (!skill.num) return;
-                const skData = skillData[id].skills[skill.id].data;
+                const skData = skillData[id]?.skills[skill.id]?.data;
+                if(!skData) return;
                 if(skData.coinValue < 0) acc[skData.affinity] = Math.max(acc[skData.affinity], skData.baseValue);
                 else acc[skData.affinity] = Math.max(acc[skData.affinity], skData.baseValue + skData.coinValue * skData.coins.length);
             });

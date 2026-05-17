@@ -220,6 +220,19 @@ export default function SiteCustomizationPage() {
                 filterModeOverride={currentFilterSelectionMode}
             />
         </SettingContainer>
+        
+        <SettingContainer
+            name={"Share Button Behavior"}
+            desc={"By default, the share button will use your browser's share menu. You can disable this if you want it to simply copy the page link."}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.disableShareMenu ?? customizationDefaults.disableShareMenu}
+                    onChange={e => setData(p => ({ ...p, disableShareMenu: e.target.checked }))}
+                />
+                <span>Disable Share Menu</span>
+            </label>
+        </SettingContainer>
 
         <SettingContainer
             name={"Site Display Settings"}

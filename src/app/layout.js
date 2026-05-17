@@ -3,6 +3,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
 import LayoutComponent from "./layoutComponent";
+import { gaId } from "./lib/gaEvents";
 import JsonLd, { getOrganizationSchema, getWebsiteSchema } from "./lib/jsonLd";
 
 export const metadata = {
@@ -23,8 +24,6 @@ const schema = {
 };
 
 export default function RootLayout({ children }) {
-    const gaId = process.env.NODE_ENV === 'production' ? 'G-HJ0SH2TDC8' : null;
-
     return (
         <html lang="en">
             <head>

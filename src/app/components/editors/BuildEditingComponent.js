@@ -108,7 +108,7 @@ export default function BuildEditingComponent({
                                         </div>
                                         {Array.from({ length: 5 }, (_, rank) =>
                                             <div key={rank} style={{ gridColumn: "2", gridRow: rank + 1 }}>
-                                                <EgoMenuSelector value={egos[egoIds[index][rank]] || null} setValue={v => setEgoId(v, index, rank)} options={egoOptions[index + 1][rank]} rank={rank} />
+                                                <EgoMenuSelector value={egos[egoIds?.[index]?.[rank]] || null} setValue={v => setEgoId(v, index, rank)} options={egoOptions[index + 1][rank]} rank={rank} />
                                             </div>
                                         )}
                                     </div>
@@ -121,11 +121,11 @@ export default function BuildEditingComponent({
                                             {Array.from({ length: 5 }, (_, rank) =>
                                                 <UptieSelector
                                                     key={rank}
-                                                    value={egoThreadspins?.[index]?.[rank] ?? null}
+                                                    value={egoThreadspins?.[index]?.[rank] ?? ''}
                                                     setValue={v => setEgoThreadspin(v, index, rank)}
                                                     allowEmpty={true}
                                                     emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
-                                                    maxUptie={egos[egoIds[index][rank]]?.maxThreadspin ?? 4}
+                                                    maxUptie={egos[egoIds?.[index]?.[rank]]?.maxThreadspin ?? 4}
                                                 />)}
                                         </div>
                                         {skillReplaces ?

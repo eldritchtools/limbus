@@ -17,7 +17,7 @@ function TooltipLoader({ type }) {
     const [timers, timersLoading] = useData("timers");
     if (timersLoading) return null;
 
-    const timerObjs = Object.values(timers).filter(x => x.sub === type);
+    const timerObjs = timers[type].others;
     if(timerObjs.length === 0) return null;
 
     return <TimerTooltipContent timers={timerObjs} />

@@ -16,6 +16,7 @@ import { getCollection, insertCollection, updateCollection } from "@/app/databas
 import { isLocalId } from "@/app/database/localDB";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { uiStrings } from "@/app/lib/uiStrings";
 
 function Item({ type, data, note, index, isFirst, isLast, swapItems, removeItem, setItemNote, username, flair }) {
@@ -119,6 +120,7 @@ export default function CollectionEditor({ mode, collectionId }) {
     const router = useRouter();
 
     useEffect(() => {
+        if(!loading) return;
         if (mode === "edit") {
             const handleCollection = collection => {
                 if (!collection || (collection.user_id && collection.user_id !== user.id)) {
@@ -149,7 +151,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                     router.push(`/collections/${collectionId}`);
                 });
         }
-    }, [mode, collectionId, router, user]);
+    }, [mode, collectionId, loading, router, user]);
 
     const handleSave = async (isPublished) => {
         if (title === "") {
@@ -187,6 +189,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 router.push(`/collections/${data}`);
             } else {
                 const data = await insertCollection(collectionData);
+                triggerPostCreateGAEvent("collection");
                 router.push(`/collections/${data}`);
             }
         } else {
@@ -205,6 +208,7 @@ export default function CollectionEditor({ mode, collectionId }) {
             }
 
             if (mode === "edit") collectionData.id = Number(collectionId);
+            else triggerPostCreateGAEvent("collection");
 
             const data = await contentConfig.collections.local.save(collectionData)
             router.push(`/collections/${data}`);

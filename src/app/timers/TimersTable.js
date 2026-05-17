@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getNextDay, getNextDayOfWeek, kstToLocalTime } from "./timerFunc";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
+import { VerticalDivider } from "../components/objects/Dividers";
 import { getTimerTooltipProps } from "../components/tooltips/TimerTooltip";
 import { getSeasonString } from "../lib/constants";
 
@@ -53,7 +54,7 @@ export function TimeString({ date }) {
 
 export function isDaysAway(date, days) {
     const diff = date.getTime() - Date.now();
-    if(diff < 0) return false;
+    if (diff < 0) return false;
     return Math.floor(diff / DAY) >= days;
 }
 
@@ -99,7 +100,7 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
         }}
         {...tooltipProps}
     >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: isMobile ? "0.2rem" : "0.5rem", width: style.width }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem", width: style.width, pointerEvents: "none" }}>
             <span style={{ textAlign: "center", whiteSpace: "pre-wrap" }}>{title}</span>
             {src ? <BannerIcon path={src} style={style} /> : null}
         </div>
@@ -109,30 +110,29 @@ export function TimerRow({ title, src, date, dateString, column = false, tooltip
 
 export default function TimersTable({ timers }) {
     const timeLocal = kstToLocalTime("6AM");
+    const { isMobile } = useBreakpoint();
 
-    return <div style={{ display: "flex", flexDirection: "column", overflowX: "auto", maxWidth: "95vw", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
-        {timers?.season ?
-            <TimerRow title={`Season ${getSeasonString(7)}`} src={timers.season.src} dateString={timers.season.endDate} /> :
-            null
-        }
-        <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} />
-        <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} />
-        {timers?.event ?
-            <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} /> :
-            null
-        }
-        {timers?.event2 ?
-            <TimerRow title={timers.event2.name} src={timers.event2.src} dateString={timers.event2.endDate} /> :
-            null
-        }
-        {timers?.feature ?
-            <TimerRow title={timers.feature.name} src={timers.feature.src} dateString={timers.feature.endDate} /> :
-            null
-        }
-        {timers?.target ?
-            <TimerRow title={timers.target.name} src={timers.target.src} dateString={timers.target.endDate} /> :
-            null
-        }
+    return <div style={{
+        display: "flex", width: "max-content", overflowY: "hidden", alignItems: "start", justifyContent: "center",
+        border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem"
+    }}
+    >
+        <div style={{ display: "flex", flexDirection: "column" }}>
+            {timers?.season ?
+                <TimerRow title={`Season ${getSeasonString(7)}`} src={timers.season.src} dateString={timers.season.endDate} column={isMobile} /> :
+                null
+            }
+            <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} column={isMobile} />
+            <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={isMobile} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+            {timers?.events?.main && <TimerRow title={timers.events.main.name} src={timers.events.main.src} dateString={timers.events.main.endDate} column={isMobile} />}
+            {(timers?.events?.others ?? []).map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} dateString={timer.endDate} column={isMobile} />)}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+            {timers?.banners?.main && <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} dateString={timers.banners.main.endDate} column={isMobile} />}
+            {(timers?.banners?.others ?? []).map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} dateString={timer.endDate} column={isMobile} />)}
+        </div>
     </div>
 }
 
@@ -149,11 +149,11 @@ export function HomepageTimers() {
             <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={true} />
         </div>
         {timers?.event ?
-            <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} column={true} tooltip={"event"} /> :
+            <TimerRow title={timers.event.name} src={timers.event.src} dateString={timers.event.endDate} column={true} tooltip={"events"} /> :
             null
         }
         {timers?.feature ?
-            <TimerRow title={timers.feature.name} src={timers.feature.src} dateString={timers.feature.endDate} column={true} tooltip={"feature"} /> :
+            <TimerRow title={timers.feature.name} src={timers.feature.src} dateString={timers.feature.endDate} column={true} tooltip={"banners"} /> :
             null
         }
     </div>

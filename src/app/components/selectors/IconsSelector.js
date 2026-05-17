@@ -40,7 +40,7 @@ export default function IconsSelector({ type, categories, values, setValues, bor
     const filterSelectionMode = filterModeOverride ?? getCustomizationValue("filterSelectionMode");
 
     const clickProps = useMemo(() => {
-        if(filterSelectionMode === "ieo") {
+        if (filterSelectionMode === "ieo") {
             return {
                 "onClick": (filter, selected, excluded, event) => {
                     if (selected)
@@ -133,11 +133,23 @@ export default function IconsSelector({ type, categories, values, setValues, bor
     if (type === "column") {
         categories.forEach(category => {
             if (category === "sinner") {
-                pieces.push(<div key={category} style={{ display: "grid", gridTemplateColumns: "repeat(6, max-content)", padding: "0.2rem", width: "100%", borderBottom: "1px var(--secondary-border-color) solid", justifyContent: "center" }}>
+                pieces.push(<div
+                    key={category}
+                    style={{
+                        display: "grid", gridTemplateColumns: "repeat(6, max-content)", padding: "0.2rem",
+                        width: "100%", borderBottom: "1px var(--secondary-border-color) solid", justifyContent: "center"
+                    }}
+                >
                     {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             } else {
-                pieces.push(<div key={category} style={{ display: "flex", justifyContent: "center", padding: "0.2rem", width: "100%", borderBottom: "1px var(--secondary-border-color) solid" }}>
+                pieces.push(<div
+                    key={category}
+                    style={{
+                        display: "flex", flexWrap: "wrap", justifyContent: "center", padding: "0.2rem", width: "100%",
+                        borderBottom: "1px var(--secondary-border-color) solid"
+                    }}
+                >
                     {getCategoryItems(category).map(filter => toggleComponent(category, filter))}
                 </div>)
             }

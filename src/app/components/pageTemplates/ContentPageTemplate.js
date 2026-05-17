@@ -10,6 +10,7 @@ import EditButton from "../contentActions/EditButton";
 import LikeButton from "../contentActions/LikeButton";
 import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
+import ShareButton from "../contentActions/ShareButton";
 import { BackSolid, ViewSolid } from "../contentActions/Symbols";
 import { HorizontalDivider } from "../objects/Dividers";
 import Tag from "../objects/Tag";
@@ -65,6 +66,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
             return (user && user.id === content.user_id) || isLocalId(targetId) ?
                 <EditButton key={"edit"} targetType={targetType} targetId={targetId} /> :
                 null
+        if (action === "share") return <ShareButton key={"share"} targetType={targetType} targetId={targetId} title={content.title} />;
         if (action === "delete")
             return (user && user.id === content.user_id) || isLocalId(targetId) ?
                 <DeleteButton key={"delete"} targetType={targetType} targetId={targetId} title={content.title} /> :
