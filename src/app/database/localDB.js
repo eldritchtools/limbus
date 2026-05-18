@@ -7,7 +7,10 @@ export const db = new Dexie("limbus-company-tools");
 const itemStores = ["builds", "collections", "mdPlans"];
 const savedStores = ["savedBuilds", "savedCollections", "savedMdPlans"];
 const singleStores = ["achievements", "companies"];
-const unsyncedStores = ["keywordSolver", "teamSolver", "teamRandomizer", "trainingCalc", "siteCustomization", "mdPlanTracking", "universalTracking"];
+const unsyncedStores = [
+    "keywordSolver", "teamSolver", "teamRandomizer", "trainingCalc", "siteCustomization", 
+    "mdPlanTracking", "universalTracking", "giftsTracking"
+];
 
 db.version(1).stores(
     {

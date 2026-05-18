@@ -135,7 +135,11 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
             } else if (type === "gift") {
                 if (!(filterType in giftFilterMatchFunctions)) continue;
 
-                if (!f[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
+                if (strictFiltering && filterType === "tag") {
+                    if (!f[filterType].every(x => giftFilterMatchFunctions[filterType](x, item))) return false;
+                } else {
+                    if (!f[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
+                }
             }
         }
 

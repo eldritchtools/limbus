@@ -150,7 +150,8 @@ export default function ThemePacksPage() {
         if (themePacksLoading || giftsLoading) return;
         return Object.entries(themePacksData).reduce((acc, [id, themePack]) => {
             acc[id] = [themePack.name];
-            if (themePack.exclusive_gifts) acc[id].push(...themePack.exclusive_gifts.map(x => giftsData[x].names[0]))
+            if (themePack.exclusive_gifts) 
+                acc[id].push(...themePack.exclusive_gifts.map(x => giftsData[x]?.names[0] ?? "").filter(x => x.length > 0))
             return acc;
         }, {});
     }, [themePacksData, themePacksLoading, giftsData, giftsLoading]);

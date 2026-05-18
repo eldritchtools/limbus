@@ -18,6 +18,7 @@ import { getLocalStore } from "@/app/database/localDB";
 import { bitsetFunctions } from "@/app/lib/bitset";
 import { sinnerIdMapping } from "@/app/lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "@/app/lib/filter";
+import { triggerToolUsedGAEvent } from "@/app/lib/gaEvents";
 import useLocalState from "@/app/lib/useLocalState";
 
 const itemOwned = (bitsets, item) => bitsetFunctions.hasFlag(bitsets[item.sinnerId - 1], Number(item.id.slice(-2)) - 1);
@@ -246,6 +247,7 @@ export default function CompanyDisplay({ username, editable = false }) {
     const [lastSaved, setLastSaved] = useState(null);
     const [saveStatus, setSaveStatus] = useState("idle");
     const saveTimeout = useRef(null);
+    const [firstSave, setFirstSave] = useState(true);
 
     useEffect(() => {
         if (!contentLoading || loading) return;
@@ -288,6 +290,11 @@ export default function CompanyDisplay({ username, editable = false }) {
             } else {
                 await getLocalStore("companies").save({ ...data, id: "main" });
             }
+
+            if (firstSave) {
+                setFirstSave(false);
+                triggerToolUsedGAEvent("Company");
+            }
         };
 
         clearTimeout(saveTimeout.current);
@@ -308,7 +315,7 @@ export default function CompanyDisplay({ username, editable = false }) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setForceSave(false);
         return () => clearTimeout(saveTimeout.current);
-    }, [identityBitsets, egoBitsets, changed, user, editable, forceSave]);
+    }, [identityBitsets, egoBitsets, changed, user, editable, forceSave, firstSave]);
 
     const saveString = useMemo(() => {
         if (saveStatus === "idle") return null;

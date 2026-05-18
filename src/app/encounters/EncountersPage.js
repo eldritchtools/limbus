@@ -76,7 +76,7 @@ function Encounter({ category, categoryName, encounter }) {
 
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>Details</div>
-            {category === "reflectrial" || category === "story" ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
+            {["reflectrial", "story", "luxcavation"].includes(category) ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
         </div>
 
         {tab === "details" ?
@@ -156,7 +156,7 @@ export default function EncountersPage() {
                     value={encounter}
                     onChange={handleSetEncounter}
                     placeholder={"Choose encounter..."}
-                    filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                    filterOption={(candidate, input) => checkFilterMatch(input, [candidate.data.name, candidate.data.altName])}
                     styles={selectStyle}
                 />
             </div>

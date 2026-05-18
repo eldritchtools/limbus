@@ -16,7 +16,8 @@ INSERT INTO fixed_pages (slug) VALUES ('daily-random');
 CREATE TYPE encounter_category_enum AS ENUM (
   'story',
   'md',
-  'reflectrial'
+  'reflectrial',
+  'luxcavation'
 );
 
 CREATE TABLE encounters (

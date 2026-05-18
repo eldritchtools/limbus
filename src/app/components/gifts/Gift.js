@@ -31,7 +31,7 @@ function GiftFetch({ id, ...props }) {
     } else if (!(id in gifts)) {
         console.warn(`Gift ${id} not found.`);
 
-        if (text ?? false) return <span>Gift not found</span>;
+        if (props.text ?? false) return <span>Gift not found</span>;
         else return <GiftIcon id={id} />
     } else {
         return <GiftMain id={id} gift={gifts[id]} {...props} />

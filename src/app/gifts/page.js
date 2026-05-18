@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "./gifts.module.css";
 import { useData } from "../components/DataProvider";
@@ -11,17 +11,19 @@ import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { getLocalStore } from "../database/localDB";
 import { affinityColorMapping } from "../lib/colors";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
+import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import { TextWithStatuses } from "../lib/statusReplacement";
 import useLocalState from "../lib/useLocalState";
 
-function GiftDesc({ gift }) {
+function GiftDesc({ gift, clickable }) {
     const { openGiftModal } = useModal();
 
     return <div
         className={`panel-container ${styles.giftDesc}`}
-        onClick={() => openGiftModal({ gift, enhanceRank: 0 })}
+        onClick={clickable ? () => openGiftModal({ gift, enhanceRank: 0 }) : null}
     >
         <div style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "bold", textAlign: "start", color: affinityColorMapping[gift.affinity] }}>
             {gift.names[0]}
@@ -37,13 +39,13 @@ function GiftDesc({ gift }) {
     </div>
 }
 
-function GiftCard({ gift, isSmall }) {
+function GiftCard({ gift, isSmall, clickable }) {
     const { openGiftModal } = useModal();
 
     return <div
         className={`panel-container ${styles.giftCard}`}
         style={{ height: isSmall ? "175px" : "250px" }}
-        onClick={() => openGiftModal({ gift, enhanceRank: 0 })}
+        onClick={clickable ? () => openGiftModal({ gift, enhanceRank: 0 }) : null}
     >
         <div style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "bold", textAlign: "center", color: affinityColorMapping[gift.affinity] }}>
             {gift.names[0]}
@@ -62,37 +64,48 @@ function GiftCard({ gift, isSmall }) {
     </div>
 }
 
-function GiftList({ searchString, filters, tagFilter, tagFilterExcluding, includeDescription, displayType, giftsData, isSmall }) {
-    const list = useMemo(() => {
-        const combinedFilters = [...filters];
-        if (tagFilter) {
-            if (tagFilterExcluding) combinedFilters.push(["tag", `-${tagFilter}`]);
-            else combinedFilters.push(["tag", tagFilter]);
-        }
+function GiftList({ gifts, displayType, tracking, setTracking, isSmall }) {
+    const listComponents = useMemo(() => {
+        const toggleGift = tracking ?
+            (id, marked) => {
+                const newSet = new Set(tracking);
+                if (marked) newSet.delete(Number(id));
+                else newSet.add(Number(id));
+                setTracking(newSet);
+            } :
+            null;
 
-        return filterByFilters(
-            "gift",
-            Object.values(giftsData),
-            combinedFilters,
-            gift => {
-                if (searchString.length !== 0) {
-                    const filterStrings = [gift.names[0]];
-                    if (includeDescription) filterStrings.push(gift.search_desc);
-                    if (!checkFilterMatch(searchString, filterStrings)) return false;
-                }
-                return true;
+        const buildComponent = (id, gift, clickable) => {
+            switch (displayType) {
+                case "icon": return <Gift key={id} gift={gift} includeTooltip={true} scale={isSmall ? .6 : 1} expandable={clickable} />;
+                case "card": return <GiftCard key={id} gift={gift} isSmall={isSmall} clickable={clickable} />;
+                case "desc": return <GiftDesc key={id} gift={gift} clickable={clickable} />;
+                default: return null;
             }
-        ).map(x => [x.id, x])
-    }, [searchString, filters, tagFilter, tagFilterExcluding, includeDescription, giftsData]);
+        };
 
-    const listComponents = list.map(([id, gift]) => {
-        switch (displayType) {
-            case "icon": return <Gift key={id} gift={gift} includeTooltip={true} scale={isSmall ? .6 : 1} />;
-            case "card": return <GiftCard key={id} gift={gift} isSmall={isSmall} />;
-            case "desc": return <GiftDesc key={id} gift={gift} />;
-            default: return null;
-        }
-    });
+        const marked = [];
+        const unmarked = [];
+
+        gifts.forEach(([id, gift]) => {
+            if (tracking) {
+                const isMarked = tracking.has(Number(id));
+                if (isMarked) {
+                    marked.push(<div key={id} onClick={() => toggleGift(id, true)} style={{ filter: "brightness(0.5)" }}>
+                        {buildComponent(id, gift, false)}
+                    </div>)
+                } else {
+                    unmarked.push(<div key={id} onClick={() => toggleGift(id, false)}>
+                        {buildComponent(id, gift, false)}
+                    </div>)
+                }
+            } else {
+                unmarked.push(buildComponent(id, gift, true));
+            }
+        })
+
+        return [...unmarked, ...marked];
+    }, [gifts, displayType, tracking, setTracking, isSmall]);
 
     const columns = displayType === "icon" ?
         `repeat(auto-fill, minmax(${isSmall ? 60 : 100}px, 1fr))` :
@@ -117,12 +130,106 @@ export default function GiftsPage() {
     const [filters, setFilters] = useState([]);
     const [includeDescription, setIncludeDescription] = useLocalState("giftsIncludeDescription", false);
     const [displayType, setDisplayType] = useLocalState("giftsDisplayType", "icon");
-    const [tagFilter, setTagFilter] = useState(null);
+    const [strictFiltering, setStrictFiltering] = useLocalState("giftsStrictFiltering", false);
+    const [tagFilters, setTagFilters] = useState([]);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
     const { isDesktop } = useBreakpoint();
 
     const newGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.new), [giftsData, giftsLoading]);
     const updatedGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.updated), [giftsData, giftsLoading]);
+
+    const [loading, setLoading] = useState(true);
+    const [tracking, setTracking] = useState(null);
+    const saveTimeout = useRef(null);
+    const [firstSave, setFirstSave] = useState(true);
+
+    const filteredGifts = useMemo(() => {
+        if (giftsLoading) return [];
+        const combinedFilters = [...filters, ...tagFilters.map(tag => ["tag", tag])];
+
+        return filterByFilters(
+            "gift",
+            Object.values(giftsData),
+            combinedFilters,
+            gift => {
+                if (searchString.length !== 0) {
+                    const filterStrings = [gift.names[0]];
+                    if (includeDescription) filterStrings.push(gift.search_desc);
+                    if (!checkFilterMatch(searchString, filterStrings)) return false;
+                }
+                return true;
+            },
+            strictFiltering
+        ).map(x => [x.id, x]);
+    }, [filters, tagFilters, giftsData, giftsLoading, searchString, includeDescription, strictFiltering]);
+
+    useEffect(() => {
+        if (loading) {
+            getLocalStore("giftsTracking").get("main").then(x => {
+                setLoading(false);
+                if (!x) return;
+                setTracking(new Set(x.gifts));
+            });
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        if (loading || !tracking) return;
+
+        const saveData = async () => {
+            if (firstSave) {
+                triggerToolUsedGAEvent("Gifts Tracking");
+                setFirstSave(false);
+            }
+
+            const data = { id: "main", gifts: [...tracking] };
+            if (data.gifts.length === 0)
+                getLocalStore("giftsTracking").remove("main");
+            else
+                getLocalStore("giftsTracking").save(data);
+        };
+
+        clearTimeout(saveTimeout.current);
+
+        saveTimeout.current = setTimeout(async () => {
+            try {
+                await saveData();
+            } catch (err) {
+                console.error("Unable to persist data.");
+            }
+        }, 1000);
+
+        return () => clearTimeout(saveTimeout.current);
+    }, [tracking, loading, firstSave]);
+
+    const toggleTracking = () => {
+        if (tracking) {
+            setTracking(null);
+            return;
+        }
+
+        getLocalStore("giftsTracking").get("main").then(x => {
+            if (x) setTracking(new Set(x.gifts));
+            else setTracking(new Set());
+        });
+    }
+
+    const trackingFuncs = tracking ? {
+        markAll: () => {
+            const newSet = new Set(tracking);
+            filteredGifts.forEach(([id]) => newSet.add(Number(id)));
+            setTracking(newSet);
+        },
+        unmarkAll: () => {
+            const newSet = new Set(tracking);
+            filteredGifts.forEach(([id]) => newSet.delete(Number(id)));
+            setTracking(newSet);
+        },
+        resetTracking: () => {
+            setTracking(new Set());
+            getLocalStore("universalTracking").remove("main");
+        }
+    } : {};
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.O Gifts</h1>
@@ -150,10 +257,18 @@ export default function GiftsPage() {
                     </div>
                 </div>
                 <div style={{ textAlign: "start" }}>
-                    <GiftTagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
+                    <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
+                </div>
+                <div />
+                <div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                        Strict Tag Filtering
+                        <span className="sub-text">(Require all selected tags)</span>
+                    </label>
                 </div>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Display Type</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
+                <div style={{ display: "flex", gap: "0.2rem", alignItems: "start" }}>
                     <label>
                         <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} />
                         Icons Only
@@ -167,12 +282,29 @@ export default function GiftsPage() {
                         Full Description
                     </label>
                 </div>
-                <div />
             </div>
             <IconsSelector type={"column"} categories={["giftTier", "status", "atkTypeKwless", "affinity"]} values={filters} setValues={setFilters} />
         </div>
+        <div style={{ display: "flex", gap: "0.25rem" }}>
+            <button onClick={() => toggleTracking()}>
+                {tracking === null ? "Activate Tracking Mode" : "Deactivate Tracking Mode"}
+            </button>
+            {
+                tracking && <>
+                    <button onClick={trackingFuncs.markAll}>
+                        Mark all Filtered
+                    </button>
+                    <button onClick={trackingFuncs.unmarkAll}>
+                        Unmark all Filtered
+                    </button>
+                    <button onClick={trackingFuncs.resetTracking}>
+                        Reset Tracking
+                    </button>
+                </>
+            }
+        </div>
         <HorizontalDivider />
-        {filters.length === 0 && tagFilter === null && searchString.length === 0 ?
+        {filters.length === 0 && tagFilters.length === 0 && searchString.length === 0 ?
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", width: "100%" }}>
                 {newGifts.length > 0 ? <React.Fragment>
                     <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>New</span>
@@ -191,13 +323,10 @@ export default function GiftsPage() {
         {giftsLoading ?
             <div style={{ textAlign: "center", fontSize: "1.5rem" }}>Loading Gifts...</div> :
             <GiftList
-                searchString={searchString}
-                filters={filters}
-                tagFilter={tagFilter}
-                tagFilterExcluding={tagFilterExcluding}
-                includeDescription={includeDescription}
+                gifts={filteredGifts}
                 displayType={displayType}
-                giftsData={giftsData}
+                tracking={tracking}
+                setTracking={setTracking}
                 isSmall={!isDesktop}
             />
         }
