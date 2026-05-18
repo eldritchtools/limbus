@@ -47,6 +47,7 @@ export default function TermsPage() {
             <ul>
                 <li>Google OAuth (Google Cloud) for authentication</li>
                 <li>Supabase for user authentication and data storage</li>
+                <li>Discord OAuth for authentication</li>
                 <li>Cloudflare for security and traffic protection</li>
             </ul>
 

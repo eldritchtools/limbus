@@ -41,6 +41,7 @@ export default function PrivacyPage() {
                 <li><strong>Google OAuth (Google Cloud)</strong> – authentication</li>
                 <li><strong>Supabase</strong> – user authentication and data storage</li>
                 <li><strong>Google Analytics</strong> – website usage analytics</li>
+                <li><strong>Discord OAuth</strong> – authentication</li>
                 <li><strong>Cloudflare</strong> – security, caching, and traffic protection</li>
             </ul>
 
