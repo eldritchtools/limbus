@@ -12,6 +12,7 @@ import RarityIcon from "@/app/components/icons/RarityIcon";
 import SinnerIcon from "@/app/components/icons/SinnerIcon";
 import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import NumberInputWithButtons from "@/app/components/objects/NumberInputWithButtons";
 import RatingComponent from "@/app/components/ratings/RatingComponent";
 import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
@@ -69,26 +70,30 @@ function RatingTab({ id, setUserReview, reviewText, setReviewText, isReviewing, 
 }
 
 function NotesTab({ notes }) {
-    if (!notes || !notes.usage) return <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Not yet available...</div>;
-    if (!notes.other)
-        return <div style={{ display: "flex", flexDirection: "column" }}>
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        {(!notes || !notes.usage) &&
+            <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Not yet available...</div>
+        }
+        {notes && notes.usage && <>
+            {notes.other && <div className="sub-text">Usage Tips</div>}
             {notes.usage.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
                 • <MarkdownRenderer content={str} />
             </div>)}
-        </div>
-
-    return <div style={{ display: "flex", flexDirection: "column" }}>
-        <div className="sub-text">Usage Tips</div>
-        {notes.usage.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-            • <MarkdownRenderer content={str} />
-        </div>)}
-        <div style={{ height: "0.5rem" }} />
-        <div className="sub-text">Other Details</div>
-        {notes.other.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-            • <MarkdownRenderer content={str} />
-        </div>)}
+        </>
+        }
+        {notes && notes.other && <>
+            <div style={{ height: "0.5rem" }} />
+            <div className="sub-text">Other Details</div>
+            {notes.other.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
+                • <MarkdownRenderer content={str} />
+            </div>)}
+        </>}
+        <HorizontalDivider />
+        <span style={{textAlign: "center"}}>Check out the Community Rating or Community Reviews tabs to view the community&apos;s thoughts or leave your own!</span>
     </div>
 }
+
+
 
 function BuildsTab({ builds }) {
     if (!builds) return <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Loading builds...</div>;
@@ -371,12 +376,12 @@ export default function IdentityPage({ params }) {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
                     {isReviewing && <>
-                        <span style={{ textAlign: "center" }}>Consider leaving a review along with your rating.</span>
+                        <span className="title-text" style={{ textAlign: "center" }}>Review</span>
                         <div style={{ width: "100%" }}>
                             <MarkdownEditorWrapper
                                 value={reviewText}
                                 onChange={v => setReviewText(v)}
-                                placeholder={`Review for this identity (optional)...`}
+                                placeholder={`Leave a review for this identity (optional)...`}
                             />
                         </div>
                     </>

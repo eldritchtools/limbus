@@ -218,12 +218,12 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(320px, 90vw)", flex: 1, minHeight: 0 }}>
             {isReviewing && <>
-                <span style={{ textAlign: "center" }}>Consider leaving a review along with your rating.</span>
+                <span className="title-text" style={{ textAlign: "center" }}>Review</span>
                 <div style={{ width: "100%" }}>
                     <MarkdownEditorWrapper
                         value={reviewText}
                         onChange={v => setReviewText(v)}
-                        placeholder={`Review for this ${type === "identity" ? "identity" : "E.G.O"} (optional)...`}
+                        placeholder={`Leave a review for this ${type === "identity" ? "identity" : "E.G.O"} (optional)...`}
                     />
                 </div>
             </>
