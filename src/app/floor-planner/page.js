@@ -61,7 +61,8 @@ function ExclusiveGiftList({ selectedFloors }) {
     const [giftsData, giftsLoading] = useData("gifts");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
-    const [tagFilter, setTagFilter] = useState(null);
+    const [strictFiltering, setStrictFiltering] = useLocalState("floorPlannerGiftsStrictFiltering", false);
+    const [tagFilters, setTagFilters] = useState([]);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
     const [selectedGifts, setSelectedGifts] = useLocalState("floorPlannerSelectedGifts", []);
     const { isMobile } = useBreakpoint();
@@ -82,11 +83,7 @@ function ExclusiveGiftList({ selectedFloors }) {
 
     const [selGifts, unselGifts] = useMemo(() => {
         if (giftsLoading) return [];
-        const combinedFilters = [...filters];
-        if (tagFilter) {
-            if (tagFilterExcluding) combinedFilters.push(["tag", `-${tagFilter}`]);
-            else combinedFilters.push(["tag", tagFilter]);
-        }
+        const combinedFilters = [...filters, ...tagFilters.map(tag => ["tag", tag])];
 
         const filteredGifts = filterByFilters(
             "gift",
@@ -96,7 +93,8 @@ function ExclusiveGiftList({ selectedFloors }) {
                 if (!gift.exclusiveTo) return false;
                 if (searchString.length > 0 && !checkFilterMatch(searchString, [gift.names[0], gift.search_desc])) return false;
                 return true;
-            }
+            },
+            strictFiltering
         );
 
         return filteredGifts.reduce(([sel, unsel], gift) => {
@@ -104,7 +102,7 @@ function ExclusiveGiftList({ selectedFloors }) {
             else unsel.push(gift.id);
             return [sel, unsel]
         }, [[], []]);
-    }, [giftsData, giftsLoading, filters, tagFilter, tagFilterExcluding, searchString, selectedGifts]);
+    }, [giftsData, giftsLoading, filters, strictFiltering, tagFilters, searchString, selectedGifts]);
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
         <h3 style={{ margin: "0.5rem", textAlign: "center" }}>Exclusive Gifts Helper</h3>
@@ -146,7 +144,15 @@ function ExclusiveGiftList({ selectedFloors }) {
                     </div>
                 </div>
                 <div style={{ textAlign: "start" }}>
-                    <GiftTagFilterSelector tagFilter={tagFilter} setTagFilter={setTagFilter} />
+                    <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
+                </div>
+                <div />
+                <div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                        Strict Tag Filtering
+                        <span className="sub-text">(Require all selected tags)</span>
+                    </label>
                 </div>
                 <div />
                 <button onClick={() => setSelectedGifts([])}>Reset Gifts</button>

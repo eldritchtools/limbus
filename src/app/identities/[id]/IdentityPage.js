@@ -178,7 +178,7 @@ function SkillsTab({ identityData, level, skills, preSkills, combatPassives, sup
 }
 
 function ReviewsTab({ id, setShowReviews, userReview }) {
-    const [tab, setTab, tabInitialized] = useLocalState("ratingTab", "latest");
+    const [tab, setTab, tabInitialized] = useLocalState("ratingTab", "top");
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <button onClick={() => setShowReviews(false)}>Hide Reviews</button>
