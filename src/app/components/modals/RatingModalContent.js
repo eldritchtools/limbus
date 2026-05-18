@@ -9,6 +9,7 @@ import { useSkillData } from "../dataHooks/skills";
 import { useData } from "../DataProvider";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
+import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import RatingComponent from "../ratings/RatingComponent";
 import ReviewsComponent from "../ratings/ReviewsComponent";
 import PassiveCard from "../skill/PassiveCard";
@@ -104,7 +105,7 @@ function IdentityDetails({ id }) {
 
 function EgoDetails({ id }) {
     const [egos, egosLoading] = useData("egos");
-    const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } = 
+    const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } =
         useSkillData("ego", id, egosLoading ? 4 : (egos[id].maxThreadspin ?? 4));
     const router = useRouter();
 
@@ -166,6 +167,9 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
     const [builds, setBuilds] = useState(null);
     const { isDesktop } = useBreakpoint();
 
+    const [reviewText, setReviewText] = useState("");
+    const [isReviewing, setIsReviewing] = useState(false);
+
     const triggerRender = useCallback(() => { updateCount(p => p + 1) }, []);
 
     const handleChange = async x => {
@@ -198,9 +202,23 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
     return <div style={{ display: "flex", flexDirection: isDesktop ? "row" : "column", alignItems: isDesktop ? null : "center", gap: "0.5rem", maxHeight: "80vh" }}>
         <div style={{ maxWidth: "min(340px, 100%)", paddingBottom: "2rem" }}>
             <h2 className="title-text" style={{ textAlign: "center" }}>{name}</h2>
-            <RatingComponent type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} />
+            <RatingComponent 
+                type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} 
+                reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing} 
+            />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(320px, 90vw)", flex: 1, minHeight: 0 }}>
+            {isReviewing && <>
+                <span style={{ textAlign: "center" }}>Consider leaving a review along with your rating.</span>
+                <div style={{ width: "100%" }}>
+                    <MarkdownEditorWrapper
+                        value={reviewText}
+                        onChange={v => setReviewText(v)}
+                        placeholder={`Review for this ${type === "identity" ? "identity" : "E.G.O"} (optional)...`}
+                    />
+                </div>
+            </>
+            }
             <div style={{ alignSelf: "center", maxWidth: "90vw", overflowX: "auto", overflowY: "hidden", padding: "0.25rem", boxSizing: "border-box", flexShrink: 0 }}>
                 <div style={{ display: "flex", gap: "1rem", width: "max-content" }}>
                     <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
@@ -217,7 +235,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
                     (type === "identity" ? <IdentityDetails id={id} /> : <EgoDetails id={id} />) :
                     (tab === "builds" ?
                         <BuildsTab builds={builds} /> :
-                        (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} userReview={review} />)
+                        (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} userReview={!isReviewing ? review : null} />)
                     )
                 }
             </div>
