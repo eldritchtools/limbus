@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import TeamBuild from "../contentCards/TeamBuild";
 import { useSkillData } from "../dataHooks/skills";
 import { useData } from "../DataProvider";
+import { useModal } from "./ModalProvider";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
@@ -159,7 +160,8 @@ function BuildsTab({ builds }) {
     </div>
 }
 
-export default function RatingModalContent({ type, id, getCommunityReviews, getUserReviews, onChange }) {
+export default function RatingModalContent({ modalId, type, id, getCommunityReviews, getUserReviews, onChange }) {
+    const { setModalBeforeClose } = useModal();
     const [identities, identitiesLoading] = useData("identities_mini")
     const [egos, egosLoading] = useData("egos_mini");
     const [, updateCount] = useState(0);
@@ -195,6 +197,13 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
         if (tab === "builds" && !builds) fetchBuilds();
     }, [type, tab, builds, id])
 
+    useEffect(() => {
+        setModalBeforeClose(modalId, () => {
+            if (!isReviewing) return true;
+            return window.confirm("You're currently creating or editing a review.\nDiscard unsaved changes?");
+        });
+    }, [modalId, isReviewing, setModalBeforeClose]);
+
     const name = type === "identity" ?
         (identitiesLoading ? "" : `[${sinnerIdMapping[identities[id].sinnerId]}] ${identities[id].name}`) :
         (egosLoading ? "" : `[${sinnerIdMapping[egos[id].sinnerId]}] ${egos[id].name}`)
@@ -202,9 +211,9 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
     return <div style={{ display: "flex", flexDirection: isDesktop ? "row" : "column", alignItems: isDesktop ? null : "center", gap: "0.5rem", maxHeight: "80vh" }}>
         <div style={{ maxWidth: "min(340px, 100%)", paddingBottom: "2rem" }}>
             <h2 className="title-text" style={{ textAlign: "center" }}>{name}</h2>
-            <RatingComponent 
-                type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange} 
-                reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing} 
+            <RatingComponent
+                type={type} id={id} globalData={communityRating} userData={review} onChange={handleChange}
+                reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing}
             />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(320px, 90vw)", flex: 1, minHeight: 0 }}>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-export default function ModalContainer({ isOpen, onClose, index = 0, children }) {
+export default function ModalContainer({ isOpen, onClose, beforeClose, index = 0, children }) {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -15,16 +15,28 @@ export default function ModalContainer({ isOpen, onClose, index = 0, children })
         }
     }, [isOpen]);
 
+    const attemptClose = useCallback(async () => {
+        if (beforeClose) {
+            const shouldClose = await beforeClose();
+
+            if (!shouldClose) {
+                return;
+            }
+        }
+
+        onClose();
+    }, [beforeClose, onClose]);
+
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyDown = (e) => {
-            if (e.key === "Escape") onClose();
+            if (e.key === "Escape") attemptClose();
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isOpen, onClose]);
+    }, [isOpen, attemptClose]);
 
     if (!isOpen) return null;
 
@@ -72,8 +84,8 @@ export default function ModalContainer({ isOpen, onClose, index = 0, children })
     };
 
     return createPortal(
-        <div style={overlayStyle} onClick={onClose}>
-            <button style={closeStyle} onClick={onClose}>
+        <div style={overlayStyle} onClick={attemptClose}>
+            <button style={closeStyle} onClick={attemptClose}>
                 ✕
             </button>
             <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
