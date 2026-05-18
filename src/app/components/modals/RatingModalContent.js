@@ -162,7 +162,7 @@ export default function RatingModalContent({ type, id, getCommunityReviews, getU
     const [identities, identitiesLoading] = useData("identities_mini")
     const [egos, egosLoading] = useData("egos_mini");
     const [, updateCount] = useState(0);
-    const [tab, setTab, tabInitialized] = useLocalState("ratingModalTab", "latest");
+    const [tab, setTab, tabInitialized] = useLocalState("ratingModalTab", "top");
     const [builds, setBuilds] = useState(null);
     const { isDesktop } = useBreakpoint();
 
