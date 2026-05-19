@@ -59,7 +59,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
         <div className={styles.teamBuildContent}>
             <div className={styles.teamBuildTitleContainer}>
-                <h2 className={styles.teamBuildTitle}>{build.title}</h2>
+                <div className={styles.teamBuildTitle}>{build.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>
                 <UsernameWithTime data={build} scale={.8} includeUpdatedAt={false} />

@@ -76,6 +76,24 @@ function AuthForm() {
         if (error) console.error('Google sign-in error:', error.message);
     };
 
+    const handleDiscordLogin = async () => {
+        setLoading(true);
+        document.body.style.cursor = "wait";
+        document.body.style.pointerEvents = "none";
+
+        const { error } = await getSupabase().auth.signInWithOAuth({
+            provider: 'discord',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`
+            },
+        });
+
+        setLoading(false);
+        document.body.style.cursor = "default";
+        document.body.style.pointerEvents = "auto";
+        if (error) console.error('Discord sign-in error:', error.message);
+    };
+
     return (
         <div
             style={{
@@ -93,6 +111,31 @@ function AuthForm() {
             </h2>
             <div className="sub-text" style={{ marginBottom: "0.75rem", textAlign: "center" }}>(Authentication via Supabase)</div>
 
+            <button onClick={handleGoogleLogin} className={styles.googleButton}>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 488 512"
+                    fill="currentColor"
+                    style={{ width: '1.25rem', height: '1.25rem' }}
+                >
+                    <path d="M488 261.8C488 403.3 391.1 512 248 512 110.8 512 0 401.2 0 264S110.8 16 248 16c66.8 0 123 24.6 166.3 65L347 147c-24.4-23.3-55.7-37.5-99-37.5-84.3 0-153 68.5-153 153.3s68.7 153.3 153 153.3c97.7 0 134.3-70 140-106H248v-85h240a208 208 0 010 36.7z" />
+                </svg>
+                Continue with Google
+            </button>
+            <button onClick={handleDiscordLogin} className={styles.discordButton}>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 127.14 96.36"
+                    fill="currentColor"
+                    style={{ width: '1.25rem', height: '1.25rem' }}
+                >
+                    <path d="M107.7 8.07A105.15 105.15 0 0081.47 0a72.06 72.06 0 00-3.63 7.36 97.8 97.8 0 00-29.7 0A72.06 72.06 0 0044.51 0a105.89 105.89 0 00-26.24 8.07C2.79 32.65-1.61 56.6.41 80.21a105.73 105.73 0 0032.17 16.15 77.7 77.7 0 006.89-11.11 68.42 68.42 0 01-10.85-5.24c.91-.66 1.8-1.34 2.67-2a74.13 74.13 0 0066.85 0c.87.71 1.76 1.39 2.67 2a68.2 68.2 0 01-10.87 5.25 77.14 77.14 0 006.89 11.1 105.25 105.25 0 0032.19-16.14c2.37-25.09-2.02-48.98-18.35-72.14zM42.45 65.69c-6.13 0-11.18-5.65-11.18-12.58s4.91-12.6 11.18-12.6c6.27 0 11.2 5.65 11.18 12.6 0 6.93-4.91 12.58-11.18 12.58zm42.24 0c-6.13 0-11.18-5.65-11.18-12.58s4.91-12.6 11.18-12.6c6.27 0 11.18 5.65 11.18 12.6 0 6.93-4.91 12.58-11.18 12.58z" />
+                </svg>
+                Continue with Discord
+            </button>
+            
+            <div style={{ margin: '1rem 0', textAlign: 'center', fontWeight: "bold", color: 'var(--seconary-text-color' }}>OR</div>
+
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <input type="password" placeholder="Password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
@@ -109,20 +152,6 @@ function AuthForm() {
                     </button>
                 </div>
             </form>
-
-            <div style={{ margin: '1rem 0', textAlign: 'center', fontWeight: "bold", color: 'var(--seconary-text-color' }}>OR</div>
-
-            <button onClick={handleGoogleLogin} className={styles.googleButton}>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488 512"
-                    fill="currentColor"
-                    style={{ width: '1.25rem', height: '1.25rem' }}
-                >
-                    <path d="M488 261.8C488 403.3 391.1 512 248 512 110.8 512 0 401.2 0 264S110.8 16 248 16c66.8 0 123 24.6 166.3 65L347 147c-24.4-23.3-55.7-37.5-99-37.5-84.3 0-153 68.5-153 153.3s68.7 153.3 153 153.3c97.7 0 134.3-70 140-106H248v-85h240a208 208 0 010 36.7z" />
-                </svg>
-                Continue with Google
-            </button>
 
             <p className="sub-text" style={{ marginTop: '0.75rem', textAlign: 'center' }}>
                 {isLogin ? 'Need an account?' : 'Already have one?'}{' '}

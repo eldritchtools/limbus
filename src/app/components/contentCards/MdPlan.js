@@ -84,7 +84,7 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
 
         <div className={styles.mdPlanContent} style={{ width: width }}>
             <div className={styles.mdPlanTitleContainer}>
-                <h2 className={styles.mdPlanTitle}>{plan.title}</h2>
+                <div className={styles.mdPlanTitle}>{plan.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>
                 <UsernameWithTime data={plan} scale={.8} includeUpdatedAt={false} />

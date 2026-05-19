@@ -68,7 +68,7 @@ export default function TrainingCalcPage() {
 
             await getLocalStore("trainingCalc").save(data);
 
-            if(firstSave) {
+            if (firstSave) {
                 triggerToolUsedGAEvent("Training Calculator");
                 setFirstSave(false);
             }
@@ -228,7 +228,10 @@ export default function TrainingCalcPage() {
             Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os. Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of shards from crate rewards.
         </span>
 
-        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center" }}>
+        <div style={{
+            display: "flex", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row", gap: "1rem",
+            alignItems: "center", justifyContent: isMobile ? null : "center", maxWidth: "100%"
+        }}>
             <SelectedTable
                 identities={identities} egos={egos}
                 selected={selected} setSelected={setSelected}

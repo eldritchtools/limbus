@@ -9,7 +9,9 @@ import EgoIcon from "@/app/components/icons/EgoIcon";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import RarityIcon from "@/app/components/icons/RarityIcon";
 import SinnerIcon from "@/app/components/icons/SinnerIcon";
+import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import RatingComponent from "@/app/components/ratings/RatingComponent";
 import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
 import UptieSelector from "@/app/components/selectors/UptieSelector";
@@ -25,7 +27,7 @@ import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constant
 import { constructSkillLabel } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
-function RatingTab({ id, showReviews, setShowReviews, setUserReview }) {
+function RatingTab({ id, setUserReview, reviewText, setReviewText, isReviewing, setIsReviewing }) {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [globalData, setGlobalData] = useState(null);
@@ -57,33 +59,33 @@ function RatingTab({ id, showReviews, setShowReviews, setUserReview }) {
         setRefresh(true);
     }
 
-    const showReviewsButton =
-        globalData ?
-            <button onClick={() => setShowReviews(p => !p)}>{showReviews ? "Hide Reviews" : "Show Reviews"}</button> :
-            null
-
-    return <RatingComponent type={"ego"} id={id} globalData={globalData} userData={userData} onChange={onChange} showReviewsButton={showReviewsButton} />
+    return <RatingComponent
+        type={"ego"} id={id} globalData={globalData} userData={userData} onChange={onChange}
+        reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing}
+    />
 }
 
 function NotesTab({ notes }) {
-    if (!notes || !notes.main) return <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Not yet available...</div>;
-    if (!notes.other)
-        return <div style={{ display: "flex", flexDirection: "column" }}>
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        {(!notes || !notes.main) &&
+            <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Not yet available...</div>
+        }
+        {notes && notes.main && <>
+            {notes.other && <div className="sub-text">Main</div>}
             {notes.main.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
                 • <MarkdownRenderer content={str} />
             </div>)}
-        </div>
-
-    return <div style={{ display: "flex", flexDirection: "column" }}>
-        <div className="sub-text">Main</div>
-        {notes.main.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-            • <MarkdownRenderer content={str} />
-        </div>)}
-        <div style={{ height: "0.5rem" }} />
-        <div className="sub-text">Other</div>
-        {notes.other.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-            • <MarkdownRenderer content={str} />
-        </div>)}
+        </>
+        }
+        {notes && notes.other && <>
+            <div style={{ height: "0.5rem" }} />
+            <div className="sub-text">Other</div>
+            {notes.other.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
+                • <MarkdownRenderer content={str} />
+            </div>)}
+        </>}
+        <HorizontalDivider />
+        <span style={{textAlign: "center"}}>Check out the Community Rating or Community Reviews tabs to view the community&apos;s thoughts or leave your own!</span>
     </div>
 }
 
@@ -121,11 +123,10 @@ function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCo
     </div>
 }
 
-function ReviewsTab({ id, setShowReviews, userReview }) {
+function ReviewsTab({ id, userReview }) {
     const [tab, setTab, tabInitialized] = useLocalState("ratingTab", "top");
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <button onClick={() => setShowReviews(false)}>Hide Reviews</button>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
             <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
             <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
             <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
@@ -140,10 +141,13 @@ export default function EgoPage({ params }) {
     const [uptie, setUptie] = useState(4);
     const [preuptie, setPreuptie] = useState(1);
     const [activeTab, setActiveTab] = useLocalState("egoActiveTab", "notes");
+    const [mainActiveTab, setMainActiveTab] = useLocalState("egoMainActiveTab", "details");
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
     const [showReviews, setShowReviews] = useState(false);
     const [userReview, setUserReview] = useState(null);
+    const [reviewText, setReviewText] = useState("");
+    const [isReviewing, setIsReviewing] = useState(false);
 
     const egoData = useMemo(() => egosLoading ? null : egos[id], [id, egos, egosLoading]);
     const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } = useSkillData("ego", id, preuptie);
@@ -273,21 +277,43 @@ export default function EgoPage({ params }) {
                             activeTab === "notes" ?
                                 <NotesTab notes={notes} /> :
                                 activeTab === "rating" ?
-                                    <RatingTab id={id} showReviews={showReviews} setShowReviews={setShowReviews} setUserReview={setUserReview} /> :
+                                    <RatingTab id={id} showReviews={showReviews} setShowReviews={setShowReviews} setUserReview={setUserReview}
+                                        reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing}
+                                    /> :
                                     <BuildsTab builds={builds} />
                         }
                     </div>
                 </div>
 
-                {showReviews ?
-                    <ReviewsTab id={id} setShowReviews={setShowReviews} userReview={userReview} /> :
-                    <SkillsTab
-                        awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
-                        corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
-                        passives={passives} prePassives={prePassives}
-                        compareMode={compareMode} preuptie={preuptie}
-                    />
-                }
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
+                    {isReviewing && <>
+                        <span className="title-text" style={{ textAlign: "center" }}>Review</span>
+                        <div style={{ width: "100%" }}>
+                            <MarkdownEditorWrapper
+                                value={reviewText}
+                                onChange={v => setReviewText(v)}
+                                placeholder={`Leave a review for this E.G.O (optional)...`}
+                            />
+                        </div>
+                    </>
+                    }
+
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+                        <div className={`tab-header ${mainActiveTab === "details" ? "active" : ""}`} onClick={() => setMainActiveTab("details")}>Details</div>
+                        <div className={`tab-header ${mainActiveTab === "reviews" ? "active" : ""}`} onClick={() => setMainActiveTab("reviews")}>Community Reviews</div>
+                    </div>
+
+                    {mainActiveTab === "reviews" ?
+                        <ReviewsTab id={id} userReview={!isReviewing ? userReview : null} /> :
+                        <SkillsTab
+                            awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
+                            corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
+                            passives={passives} prePassives={prePassives}
+                            compareMode={compareMode} preuptie={preuptie}
+                        />
+                    }
+                </div>
+
             </div>
         </div>
     </>

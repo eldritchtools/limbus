@@ -15,6 +15,7 @@ import {
 import { backspaceTriggersCompletion, tabAcceptsCompletion, tokenAutocomplete, useAutocompleteDataFacetExtension } from './MarkdownEditorAutocomplete';
 import { markdownStyling } from './MarkdownEditorStyling';
 import "./MarkdownEditorMain.css"
+import { getGeneralTooltipProps } from '../tooltips/GeneralTooltip';
 
 /* ---------- Helpers ---------- */
 
@@ -267,18 +268,42 @@ export default function MarkdownEditorMain({
             {/* Toolbar */}
             {mini ? null :
                 <div style={{ marginBottom: 4 }}>
-                    <button onClick={() => toggleWrap(viewRef.current, "**")}><FaBold /></button>
-                    <button onClick={() => toggleWrap(viewRef.current, "*")}><FaItalic /></button>
-                    <button onClick={() => toggleWrap(viewRef.current, "`")}><FaCode /></button>
-                    <button onClick={() => insertOrCycleHeading(viewRef.current)}><FaHeading /></button>
-                    <button onClick={() => insertQuote(viewRef.current)}><FaQuoteRight /></button>
-                    <button onClick={() => insertBullet(viewRef.current)}><FaListUl /></button>
-                    <button onClick={() => insertNumbered(viewRef.current)}><FaListOl /></button>
-                    <button onClick={() => insertLink(viewRef.current)}><FaLink /></button>
-                    <button onClick={() => insertImage(viewRef.current)}><FaImage /></button>
-                    <button onClick={() => insertInlineLaTeX(viewRef.current)}>$</button>
-                    <button onClick={() => insertBlockLaTeX(viewRef.current)}>$$</button>
-                    <button onClick={guideClick}><FaQuestionCircle /></button>
+                    <button {...getGeneralTooltipProps("Bold")} onClick={() => toggleWrap(viewRef.current, "**")}>
+                        <FaBold />
+                    </button>
+                    <button {...getGeneralTooltipProps("Italic")} onClick={() => toggleWrap(viewRef.current, "*")}>
+                        <FaItalic />
+                    </button>
+                    <button {...getGeneralTooltipProps("Inline Code")} onClick={() => toggleWrap(viewRef.current, "`")}>
+                        <FaCode />
+                    </button>
+                    <button {...getGeneralTooltipProps("Heading")} onClick={() => insertOrCycleHeading(viewRef.current)}>
+                        <FaHeading />
+                    </button>
+                    <button {...getGeneralTooltipProps("Blockquote")} onClick={() => insertQuote(viewRef.current)}>
+                        <FaQuoteRight />
+                    </button>
+                    <button {...getGeneralTooltipProps("Bulleted List")} onClick={() => insertBullet(viewRef.current)}>
+                        <FaListUl />
+                    </button>
+                    <button {...getGeneralTooltipProps("Numbered List")} onClick={() => insertNumbered(viewRef.current)}>
+                        <FaListOl />
+                    </button>
+                    <button {...getGeneralTooltipProps("Insert Link")} onClick={() => insertLink(viewRef.current)}>
+                        <FaLink />
+                    </button>
+                    <button {...getGeneralTooltipProps("Insert Image")} onClick={() => insertImage(viewRef.current)}>
+                        <FaImage />
+                    </button>
+                    <button {...getGeneralTooltipProps("Inline Math (LaTeX)")} onClick={() => insertInlineLaTeX(viewRef.current)}>
+                        $
+                    </button>
+                    <button {...getGeneralTooltipProps("Math Block (LaTeX)")} onClick={() => insertBlockLaTeX(viewRef.current)}>
+                        $$
+                    </button>
+                    <button {...getGeneralTooltipProps("Markdown Guide")} onClick={guideClick}>
+                        <FaQuestionCircle />
+                    </button>
                 </div>
             }
 

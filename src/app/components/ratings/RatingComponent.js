@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import StatsRadarChart from "./RadarChart";
 import { useData } from "../DataProvider";
-import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import Slider from "../objects/Slider";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
@@ -11,27 +10,26 @@ import { deleteReview, getOverallScore, getReviewScores, submitReview } from "@/
 import { triggerReviewSubmitGAEvent } from "@/app/lib/gaEvents";
 import { egoCriteria, identityCriteria } from "@/app/lib/ratings";
 
-export default function RatingComponent({ type, id, globalData, userData, onChange, showReviewsButton }) {
+export default function RatingComponent({ type, id, globalData, userData, onChange, showReviewsButton, reviewText, setReviewText, isReviewing, setIsReviewing }) {
     const [identities] = useData("identities_mini", "type" === "identity");
     const [egos] = useData("egos_mini", "type" === "ego");
     const { user } = useAuth();
     const [rating, setRating] = useState(null);
-    const [review, setReview] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     const criteria = type === "identity" ? identityCriteria : egoCriteria;
-    const label = type === "identity" ? "identity" : "E.G.O";
 
     const rateButton =
         user ?
             <button onClick={() => {
                 if (userData) {
                     setRating(userData.rating ?? getReviewScores(userData));
-                    setReview(userData.review_text ?? "");
+                    setReviewText(userData.review_text ?? "");
                 } else {
                     setRating(Array.from({ length: 5 }, () => 0))
-                    setReview("");
+                    setReviewText("");
                 }
+                setIsReviewing(true);
             }}>
                 {userData ? "Edit Rating" : "Create Rating"}
             </button> :
@@ -48,13 +46,14 @@ export default function RatingComponent({ type, id, globalData, userData, onChan
             criteria3: rating[2],
             criteria4: rating[3],
             criteria5: rating[4],
-            reviewText: review?.trim() || null,
+            reviewText: reviewText ?? review?.trim() ?? null,
         });
 
         triggerReviewSubmitGAEvent(id, (type === "identity" ? identities?.[id]?.name : egos?.[id]?.name) ?? "");
         if(onChange) onChange(result);
         setRating(null);
-        setReview("");
+        setReviewText("");
+        setIsReviewing(false);
         setSubmitting(false);
     }
 
@@ -68,7 +67,7 @@ export default function RatingComponent({ type, id, globalData, userData, onChan
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", maxWidth: "100%" }}>
         {globalData ?
             <StatsRadarChart type={type} globalData={globalData.rating} userData={rating ?? userData?.rating ?? getReviewScores(userData)} /> :
-            <span>No ratings yet. Be the first to rate this {label}!</span>
+            <span>No ratings yet. Be the first to rate this {type === "identity" ? "identity" : "E.G.O"}!</span>
         }
         {
             rating ?
@@ -88,17 +87,8 @@ export default function RatingComponent({ type, id, globalData, userData, onChan
                             </React.Fragment>)
                         }
                     </div>
-                    <span>Consider leaving a review</span>
-                    <div style={{ width: "100%" }}>
-                        <MarkdownEditorWrapper
-                            value={review}
-                            onChange={v => setReview(v)}
-                            placeholder={`Review for this ${label} (optional)...`}
-                            mini={true} short={true}
-                        />
-                    </div>
                     <div>
-                        <button onClick={() => { setRating(null); setReview(""); }} disabled={submitting}>Cancel</button>
+                        <button onClick={() => { setRating(null); setReviewText(""); setIsReviewing(false); }} disabled={submitting}>Cancel</button>
                         <button onClick={() => submitRating(rating)} disabled={submitting}>Submit Rating</button>
                     </div>
                 </> :

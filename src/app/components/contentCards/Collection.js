@@ -28,7 +28,7 @@ export default function Collection({ collection, complete = true }) {
         <NoPrefetchLink href={`/collections/${collection.id}`} className={styles.collectionLink} />
 
         <div className={styles.collectionContent}>
-            <h3 style={{ margin: 0 }}>{collection.title}</h3>
+            <div style={{ fontSize: "1.2rem", fontWeight: "bold", margin: 0 }}>{collection.title}</div>
             {hoverWrap(<UsernameWithTime data={collection} scale={.8} includeUpdatedAt={false} />)}
             <div style={{ color: "#aaa", fontSize: "0.9rem", alignSelf: "start", textAlign: "start" }}>
                 {collection.short_desc}

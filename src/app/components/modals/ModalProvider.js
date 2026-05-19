@@ -60,7 +60,7 @@ export function ModalProvider({ children }) {
     }, [stack.length]);
 
     const openModal = (type, props = {}) => {
-        setStack(prev => [...prev, { type, props }]);
+        setStack(prev => [...prev, { modalId: stack.length, type, props, beforeClose: null }]);
     }
 
     const openGiftModal = ({ gift, enhanceRank }) => {
@@ -107,6 +107,16 @@ export function ModalProvider({ children }) {
         openModal("rating", { type, id, getCommunityReviews, getUserReviews, onChange });
     }
 
+    const setModalBeforeClose = (id, beforeClose) => {
+        setStack(prev =>
+            prev.map(entry =>
+                entry.modalId === id
+                    ? { ...entry, beforeClose }
+                    : entry
+            )
+        );
+    };
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
@@ -127,6 +137,7 @@ export function ModalProvider({ children }) {
         openChoiceEventModal,
         openSetFavoriteLinksModal,
         openRatingModal,
+        setModalBeforeClose,
         closeModal,
         clearModals
     }
@@ -137,8 +148,8 @@ export function ModalProvider({ children }) {
         {stack.map((entry, index) => {
             const ModalComponent = MODAL_COMPONENTS[entry.type];
 
-            return <ModalContainer key={index} isOpen={true} onClose={closeModal} index={index}>
-                <ModalComponent {...entry.props} onClose={closeModal} />
+            return <ModalContainer key={index} isOpen={true} onClose={closeModal} beforeClose={entry.beforeClose} index={index}>
+                <ModalComponent modalId={entry.modalId} {...entry.props} onClose={closeModal} />
             </ModalContainer>
         })}
     </ModalContext.Provider>;

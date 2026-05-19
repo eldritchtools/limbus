@@ -18,6 +18,26 @@
   border-color: #a03030;
 }
 
+.discordButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  background-color: #5865F2;
+  color: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #404EED;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.discordButton:hover {
+  background-color: #6b78ff;
+  border-color: #5a67ff;
+}
+
 .signupButton {
   background: none;
   border: none;
