@@ -31,3 +31,17 @@ export async function updateUser(userId, flair, description, socials) {
         return data;
     });
 }
+
+export async function updateUserAvatar(userId, avatarId) {
+    const update = { avatar_id: avatarId };
+
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("users")
+            .update(update)
+            .eq("id", userId)
+
+        if (error) throw error;
+        return data;
+    });
+}

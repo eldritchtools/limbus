@@ -105,7 +105,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
         <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.2", marginBottom: "0.25rem" }}>
             {skill.desc ?
                 (diff > 0 ?
-                    <DiffedText before={pre.desc.split("\n")} after={skill.desc.split("\n")} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} /> :
+                    <DiffedText before={pre.desc?.split("\n") ?? []} after={skill.desc.split("\n")} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} /> :
                     <ProcessedText text={skill.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
                 ) :
                 null

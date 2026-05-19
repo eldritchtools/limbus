@@ -5,6 +5,7 @@ CREATE TABLE public.users (
   description TEXT DEFAULT NULL,
   is_admin BOOLEAN DEFAULT FALSE,
   socials JSONB DEFAULT '[]',
+  avatar_id TEXT DEFAULT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
