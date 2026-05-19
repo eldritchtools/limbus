@@ -43,6 +43,7 @@ export default function PrivacyPage() {
                 <li><strong>Google Analytics</strong> – website usage analytics</li>
                 <li><strong>Discord OAuth</strong> – authentication</li>
                 <li><strong>Cloudflare</strong> – security, caching, and traffic protection</li>
+                <li><strong>Resend</strong> – automated emails</li>
             </ul>
 
             <p>

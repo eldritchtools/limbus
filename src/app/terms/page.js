@@ -49,6 +49,7 @@ export default function TermsPage() {
                 <li>Supabase for user authentication and data storage</li>
                 <li>Discord OAuth for authentication</li>
                 <li>Cloudflare for security and traffic protection</li>
+                <li>Resend for automated emails</li>
             </ul>
 
             <h2>Disclaimer</h2>
