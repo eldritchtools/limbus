@@ -1,5 +1,6 @@
 import KeywordIcon from "../components/icons/KeywordIcon";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
+import DragContainer from "../components/objects/DragContainer";
 import { uiColors } from "../lib/colors";
 import { threadLux } from "../lib/training";
 import { getNextDayOfWeek } from "../timers/timerFunc";
@@ -24,9 +25,9 @@ function EncountersComponent({ levels, type }) {
 export default function LuxTable() {
     const threadLevels = [...Object.keys(threadLux)];
 
-    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem", maxWidth: "100%" }}>
         <div className="title-text">Luxcavation Cheatsheet</div>
-        <div style={{ overflowX: "auto", maxWidth: "95vw" }}>
+        <DragContainer>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(100px, 1fr))", width: "max-content" }}>
                 <div />
                 {
@@ -87,10 +88,13 @@ export default function LuxTable() {
                     <CellTitle ids={["envy"]} title={"ENVY"} />
                 </div>
             </div>
-        </div>
+        </DragContainer>
 
         <div className="title-text">Encounter Links</div>
-        <div style={{ display: "flex", flexWrap: "wrap", alignSelf: "center", fontWeight: "bold", gap: "1rem" }}>
+        <div style={{
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, 250px)",
+            alignSelf: "center", fontWeight: "bold", gap: "10px", maxWidth: "min(100%, 1300px)"
+        }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <CellTitle ids={["slash"]} title={"SLASH"} />
                 <EncountersComponent levels={[8, 33, 48, 53, 58]} type={"slash"} />
@@ -111,8 +115,6 @@ export default function LuxTable() {
                 <CellTitle ids={["lust"]} title={"Lust"} />
                 <EncountersComponent levels={threadLevels} type={"lust"} />
             </div>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", alignSelf: "center", fontWeight: "bold", gap: "1rem" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <CellTitle ids={["sloth"]} title={"SLOTH"} />
                 <EncountersComponent levels={threadLevels} type={"sloth"} />
