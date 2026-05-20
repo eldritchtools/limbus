@@ -54,7 +54,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                     </div>
                     {build.title}
                 </h2>
-                <UsernameWithTime data={build} scale={.9} />
+                <UsernameWithTime data={build} scale={.9} avatarId={build.user_avatar_id} />
             </div>
 
             <BuildDisplay

@@ -85,7 +85,7 @@ export default function ContributeCollectionPage({ params }) {
             <h2 style={{ display: "flex", fontSize: "1.2rem", fontWeight: "bold", alignItems: "center" }}>
                 {collection.title}
             </h2>
-            <UsernameWithTime data={collection} scale={.9} includeUpdatedAt={true} />
+            <UsernameWithTime data={collection} scale={.9} includeUpdatedAt={true} avatarId={collection.user_avatar_id} />
         </div>
 
         <div style={{ height: "0.5rem" }} />

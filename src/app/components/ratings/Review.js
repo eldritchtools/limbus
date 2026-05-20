@@ -6,6 +6,7 @@ import ReactTimeAgo from "react-time-ago";
 import BumpArrow from "./BumpArrow";
 import StatsRadarChart from "./RadarChart";
 import { useData } from "../DataProvider";
+import Avatar from "../icons/Avatar";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
@@ -16,7 +17,7 @@ import Username from "../user/Username";
 import { getReviewScores } from "@/app/database/reviews";
 import { sinnerIdMapping } from "@/app/lib/constants";
 
-export default function Review({ type, reviewData, backReview, frontReview, usernameOverride, expanded }) {
+export default function Review({ type, reviewData, backReview, frontReview, usernameOverride, userAvatarIdOverride, expanded }) {
     const [identities, identitiesLoading] = useData("identities", reviewData.item_type === "identity");
     const [egos, egosLoading] = useData("egos", reviewData.item_type === "ego");
     const { isMobile } = useBreakpoint();
@@ -57,6 +58,7 @@ export default function Review({ type, reviewData, backReview, frontReview, user
     if (frontReview) dataProp.userData = getReviewScores(frontReview);
 
     const username = useMemo(() => usernameOverride ?? reviewData.user?.username, [usernameOverride, reviewData]);
+    const avatarId = useMemo(() => userAvatarIdOverride ?? reviewData.user?.avatar_id, [userAvatarIdOverride, reviewData]);
 
     const goToRanking = () => {
         const params = new URLSearchParams();
@@ -81,8 +83,9 @@ export default function Review({ type, reviewData, backReview, frontReview, user
                 </div>
             }
             <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.25rem", textWrap: "wrap" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.2rem", textWrap: "wrap" }}>
                     <span>by </span>
+                    <Avatar avatarId={avatarId} size={24} style={{ display: "inline" }} />
                     <Username username={username} data={reviewData} />
                     <span> • </span>
                     <ReactTimeAgo date={reviewData.updated_at} locale="en-US" timeStyle="mini" />

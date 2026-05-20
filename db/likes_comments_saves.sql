@@ -157,7 +157,7 @@ AFTER DELETE ON public.md_plans
 FOR EACH ROW
 EXECUTE FUNCTION public.cleanup_target_rows('md_plan');
 
-CREATE OR REPLACE FUNCTION public.get_target_comments_v1(
+CREATE OR REPLACE FUNCTION public.get_target_comments_v2(
   p_target_id UUID,
   p_target_type target_type_enum,
   p_limit INT DEFAULT 20,
@@ -168,12 +168,14 @@ RETURNS TABLE(
   user_id UUID,
   username TEXT,
   user_flair TEXT,
+  user_avatar_id TEXT,
   body TEXT,
   created_at TIMESTAMPTZ,
   edited BOOLEAN,
   parent_body TEXT,
   parent_author TEXT,
   parent_flair TEXT,
+  parent_avatar_id TEXT,
   parent_deleted BOOLEAN
 )
 LANGUAGE sql
@@ -184,12 +186,14 @@ AS $$
     c.user_id,
     u.username,
     u.flair,
+    u.avatar_id,
     c.body,
     c.created_at,
     c.edited,
     p.body AS parent_body,
     pu.username AS parent_author,
     pu.flair AS parent_flair,
+    pu.avatar_id AS parent_avatar_id,
     p.deleted AS parent_deleted
   FROM public.comments AS c
   JOIN public.users AS u ON c.user_id = u.id

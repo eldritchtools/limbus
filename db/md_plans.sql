@@ -125,7 +125,7 @@ with check (
   )
 );
 
-create or replace function public.search_md_plans_v4(
+create or replace function public.search_md_plans_v5(
   p_query text default null,
   plan_id_filter uuid[] default null,
   username_exact_filter text default null,
@@ -142,6 +142,7 @@ returns table (
   user_id uuid,
   username text,
   user_flair text,
+  user_avatar_id text,
   title text,
   body text,
   difficulty text,
@@ -186,6 +187,7 @@ begin
       p.user_id,
       u.username,
       u.flair,
+      u.avatar_id,
       p.title,
       p.body,
       p.difficulty,
@@ -247,6 +249,7 @@ begin
     p.user_id,
     p.username,
     p.flair AS user_flair,
+    p.avatar_id AS user_avatar_id,
     p.title,
     p.body,
     p.difficulty,
@@ -270,6 +273,7 @@ begin
     p.user_id,
     p.username,
     p.flair,
+    p.avatar_id,
     p.title,
     p.body,
     p.difficulty,
@@ -547,7 +551,7 @@ begin
 end;
 $$;
 
-create or replace function public.get_md_plan_v3(
+create or replace function public.get_md_plan_v4(
   p_plan_id uuid
 )
 returns jsonb
@@ -570,6 +574,7 @@ begin
       p.*,
       u.username,
       u.flair,
+      u.avatar_id,
       u.socials,
       pc.user_id AS pinned_user_id,
       pc.body AS pinned_body,
@@ -577,6 +582,7 @@ begin
       pc.edited AS pinned_edited,
       pu.username AS pinned_username,
       pu.flair AS pinned_user_flair,
+      pu.avatar_id AS pinned_user_avatar_id,
       pp.body AS parent_body,
       ppu.username AS parent_author,
       ppu.flair AS parent_flair,
@@ -598,7 +604,7 @@ begin
         ORDER BY pb.position
       ) AS builds
     FROM public.md_plan_builds pb
-    JOIN public.search_builds_v9(
+    JOIN public.search_builds_v11(
       build_id_filter := ARRAY(
         SELECT build_id
         FROM public.md_plan_builds
@@ -635,6 +641,7 @@ begin
     'user_id', p.user_id,
     'username', p.username,
     'user_flair', p.flair,
+    'user_avatar_id', p.avatar_id,
     'user_socials', p.socials,
     'title', p.title,
     'body', p.body,
@@ -670,6 +677,7 @@ begin
         'user_id', p.pinned_user_id,
         'username', p.pinned_username,
         'user_flair', p.pinned_user_flair,
+        'user_avatar_id', p.pinned_user_avatar_id,
         'body', p.pinned_body,
         'created_at', p.pinned_created_at,
         'edited', p.pinned_edited,
@@ -692,7 +700,7 @@ begin
 end;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_saved_md_plans_v3(
+CREATE OR REPLACE FUNCTION public.get_saved_md_plans_v4(
   p_user_id UUID,
   p_sort_by text DEFAULT NULL,
   p_limit int DEFAULT 20,
@@ -703,6 +711,7 @@ returns table (
   user_id uuid,
   username text,
   user_flair text,
+  user_avatar_id text,
   title text,
   body text,
   difficulty text,
@@ -739,7 +748,7 @@ BEGIN
   -- call search_md_plans with the filter
   RETURN QUERY
     SELECT *
-    FROM public.search_md_plans_v3(
+    FROM public.search_md_plans_v5(
       p_query := NULL,
       plan_id_filter := saved_ids,
       username_exact_filter := NULL,

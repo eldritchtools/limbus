@@ -39,15 +39,15 @@ const createParams = {
 };
 
 export async function getPopularBuilds(page = 1, pageSize = null) {
-    return callRPC("get_popular_builds_v5", paginateParams({}, page, pageSize ?? contentConfig.builds.defaultPageSize));
+    return callRPC("get_popular_builds_v6", paginateParams({}, page, pageSize ?? contentConfig.builds.defaultPageSize));
 }
 
 export async function searchBuilds(params, page = 1, pageSize = null) {
-    return callRPC("search_builds_v10", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.builds.defaultPageSize));
+    return callRPC("search_builds_v11", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.builds.defaultPageSize));
 }
 
 export async function getBuild(id, forEdit = false) {
-    return callRPC("get_build_v5", { p_build_id: id, p_for_edit: forEdit });
+    return callRPC("get_build_v6", { p_build_id: id, p_for_edit: forEdit });
 }
 
 export async function insertBuild(params) {
@@ -72,5 +72,5 @@ export async function unpinBuildComment(buildId) {
 }
 
 export async function getSavedBuilds(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_builds_v4", paginateParams({p_user_id: user_id}, page, pageSize ?? contentConfig.builds.defaultPageSize))
+    return callRPC("get_saved_builds_v5", paginateParams({p_user_id: user_id}, page, pageSize ?? contentConfig.builds.defaultPageSize))
 }

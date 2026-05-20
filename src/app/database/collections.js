@@ -26,11 +26,11 @@ const createParams = {
 };
 
 export async function searchCollections(params, page = 1, pageSize = null) {
-    return callRPC("search_collections_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.collections.defaultPageSize));
+    return callRPC("search_collections_v5", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.collections.defaultPageSize));
 }
 
 export async function getCollection(id) {
-    return callRPC("get_collection_v3", { p_collection_id: id })
+    return callRPC("get_collection_v4", { p_collection_id: id })
 }
 
 export async function insertCollection(params) {
@@ -55,7 +55,7 @@ export async function unpinCollectionComment(collectionId) {
 }
 
 export async function getSavedCollections(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_collections", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.collections.defaultPageSize));
+    return callRPC("get_saved_collections_v2", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.collections.defaultPageSize));
 }
 
 export async function submitCollectionContribution(user_id, collection_id, target_type, target_id, note, submitter_note) {
@@ -83,7 +83,7 @@ export async function submitCollectionContribution(user_id, collection_id, targe
 }
 
 export async function getCollectionSubmissions(id) {
-    return callRPC("get_collection_submissions_v2", { p_collection_id: id });
+    return callRPC("get_collection_submissions_v3", { p_collection_id: id });
 }
 
 export async function approveCollectionSubmission(id, note) {

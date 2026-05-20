@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import Avatar from "../icons/Avatar";
 import { useModal } from "../modals/ModalProvider";
 import Username from "../user/Username";
 import UsernameWithTime from "../user/UsernameWithTime";
@@ -92,7 +93,11 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
                             </div>
                         </div> :
                         <div style={{ display: "flex", flexDirection: "column", textAlign: "start", gap: "0.25rem" }}>
-                            <span style={{ fontSize: "0.8rem" }}>Replying to <Username username={comment.parent_author} flair={comment.parent_flair} /></span>
+                            <span style={{ display: "flex", fontSize: "0.8rem", alignItems: "center", gap: "0.2rem" }}>
+                                Replying to 
+                                <Avatar avatarId={comment.parent_avatar_id} size={24} style={{display: "inline"}} />
+                                <Username username={comment.parent_author} flair={comment.parent_flair} />
+                            </span>
                             <div style={{ border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem", padding: "0.25rem", paddingLeft: "0.5rem" }}>
                                 <MarkdownRenderer content={comment.parent_body} />
                             </div>
@@ -104,7 +109,9 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
                 <CommentInput targetType={targetType} targetId={targetId} initialValue={comment.body} parentId={comment.parent_id}
                     editId={comment.id} onEdit={(body) => { setEditing(false); onEdit(comment.id, body); }} onCancel={() => setEditing(false)} /> :
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                    <div style={{ fontSize: "0.8rem" }}><UsernameWithTime data={comment} scale={.8} includeUpdatedAt={false} /> {comment.edited ? `(edited)` : null}</div>
+                    <div style={{ fontSize: "0.8rem" }}>
+                        <UsernameWithTime data={comment} scale={.8} includeUpdatedAt={false} avatarId={comment.user_avatar_id} /> {comment.edited ? `(edited)` : null}
+                    </div>
                     <MarkdownRenderer content={comment.body} />
 
                     <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
