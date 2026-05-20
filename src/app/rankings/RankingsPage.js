@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import RankingDisplay from "./RankingDisplay";
 import { rankingsFilter } from "./rankingsFilter";
 import { useData } from "../components/DataProvider";
+import Avatar from "../components/icons/Avatar";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -139,8 +140,8 @@ function ReviewerDisplay({
 
     const reviewersMapping = useMemo(() => {
         const mapping = {};
-        topReviewers.forEach(reviewer => {mapping[reviewer.username] = reviewer.user_id});
-        otherReviewers.forEach(reviewer => {mapping[reviewer.username] = reviewer.user_id});
+        topReviewers.forEach(reviewer => { mapping[reviewer.username] = { id: reviewer.user_id, avatarId: reviewer.avatar_id } });
+        otherReviewers.forEach(reviewer => { mapping[reviewer.username] = { id: reviewer.user_id, avatarId: reviewer.avatar_id } });
         return mapping;
     }, [topReviewers, otherReviewers]);
 
@@ -164,11 +165,11 @@ function ReviewerDisplay({
         setUserInput(username);
 
         const loadReviews = async () => {
-            let userId = reviewersMapping[username];
+            let userId = reviewersMapping[username]?.id;
             if (!userId) {
-                const fetched = await getUserDataFromUsername(username, "id");
-                if(fetched) {
-                    setOtherReviewers(p => ([...p, {user_id: fetched.id, username: username}]));
+                const fetched = await getUserDataFromUsername(username, "id, avatar_id");
+                if (fetched) {
+                    setOtherReviewers(p => ([...p, { user_id: fetched.id, username: username, avatar_id: fetched.avatar_id }]));
                     userId = fetched.id;
                     setUserInput(username);
                     setMessage("");
@@ -190,7 +191,7 @@ function ReviewerDisplay({
         }
 
         loadReviews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [username, router]);
 
     const setSelectedUser = async (username) => {
@@ -201,7 +202,7 @@ function ReviewerDisplay({
         router.push(`/rankings?${params.toString()}`, { scroll: false });
     }
 
-    const selectedId = useMemo(() => reviewersMapping[username], [reviewersMapping, username]);
+    const selectedId = useMemo(() => reviewersMapping[username]?.id, [reviewersMapping, username]);
 
     const items = useMemo(() => {
         return rankingsFilter({
@@ -238,7 +239,10 @@ function ReviewerDisplay({
         return <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
                 <button onClick={() => { setSelectedUser(null); setSelectedReview(null); }}>Go Back</button>
-                <h2 className="title-text">{username}&apos;s Ranking</h2>
+                <h2 className="title-text" style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                    <Avatar avatarId={reviewersMapping[username].avatarId} size={32} />
+                    {username}&apos;s Ranking
+                </h2>
             </div>
             {user && selectedId === user.id &&
                 <span className="sub-text" style={{ textAlign: "center" }}>
@@ -284,10 +288,12 @@ function ReviewerDisplay({
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "0.5rem", width: "min(1300px, 100%)" }}>
             {topReviewers.map(reviewer =>
                 <div key={reviewer.user_id} className="text-link"
+                    style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
                     onClick={() => {
                         setSelectedUser(reviewer.username);
                         setLoading(true);
                     }}>
+                    <Avatar avatarId={reviewer.avatar_id} size={24} />
                     {reviewer.username}
                 </div>
             )}
