@@ -1,3 +1,5 @@
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
+
 import { deploymentColors } from "@/app/lib/colors";
 
 const deploymentComponentStyle = {
@@ -18,17 +20,19 @@ const innerStyle = {
     fontSize: "clamp(0.6rem, 15cqw, 1.5rem)"
 }
 
+const generalProps = getGeneralTooltipProps("Try the Easy Deployment Menu if you need to rearrange sinners.")
+
 export default function DeploymentComponent({ depType, depIndex, setOrder, sinnerId }) {
     if (depType === "none") {
         if (setOrder)
-            return <button onClick={() => setOrder(p => [...p, sinnerId])} style={deploymentComponentStyle}>
+            return <button onClick={() => setOrder(p => [...p, sinnerId])} style={deploymentComponentStyle} {...generalProps}>
                 <span style={innerStyle}>Deploy</span>
             </button>;
         else
             return <div style={deploymentComponentStyle} />;
     } else if (depType === "active") {
         if (setOrder)
-            return <button onClick={() => setOrder(p => p.filter(x => x !== sinnerId))} style={deploymentComponentStyle}>
+            return <button onClick={() => setOrder(p => p.filter(x => x !== sinnerId))} style={deploymentComponentStyle} {...generalProps}>
                 <span style={{ ...innerStyle, color: deploymentColors.active }}>Active {depIndex}</span>
             </button>;
         else
@@ -37,7 +41,7 @@ export default function DeploymentComponent({ depType, depIndex, setOrder, sinne
             </div>;
     } else if (depType === "backup") {
         if (setOrder)
-            return <button onClick={() => setOrder(p => p.filter(x => x !== sinnerId))} style={deploymentComponentStyle}>
+            return <button onClick={() => setOrder(p => p.filter(x => x !== sinnerId))} style={deploymentComponentStyle} {...generalProps}>
                 <span style={{ ...innerStyle, color: deploymentColors.backup }}>Backup {depIndex}</span>
             </button>;
         else

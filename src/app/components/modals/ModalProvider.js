@@ -10,6 +10,7 @@ import GiftModalContent from "./GiftModalContent";
 import ModalContainer from "./ModalContainer";
 import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
+import SelectDeploymentModalContent from "./SelectDeploymentModalContent";
 import SelectGiftModalContent from "./SelectGiftModalContent";
 import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
 import SelectThemePackModalContent from "./SelectThemePackModalContent";
@@ -29,7 +30,8 @@ const MODAL_COMPONENTS = {
     "updateHistory": UpdateHistoryModalContent,
     "choiceEvent": ChoiceEventModalContent,
     "setFavoriteLinks": SetFavoriteLinksModalContent,
-    "rating": RatingModalContent
+    "rating": RatingModalContent,
+    "selectDeployment": SelectDeploymentModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -107,6 +109,10 @@ export function ModalProvider({ children }) {
         openModal("rating", { type, id, getCommunityReviews, getUserReviews, onChange });
     }
 
+    const openSelectDeploymentModal = ({ initialActive, identityIds, activeSinners, onSave }) => {
+        openModal("selectDeployment", { initialActive, identityIds, activeSinners, onSave });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -137,6 +143,7 @@ export function ModalProvider({ children }) {
         openChoiceEventModal,
         openSetFavoriteLinksModal,
         openRatingModal,
+        openSelectDeploymentModal,
         setModalBeforeClose,
         closeModal,
         clearModals
