@@ -9,6 +9,7 @@ import CommentButton from "../contentActions/CommentButton";
 import LikeButton from "../contentActions/LikeButton";
 import SaveButton from "../contentActions/SaveButton";
 import HoverBlocker from "../HoverBlocker";
+import Avatar from "../icons/Avatar";
 import KeywordIcon from "../icons/KeywordIcon";
 import NoPrefetchLink from "../NoPrefetchLink";
 import Tag from "../objects/Tag";
@@ -57,8 +58,14 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
             null
         }
 
+        {build.user_avatar_id &&
+            <div className={styles.teamBuildAvatar}>
+                <Avatar avatarId={build.user_avatar_id} size={32}/>
+            </div>
+        }
+
         <div className={styles.teamBuildContent}>
-            <div className={styles.teamBuildTitleContainer}>
+            <div className={styles.teamBuildTitleContainer} style={{maxWidth: build.user_avatar_id ? "calc(100% - 32px)" : "100%"}}>
                 <div className={styles.teamBuildTitle}>{build.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>

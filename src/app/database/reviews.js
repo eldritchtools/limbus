@@ -88,7 +88,7 @@ export async function getItemReviews({ itemType, itemId, page = 1, pageSize = de
     return await withRetry(async () => {
         let query = getSupabase()
             .from("reviews")
-            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, last_bumped_at, bump_count, user:users ( username )`)
+            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, last_bumped_at, bump_count, user:users ( username, avatar_id )`)
             .eq("item_type", itemType)
             .eq("item_id", itemId)
             .not("review_text", "is", null)
@@ -184,7 +184,7 @@ export async function bumpReview(reviewId) {
 export async function getPopularReviewers() {
     return await withRetry(async () => {
         const { data, error } = await getSupabase()
-            .from("user_review_stats")
+            .from("user_review_stats_v2")
             .select("*")
             .order("total_bumps", { ascending: false })
             .limit(50)

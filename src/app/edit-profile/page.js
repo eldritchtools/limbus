@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
+import { AvatarUploader } from "./AvatarUploader";
 import MarkdownEditorWrapper from "../components/markdown/MarkdownEditorWrapper";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import DropdownButton from "../components/objects/DropdownButton";
@@ -54,6 +55,7 @@ export default function EditProfilePage() {
     const [flair, setFlair] = useState("");
     const [socials, setSocials] = useState([]);
     const [description, setDescription] = useState("");
+    const [avatarId, setAvatarId] = useState(null);
     const [profileLoading, setProfileLoading] = useState(true);
     const [profileError, setProfileError] = useState(null);
     const [updating, setUpdating] = useState(false);
@@ -64,6 +66,7 @@ export default function EditProfilePage() {
             setFlair(profile.flair ?? "");
             setDescription(profile.description ?? "");
             setSocials(profile.socials ?? []);
+            setAvatarId(profile.avatar_id);
             setProfileLoading(false);
         }
     }, [profile]);
@@ -151,12 +154,15 @@ export default function EditProfilePage() {
                         View your profile <NoPrefetchLink className="text-link" href={`profiles/${profile.username}`}>here</NoPrefetchLink>.
                     </div>
                     <h4 style={headerStyle}>Username</h4>
-                    <span className="sub-text">Name to display across the site. This must be updated separately from the rest of the profile.</span>
-                    <div><input value={username} onChange={e => setUsername(e.target.value)} /></div>
+                    <span className="sub-text">Name to display across the site. This is updated separately from the rest of the profile.</span>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <input value={username} onChange={e => setUsername(e.target.value)} />
                         <button onClick={handleUpdateUsername} disabled={updating}>Update Username</button>
                         {usernameError}
                     </div>
+                    <h4 style={headerStyle}>Profile Picture</h4>
+                    <span className="sub-text">Picture to display across the site. Uploads are limited to 5MB. This is updated separately from the rest of the profile.</span>
+                    <AvatarUploader userId={user.id} avatarId={avatarId} onUpdated={setAvatarId} />
                     <h4 style={headerStyle}>Flair</h4>
                     <span className="sub-text">Add a flair to display beside or below your username.</span>
                     <div><input value={flair} onChange={e => setFlair(e.target.value)} /></div>

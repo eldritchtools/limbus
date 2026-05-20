@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 
 import styles from "./UserStatus.module.css";
+import Avatar from "../icons/Avatar";
 import NoPrefetchLink from "../NoPrefetchLink";
 import Notification from "../objects/Notification";
 
@@ -41,7 +42,7 @@ function UserStatus() {
         };
 
         refreshNotifications();
-        
+
         const onFocus = () => refreshNotifications();
 
         window.addEventListener("focus", onFocus);
@@ -57,7 +58,10 @@ function UserStatus() {
         </div> :
         <div style={{ padding: "0.5rem", paddingLeft: "1rem", borderBottom: "1px #444 solid", fontSize: "0.875rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                Welcome, {profile ? profile.username : "Guest"}!
+                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                    <Avatar avatarId={profile?.avatar_id} size={32} style={{ display: "inline" }} />
+                    Welcome, {profile ? profile.username : "Guest"}!
+                </div>
                 {user ?
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "end" }}>
                         <div style={{ position: "relative" }} ref={popoverRef}>

@@ -9,6 +9,7 @@ import CommentButton from "../contentActions/CommentButton";
 import LikeButton from "../contentActions/LikeButton";
 import SaveButton from "../contentActions/SaveButton";
 import HoverBlocker from "../HoverBlocker";
+import Avatar from "../icons/Avatar";
 import EgoIcon from "../icons/EgoIcon";
 import Icon from "../icons/Icon";
 import IdentityIcon from "../icons/IdentityIcon";
@@ -83,7 +84,13 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 
         <div className={styles.mdPlanContent} style={{ width: width }}>
-            <div className={styles.mdPlanTitleContainer}>
+            {plan.user_avatar_id &&
+                <div className={styles.mdPlanAvatar}>
+                    <Avatar avatarId={plan.user_avatar_id} size={32}/>
+                </div>
+            }
+            
+            <div className={styles.mdPlanTitleContainer} style={{maxWidth: plan.user_avatar_id ? "calc(100% - 32px)" : "100%"}}>
                 <div className={styles.mdPlanTitle}>{plan.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>

@@ -208,7 +208,7 @@ export default function BuildEditingComponent({
             {!minimalEditor ?
                 <BuildDisplayMenuCard>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <span style={{ textAlign: "center" }}>Active Sinners</span>
+                        <span style={{ textAlign: "center" }}>Active<br/>Sinners</span>
                         <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
                     </div>
                     <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1rem" }}>Reset Deployment Order</button>

@@ -73,11 +73,12 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 
-CREATE OR REPLACE FUNCTION public.get_popular_builds_v5(p_limit INTEGER, p_offset INTEGER)
+CREATE OR REPLACE FUNCTION public.get_popular_builds_v6(p_limit INTEGER, p_offset INTEGER)
 RETURNS TABLE (
   id UUID,
   username TEXT,
   user_flair TEXT,
+  user_avatar_id TEXT,
   title TEXT,
   score NUMERIC,
   deployment_order INTEGER[],
@@ -98,6 +99,7 @@ BEGIN
     p.build_id,
     u.username,
     u.flair,
+    u.avatar_id,
     b.title,
     b.score,
     b.deployment_order,

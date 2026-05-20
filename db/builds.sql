@@ -67,7 +67,7 @@ ON public.builds
 FOR DELETE
 USING (auth.uid() = user_id);
 
-CREATE OR REPLACE FUNCTION public.search_builds_v10(
+CREATE OR REPLACE FUNCTION public.search_builds_v11(
   p_query TEXT DEFAULT NULL,
   build_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -101,6 +101,7 @@ RETURNS TABLE (
   is_published BOOLEAN,
   username TEXT,
   user_flair TEXT,
+  user_avatar_id TEXT,
   tags TEXT[],
   extra_opts TEXT,
   identity_ids INT[],
@@ -146,6 +147,7 @@ BEGIN
       b.is_published,
       u.username,
       u.flair,
+      u.avatar_id,
       b.extra_opts,
       b.identity_ids,
       b.keyword_ids,
@@ -247,6 +249,7 @@ BEGIN
     b.is_published,
     b.username,
     b.flair AS user_flair,
+    b.avatar_id AS user_avatar_id,
     COALESCE(bt.tags, ARRAY[]::TEXT[]) AS tags,
     b.extra_opts,
     b.identity_ids,
@@ -449,7 +452,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_build_v5(
+CREATE OR REPLACE FUNCTION public.get_build_v6(
   p_build_id UUID,
   p_for_edit BOOLEAN DEFAULT FALSE
 )
@@ -488,6 +491,7 @@ BEGIN
       'user_id', u.id,
       'username', u.username,
       'user_flair', u.flair,
+      'user_avatar_id', u.avatar_id,
       'title', b.title,
       'body', b.body,
       'deployment_order', b.deployment_order,
@@ -516,6 +520,7 @@ BEGIN
       'user_id', u.id,
       'username', u.username,
       'user_flair', u.flair,
+      'user_avatar_id', u.avatar_id,
       'user_socials', u.socials,
       'title', b.title,
       'body', b.body,
@@ -549,6 +554,7 @@ BEGIN
           'user_id', pc.user_id,
           'username', pu.username,
           'user_flair', pu.flair,
+          'user_avatar_id', pu.avatar_id,
           'body', pc.body,
           'created_at', pc.created_at,
           'edited', pc.edited,
@@ -569,14 +575,14 @@ BEGIN
     LEFT JOIN public.comments pp ON pp.id = pc.parent_id
     LEFT JOIN public.users ppu ON ppu.id = pp.user_id
     WHERE b.id = p_build_id
-    GROUP BY b.id, u.id, u.username, u.flair, pc.id, pu.username, pu.flair, pp.body, ppu.username, ppu.flair, pp.deleted;
+    GROUP BY b.id, u.id, u.username, u.flair, u.avatar_id, pc.id, pu.username, pu.flair, pu.avatar_id, pp.body, ppu.username, ppu.flair, pp.deleted;
   END IF;
 
   RETURN build_data;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION public.get_saved_builds_v4(
+CREATE OR REPLACE FUNCTION public.get_saved_builds_v5(
   p_user_id UUID,
   p_sort_by text DEFAULT NULL,
   p_limit INTEGER DEFAULT 20,
@@ -596,6 +602,7 @@ RETURNS TABLE (
   is_published BOOLEAN,
   username TEXT,
   user_flair TEXT,
+  user_avatar_id TEXT,
   tags TEXT[],
   extra_opts TEXT,
   identity_ids INT[],
@@ -620,7 +627,7 @@ BEGIN
 
   RETURN QUERY
     SELECT *
-    FROM public.search_builds_v9(
+    FROM public.search_builds_v11(
       build_id_filter := saved_ids,
       p_limit := p_limit,
       p_offset := p_offset,

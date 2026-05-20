@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import CompanyDisplay from "@/app/components/company/CompanyDisplay";
 import { useData } from "@/app/components/DataProvider";
+import Avatar from "@/app/components/icons/Avatar";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
@@ -28,6 +29,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
     const [altNames, altNamesLoading] = useData("alt_names");
     const [userId, setUserId] = useState(null);
     const [content, setContent] = useState([]);
+    const [avatarId, setAvatarId] = useState(null);
     const [reviews, setReviews] = useState(null);
     const [reviewSearch, setReviewSearch] = useState("");
     const [contentLoading, setContentLoading] = useState(false);
@@ -52,6 +54,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
                 setFlair(x.flair ?? "");
                 setDescription(x.description ?? "");
                 setSocials(x.socials ?? []);
+                setAvatarId(x.avatar_id ?? null);
             }
             else setUserExists(false);
             setCheckingUser(false);
@@ -187,7 +190,8 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
     return <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: isDesktop ? "90%" : "100%" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-                <h1 style={{ fontSize: "1.75rem", marginBottom: "0" }}>{parsedUsername}</h1>
+                <Avatar avatarId={avatarId} size={128} />
+                <h1 style={{ fontSize: "1.75rem", marginTop: "0", marginBottom: "0" }}>{parsedUsername}</h1>
                 <div><em>{flair}</em></div>
                 {socials.length > 0 ? <SocialsDisplay socials={socials} /> : null}
                 <div style={{ width: isDesktop ? "70%" : "90%" }}> <MarkdownRenderer content={description} /></div>

@@ -12,6 +12,7 @@ import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
 import ShareButton from "../contentActions/ShareButton";
 import { BackSolid, ViewSolid } from "../contentActions/Symbols";
+import Avatar from "../icons/Avatar";
 import { HorizontalDivider } from "../objects/Dividers";
 import Tag from "../objects/Tag";
 import SocialsDisplay from "../user/SocialsDisplay";
@@ -97,7 +98,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
                 </h2>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
-                        <UsernameWithTime data={content} scale={.9} />
+                        <UsernameWithTime data={content} scale={.9} avatarId={content.user_avatar_id} />
                     </div>
                     {sideComponent}
                 </div>

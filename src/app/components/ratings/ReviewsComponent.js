@@ -30,7 +30,7 @@ export default function ReviewsComponent({ type, id, sortType, userReview }) {
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
         {userReview?.review_text &&
-            <Review type={type} reviewData={userReview} backReview={userReview} usernameOverride={profile?.username} />
+            <Review type={type} reviewData={userReview} backReview={userReview} usernameOverride={profile?.username} userAvatarIdOverride={profile?.avatar_id} />
         }
         {user &&
             <span className="sub-text" style={{ textAlign: "center" }}>

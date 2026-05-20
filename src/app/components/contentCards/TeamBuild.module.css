@@ -35,6 +35,17 @@
     z-index: 5;
 }
 
+.teamBuildAvatar {
+    display: flex;
+    /* border: 1px var(--secondary-border-color) solid; */
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    z-index: 5;
+}
+
 .teamBuildContent {
     display: flex;
     flex-direction: column;

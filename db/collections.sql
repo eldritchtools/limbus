@@ -144,7 +144,7 @@ with check (
   )
 );
 
-create or replace function public.search_collections_v4(
+create or replace function public.search_collections_v5(
   p_query text default null,
   collection_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -161,6 +161,7 @@ returns table (
   user_id uuid,
   username TEXT,
   user_flair TEXT,
+  user_avatar_id TEXT,
   title text,
   short_desc text,
   submission_mode collection_submission_mode,
@@ -200,6 +201,7 @@ begin
       c.user_id,
       u.username,
       u.flair,
+      u.avatar_id,
       c.title,
       c.short_desc,
       c.submission_mode,
@@ -259,7 +261,7 @@ begin
 
   builds AS (
     SELECT *
-    FROM public.search_builds_v9(
+    FROM public.search_builds_v11(
       build_id_filter := ARRAY(SELECT abi.id FROM all_build_ids abi),
       p_limit := 1000,
       p_ignore_block_discovery := true
@@ -268,7 +270,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v3(
+    FROM public.search_md_plans_v5(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_limit := 1000,
       p_ignore_block_discovery := true
@@ -322,6 +324,7 @@ begin
     c.user_id,
     c.username,
     c.flair AS user_flair,
+    c.avatar_id AS user_avatar_id,
     c.title,
     c.short_desc,
     c.submission_mode,
@@ -341,6 +344,7 @@ begin
     c.user_id,
     c.username,
     c.flair,
+    c.avatar_id,
     c.title,
     c.short_desc,
     c.submission_mode,
@@ -550,7 +554,7 @@ begin
 end;
 $$;
 
-create or replace function public.get_collection_v3(
+create or replace function public.get_collection_v4(
   p_collection_id uuid
 )
 returns jsonb
@@ -573,6 +577,7 @@ begin
       c.user_id,
       u.username,
       u.flair,
+      u.avatar_id,
       u.socials,
       c.title,
       c.body,
@@ -594,6 +599,7 @@ begin
       pc.edited AS pinned_edited,
       pu.username AS pinned_username,
       pu.flair AS pinned_user_flair,
+      pu.avatar_id AS pinned_user_avatar_id,
       pp.body AS parent_body,
       ppu.username AS parent_author,
       ppu.flair AS parent_flair,
@@ -634,7 +640,7 @@ begin
 
   builds AS (
     SELECT *
-    FROM public.search_builds_v9(
+    FROM public.search_builds_v11(
       build_id_filter := ARRAY(SELECT abi.id FROM all_build_ids abi),
       p_published := true,
       p_limit := 1000,
@@ -644,7 +650,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v3(
+    FROM public.search_md_plans_v5(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_published := true,
       p_limit := 1000,
@@ -709,6 +715,7 @@ begin
     'user_id', c.user_id,
     'username', c.username,
     'user_flair', c.flair,
+    'user_avatar_id', c.avatar_id,
     'user_socials', c.socials,
     'title', c.title,
     'body', c.body,
@@ -735,6 +742,7 @@ begin
         'user_id', c.pinned_user_id,
         'username', c.pinned_username,
         'user_flair', c.pinned_user_flair,
+        'user_avatar_id', c.pinned_user_avatar_id,
         'body', c.pinned_body,
         'created_at', c.pinned_created_at,
         'edited', c.pinned_edited,
@@ -854,7 +862,7 @@ USING (
   )
 );
 
-CREATE OR REPLACE FUNCTION public.get_collection_submissions_v2(
+CREATE OR REPLACE FUNCTION public.get_collection_submissions_v3(
   p_collection_id uuid
 )
 RETURNS TABLE (
@@ -892,7 +900,7 @@ all_md_plan_ids AS (
 
 builds AS (
   SELECT *
-  FROM public.search_builds_v9(
+  FROM public.search_builds_v11(
     build_id_filter := ARRAY(SELECT abi.id FROM all_build_ids abi),
     p_published := TRUE,
     p_limit := 1000,
@@ -902,7 +910,7 @@ builds AS (
 
 md_plans AS (
   SELECT *
-  FROM public.search_md_plans_v3(
+  FROM public.search_md_plans_v5(
     plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
     p_published := TRUE,
     p_limit := 1000,
@@ -938,7 +946,8 @@ SELECT
   jsonb_build_object(
     'user_id', s.submitted_by,
     'username', su.username,
-    'flair', su.flair
+    'flair', su.flair,
+    'avatar_id', su.avatar_id
   ) AS submitter,
 
   ac.data
@@ -1199,7 +1208,7 @@ AFTER UPDATE OF status ON public.collection_submissions
 FOR EACH ROW
 EXECUTE FUNCTION handle_collection_submission_review_notifications();
 
-CREATE OR REPLACE FUNCTION public.get_saved_collections(
+CREATE OR REPLACE FUNCTION public.get_saved_collections_v2(
   p_user_id UUID,
   p_sort_by text DEFAULT NULL,
   p_limit int DEFAULT 20,
@@ -1210,6 +1219,7 @@ RETURNS TABLE (
   user_id uuid,
   username TEXT,
   user_flair TEXT,
+  user_avatar_id TEXT,
   title text,
   short_desc text,
   submission_mode collection_submission_mode,
@@ -1240,7 +1250,7 @@ BEGIN
   -- call search_collections with the filter
   RETURN QUERY
     SELECT *
-    FROM public.search_collections_v1(
+    FROM public.search_collections_v5(
       p_query := NULL,
       collection_id_filter := saved_ids,
       username_exact_filter := NULL,

@@ -12,6 +12,7 @@ import LikeButton from "../contentActions/LikeButton";
 import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
 import HoverBlocker from "../HoverBlocker";
+import Avatar from "../icons/Avatar";
 import DragContainer from "../objects/DragContainer";
 import Tag from "../objects/Tag";
 import UsernameWithTime from "../user/UsernameWithTime";
@@ -27,7 +28,13 @@ export default function Collection({ collection, complete = true }) {
     return <div className={`${styles.collection} ${!blockHover ? styles.canHover : null}`}>
         <NoPrefetchLink href={`/collections/${collection.id}`} className={styles.collectionLink} />
 
-        <div className={styles.collectionContent}>
+        <div className={styles.collectionContent} style={{maxWidth: collection.user_avatar_id ? "calc(100% - 32px)" : "100%"}}>
+            {collection.user_avatar_id &&
+                <div className={styles.collectionAvatar}>
+                    <Avatar avatarId={collection.user_avatar_id} size={32}/>
+                </div>
+            }
+
             <div style={{ fontSize: "1.2rem", fontWeight: "bold", margin: 0 }}>{collection.title}</div>
             {hoverWrap(<UsernameWithTime data={collection} scale={.8} includeUpdatedAt={false} />)}
             <div style={{ color: "#aaa", fontSize: "0.9rem", alignSelf: "start", textAlign: "start" }}>

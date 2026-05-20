@@ -22,6 +22,17 @@
     z-index: 3;
 }
 
+.mdPlanAvatar {
+    display: flex;
+    /* border: 1px var(--secondary-border-color) solid; */
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    z-index: 5;
+}
+
 .mdPlanContent {
     display: flex;
     flex-direction: column;

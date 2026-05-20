@@ -5,7 +5,7 @@ const DEFAULT_PAGE_SIZE = 20;
 
 export async function getComments(type, id, page = 1) {
     return callRPC(
-        "get_target_comments_v1",
+        "get_target_comments_v2",
         paginateParams({ p_target_id: id, p_target_type: type }, page, DEFAULT_PAGE_SIZE)
     );
 }

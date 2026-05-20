@@ -9,7 +9,9 @@ const DATA_ROOT =
     process.env.NODE_ENV === "development" ?
         "http://localhost:3000/api/local-data" :
         `https://limbus-assets.eldritchtools.com/data`;
+        
+const UPLOADS_ROOT = `https://limbus-uploads.eldritchtools.com`;
 
 const PUBLIC_ROOT = "https://limbus-assets.eldritchtools.com";
 
-export { ASSETS_ROOT, DATA_ROOT, PUBLIC_ROOT };
+export { ASSETS_ROOT, DATA_ROOT, PUBLIC_ROOT, UPLOADS_ROOT };

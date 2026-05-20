@@ -37,11 +37,11 @@ const createParams = {
 }
 
 export async function searchMdPlans(params, page, pageSize = null) {
-    return callRPC("search_md_plans_v4", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.md_plans.defaultPageSize));
+    return callRPC("search_md_plans_v5", paginateParams(convertParams(params, searchParams), page, pageSize ?? contentConfig.md_plans.defaultPageSize));
 }
 
 export async function getMdPlan(planId) {
-    return callRPC("get_md_plan_v3", { p_plan_id: planId });
+    return callRPC("get_md_plan_v4", { p_plan_id: planId });
 }
 
 export async function createMdPlan(params) {
@@ -66,5 +66,5 @@ export async function unpinMdPlanComment(planId) {
 }
 
 export async function getSavedMdPlans(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_md_plans_v3", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.md_plans.defaultPageSize));
+    return callRPC("get_saved_md_plans_v4", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.md_plans.defaultPageSize));
 }
