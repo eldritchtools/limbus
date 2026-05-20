@@ -53,17 +53,20 @@ function UserStatus() {
     }, [user]);
 
     return loading ?
-        <div style={{ padding: "0.5rem", paddingLeft: "1rem", borderBottom: "1px #444 solid", fontSize: "0.875rem" }}>
+        <div style={{ padding: "0.5rem", paddingLeft: "1rem", borderBottom: "1px var(--secondary-border-color) solid", fontSize: "0.875rem" }}>
             Loading user status...
         </div> :
-        <div style={{ padding: "0.5rem", paddingLeft: "1rem", borderBottom: "1px #444 solid", fontSize: "0.875rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ padding: "0.5rem", paddingLeft: "1rem", borderBottom: "1px var(--secondary-border-color) solid", fontSize: "0.875rem" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                     <Avatar avatarId={profile?.avatar_id} size={32} style={{ display: "inline" }} />
-                    Welcome, {profile ? profile.username : "Guest"}!
+                    <span style={{ overflowWrap: "break-word", wordWrap: "break-word", maxWidth: profile?.avatar_id ? "185px" : "215px" }}>
+                        {`Welcome, ${profile ? profile.username : "Guest"}!`}
+                    </span>
                 </div>
                 {user ?
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end" }}>
+                    <div style={{ display: "flex", alignItems: "end" }}>
+                        <button onClick={() => logout()} className={styles.logInOut} style={{flex: 1}}>Logout</button>
                         <div style={{ position: "relative" }} ref={popoverRef}>
                             <button onClick={() => setNotifsOpen(p => !p)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", fontSize: "1rem" }}>
                                 🔔
@@ -84,7 +87,6 @@ function UserStatus() {
                                     </div>
                                 </div> : null}
                         </div>
-                        <button onClick={() => logout()} className={styles.logInOut}>Logout</button>
                     </div> :
                     <button onClick={() => router.push("/login")} className={styles.logInOut}>Login</button>
                 }

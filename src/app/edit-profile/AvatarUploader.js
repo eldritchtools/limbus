@@ -3,9 +3,11 @@
 import { useRef, useState } from "react";
 
 import Avatar from "../components/icons/Avatar";
+import { useAuth } from "../database/authProvider";
 import { updateUserAvatar } from "../database/users";
 
 export function AvatarUploader({ userId, avatarId, onUpdated }) {
+    const { refreshProfile } = useAuth();
     const inputRef = useRef(null);
     const [loading, setLoading] = useState(false);
 
@@ -24,17 +26,30 @@ export function AvatarUploader({ userId, avatarId, onUpdated }) {
 
         if (data?.id) {
             await updateUserAvatar(userId, data.id);
+            refreshProfile();
             onUpdated(data.id);
         }
 
         setLoading(false);
     }
 
-    return <div style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
+    async function removeAvatar() {
+        setLoading(true);
+        await updateUserAvatar(userId, null);
+        refreshProfile();
+        onUpdated(null);
+        setLoading(false);
+    }
+
+    return <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
         <Avatar avatarId={avatarId} size={64} />
 
         <button onClick={() => inputRef.current?.click()} disabled={loading}>
-            {loading ? "Uploading..." : "Change avatar"}
+            Change avatar
+        </button>
+
+        <button onClick={removeAvatar} disabled={loading}>
+            Remove avatar
         </button>
 
         <input ref={inputRef} type="file" hidden accept="image/*"
