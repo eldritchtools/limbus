@@ -32,8 +32,9 @@ export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
                 value={teamCode}
                 readOnly={!editable}
                 style={{ width: "200px", height: "3.5rem", cursor: "pointer" }}
-                onClick={editable ? undefined : handleTeamCodeCopy}
+                onClick={editable ? null : handleTeamCodeCopy}
                 onChange={editable ? e => setTeamCode(e.target.value) : undefined}
+                onFocus={editable ? e => e.target.select() : null}
             />
             {copySuccess !== '' ?
                 <div className={styles.copyPopup}>
