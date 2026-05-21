@@ -132,7 +132,7 @@ export default function HomePage() {
                 <br /> <br />
                 Limbus Company Tools is a hub for sharing team builds and Mirror Dungeon plans. View an Identities and E.G.Os database complete with community ratings and reviews. Use calculators, planners, team randomizers, and other reference tools for the game.
                 <br /> <br />
-                Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize your experience.
+                Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to customize your profile or site experience.
             </p>
             <LinksMenu />
             <HomepageTimers />

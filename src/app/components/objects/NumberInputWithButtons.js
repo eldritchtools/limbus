@@ -7,12 +7,12 @@ function NumberInputWithButtons({ value, setValue, min = 1, max = 100, allowEmpt
     }}>
         {vertical ?
             <button
-                onClick={() => setValue(Math.min(max, (value ?? 0) + 1))}
+                onClick={() => setValue(_ => Math.min(max, (value ?? 0) + 1))}
             // style={{ marginLeft: "6px" }}
             >+</button> :
             <button
-                onClick={() => setValue(Math.max(min, (value ?? 0) - 1))}
-                style={{ marginRight: "6px" }}
+                onClick={() => setValue(_ => Math.max(min, (value ?? 0) - 1))}
+                style={{ marginRight: "2px" }}
             >−</button>
         }
         <NumberInput
@@ -25,12 +25,12 @@ function NumberInputWithButtons({ value, setValue, min = 1, max = 100, allowEmpt
         />
         {vertical ?
             <button
-                onClick={() => setValue(Math.max(min, (value ?? 0) - 1))}
+                onClick={() => setValue(_ => Math.max(min, (value ?? 0) - 1))}
                 // style={{ marginRight: "6px" }}
             >−</button> :
             <button
-                onClick={() => setValue(Math.min(max, (value ?? 0) + 1))}
-                style={{ marginLeft: "6px" }}
+                onClick={() => setValue(_ => Math.min(max, (value ?? 0) + 1))}
+                style={{ marginLeft: "2px" }}
             >+</button>
         }
     </div>;

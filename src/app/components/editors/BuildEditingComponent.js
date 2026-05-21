@@ -13,6 +13,7 @@ import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upc
 import RarityIcon from "../icons/RarityIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import EventRolls from "../mdPlans/EventRolls";
+import { useModal } from "../modals/ModalProvider";
 import NumberInputWithButtons from "../objects/NumberInputWithButtons";
 import AllIdEgoSelector from "../selectors/AllIdEgoSelector";
 import { EgoMenuSelector } from "../selectors/EgoSelectors";
@@ -39,6 +40,7 @@ export default function BuildEditingComponent({
     minimalEditor = false, replaceDeployment, insertPanel,
     defaultAdditionalToggle = false, includeEventRolls = false
 }) {
+    const { openSelectDeploymentModal } = useModal();
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
 
@@ -171,7 +173,7 @@ export default function BuildEditingComponent({
                     />
             )
         }
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", justifyContent: "center" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", justifyContent: "center" }}>
             {insertPanel ? insertPanel : null}
             {!minimalEditor ?
                 <BuildDisplayMenuCard>
@@ -207,11 +209,21 @@ export default function BuildEditingComponent({
             </BuildDisplayMenuCard>
             {!minimalEditor ?
                 <BuildDisplayMenuCard>
+                    <span>Deployment</span>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <span style={{ textAlign: "center" }}>Active<br/>Sinners</span>
+                        <span style={{ textAlign: "center" }}>Active<br />Sinners</span>
                         <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
                     </div>
-                    <button onClick={() => setDeploymentOrder([])} style={{ fontSize: "1rem" }}>Reset Deployment Order</button>
+                    <div>
+                        <button onClick={() => setDeploymentOrder(_ => [])}>Reset Order</button>
+                        <button onClick={
+                            () => openSelectDeploymentModal({
+                                initialActive: deploymentOrder, identityIds, activeSinners, onSave: setDeploymentOrder
+                            })
+                        }>
+                            Easy Menu
+                        </button>
+                    </div>
                 </BuildDisplayMenuCard> :
                 null
             }

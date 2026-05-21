@@ -59,6 +59,7 @@ export default function EditProfilePage() {
     const [profileLoading, setProfileLoading] = useState(true);
     const [profileError, setProfileError] = useState(null);
     const [updating, setUpdating] = useState(false);
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         if (profile) {
@@ -101,7 +102,7 @@ export default function EditProfilePage() {
         }
 
         refreshProfile();
-        window.location.reload();
+        setUpdating(false);
     };
 
     const handleUpdateProfile = async () => {
@@ -133,9 +134,9 @@ export default function EditProfilePage() {
         setUpdating(true);
         await updateUser(user.id, flair.trim(), description, socials);
         setUpdating(false);
+        setMessage("Updated!");
 
         refreshProfile();
-        window.location.reload();
     };
 
     const addSocial = (value) => {
@@ -176,6 +177,7 @@ export default function EditProfilePage() {
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <button onClick={handleUpdateProfile} disabled={updating}>Update Profile</button>
                         {profileError}
+                        {message}
                     </div>
                 </div> :
                 <h2>Profile Loading...</h2>
