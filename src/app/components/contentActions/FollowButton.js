@@ -35,7 +35,7 @@ export default function FollowButton({ targetId }) {
     };
 
     return <button
-        {...getGeneralTooltipProps("Follow to get a notification whenever this user makes a new post.")}
+        {...getGeneralTooltipProps("Follow to get a notification whenever this user publishes a new post.")}
         style={{ background: "transparent", border: "transparent", padding: 0 }}
         disabled={loading} onClick={handleClick}
     >
