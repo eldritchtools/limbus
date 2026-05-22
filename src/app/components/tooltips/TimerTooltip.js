@@ -9,7 +9,7 @@ const TOOLTIP_ID = "timer-tooltip";
 
 function TimerTooltipContent({ timers }) {
     return <div style={{display: "flex", flexDirection: "column"}}>
-        {timers.map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} dateString={timer.endDate} />)}
+        {timers.map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} startDate={timer.startDate} endDate={timer.endDate} />)}
     </div>
 }
 
