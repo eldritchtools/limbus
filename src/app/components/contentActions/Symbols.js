@@ -1,6 +1,7 @@
 import {
     HandThumbUpIcon,
     BookmarkIcon,
+    BellIcon
 } from '@heroicons/react/24/outline'
 import {
     HandThumbUpIcon as HandThumbUpIconSolid,
@@ -12,7 +13,8 @@ import {
     EyeIcon as EyeIconSolid,
     UserPlusIcon as UserPlusIconSolid,
     ClipboardDocumentCheckIcon as ClipboardDocumentCheckIconSolid,
-    ArrowLeftIcon as ArrowLeftIconSolid
+    ArrowLeftIcon as ArrowLeftIconSolid,
+    BellIcon as BellIconSolid
 } from '@heroicons/react/24/solid'
 
 
@@ -66,13 +68,21 @@ export function ViewSolid({ size = 20, text }) {
 }
 
 export function ContributeSolid({ size = 20, text }) {
-    return constructSymbol(UserPlusIconSolid, size, text)
+    return constructSymbol(UserPlusIconSolid, size, text);
 }
 
 export function ReviewSolid({ size = 20, text }) {
-    return constructSymbol(ClipboardDocumentCheckIconSolid, size, text)
+    return constructSymbol(ClipboardDocumentCheckIconSolid, size, text);
 }
 
 export function BackSolid({ size = 20, text }) {
-    return constructSymbol(ArrowLeftIconSolid, size, text)
+    return constructSymbol(ArrowLeftIconSolid, size, text);
+}
+
+export function BellOutline({ size = 20, text }) {
+    return constructSymbol(BellIcon, size, text);
+}
+
+export function BellSolid({ size = 20, text }) {
+    return constructSymbol(BellIconSolid, size, text);
 }

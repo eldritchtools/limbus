@@ -90,12 +90,13 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     const handleSetIdentityIds = fn => setIdentityIds(fn(identitiesConverted));
     const handleSetEgoIds = fn => setEgoIds(fn(egosConverted));
     const handleOptsFunction = (func, key) => setExtraOpts(p => ({ ...p, [key]: func(p[key]) }));
+    const handleOptsValue = (v, key) => setExtraOpts(p => ({ ...p, [key]: v }));
 
     if (editable) return <BuildEditingComponent
         identityIds={identitiesConverted} setIdentityIds={handleSetIdentityIds}
         egoIds={egosConverted} setEgoIds={handleSetEgoIds}
         deploymentOrder={extraOpts.deploymentOrder} setDeploymentOrder={f => handleOptsFunction(f, "deploymentOrder")}
-        activeSinners={extraOpts.activeSinners} setActiveSinners={f => handleOptsFunction(f, "activeSinners")}
+        activeSinners={extraOpts.activeSinners} setActiveSinners={v => handleOptsValue(v, "activeSinners")}
         identityLevels={extraOpts.identityLevels} setIdentityLevels={f => handleOptsFunction(f, "identityLevels")}
         identityUpties={extraOpts.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
         egoThreadspins={extraOpts.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}

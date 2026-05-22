@@ -97,7 +97,7 @@ BEGIN
           LIMIT showcase_limit
         ) top_show
       ) ids,
-      LATERAL public.search_builds_v9(
+      LATERAL public.search_builds_v11(
         build_id_filter := ids.show_ids,
         p_limit := showcase_limit
       ) s

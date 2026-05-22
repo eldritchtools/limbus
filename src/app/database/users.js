@@ -45,3 +45,42 @@ export async function updateUserAvatar(userId, avatarId) {
         return data;
     });
 }
+
+export async function followUser(targetId) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("follows")
+            .insert({ followed_user_id: targetId })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    });
+}
+
+export async function unfollowUser(targetId) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("follows")
+            .delete()
+            .eq("followed_user_id", targetId);
+
+        if (error) throw error;
+        return data;
+    });
+}
+
+export async function checkFollow(userId, targetId) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("follows")
+            .select("*")
+            .eq("follower_user_id", userId)
+            .eq("followed_user_id", targetId)
+            .maybeSingle();
+
+        if (error) throw error;
+        return data;
+    });
+}

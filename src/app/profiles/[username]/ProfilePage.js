@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 
 import CompanyDisplay from "@/app/components/company/CompanyDisplay";
+import FollowButton from "@/app/components/contentActions/FollowButton";
 import { useData } from "@/app/components/DataProvider";
 import Avatar from "@/app/components/icons/Avatar";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
@@ -191,7 +192,10 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: isDesktop ? "90%" : "100%" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
                 <Avatar avatarId={avatarId} size={128} />
-                <h1 style={{ fontSize: "1.75rem", marginTop: "0", marginBottom: "0" }}>{parsedUsername}</h1>
+                <h1 style={{ fontSize: "1.75rem", marginTop: "0", marginBottom: "0" }}>
+                    {parsedUsername}
+                    <FollowButton targetId={userId} />
+                </h1>
                 <div><em>{flair}</em></div>
                 {socials.length > 0 ? <SocialsDisplay socials={socials} /> : null}
                 <div style={{ width: isDesktop ? "70%" : "90%" }}> <MarkdownRenderer content={description} /></div>
