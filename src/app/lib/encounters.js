@@ -2,8 +2,8 @@ export const encounterCategoryLabels = {
     "md": "Mirror Dungeon",
     "reflectrial": "Reflectrial",
     "story": "Story",
-    "luxcavation": "Luxcavation"
-    // "rr": "Refraction Railway"
+    "luxcavation": "Luxcavation",
+    "rr": "Refraction Railway"
 };
 
 export function encounterToOption(id, name) {

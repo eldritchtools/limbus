@@ -48,7 +48,7 @@ function EncountersSelection({ category, setCategory, encounter, setEncounter, s
         params.set("category", category.value);
         params.set("encounter", enc.value);
 
-        router.replace(`/builds?${params.toString()}`, {scroll: false});
+        router.replace(`/builds?${params.toString()}`, { scroll: false });
     };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
@@ -184,14 +184,18 @@ export default function BuildsPage() {
             <div className="title-text">
                 {"Loading builds..."}
             </div> :
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                {activeTab === "popular" ?
-                    <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
-                        Most popular builds are recomputed every few hours.
-                    </p> :
-                    null
-                }
-                <BuildsSearchDisplay builds={builds} />
-            </div>}
+            builds.length === 0 ?
+                <div style={{marginTop: "1rem", color: "var(--disabled-text-color)"}} >
+                    No builds found...
+                </div> :
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    {activeTab === "popular" ?
+                        <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
+                            Most popular builds are recomputed every few hours.
+                        </p> :
+                        null
+                    }
+                    <BuildsSearchDisplay builds={builds} />
+                </div>}
     </div>;
 }

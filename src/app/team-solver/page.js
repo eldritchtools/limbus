@@ -349,7 +349,7 @@ export default function TeamSolverPage() {
                 </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
                     <span>Max Sinners:</span>
                     <NumberInput value={deployedSinners} onChange={setDeployedSinners} min={1} max={12} style={{ textAlign: "center", width: "3ch" }} />
                 </div>
