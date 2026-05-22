@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useCallback, useRef } from "react"
 import { useAuth } from "./authProvider";
 import { getSupabase } from './connection';
 import { withRetry } from "./supabaseTemplates";
+import { checkFollow, followUser, unfollowUser } from "./users";
 
 const RequestsCacheContext = createContext(null);
 
@@ -14,6 +15,7 @@ export function RequestsCacheProvider({ children }) {
     const { user } = useAuth();
     const [likedMap, setLikedMap] = useState({});
     const [savedMap, setSavedMap] = useState({});
+    const [followedMap, setFollowedMap] = useState({});
 
     const loadedKeys = useRef(new Set());
     const queuedKeys = useRef(new Set());
@@ -56,7 +58,6 @@ export function RequestsCacheProvider({ children }) {
             return;
         }
     };
-
 
     const fetchUserData = useCallback((targetType, targetIds) => {
         if (!user) return;
@@ -136,13 +137,45 @@ export function RequestsCacheProvider({ children }) {
     const checkLiked = useCallback((targetType, targetId) => likedMap[makeKey(targetType, targetId)], [likedMap]);
     const checkSaved = useCallback((targetType, targetId) => savedMap[makeKey(targetType, targetId)], [savedMap]);
 
+    const checkFollowed = async (id) => {
+        if (!user || !id) return;
+
+        if(id in followedMap) return followedMap[id];
+
+        try {
+            const data = await checkFollow(user.id, id);
+
+            if(data)
+                setFollowedMap(prev => ({...prev, [id]: true}))
+            else
+                setFollowedMap(prev => ({...prev, [id]: false}))
+        } catch (err) {
+            console.error(`Error loading follow`, err);
+            return;
+        }
+    };
+
+    const toggleFollowed = async (id) => {
+        if (!user || !id) return;
+
+        if(followedMap[id]) {
+            const data = await unfollowUser(id);
+            setFollowedMap(prev => ({...prev, [id]: false}));
+        } else {
+            const data = await followUser(id);
+            setFollowedMap(prev => ({...prev, [id]: true}));
+        }
+    }
+
     return <RequestsCacheContext.Provider
         value={{
             checkLiked,
             checkSaved,
             fetchUserData,
             toggleLike: (type, id) => toggleInteraction("likes", type, id),
-            toggleSave: (type, id) => toggleInteraction("saves", type, id)
+            toggleSave: (type, id) => toggleInteraction("saves", type, id),
+            checkFollowed,
+            toggleFollowed
         }}
     >
         {children}

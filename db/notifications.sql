@@ -4,7 +4,7 @@ CREATE TABLE public.notifications (
   actor_ids UUID[] DEFAULT '{}',
   target_type target_type_enum,
   target_id UUID,
-  type TEXT NOT NULL CHECK (type IN ('comment', 'reply')),
+  type notification_type_enum NOT NULL,
   parent_comment_id UUID REFERENCES comments(id),
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -15,7 +15,8 @@ CREATE TYPE notification_type_enum AS ENUM (
   'reply',
   'collection_submission',
   'collection_submission_approved',
-  'collection_submission_rejected'
+  'collection_submission_rejected',
+  'new_post'
 );
 
 CREATE OR REPLACE FUNCTION handle_comment_notifications()

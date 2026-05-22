@@ -26,6 +26,7 @@ const eventString = {
     "collection_submission": "made a submission to your",
     "collection_submission_approved": "approved your submission to the",
     "collection_submission_rejected": "rejected your submission to the",
+    "new_post": "has posted a new"
 }
 
 function constructNotifMessage(notif) {

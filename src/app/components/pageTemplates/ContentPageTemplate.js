@@ -98,7 +98,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
                 </h2>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
-                        <UsernameWithTime data={content} scale={.9} avatarId={content.user_avatar_id} />
+                        <UsernameWithTime data={content} scale={.9} avatarId={content.user_avatar_id} withFollowButton={true} />
                     </div>
                     {sideComponent}
                 </div>
