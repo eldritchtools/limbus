@@ -56,7 +56,7 @@ export default function RandomTips({ }) {
     return <div className="panel-container" style={{width: "100%"}}>
         <h3 style={{ margin: 0, marginBottom: "0.5rem", alignSelf: "start" }}>
             Random Tip&nbsp;
-            <button onClick={() => {setForce(true)}}>Randomize</button>
+            <button style={{fontSize: "0.7rem"}} onClick={() => {setForce(true)}}>Randomize</button>
         </h3>
         <MarkdownRenderer content={tips[tipIndex].text} />
     </div>
