@@ -39,7 +39,8 @@ const paths = [
             { path: "/identities", title: "Identities" },
             { path: "/egos", title: "E.G.Os" },
             { path: "/encounters", title: "Encounters" },
-            { path: "/timers", title: "Timers and Roadmap" }
+            { path: "/timers", title: "Timers and Roadmap" },
+            { path: "/release-history", title: "Release History" }
         ]
     },
     {
@@ -47,8 +48,8 @@ const paths = [
             { path: "/my-profile", title: "View My Profile" },
             { path: "/my-posts", title: "My Posts" },
             { path: "/edit-profile", title: "Edit Profile" },
-            { path: "/company", title: "Company"},
-            { path: "/site-customization", title: "Site Customization"}
+            { path: "/company", title: "Company" },
+            { path: "/site-customization", title: "Site Customization" }
         ]
     },
     {

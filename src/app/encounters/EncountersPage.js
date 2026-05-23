@@ -14,7 +14,7 @@ import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
-import { encounterToOption, getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
+import { getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import { uiStrings } from "../lib/uiStrings";
 import { selectStyle } from "../styles/selectStyle";
@@ -76,7 +76,7 @@ function Encounter({ category, categoryName, encounter }) {
 
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>Details</div>
-            {["reflectrial", "story", "luxcavation"].includes(category) ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
+            {["reflectrial", "story", "luxcavation", "rr"].includes(category) ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
         </div>
 
         {tab === "details" ?
@@ -95,9 +95,7 @@ function Encounter({ category, categoryName, encounter }) {
 
 export default function EncountersPage() {
     const [encounters, encountersLoading] = useData("encounters");
-    const [category, setCategory] = useState(null);
-    const [encounter, setEncounter] = useState(null);
-    const {isMobile} = useBreakpoint();
+    const { isMobile } = useBreakpoint();
     const router = useRouter();
 
     const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
@@ -108,29 +106,35 @@ export default function EncountersPage() {
 
     const categoryOptions = useMemo(() => getEncounterCategoryOptions(), []);
 
-    const encounterOptions = useMemo(() => 
-        encountersLoading || !category ? [] : getEncounterOptions(encounters, category), 
-        [encountersLoading, encounters, category]
+    const selectedCategory = useMemo(
+        () => categoryOptions.find(x => x.value === searchParams.category) ?? null,
+        [categoryOptions, searchParams.category]
     );
 
-    useEffect(() => {
-        if (encountersLoading) return;
-        const cat = searchParams.category;
-        const enc = searchParams.encounter;
-        if (cat && cat in encounters && enc && enc in encounters[cat]) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setCategory(categoryOptions.find(x => x.value === cat));
-            setEncounter(encounterToOption(enc, encounters[cat][enc]))
-        }
-    }, [encountersLoading, searchParams, categoryOptions, encounters])
+    const encounterOptions = useMemo(() =>
+        encountersLoading || !selectedCategory ? [] : getEncounterOptions(encounters, selectedCategory),
+        [encountersLoading, encounters, selectedCategory]
+    );
+
+    const selectedEncounter = useMemo(
+        () => encounterOptions.find(x => x.value === searchParams.encounter) ?? null,
+        [encounterOptions, searchParams.encounter]
+    );
+
+    const handleSetCategory = cat => {
+        const params = new URLSearchParams();
+        params.set("category", cat.value);
+
+        router.replace(`/encounters?${params.toString()}`, { scroll: false });
+    }
 
     const handleSetEncounter = enc => {
-        if (!category || !enc) return;
+        if (!selectedCategory || !enc) return;
         const params = new URLSearchParams();
-        params.set("category", category.value);
+        params.set("category", selectedCategory.value);
         params.set("encounter", enc.value);
 
-        router.replace(`/encounters?${params.toString()}`, {scroll: false});
+        router.replace(`/encounters?${params.toString()}`, { scroll: false });
     };
 
     if (encountersLoading) return <LoadingContentPageTemplate />;
@@ -144,8 +148,8 @@ export default function EncountersPage() {
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
                 <Select
                     options={categoryOptions}
-                    value={category}
-                    onChange={v => { setCategory(v); setEncounter(null); }}
+                    value={selectedCategory}
+                    onChange={handleSetCategory}
                     placeholder={"Choose category..."}
                     filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
                     styles={selectStyle}
@@ -153,7 +157,7 @@ export default function EncountersPage() {
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Encounter</span>
                 <Select
                     options={encounterOptions}
-                    value={encounter}
+                    value={selectedEncounter}
                     onChange={handleSetEncounter}
                     placeholder={"Choose encounter..."}
                     filterOption={(candidate, input) => checkFilterMatch(input, [candidate.data.name, candidate.data.altName])}
@@ -162,8 +166,8 @@ export default function EncountersPage() {
             </div>
         </div>
         <HorizontalDivider />
-        {category && encounter ?
-            <Encounter category={category.value} categoryName={category.label} encounter={encounter.value} /> :
+        {selectedCategory && selectedEncounter ?
+            <Encounter category={selectedCategory.value} categoryName={selectedCategory.label} encounter={selectedEncounter.value} /> :
             null
         }
     </div>;

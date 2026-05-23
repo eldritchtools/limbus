@@ -3,6 +3,7 @@
     -ms-overflow-style: none;
     position: relative;
     overflow-x: auto; 
+    overflow-y: hidden;
     width: 100%;
 }
 

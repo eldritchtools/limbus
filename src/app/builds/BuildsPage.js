@@ -12,43 +12,49 @@ import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
 import BuildsSearchComponent, { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { getPopularBuilds, searchBuilds } from "../database/builds";
-import { encounterToOption, getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
+import { getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
 
-function EncountersSelection({ category, setCategory, encounter, setEncounter, searchParams }) {
+function EncountersSelection({ category, encounter }) {
     const [encounters, encountersLoading] = useData("encounters");
     const { isMobile } = useBreakpoint();
     const router = useRouter();
 
     const categoryOptions = useMemo(() => getEncounterCategoryOptions(true), []);
 
-    const encounterOptions = useMemo(() =>
-        encountersLoading || !category ? [] : getEncounterOptions(encounters, category),
-        [encountersLoading, encounters, category]
+    const selectedCategory = useMemo(
+        () => categoryOptions.find(x => x.value === category) ?? null,
+        [categoryOptions, category]
     );
 
-    useEffect(() => {
-        if (encountersLoading) return;
-        const cat = searchParams.get("category");
-        const enc = searchParams.get("encounter");
+    const encounterOptions = useMemo(() =>
+        encountersLoading || !selectedCategory ? [] : getEncounterOptions(encounters, selectedCategory),
+        [encountersLoading, encounters, selectedCategory]
+    );
 
-        const catOption = categoryOptions.find(x => x.value === cat);
-        if (!catOption || !(enc in encounters[cat])) return;
+    const selectedEncounter = useMemo(
+        () => encounterOptions.find(x => x.value === encounter) ?? null,
+        [encounterOptions, encounter]
+    );
 
-        setCategory(categoryOptions.find(x => x.value === cat));
-        setEncounter(encounterToOption(enc, encounters[cat][enc]));
-    }, [searchParams, encounters, encountersLoading, categoryOptions, setCategory, setEncounter]);
-
-    const handleSetEncounter = enc => {
-        if (!category || !enc) return;
+    const handleSetCategory = cat => {
         const params = new URLSearchParams();
         params.set('mode', "enc");
-        params.set("category", category.value);
+        params.set("category", cat.value);
+
+        router.replace(`/builds?${params.toString()}`, { scroll: false });
+    }
+
+    const handleSetEncounter = enc => {
+        if (!selectedCategory || !enc) return;
+        const params = new URLSearchParams();
+        params.set('mode', "enc");
+        params.set("category", category);
         params.set("encounter", enc.value);
 
-        router.replace(`/builds?${params.toString()}`, {scroll: false});
+        router.replace(`/builds?${params.toString()}`, { scroll: false });
     };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
@@ -56,8 +62,8 @@ function EncountersSelection({ category, setCategory, encounter, setEncounter, s
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
             <Select
                 options={categoryOptions}
-                value={category}
-                onChange={v => { setCategory(v); setEncounter(null); }}
+                value={selectedCategory}
+                onChange={handleSetCategory}
                 placeholder={"Choose category..."}
                 filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
                 styles={selectStyle}
@@ -65,7 +71,7 @@ function EncountersSelection({ category, setCategory, encounter, setEncounter, s
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Encounter</span>
             <Select
                 options={encounterOptions}
-                value={encounter}
+                value={selectedEncounter}
                 onChange={handleSetEncounter}
                 placeholder={"Choose encounter..."}
                 filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
@@ -76,8 +82,8 @@ function EncountersSelection({ category, setCategory, encounter, setEncounter, s
         {category && encounter ?
             <React.Fragment>
                 <span className="sub-text" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem", textWrap: "wrap" }}>
-                    <MarkdownRenderer content={`Showing builds for the encounter {enc:${category.value}|${encounter.value}}. If you'd like to see your build here, use the corresponding tag.`} />
-                    <Tag tag={`${category.value}-${encounter.value}`} type={"build"} />
+                    <MarkdownRenderer content={`Showing builds for the encounter {enc:${category}|${encounter}}. If you'd like to see your build here, use the corresponding tag.`} />
+                    <Tag tag={`${category}-${encounter}`} type={"build"} />
                 </span>
                 <span className="sub-text">Clicking on the link will bring you to the encounters page where you can find more details about the encounter or share your experience with it.</span>
             </React.Fragment> :
@@ -101,6 +107,10 @@ export default function BuildsPage() {
         if (["popular", "new", "random", "enc"].includes(mode)) {
             setActiveTab(mode);
         }
+        const cat = searchParams.get('category');
+        if (cat) setEncounterCategory(cat);
+        const enc = searchParams.get('encounter');
+        if (enc) setEncounter(enc);
     }, [searchParams, setActiveTab]);
 
     useEffect(() => {
@@ -119,7 +129,7 @@ export default function BuildsPage() {
                 else if (activeTab === "random")
                     data = await searchBuilds({ published: true, sortBy: "random" }, 1);
                 else if (activeTab === "enc") {
-                    const params = prepareBuildFilters({ tags: [`${encounterCategory.value}-${encounter.value}`] }, { published: true, ignoreBlockDiscovery: true });
+                    const params = prepareBuildFilters({ tags: [`${encounterCategory}-${encounter}`] }, { published: true, ignoreBlockDiscovery: true });
                     data = await searchBuilds(params, 1);
                 }
 
@@ -172,26 +182,23 @@ export default function BuildsPage() {
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
             <div className={`tab-header ${activeTab === "enc" ? "active" : ""}`} onClick={() => handleTabClick("enc")}>Encounters</div>
         </div>
-        {activeTab === "enc" ?
-            <EncountersSelection
-                category={encounterCategory} setCategory={setEncounterCategory}
-                encounter={encounter} setEncounter={setEncounter}
-                searchParams={searchParams}
-            /> :
-            null
-        }
+        {activeTab === "enc" && <EncountersSelection category={encounterCategory} encounter={encounter} />}
         {loading ?
             <div className="title-text">
                 {"Loading builds..."}
             </div> :
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                {activeTab === "popular" ?
-                    <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
-                        Most popular builds are recomputed every few hours.
-                    </p> :
-                    null
-                }
-                <BuildsSearchDisplay builds={builds} />
-            </div>}
+            builds.length === 0 ?
+                <div style={{ marginTop: "1rem", color: "var(--disabled-text-color)" }} >
+                    No builds found...
+                </div> :
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    {activeTab === "popular" ?
+                        <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
+                            Most popular builds are recomputed every few hours.
+                        </p> :
+                        null
+                    }
+                    <BuildsSearchDisplay builds={builds} />
+                </div>}
     </div>;
 }

@@ -17,6 +17,7 @@ import { useSiteCustomization } from "./components/SiteCustomizationProvider";
 import { getHomepagePosts } from "./database/homepage";
 import styles from "./homepage.module.css";
 import { HomepageLinkList, homepageLinks } from "./lib/homepageLinks";
+import RandomTips from "./RandomTips";
 import { HomepageTimers } from "./timers/TimersTable";
 
 function RecentAdditions() {
@@ -136,6 +137,7 @@ export default function HomePage() {
             </p>
             <LinksMenu />
             <HomepageTimers />
+            <RandomTips />
             <RecentAdditions />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>
                 <div className={styles.panelContainer} style={{ alignItems: "start", gap: "0.5rem" }}>
@@ -175,6 +177,9 @@ export default function HomePage() {
                             </div>
                         </DragContainer>
                     }
+                    <NoPrefetchLink className="text-link" href={"/release-history"} style={{ alignSelf: "end" }}>
+                        Discuss upcoming Identities and E.G.O ➔
+                    </NoPrefetchLink>
                 </div>
                 <div className={styles.panelContainer} style={{ "gap": "0.2rem" }}>
                     {/* <div style={{ fontSize: "0.9rem", color: "#aaa", textAlign: "start" }}>Announcement</div> */}

@@ -126,9 +126,13 @@ export default function EncounterDetails({ data }) {
         setPhase(0);
         setTargetIndex(0);
     }, [data]);
+    
+    if (!data) return <div>
+        <h3>No encounter data.</h3>
+    </div>
 
     let targetsData = data, battles = null, waves = null, phases = null;
-    if ("battles" in targetsData && targetsData.battles[wave]) {
+    if ("battles" in targetsData && targetsData.battles[battle]) {
         battles = targetsData.battles.length;
         targetsData = targetsData.battles[battle];
     }
@@ -145,12 +149,8 @@ export default function EncounterDetails({ data }) {
     const enemyBuffs = targetsData.enemyBuffs ?? [];
     const targets = targetsData.targets;
 
-    if (!targets) return <div>
-        <h3>No encounter data.</h3>
-    </div>
-
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        {battles ?
+        {battles &&
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: battles }, (_, i) =>
                     <div
@@ -160,11 +160,10 @@ export default function EncounterDetails({ data }) {
                         Battle {i + 1}
                     </div>
                 )}
-            </div> :
-            null
+            </div>
         }
 
-        {waves ?
+        {waves &&
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: waves }, (_, i) =>
                     <div
@@ -174,11 +173,10 @@ export default function EncounterDetails({ data }) {
                         Wave {i + 1}
                     </div>
                 )}
-            </div> :
-            null
+            </div>
         }
 
-        {phases ?
+        {phases &&
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 {Array.from({ length: phases }, (_, i) =>
                     <div
@@ -188,8 +186,7 @@ export default function EncounterDetails({ data }) {
                         Phase {i + 1}
                     </div>
                 )}
-            </div> :
-            null
+            </div>
         }
 
         {allyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
@@ -202,17 +199,21 @@ export default function EncounterDetails({ data }) {
             {enemyBuffs.map(id => <BuffComponent key={id} id={id} />)}
         </div> : null}
 
-        <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
-            <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
-                {targets.map((target, i) =>
-                    <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => setTargetIndex(i)}>
-                        <EnemyIcon id={target.portrait} style={{ width: "100%", height: "100%" }} />
-                        {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
-                    </div>
-                )}
+        {targets &&
+            <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
+                <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
+                    {targets.map((target, i) =>
+                        <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => setTargetIndex(i)}>
+                            <EnemyIcon id={target.portrait} style={{ width: "100%", height: "100%" }} />
+                            {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        }
 
-        <TargetComponent target={targets[targetIndex]} />
+        {targets &&
+            <TargetComponent target={targets[targetIndex]} />
+        }
     </div>
 }

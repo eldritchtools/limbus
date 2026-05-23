@@ -2,8 +2,8 @@ export const encounterCategoryLabels = {
     "md": "Mirror Dungeon",
     "reflectrial": "Reflectrial",
     "story": "Story",
-    "luxcavation": "Luxcavation"
-    // "rr": "Refraction Railway"
+    "luxcavation": "Luxcavation",
+    "rr": "Refraction Railway"
 };
 
 export function encounterToOption(id, name) {
@@ -22,5 +22,5 @@ export function getEncounterCategoryOptions(withTagsOnly = false) {
 }
 
 export function getEncounterOptions(encounters, category) {
-    return Object.entries(encounters[category.value]).map(([id, name]) => encounterToOption(id, name));
+    return Object.entries(encounters[category.value] ?? {}).map(([id, name]) => encounterToOption(id, name));
 }
