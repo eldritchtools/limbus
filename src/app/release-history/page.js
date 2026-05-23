@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../components/dataHooks/upcoming";
 import EgoIcon from "../components/icons/EgoIcon";
