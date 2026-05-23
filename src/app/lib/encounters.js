@@ -22,5 +22,5 @@ export function getEncounterCategoryOptions(withTagsOnly = false) {
 }
 
 export function getEncounterOptions(encounters, category) {
-    return Object.entries(encounters[category.value]).map(([id, name]) => encounterToOption(id, name));
+    return Object.entries(encounters[category.value] ?? {}).map(([id, name]) => encounterToOption(id, name));
 }

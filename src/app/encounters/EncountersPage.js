@@ -14,7 +14,7 @@ import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
-import { encounterToOption, getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
+import { getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import { uiStrings } from "../lib/uiStrings";
 import { selectStyle } from "../styles/selectStyle";
