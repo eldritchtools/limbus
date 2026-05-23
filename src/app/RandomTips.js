@@ -14,6 +14,7 @@ export default function RandomTips({ }) {
 
     useEffect(() => {
         if ((tipsLoading || tipIndex !== null) && !force) return;
+        if (!tips) return;
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setForce(false);
 
@@ -36,13 +37,13 @@ export default function RandomTips({ }) {
             totalWeight += tips[i].weight ?? 1;
         }
 
-        while(true) {
+        while (true) {
             let r = Math.random() * totalWeight;
 
             for (let i = 0; i < options.length; i++) {
                 r -= weights[i];
                 if (r <= 0) {
-                    if(options[i] === tipIndex) break;
+                    if (options[i] === tipIndex) break;
                     setTipIndex(options[i]);
                     return;
                 }
@@ -53,10 +54,10 @@ export default function RandomTips({ }) {
 
     if (tipsLoading || tipIndex === null) return null;
 
-    return <div className="panel-container" style={{width: "100%"}}>
+    return <div className="panel-container" style={{ width: "100%" }}>
         <h3 style={{ margin: 0, marginBottom: "0.5rem", alignSelf: "start" }}>
             Random Tip&nbsp;
-            <button style={{fontSize: "0.7rem"}} onClick={() => {setForce(true)}}>Randomize</button>
+            <button style={{ fontSize: "0.7rem" }} onClick={() => { setForce(true) }}>Randomize</button>
         </h3>
         <MarkdownRenderer content={tips[tipIndex].text} />
     </div>
