@@ -1,11 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 
 import styles from "./Notification.module.css";
 
+import { fetchEncounter } from "@/app/database/encounters";
 import { setNotificationRead } from "@/app/database/notifications";
+import { commentsTargetIdsReversed } from "@/app/lib/commentsTargetIds";
+import metadataIndex from "@/data/metadata_index.json";
 
 function constructActorStr(actors) {
     if (actors.length >= 4) return `${actors[0]}, ${actors[1]}, and ${actors.length - 2} more users`;
@@ -17,26 +21,51 @@ function constructActorStr(actors) {
 const targetTypeMapping = {
     "build": "build",
     "collection": "collection",
-    "md_plan": "md plan"
+    "md_plan": "md plan",
+    "encounter": "encounter"
 }
 
 const eventString = {
     "comment": "commented on your",
-    "reply": "replied to your comment to the",
+    "reply": "replied to your comment on the",
     "collection_submission": "made a submission to your",
     "collection_submission_approved": "approved your submission to the",
     "collection_submission_rejected": "rejected your submission to the",
     "new_post": "has posted a new"
 }
 
-function constructNotifMessage(notif) {
+function constructNotifMessage(notif, category, encounter) {
     const actorsStr = constructActorStr(notif.actors);
 
-    return `${actorsStr} ${eventString[notif.type]} ${targetTypeMapping[notif.target_type]} ${notif.title}`
+    if (notif.target_type === "fixed")
+        return `${actorsStr} ${eventString[notif.type]} ${commentsTargetIdsReversed[notif.target_id]} page`;
+
+    if (notif.target_type === "encounter") {
+        const name = metadataIndex?.encounters?.[category]?.[encounter] ?? "";
+        return `${actorsStr} ${eventString[notif.type]} ${targetTypeMapping[notif.target_type]} ${name}`;
+    }
+
+    return `${actorsStr} ${eventString[notif.type]} ${targetTypeMapping[notif.target_type]} ${notif.title}`;
 }
 
 export default function Notification({ notif, updateNotif }) {
     const router = useRouter();
+    const [category, setCategory] = useState(null);
+    const [encounter, setEncounter] = useState(null);
+
+    useEffect(() => {
+        if(notif.target_type !== "encounter") return;
+
+        const fetchData = async () => {
+            const data = await fetchEncounter(notif.target_id);
+            if(data) {
+                setCategory(data.category);
+                setEncounter(data.slug);
+            }
+        }
+
+        fetchData();
+    }, [notif]);
 
     const handleNotifClick = async (notif) => {
         await setNotificationRead(notif.id);
@@ -51,6 +80,26 @@ export default function Notification({ notif, updateNotif }) {
             case "md_plan":
                 router.push(`/md-plans/${notif.target_id}`);
                 return;
+            case "fixed":
+                switch (commentsTargetIdsReversed[notif.target_id]) {
+                    case "Daily Random Team":
+                        router.push("/daily-random");
+                        return;
+                    case "Release History":
+                        router.push("/release-history");
+                        return;
+                    default:
+                        return;
+                }
+            case "encounter":
+                if(category && encounter) {
+                    const params = new URLSearchParams();
+                    params.set("category", category);
+                    params.set("encounter", encounter);
+
+                    router.push(`/encounters?${params.toString()}`);
+                }
+                return
             default:
                 return
         }
@@ -58,7 +107,7 @@ export default function Notification({ notif, updateNotif }) {
 
     return <div onClick={() => handleNotifClick(notif)} className={notif.is_read ? styles.notifRead : styles.notif}>
         <div style={{ fontSize: "1rem", marginBottom: "4px" }} onClick={() => handleNotifClick(notif)}>
-            {constructNotifMessage(notif)}
+            {constructNotifMessage(notif, category, encounter)}
         </div>
         <div className="sub-text">
             <ReactTimeAgo date={notif.created_at} locale="en-US" timeStyle="mini" />
