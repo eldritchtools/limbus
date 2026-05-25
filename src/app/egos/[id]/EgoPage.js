@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import { useSkillData } from "@/app/components/dataHooks/skills";
