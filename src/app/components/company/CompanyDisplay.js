@@ -186,6 +186,14 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
     }
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
+        {editable && <div style={{display: "flex", alignItems: "center", alignSelf: "center", gap: "0.2rem"}}>
+            <button onClick={() => setForceSave(true)}>
+                Save Changes
+            </button>
+            <div>
+                {saveString}
+            </div>
+        </div>}
         <h2 style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${activeTab === "both" ? "active" : ""}`} onClick={() => setActiveTab("both")}>Both</div>
             <div className={`tab-header ${activeTab === "id" ? "active" : ""}`} onClick={() => setActiveTab("id")}>Identities</div>
@@ -205,20 +213,14 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
                 Strict Filtering
             </label>
-            {editable ? <>
+            {editable && <>
                 <button onClick={setAllFiltered}>
                     Set All Filtered Items
                 </button>
                 <button onClick={unsetAllFiltered}>
                     Unset All Filtered Items
                 </button>
-                <button onClick={() => setForceSave(true)}>
-                    Save
-                </button>
-                <div>
-                    {saveString}
-                </div>
-            </> : null
+            </>
             }
         </div>
 
@@ -310,7 +312,7 @@ export default function CompanyDisplay({ username, editable = false }) {
                 setSaveStatus("error");
                 setChanged(false);
             }
-        }, forceSave ? 0 : 5000);
+        }, forceSave ? 0 : 3000);
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setForceSave(false);
