@@ -331,7 +331,7 @@ export default function EgosPage() {
                     <div />
                     <div>
                         <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting.</div>
+                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting, including searching through skills and passives.</div>
                     </div>
                 </div>
                 <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />

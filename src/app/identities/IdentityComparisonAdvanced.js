@@ -791,7 +791,7 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {displayType === "icon" ?
-                <h2>Icons display type not supported</h2> :
+                <h2>Icons display type not supported. Please swap to another display type.</h2> :
                 (separateSinners ?
                     listComponents.map(([sep, list], i) => <>
                         {sep}
