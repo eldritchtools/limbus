@@ -8,6 +8,7 @@ import Select from "react-select";
 import EncounterDetails from "./EncounterDetails";
 import BuildsSearchDisplay from "../components/contentCardDisplays/BuildsSearchDisplay";
 import { useData } from "../components/DataProvider";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
 import CommentSection from "../components/pageTemplates/CommentSection";
@@ -41,8 +42,15 @@ function BuildsSection({ tag }) {
         fetchBuilds();
     }, [tag, page]);
 
+    const createBuildLink = useMemo(() => {
+        const params = new URLSearchParams({ tag: tag });
+        return `/builds/new?${params.toString()}`
+    }, [tag]);
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
-        <span>If you&apos;d like to see your build here, use the tag <Tag tag={tag} type={"build"} />.</span>
+        <span>
+            If you&apos;d like to see your build here, use the tag <Tag tag={tag} type={"build"} /> or <NoPrefetchLink href={createBuildLink} className="text-link">click here</NoPrefetchLink> to go straight to a new build with the tag already in place.
+        </span>
         {loading ?
             <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>Loading builds...</p> :
             builds.length === 0 ?

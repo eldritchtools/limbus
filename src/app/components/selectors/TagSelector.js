@@ -22,7 +22,7 @@ async function loadOptions(inputValue) {
 
 const debouncedLoadOptions = debounce((inputValue, resolve) => loadOptions(inputValue).then(resolve), 300);
 
-function validateTag(name) {
+export function validateTag(name) {
     const cleaned = name.trim().toLowerCase();
 
     if (cleaned.length < 1 || cleaned.length > 50) {

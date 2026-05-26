@@ -57,6 +57,13 @@ function EncountersSelection({ category, encounter }) {
         router.replace(`/builds?${params.toString()}`, { scroll: false });
     };
 
+    const tag = useMemo(() => `${category}-${encounter}`, [category, encounter]);
+
+    const createBuildLink = useMemo(() => {
+        const params = new URLSearchParams({ tag: tag });
+        return `/builds/new?${params.toString()}`
+    }, [tag]);
+    
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
         <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
@@ -82,8 +89,8 @@ function EncountersSelection({ category, encounter }) {
         {category && encounter ?
             <React.Fragment>
                 <span className="sub-text" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem", textWrap: "wrap" }}>
-                    <MarkdownRenderer content={`Showing builds for the encounter {enc:${category}|${encounter}}. If you'd like to see your build here, use the corresponding tag.`} />
-                    <Tag tag={`${category}-${encounter}`} type={"build"} />
+                    <MarkdownRenderer content={`Showing builds for the encounter {enc:${category}|${encounter}}. If you'd like to see your build here, use the corresponding tag or [click here](${createBuildLink}) to go straight to creating a build with it.`} />
+                    <Tag tag={tag} type={"build"} />
                 </span>
                 <span className="sub-text">Clicking on the link will bring you to the encounters page where you can find more details about the encounter or share your experience with it.</span>
             </React.Fragment> :

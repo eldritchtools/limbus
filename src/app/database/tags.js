@@ -27,12 +27,11 @@ export async function handleCreateTag(name) {
         return await withRetry(async () => {
             const { data, error } = await getSupabase()
                 .from("tags")
-                .insert({ name: name })
-                .select("name")
-                .single();
+                .upsert({ name: name }, { onConflict: 'name', ignoreDuplicates: true })
+                .select("name");
 
-            if (error) throw error
-            return data.name;
+            if (error) throw error;
+            return data?.[0]?.name ?? name;
         });
     } catch (err) {
         console.error("Error creating tag:", err);

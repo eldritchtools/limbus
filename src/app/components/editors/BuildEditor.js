@@ -8,12 +8,13 @@ import { useData } from "../DataProvider";
 import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
-import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
+import TagSelector, { tagToTagSelectorOption, validateTag } from "../selectors/TagSelector";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
+import { handleCreateTag } from "@/app/database/tags";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
@@ -23,7 +24,7 @@ import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
 
 
-export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds }) {
+export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds, initTag }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [identityIds, setIdentityIds] = useState(initIdentityIds ?? Array.from({ length: 12 }, () => null));
@@ -51,14 +52,14 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [identitiesMini, identitiesMiniLoading] = useData("identities_mini");
 
     useEffect(() => {
-        if(!loading) return;
+        if (!loading) return;
         if (mode === "edit") {
             const handleBuild = build => {
                 if (!build || (build.user_id && build.user_id !== user.id)) {
                     router.back();
                     return;
                 }
-                
+
                 if (build.username || isLocalId(buildId)) {
                     setTitle(build.title);
                     setBody(build.body);
@@ -107,6 +108,20 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         setIdentityIds([...parseResult.identities]);
         setEgoIds(parseResult.egos.map(egos => [...egos]));
     }, [initTeamCode]);
+
+    useEffect(() => {
+        if (!initTag) return;
+
+        const handleInitTag = async () => {
+            const {valid, value} = validateTag(initTag);
+            if(valid) {
+                const dbTag = await handleCreateTag(value);
+                setTags([tagToTagSelectorOption(dbTag)]);
+            }
+        }
+
+        handleInitTag();
+    }, [initTag]);
 
     const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
         if (id && id in identitiesMini) {
