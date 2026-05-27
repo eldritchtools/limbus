@@ -88,7 +88,7 @@ export default function EditProfilePage() {
         }
 
         setUpdating(true);
-        const { error: insertError } = await updateUsername(user.id, username);
+        const { error: insertError } = await updateUsername(user.id, username.trim());
 
         if (insertError) {
             setUpdating(false);

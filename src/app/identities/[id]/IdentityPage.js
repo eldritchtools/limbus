@@ -110,7 +110,7 @@ function SkillsTab({ identityData, level, skills, preSkills, combatPassives, sup
                 const list = identityData.skillTypes.filter(skill => skill.type.tier === tier);
                 if (list.length === 0) return null;
                 return <div key={tier} style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                    {list.map((skill, index) => skills[skill.id] ? <div key={skill.id} style={{ flex: 1, minWidth: "min(400px, 100%)" }}>
+                    {list.map((skill, index) => skills[skill.id] ? <div key={skill.id} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
                         <SkillCard
                             skill={skills[skill.id].data}
                             count={skill.num} level={level}
@@ -121,7 +121,7 @@ function SkillsTab({ identityData, level, skills, preSkills, combatPassives, sup
                 </div>
             })}
             <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                {identityData.defenseSkillTypes.map(skill => skills[skill.id] ? <div key={skill.id} style={{ flex: 1, minWidth: "min(400px, 100%)" }}>
+                {identityData.defenseSkillTypes.map(skill => skills[skill.id] ? <div key={skill.id} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
                     <SkillCard
                         skill={skills[skill.id].data}
                         level={level}
@@ -134,7 +134,7 @@ function SkillsTab({ identityData, level, skills, preSkills, combatPassives, sup
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div className="title-text">Combat Passives</div>
                     <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                        {combatPassives.map((passive, i) => <div key={i} style={{ flex: 1, minWidth: "min(400px, 100%)" }}>
+                        {combatPassives.map((passive, i) => <div key={i} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
                             {compareMode ? (
                                 passivesPreMapping[passive.name] ?
                                     <PassiveCard
@@ -156,7 +156,7 @@ function SkillsTab({ identityData, level, skills, preSkills, combatPassives, sup
             {supportPassives.length > 0 ?
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div className="title-text">Support Passives</div>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", minWidth: "min(400px, 100%)" }}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", minWidth: "min(500px, 100%)" }}>
                         {supportPassives.map((passive, i) => <div key={i} style={{ flex: 1 }}>
                             {compareMode ? (
                                 passivesPreMapping[passive.name] ?

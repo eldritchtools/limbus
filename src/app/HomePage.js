@@ -10,6 +10,7 @@ import { useData } from "./components/DataProvider";
 import HoverBlocker from "./components/HoverBlocker";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
+import ImageHandler from "./components/icons/ImageHandler";
 import { useModal } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import DragContainer from "./components/objects/DragContainer";
@@ -82,6 +83,17 @@ function LinksMenu() {
     </div>
 }
 
+function APR() {
+    return <NoPrefetchLink href="/apr-2026" className="text-link">
+        <div className="panel-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
+            <ImageHandler path={"apr_2026/logo.webp"} style={{ width: "96px" }} />
+            <span>
+                Absolute Pride Resonance is an annual charity event organized by creators from the Project Moon community during the month of June. If you have the time, consider checking out the schedule of events by clicking here.
+            </span>
+        </div>
+    </NoPrefetchLink>
+}
+
 export default function HomePage() {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
@@ -135,6 +147,7 @@ export default function HomePage() {
                 <br /> <br />
                 Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to customize your profile or site experience.
             </p>
+            <APR />
             <LinksMenu />
             <HomepageTimers />
             <RandomTips />

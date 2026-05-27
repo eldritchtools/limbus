@@ -17,9 +17,10 @@ import DropdownButton from "../components/objects/DropdownButton";
 import Status from "../components/objects/Status";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import IconsSelector from "../components/selectors/IconsSelector";
+import { SeasonDropdownSelector } from "../components/selectors/SeasonSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { ColoredResistance } from "../lib/colors";
-import { affinities, getSeasonString, sinnerIdMapping } from "../lib/constants";
+import { affinities, sinnerIdMapping } from "../lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
 import { selectStyle } from "../styles/selectStyle";
@@ -244,11 +245,7 @@ export default function EgosPage() {
                 label: <Status id={id} includeTooltip={false} />,
                 name: statuses[id].name
             })).sort((a, b) => a.name.localeCompare(b.name)),
-            [...seasonList].map(season => ({
-                value: `${season}`,
-                label: season === 9100 ? "Walpurgisnacht (any)" : getSeasonString(season),
-                name: season === 9100 ? "Walpurgisnacht" : getSeasonString(season)
-            })).sort((a, b) => a.value - b.value)
+            [...seasonList]
         ]
     }, [egos, egosLoading, statuses, statusesLoading]);
 
@@ -288,15 +285,12 @@ export default function EgosPage() {
                             {seasonsExcluding ? "Exclude" : "Include"}
                         </div>
                     </div>
-                    <DropdownSelectorWithExclusion
-                        options={seasonOptions}
+                    <SeasonDropdownSelector
                         selected={selectedSeasons}
                         setSelected={setSelectedSeasons}
-                        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                        options={seasonOptions}
                         isMulti={true}
-                        placeholder={"Select Seasons..."}
                         excludeMode={seasonsExcluding}
-                        styles={selectStyle}
                     />
                     <span style={{ textAlign: "end" }}>Display Type:</span>
                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
@@ -331,7 +325,7 @@ export default function EgosPage() {
                     <div />
                     <div>
                         <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting.</div>
+                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting, including searching through skills and passives.</div>
                     </div>
                 </div>
                 <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />

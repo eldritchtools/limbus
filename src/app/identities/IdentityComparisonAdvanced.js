@@ -299,7 +299,7 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
     const filterList = (list) => {
         if (compareType === "stats")
             return list.filter(([identity, skills]) => {
-                const maxHp = Math.floor(identity.hp.base + LEVEL_CAP * identity.hp.level);
+                const maxHp = Math.round(identity.hp.base + LEVEL_CAP * identity.hp.level);
                 if (outsideInterval(maxHp, otherOpts.maxHp)) return false;
                 if (outsideInterval(identity.breakSection.length, otherOpts.staggers)) return false;
                 const [speedMin, speedMax] = identity.speedList[3];
@@ -377,7 +377,7 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
             switch (otherOpts.sortType) {
                 case "max hp":
                     sorted = list
-                        .map(([x, s]) => [[x, s], Math.floor(x.hp.base + LEVEL_CAP * x.hp.level)])
+                        .map(([x, s]) => [[x, s], Math.round(x.hp.base + LEVEL_CAP * x.hp.level)])
                         .sort((a, b) => a[1] - b[1])
                         .map(([x, hp]) => x)
                     break;
@@ -791,7 +791,7 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {displayType === "icon" ?
-                <h2>Icons display type not supported</h2> :
+                <h2>Icons display type not supported. Please swap to another display type.</h2> :
                 (separateSinners ?
                     listComponents.map(([sep, list], i) => <>
                         {sep}

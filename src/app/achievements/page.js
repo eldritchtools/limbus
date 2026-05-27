@@ -43,7 +43,7 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
             let text = achievement.text;
             Object.entries(achievement.replace).forEach(([key, values]) => text = text.replace(`[${key}]`, values[i]));
             subAchievements.push(<div key={subAchievements.length} className={styles.subitem}>
-                <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", filter: isPartial && tracking[achievement.id] > i ? "brightness(0.5)" : null }}>
                     <label className={styles.checkboxContainer}>
                         <input type="checkbox" onChange={() => {
                             if (tracking[achievement.id] > i) setAchievementTracking(i);
@@ -84,7 +84,7 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
     const points = Array.isArray(achievement.points) ? achievement.points.reduce((acc, x) => acc + x, 0) : achievement.points;
     const len = Array.isArray(achievement.points) ? achievement.points.length : 1;
 
-    return <details className={styles.details} onToggle={e => setIsOpen(e.target.open)}>
+    return <details className={styles.details} onToggle={e => setIsOpen(e.target.open)} style={isChecked ? {filter: "brightness(0.5)"} : {}}>
         <summary className={styles.summary}>
             <div style={{ display: "flex", gap: "0.1rem", width: "85%", alignItems: "center" }}>
                 <label className={styles.checkboxContainer}>

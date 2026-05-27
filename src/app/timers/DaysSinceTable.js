@@ -50,10 +50,10 @@ export default function DaysSinceTable({ entries, identities, egos }) {
             <td>
                 {isNaN(Number(id)) ? <KeywordIcon id={id} size={48} /> : <SinnerIcon num={id} style={{ width: "48px", height: "48px" }} />}
             </td>
-            <td>{constructCell(id, "identity")}</td>
+            {/* <td>{constructCell(id, "identity")}</td> */}
             <td>{constructCell(id, "00")}</td>
             <td>{constructCell(id, "000")}</td>
-            <td>{constructCell(id, "ego")}</td>
+            {/* <td>{constructCell(id, "ego")}</td> */}
             <td>{constructCell(id, "ZAYIN")}</td>
             <td>{constructCell(id, "TETH")}</td>
             <td>{constructCell(id, "HE")}</td>
@@ -66,10 +66,10 @@ export default function DaysSinceTable({ entries, identities, egos }) {
             <thead>
                 <tr>
                     <th style={stickyHeaderStyle}></th>
-                    <th style={stickyHeaderStyle}>Identity</th>
+                    {/* <th style={stickyHeaderStyle}>Identity</th> */}
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"00"} /></th>
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"000"} /></th>
-                    <th style={stickyHeaderStyle}>E.G.O</th>
+                    {/* <th style={stickyHeaderStyle}>E.G.O</th> */}
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"ZAYIN"} style={{ height: "1.5rem" }} /></th>
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"TETH"} style={{ height: "1.5rem" }} /></th>
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"HE"} style={{ height: "1.5rem" }} /></th>
