@@ -9,11 +9,11 @@ import { LEVEL_CAP } from "@/app/lib/constants";
 
 export default function BuildDisplayCalcMenu({ opts, setOpts }) {
     useEffect(() => {
-        setOpts({ source: "identity", cond: "default", type: "max", sp: 0, crit: "poise", view: "compress", target: {} });
+        setOpts({ source: "identity", type: "max", sp: 0, crit: "poise", view: "compress", skillBonuses: true, coinBonuses: true, passiveBonuses: true, target: {} });
     }, [setOpts]);
 
     const valueComponent = (name, key, def) => <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
-        {["off", "def"].includes(key) ? 
+        {["off", "def"].includes(key) ?
             <Icon path={name} style={{ width: "32px", height: "32px" }} /> :
             <KeywordIcon id={name} />
         }
@@ -100,23 +100,24 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
                             />
                         </div> :
                         null}
-                    <div style={{ display: "flex", flexDirection: "column", gridColumn: "span 2", alignItems: "center" }}>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            Conditionals:
-                            <DropdownButton
-                                value={opts.cond ?? "default"}
-                                setValue={(x) => setOpts(p => ({ ...p, cond: x }))}
-                                options={{ "default": "Default Values", "skill": "With Skill Effects", "all": "With Skill/Coin Effects" }}
-                            />
+                    <div style={{ display: "flex", gridColumn: "span 2", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
+                        <span>Conditionals:</span>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                            <div style={{ display: "flex", gap: "0.2rem" }}>
+                                <label>
+                                    <input type="checkbox" checked={opts.skillBonuses ?? true} onChange={e => setOpts(p => ({ ...p, skillBonuses: e.target.checked }))} />
+                                    Skill Effects
+                                </label>
+                                <label>
+                                    <input type="checkbox" checked={opts.coinBonuses ?? true} onChange={e => setOpts(p => ({ ...p, coinBonuses: e.target.checked }))} />
+                                    Coin Effects
+                                </label>
+                            </div>
+                            <label>
+                                <input type="checkbox" checked={opts.passiveBonuses ?? true} onChange={e => setOpts(p => ({ ...p, passiveBonuses: e.target.checked }))} />
+                                Passive and Status Effects
+                            </label>
                         </div>
-                        {<span style={{ whiteSpace: "pre-wrap", textAlign: "center" }}>
-                            {opts.cond === "default" ?
-                                "Default base and coin power" :
-                                opts.cond === "skill" ?
-                                    "Power and damage conditionals on the skill" :
-                                    "Power and damage conditionals on the skill and its coins"
-                            }
-                        </span>}
                     </div>
                 </div>
             </div>

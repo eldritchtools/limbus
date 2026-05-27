@@ -29,8 +29,11 @@ const paths = [
     {
         title: "Community", subpaths: [
             { path: "/builds", title: "Team Builds" },
+            { path: "/builds/new", title: "New Team Build" },
             { path: "/md-plans", title: "MD Plans" },
+            { path: "/md-plans/new", title: "New MD Plan" },
             { path: "/collections", title: "Collections" },
+            { path: "/collections/new", title: "New Collection" },
             { path: "/rankings", title: "Community Rankings" }
         ]
     },

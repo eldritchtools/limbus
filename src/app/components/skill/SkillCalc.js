@@ -30,6 +30,7 @@ function computeSkill(skill, opts) {
     let lastCoinBonuses = [];
     let typeConvert = 0;
     let coins = [...skill.coins];
+    let allCoinsEndBonuses = [];
 
     const evaluateValue = value => {
         if (typeof value === 'number')
@@ -51,7 +52,60 @@ function computeSkill(skill, opts) {
         }
     }
 
-    if (skill.bonusesEnabled && opts.cond !== "default")
+    if (skill.bonusesEnabled && opts.passiveBonuses)
+        skill.passiveBonuses?.forEach(bonus => {
+            switch (bonus.type) {
+                case "base": case "final":
+                    if (bonus.extra?.cond === "tolastcoin" || bonus.extra?.cond === "lastcoinonly") {
+                        lastCoinBonuses.push(bonus);
+                    } else {
+                        basePower += bonus.value;
+                    }
+                    break;
+                case "clash":
+                    clashBonus += bonus.value;
+                    break;
+                case "coin":
+                    if (bonus.extra?.cond === "tolastcoin" || bonus.extra?.cond === "lastcoinonly") {
+                        lastCoinBonuses.push(bonus);
+                    } else {
+                        coinPowerBonus += bonus.value;
+                    }
+                    break;
+                case "damage":
+                    if (bonus.extra?.cond === "tolastcoin" || bonus.extra?.cond === "lastcoinonly") {
+                        lastCoinBonuses.push(bonus);
+                    } else if (bonus.extra.op === "mul") {
+                        if ("type" in bonus.extra) {
+                            allCoinsEndBonuses.push(bonus);
+                        } else {
+                            damageMultiplier += bonus.value;
+                        }
+                    } else if (bonus.extra.op === "add") {
+                        if ("type" in bonus.extra)
+                            damageAdder += evaluateValue(bonus.value) * (opts.target[bonus.extra["type"]] ?? 1);
+                        else
+                            damageAdder += evaluateValue(bonus.value);
+                    }
+                    break;
+                case "critdamage":
+                    critMultiplier += bonus.value;
+                    break;
+                case "skilllevel":
+                    offDefLevel += bonus.value;
+                    break;
+                case "offlevel":
+                    if(skill.atkType) offDefLevel += bonus.value;
+                    break;
+                case "deflevel":
+                    if(!skill.atkType) offDefLevel += bonus.value;
+                    break;
+                default:
+                    break;
+            }
+        })
+
+    if (skill.bonusesEnabled && opts.skillBonuses)
         skill.bonuses?.forEach(bonus => {
             switch (bonus.type) {
                 case "base": case "final":
@@ -123,7 +177,7 @@ function computeSkill(skill, opts) {
         let lastCoinDamageAdder = 0;
         let coinTypeConvert = 0;
 
-        if (skill.bonusesEnabled && opts.cond === "all")
+        if (skill.bonusesEnabled && opts.coinBonuses)
             coin.bonuses?.forEach(bonus => {
                 switch (bonus.type) {
                     case "coin":
@@ -287,6 +341,7 @@ function computeSkill(skill, opts) {
 
     clash += clashBonus;
     clash = Math.max(clash, 0);
+    damage += damageAdder;
 
     return [formatter.format(clash), skill.atkType ? formatter.format(damage) : "0"];
 }
@@ -366,8 +421,11 @@ function SkillCalc({ skills, opts }) {
 
             let numProps = {};
             const numStyle = { fontWeight: "bold" };
-            if (skill.bonusNotes) {
-                numProps = getGeneralTooltipProps(skill.bonusNotes)
+            if (skill.passiveBonusNotes || skill.bonusNotes) {
+                const notes = [];
+                if(skill.passiveBonusNotes) notes.push(skill.passiveBonusNotes);
+                if(skill.bonusNotes) notes.push(skill.bonusNotes);
+                numProps = getGeneralTooltipProps(notes.join("\n"));
                 numStyle["textDecoration"] = "underline";
             }
 
@@ -414,7 +472,7 @@ function SkillCalc({ skills, opts }) {
     return null;
 }
 
-function extractSkillData(skill, level, rank, applyCrits = false) {
+function extractSkillData(skill, level, rank, applyCrits = false, forceCrits = false) {
     const skillData = {
         name: skill.data.name,
         rank: rank,
@@ -427,7 +485,8 @@ function extractSkillData(skill, level, rank, applyCrits = false) {
         offDefLevel: skill.data.levelCorrection + level,
         bonusesEnabled: skill.bonusesEnabled,
         bonuses: skill.data.bonuses,
-        applyCrits: applyCrits
+        applyCrits: (applyCrits && skill.data.critSkill) || forceCrits,
+        passiveBonuses: skill.data.passiveBonuses
     };
 
     if ("bonusNotes" in skill) skillData["bonusNotes"] = skill["bonusNotes"];
@@ -435,10 +494,10 @@ function extractSkillData(skill, level, rank, applyCrits = false) {
 }
 
 export function computeSkillValues(skill) {
-    const data = extractSkillData({ data: skill, bonusesEnabled: true }, LEVEL_CAP);
+    const data = extractSkillData({ data: skill, bonusesEnabled: true }, LEVEL_CAP, null, true, false);
     return {
-        min: computeSkill(data, { cond: "all", type: "min", target: { def: data.offDefLevel } }),
-        max: computeSkill(data, { cond: "all", type: "max", target: { def: data.offDefLevel } })
+        min: computeSkill(data, { skillBonuses: true, coinBonuses: true, type: "min", target: { def: data.offDefLevel } }),
+        max: computeSkill(data, { skillBonuses: true, coinBonuses: true, passiveBonuses: true, type: "max", target: { def: data.offDefLevel } })
     }
 }
 
@@ -453,7 +512,12 @@ function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
         const tier = skillData.skills[skill.id].tier;
 
         const finalApplyCrits = applyCrits || (opts.crit === "poise" && (skillData.skills[skill.id].critSkill ?? false));
-        const data = extractSkillData(skillData.skills[skill.id], level, [tier, (counts[tier] ?? 0) + 1], finalApplyCrits);
+        const data = extractSkillData(
+            skillData.skills[skill.id], level, 
+            [tier, (counts[tier] ?? 0) + 1], 
+            opts.crit === "all" || opts.crit === "poise", 
+            opts.crit === "all"
+        );
 
         if (tier in counts) {
             return [
@@ -497,7 +561,7 @@ function EgoSkillCalc({ egos, threadspins, level = LEVEL_CAP, opts }) {
             return skillList.map(skill => {
                 const finalApplyCrits = applyCrits || (opts.crit === "poise" && (skill.critSkill ?? false));
 
-                return extractSkillData(skill, level, [rank], finalApplyCrits);
+                return extractSkillData(skill, level, [rank], finalApplyCrits, finalApplyCrits);
             });
         }).flat();
 

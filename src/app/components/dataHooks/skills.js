@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import { useDataMultiple } from "../DataProvider";
+import { useData, useDataMultiple } from "../DataProvider";
 
 function getPath(type, id) {
     if (type === "identity") return `identities/${id}`;
@@ -10,9 +10,12 @@ function getPath(type, id) {
     else return "";
 }
 
-function compileSkillData(data, uptie) {
+function compileSkillData(data, uptie, passiveBonuses = [], critSkill, passiveBonusNotes) {
     const result = data.reduce((acc, dataTier) => dataTier.uptie <= uptie ? { ...acc, ...dataTier } : acc, {});
     if (Object.keys(result).length === 0) return null;
+    if(passiveBonuses.length > 0) result.passiveBonuses = passiveBonuses;
+    if(passiveBonusNotes) result.passiveBonusNotes = passiveBonusNotes;
+    if(critSkill) result.critSkill = critSkill;
     return result;
 }
 
@@ -43,6 +46,7 @@ function compileEgoPassives(skillData, threadspin) {
 export function useSkillData(type, ids, tiers) {
     const list = useMemo(() => Array.isArray(ids) ? ids : [ids], [ids]);
     const [skillData, skillDataLoading] = useDataMultiple(list.map(id => getPath(type, id)));
+    const [identities, identitiesLoading] = useData("identities");
 
     const result = useMemo(() => {
         const tierMapping = list.reduce((acc, id, i) => {
@@ -57,16 +61,26 @@ export function useSkillData(type, ids, tiers) {
                 const path = getPath(type, id);
                 if (skillDataLoading || Object.keys(skillData[path]).length === 0)
                     acc[id] = { skills: [], combatPassives: [], supportPassives: [] };
-                else
+                else {
+                    const critId = identitiesLoading ? false : identities[id].skillKeywordList?.includes("Poise");
                     acc[id] = {
                         skills: Object.fromEntries(Object.entries(skillData[path].skills)
-                            .map(([id, x]) => ([id, { ...x, data: compileSkillData(x.data, tier) }]))
+                            .map(([skillId, x]) => {
+                                const passiveBonuses = (skillData[path].passiveBonuses ?? [])
+                                .filter(x => {
+                                    if(x?.extra?.skillId) return Number(skillId) === x.extra.skillId;
+                                    return true;
+                                });
+                                const critSkill = critId || x.critSkill;
+                                return [skillId, { ...x, data: compileSkillData(x.data, tier, passiveBonuses, critSkill, skillData[path].passiveBonusNotes ?? null) }];
+                            })
                             .filter(([, x]) => x.data)
                         ),
                         combatPassives: compileCombatPassives(skillData[path], tier),
                         supportPassives: compileSupportPassives(skillData[path], tier),
                         notes: skillData[path]?.notes ?? {}
                     };
+                }
             } else if (type === "ego") {
                 const path = getPath(type, id);
                 if (skillDataLoading || Object.keys(skillData[path]).length === 0)
@@ -81,7 +95,7 @@ export function useSkillData(type, ids, tiers) {
             }
             return acc;
         }, {});
-    }, [skillData, skillDataLoading, tiers, list, type]);
+    }, [skillData, skillDataLoading, identities, identitiesLoading, tiers, list, type]);
 
     if (!Array.isArray(ids)) return Object.values(result)[0];
     return result;
