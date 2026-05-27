@@ -86,7 +86,7 @@ function LinksMenu() {
 function APR() {
     return <NoPrefetchLink href="/apr-2026" className="text-link">
         <div className="panel-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
-            <ImageHandler path={"/apr_2026/logo.webp"} style={{ width: "96px" }} />
+            <ImageHandler path={"apr_2026/logo.webp"} style={{ width: "96px" }} />
             <span>
                 Absolute Pride Resonance is an annual charity event organized by creators from the Project Moon community during the month of June. If you have the time, consider checking out the schedule of events by clicking here.
             </span>

@@ -69,7 +69,7 @@ export default function APR2026Page() {
     const headerStyle = {fontSize: "1.2rem", textAlign: "center", fontWeight: "bold", border: "1px solid var(--primary-border-color)", padding: "0.2rem"};
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        <ImageHandler path={"/apr_2026/banner.webp"} style={{ width: "100%", maxWidth: "800px" }} />
+        <ImageHandler path={"apr_2026/banner.webp"} style={{ width: "100%", maxWidth: "800px" }} />
         <span style={{ maxWidth: "1000px" }}>Absolute Pride Resonance is a month-long charity event organized by creators from the Project Moon community. Donations are directed to Outright International, a non-government organization that focuses on addressing human rights violations against the LGBTQIA+ community.</span>
         <NoPrefetchLink href="https://x.com/AbsolutePrideR?lang=en" className="text-link">APR Twitter Link</NoPrefetchLink>
         <span className="sub-text">Disclaimer: I am not part of the creator team contributing to events, but I received permission from the team to promote APR on the site.</span>
@@ -79,8 +79,8 @@ export default function APR2026Page() {
         <span>▾ Check out the schedule of events below ▾</span>
         
         <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
-            <ImageHandler path={"/apr_2026/sched_1.webp"} style={{ width: "50%", minWidth: "300px", maxWidth: "600px" }} />
-            <ImageHandler path={"/apr_2026/sched_2.webp"} style={{ width: "50%", minWidth: "300px", maxWidth: "600px" }} />
+            <ImageHandler path={"apr_2026/sched_1.webp"} style={{ width: "50%", minWidth: "300px", maxWidth: "600px" }} />
+            <ImageHandler path={"apr_2026/sched_2.webp"} style={{ width: "50%", minWidth: "300px", maxWidth: "600px" }} />
         </div>
 
         <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center" }}>Times are automatically adjusted to your local timezone. Some events may have inaccurate schedules if unexpected changes happen. Check the organizers&apos; channels for the most up to date information. More details and events will be added as they become available.</span>
