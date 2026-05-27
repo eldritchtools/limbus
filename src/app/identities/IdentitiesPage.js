@@ -14,16 +14,15 @@ import SinnerIcon from "../components/icons/SinnerIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
-import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
+import { SeasonDropdownSelector } from "../components/selectors/SeasonSelectors";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
 import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
-import { getSeasonString, sinnerIdMapping } from "../lib/constants";
+import { sinnerIdMapping } from "../lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
-import { selectStyle } from "../styles/selectStyle";
 
 function SkillSpread({ identity, columns = 4 }) {
     return <div style={{ display: "grid", gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: "0.5rem", rowGap: "1rem", width: "100%", placeItems: "center" }}>
@@ -241,11 +240,7 @@ export default function IdentitiesPage() {
         return [
             [...statusList],
             [...tagList],
-            [...seasonList].map(season => ({
-                value: `${season}`,
-                label: season === 9100 ? "Walpurgisnacht (any)" : getSeasonString(season),
-                name: season === 9100 ? "Walpurgisnacht" : getSeasonString(season)
-            })).sort((a, b) => a.value - b.value)
+            [...seasonList]
         ]
     }, [identities, identitiesLoading]);
 
@@ -298,15 +293,12 @@ export default function IdentitiesPage() {
                             {seasonsExcluding ? "Exclude" : "Include"}
                         </div>
                     </div>
-                    <DropdownSelectorWithExclusion
-                        options={seasonOptions}
+                    <SeasonDropdownSelector
                         selected={selectedSeasons}
                         setSelected={setSelectedSeasons}
-                        filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                        options={seasonOptions}
                         isMulti={true}
-                        placeholder={"Select Seasons..."}
                         excludeMode={seasonsExcluding}
-                        styles={selectStyle}
                     />
                     <span style={{ textAlign: "end" }}>Display Type:</span>
                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>

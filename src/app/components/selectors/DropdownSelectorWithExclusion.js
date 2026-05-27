@@ -20,7 +20,7 @@ export default function DropdownSelectorWithExclusion({ options, optionsMapped, 
                 return val;
             })
         } else {
-            return selected ? mapped[selected] : [selected];
+            return selected !== null ? mapped[selected] : [selected];
         }
     }, [isMulti, selected, mapped]);
 

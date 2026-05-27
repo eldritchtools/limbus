@@ -54,7 +54,7 @@ export default function BuildDisplayCalcMenu({ opts, setOpts }) {
     const lunarMemoryButton = <button onClick={applyLunarMemory}>Lunar Memory</button>
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", paddingBottom: "0.25rem" }}>
-        <span style={{ textAlign: "center" }}>These computations only count the skill in isolation and do not consider most other effects such as statuses on the sinner/target, passives, resonance bonuses, and so on.<br />Any numbers shown are only meant to serve as a guide and may not be 100% accurate. Numbers with underlines have additional info that can be displayed with a tooltip. Errors can be reported in the Discord.</span>
+        <span style={{ textAlign: "center" }}>These computations only count the skill itself with the most relevant passives and effects. Unless specified, they do not consider effects from external sources such as buffs from other sinners, resonance bonuses, clash bonuses, and so on.<br />Any numbers shown are only meant to serve as a guide and may not be 100% accurate. Numbers with underlines have additional info that can be displayed with a tooltip. Errors can be reported in the Discord.</span>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", justifyContent: "center" }}>
             <div className="panel-container" style={{ gap: "0.5rem", alignItems: "center", padding: "0.25rem" }}>
                 <span style={{ fontSize: "1.2rem" }}>Skill Info:</span>

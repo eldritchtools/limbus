@@ -7,6 +7,7 @@ import { FactionDropdownSelector } from "./FactionSelectors";
 import IconsSelector from "./IconsSelector";
 import identityStyles from "./IdentitySelectors.module.css";
 import { useData } from "../DataProvider";
+import { SeasonDropdownSelector } from "./SeasonSelectors";
 import EgoIcon from "../icons/EgoIcon";
 import Icon from "../icons/Icon";
 import IdentityIcon from "../icons/IdentityIcon";
@@ -23,6 +24,8 @@ import { buildSearchStrings, checkFilterMatch, filterByFilters } from "@/app/lib
 const advancedOptionTypes = {
     "sort": "Sort",
     "filter": "Filter",
+    "season": "Season Filter",
+    "strict": "Strict Filtering"
     // "passive": "Show Passives"
 }
 
@@ -133,7 +136,7 @@ const dropdownStyle = {
     fontSize: "0.9rem"
 }
 
-function AdvancedOption({ mode, type, param, affinity, order, cond, value, faction, setOptionParam, removeOption }) {
+function AdvancedOption({ mode, type, param, affinity, order, cond, value, faction, season, setOptionParam, removeOption }) {
     const typeDropdown = <DropdownButton
         value={type} setValue={x => setOptionParam("type", x)}
         options={{ ...advancedOptionTypes, ...(mode === "id" ? identityAdvancedOptionTypes : {}) }} defaultDisplay={"Choose an option"}
@@ -181,9 +184,9 @@ function AdvancedOption({ mode, type, param, affinity, order, cond, value, facti
                 options={conds} defaultDisplay={"Condition"}
                 styleOverride={dropdownStyle}
             />
-            <NumberInput 
-                value={value ?? 0} onChange={x => setOptionParam("value", x)} allowEmpty={true} 
-                style={{ width: "4ch", textAlign: "center", fontSize: "0.9rem", padding: "0" }} 
+            <NumberInput
+                value={value ?? 0} onChange={x => setOptionParam("value", x)} allowEmpty={true}
+                style={{ width: "4ch", textAlign: "center", fontSize: "0.9rem", padding: "0" }}
             />
             {remButton}
         </div>
@@ -193,6 +196,15 @@ function AdvancedOption({ mode, type, param, affinity, order, cond, value, facti
             {typeDropdown}
             <span style={{ fontWeight: "bold" }}>:</span>
             <FactionDropdownSelector selected={faction} setSelected={x => setOptionParam("faction", x)} />
+            {remButton}
+        </div>
+    }
+
+    if (type === "season") {
+        return <div style={advancedOptionStyle}>
+            {typeDropdown}
+            <span style={{ fontWeight: "bold" }}>:</span>
+            <SeasonDropdownSelector selected={season} setSelected={x => setOptionParam("season", x)} />
             {remButton}
         </div>
     }
@@ -226,8 +238,15 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
         const sortFunctions = [];
 
         if (mode === "id") {
+            const strict = identityAdvOpts.some(opt => opt.type === "strict");
+            const addedFilters = identityAdvOpts.reduce((f, opt) => {
+                if(opt.type === "faction" && opt.faction !== undefined && opt.faction !== null) f.push(["tag", opt.faction]);
+                if(opt.type === "season" && opt.season !== undefined && opt.season !== null) f.push(["season", opt.season]);
+                return f
+            }, []);
+
             const prefiltered = Object.entries(identityOptions).filter(([id]) => !identityIds.includes(id)).map(([, data]) => data);
-            result = filterByFilters("identity", prefiltered, filters,
+            result = filterByFilters("identity", prefiltered, [...filters, ...addedFilters],
                 data => {
                     if (data.upcoming) return false;
                     if (searchString.length !== 0 && !checkFilterMatch(searchString, buildSearchStrings(data, altNamesLoading ? null : altNames))) return false;
@@ -237,14 +256,11 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
                             const v = identityExtractParams[opt.param](data);
                             return compare(v, opt.value ?? 0, opt.cond);
                         }
-                        if (opt.type === "faction") {
-                            if (opt.faction === undefined) return true;
-                            return (data.tags || []).includes(opt.faction);
-                        }
                         return true;
                     })) return false;
                     return true;
-                }
+                },
+                strict
             );
 
             identityAdvOpts.filter(({ type }) => type === "sort").forEach(({ param, order }) => {
@@ -258,8 +274,14 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
                 });
             })
         } else {
+            const strict = egoAdvOpts.some(opt => opt.type === "strict");
+            const addedFilters = egoAdvOpts.reduce((f, opt) => {
+                if(opt.type === "season" && opt.season !== undefined && opt.season !== null) f.push(["season", opt.season]);
+                return f;
+            }, []);
+
             const prefiltered = Object.entries(egoOptions).filter(([id]) => !egoIds.some(list => list.includes(id))).map(([, data]) => data);
-            result = filterByFilters("ego", prefiltered, filters,
+            result = filterByFilters("ego", prefiltered, [...filters, ...addedFilters],
                 data => {
                     if (data.upcoming) return false;
                     if (searchString.length !== 0 && !checkFilterMatch(searchString, buildSearchStrings(data, altNamesLoading ? null : altNames))) return false;
@@ -272,7 +294,8 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
                         return true;
                     })) return false;
                     return true;
-                }
+                },
+                strict
             );
 
             egoAdvOpts.filter(({ type }) => type === "sort").forEach(({ param, affinity, order }) => {
