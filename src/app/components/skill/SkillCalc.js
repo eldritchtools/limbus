@@ -95,10 +95,10 @@ function computeSkill(skill, opts) {
                     offDefLevel += bonus.value;
                     break;
                 case "offlevel":
-                    if(skill.atkType) offDefLevel += bonus.value;
+                    if (skill.atkType) offDefLevel += bonus.value;
                     break;
                 case "deflevel":
-                    if(!skill.atkType) offDefLevel += bonus.value;
+                    if (!skill.atkType) offDefLevel += bonus.value;
                     break;
                 default:
                     break;
@@ -144,7 +144,7 @@ function computeSkill(skill, opts) {
                     offDefLevel += bonus.value;
                     break;
                 case "addcoin":
-                    coins.splice(bonus.extra.num-1, 0, ...Array(bonus.value).fill(coins[bonus.extra.num-1]));
+                    coins.splice(bonus.extra.num - 1, 0, ...Array(bonus.value).fill(coins[bonus.extra.num - 1]));
                     break;
                 default:
                     break;
@@ -176,6 +176,9 @@ function computeSkill(skill, opts) {
         let newLastCoinBonuses = [];
         let lastCoinDamageAdder = 0;
         let coinTypeConvert = 0;
+        let minResists = {};
+
+        const getRes = type => Math.max(minResists[type] ?? 0, opts.target[type] ?? 1);
 
         if (skill.bonusesEnabled && opts.coinBonuses)
             coin.bonuses?.forEach(bonus => {
@@ -188,7 +191,7 @@ function computeSkill(skill, opts) {
                             newLastCoinBonuses.push(bonus);
                         } else if (bonus.extra.cond === "lastcoinonly") {
                             if ("type" in bonus.extra)
-                                lastCoinDamageAdder += evaluateValue(bonus.value) * (opts.target[bonus.extra["type"]] ?? 1);
+                                lastCoinDamageAdder += evaluateValue(bonus.value) * getRes(bonus.extra["type"]);
                             else
                                 lastCoinDamageAdder += evaluateValue(bonus.value);
                         } else if (bonus.extra.op === "mul") {
@@ -209,13 +212,13 @@ function computeSkill(skill, opts) {
                             }
                         } else if (bonus.extra.op === "add") {
                             if ("type" in bonus.extra)
-                                coinDamageAdder += evaluateValue(bonus.value) * (opts.target[bonus.extra["type"]] ?? 1);
+                                coinDamageAdder += evaluateValue(bonus.value) * getRes(bonus.extra["type"]);
                             else
                                 coinDamageAdder += evaluateValue(bonus.value);
                         }
                         break;
                     case "typeconverteddamage":
-                        coinTypeConvert += evaluateValue(bonus.value) * (1 + ((opts.target[bonus.extra["type1"]] ?? 1) - 1) + ((opts.target[bonus.extra["type2"]] ?? 1) - 1));
+                        coinTypeConvert += evaluateValue(bonus.value) * (1 + (getRes(bonus.extra["type1"]) - 1) + (getRes(bonus.extra["type2"]) - 1));
                         break;
                     case "critdamage":
                         coinCritMultiplier += evaluateValue(bonus.value);
@@ -231,6 +234,9 @@ function computeSkill(skill, opts) {
                             reuseHeadReuses += bonus.value;
                         else
                             coinReuses += bonus.value;
+                        break;
+                    case "minresist":
+                        minResists[bonus.extra["type"]] = bonus.value;
                         break;
                     default:
                         break;
@@ -288,10 +294,18 @@ function computeSkill(skill, opts) {
 
             let coinResistMultiplier = 1;
             if (coinTypeConvert === 0) {
-                coinResistMultiplier = resistMultiplier;
+                if (Object.keys(minResists).length > 0) {
+                    if (skill.atkType) coinResistMultiplier += getRes(skill.atkType) - 1;
+                    if (skill.affinity !== "none") coinResistMultiplier += getRes(skill.affinity) - 1;
+                    coinResistMultiplier += (offDefLevel - (opts.target.def ?? LEVEL_CAP)) / (Math.abs(offDefLevel - (opts.target.def ?? LEVEL_CAP)) + 25);
+                } else {
+                    coinResistMultiplier = resistMultiplier;
+                }
             } else {
                 coinResistMultiplier = coinTypeConvert + (offDefLevel - (opts.target.def ?? LEVEL_CAP)) / (Math.abs(offDefLevel - (opts.target.def ?? LEVEL_CAP)) + 25);
             }
+
+            if(skill.name.includes("Good Girl")) console.log(coinResistMultiplier);
 
             if (skill.applyCrits) {
                 damage *= (coinResistMultiplier + 0.2) * (coinDamageMultiplier + coinCritMultiplier);
@@ -311,7 +325,7 @@ function computeSkill(skill, opts) {
                     if (bonus.extra.cond === "crit" && !skill.applyCrits) return;
                     let addedDamage = damage * evaluateValue(bonus.value);
                     if ("max" in bonus.extra) addedDamage = Math.min(addedDamage, bonus.extra["max"]);
-                    finalDamage += addedDamage * (opts.target[bonus.extra.type] ?? 1);
+                    finalDamage += addedDamage * getRes(bonus.extra.type);
                 }
             });
 
@@ -423,8 +437,8 @@ function SkillCalc({ skills, opts }) {
             const numStyle = { fontWeight: "bold" };
             if (skill.passiveBonusNotes || skill.bonusNotes) {
                 const notes = [];
-                if(skill.passiveBonusNotes) notes.push(skill.passiveBonusNotes);
-                if(skill.bonusNotes) notes.push(skill.bonusNotes);
+                if (skill.passiveBonusNotes) notes.push(skill.passiveBonusNotes);
+                if (skill.bonusNotes) notes.push(skill.bonusNotes);
                 numProps = getGeneralTooltipProps(notes.join("\n"));
                 numStyle["textDecoration"] = "underline";
             }
@@ -513,9 +527,9 @@ function IdentitySkillCalc({ identity, uptie = 4, level = LEVEL_CAP, opts }) {
 
         const finalApplyCrits = applyCrits || (opts.crit === "poise" && (skillData.skills[skill.id].critSkill ?? false));
         const data = extractSkillData(
-            skillData.skills[skill.id], level, 
-            [tier, (counts[tier] ?? 0) + 1], 
-            opts.crit === "all" || opts.crit === "poise", 
+            skillData.skills[skill.id], level,
+            [tier, (counts[tier] ?? 0) + 1],
+            opts.crit === "all" || opts.crit === "poise",
             opts.crit === "all"
         );
 
