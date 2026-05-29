@@ -1,7 +1,7 @@
 import EncountersPage from "./EncountersPage";
 import { encounterCategoryLabels } from "../lib/encounters";
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
-import { getEncountersForMetadata } from "../lib/metadataHelper";
+import { getEncounterMetadata } from "../lib/metadataHelper";
 
 export async function generateMetadata({ searchParams }) {
     const { category, encounter } = await searchParams;
@@ -9,10 +9,10 @@ export async function generateMetadata({ searchParams }) {
     let title = "Encounters";
     let description = "View details for encounters in Limbus Company, including related team builds and community discussion.";
     if (category && encounter) {
-        const encounters = await getEncountersForMetadata();
-        if (category in encounters && encounter in encounters[category]) {
-            title = `${encounterCategoryLabels[category]}: ${encounters[category][encounter]}`;
-            description = `Details for ${encounterCategoryLabels[category]}: ${encounters[category][encounter]}`;
+        const encounterTitle = await getEncounterMetadata(category, encounter);
+        if (encounterTitle) {
+            title = `${encounterCategoryLabels[category]}: ${encounterTitle}`;
+            description = `Details for ${encounterCategoryLabels[category]}: ${encounterTitle}`;
         }
     }
 

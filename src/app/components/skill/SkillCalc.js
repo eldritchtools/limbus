@@ -305,8 +305,6 @@ function computeSkill(skill, opts) {
                 coinResistMultiplier = coinTypeConvert + (offDefLevel - (opts.target.def ?? LEVEL_CAP)) / (Math.abs(offDefLevel - (opts.target.def ?? LEVEL_CAP)) + 25);
             }
 
-            if(skill.name.includes("Good Girl")) console.log(coinResistMultiplier);
-
             if (skill.applyCrits) {
                 damage *= (coinResistMultiplier + 0.2) * (coinDamageMultiplier + coinCritMultiplier);
             } else {

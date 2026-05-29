@@ -1,11 +1,11 @@
 import EgoPage from "./EgoPage";
 
 import JsonLd from "@/app/lib/jsonLd";
-import { getEgosForMetadata } from "@/app/lib/metadataHelper";
+import { getEgoMetadata } from "@/app/lib/metadataHelper";
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
-    const ego = (await getEgosForMetadata())[String(id)];
+    const ego = await getEgoMetadata(id);
 
     if (!ego) {
         return { title: "E.G.O not found" };
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
 }
 
 const schema = async id => {
-    const ego = (await getEgosForMetadata())[String(id)] ?? "Temporary missing name";
+    const ego = (await getEgoMetadata(id)) ?? "Temporary missing name";
 
     return {
         "@context": "https://schema.org",
