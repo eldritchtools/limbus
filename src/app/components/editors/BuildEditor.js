@@ -1,12 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
 import BuildEditingComponent from "./BuildEditingComponent";
 import { useData } from "../DataProvider";
 import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
+import ImageCarousel from "../objects/ImageCarousel";
+import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption, validateTag } from "../selectors/TagSelector";
 
@@ -34,6 +36,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [activeSinners, setActiveSinners] = useState(7);
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
+    const [imageIds, setImageIds] = useState([]);
     const [identityUpties, setIdentityUpties] = useState(Array.from({ length: 12 }, () => ""));
     const [identityLevels, setIdentityLevels] = useState(Array.from({ length: 12 }, () => ""));
     const [egoThreadspins, setEgoThreadspins] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => "")));
@@ -71,6 +74,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                     // setTeamCode(build.team_code);
                     setYoutubeVideo(build.youtube_video_id ?? '');
                     setTags(build.tags.map(t => tagToTagSelectorOption(t)));
+                    setImageIds(build.image_ids);
                     setIsPublished(build.is_published);
                     setBlockDiscovery(build.block_discovery ?? false);
                     setLoading(false);
@@ -167,6 +171,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 teamCode: "",
                 youtubeVideoId,
                 tags: tagsConverted,
+                imageIds: imageIds,
                 extraOpts, blockDiscovery,
                 published: isPublished,
             }
@@ -194,6 +199,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 like_count: 0,
                 comment_count: 0,
                 tags: tagsConverted,
+                image_ids: imageIds,
                 block_discovery: blockDiscovery,
                 is_published: false,
                 created_at: createdAt ?? Date.now(),
@@ -238,6 +244,14 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your build here..."} />
         </div>
+
+        {user && <React.Fragment>
+            <span style={{ fontSize: "1.2rem" }}>Images</span>
+            <span className="sub-text">{uiStrings.postImages}</span>
+            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1}/>
+            <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
+        </React.Fragment>}
+
         <span style={{ fontSize: "1.2rem" }}>Keywords</span>
         <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", minHeight: "50px", flexWrap: "wrap" }}>

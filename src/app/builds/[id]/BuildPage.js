@@ -9,6 +9,7 @@ import Distribution from "@/app/components/build/Distribution";
 import TeamCodeComponent from "@/app/components/build/TeamCodeComponent";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
+import ImageCarousel from "@/app/components/objects/ImageCarousel";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import { getBuild } from "@/app/database/builds";
 import { keywordIdMapping } from "@/app/database/keywordIds";
@@ -94,6 +95,11 @@ export default function BuildPage({ id }) {
                     <MarkdownRenderer content={build.body} />
                 </div>
             </>
+            }
+            {build?.image_ids?.length > 0 && <>
+                <span style={{ fontSize: "1.2rem" }}>Images</span>
+                <ImageCarousel imageIds={build.image_ids} />
+                </>
             }
             {build.youtube_video_id ?
                 <div style={{ display: "flex", paddingTop: "1rem", alignSelf: "center", width: "100%", justifyContent: "center" }}>

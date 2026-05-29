@@ -7,6 +7,7 @@ import ChoiceEventModalContent from "./ChoiceEventModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
+import ImageCarouselModalContent from "./ImageCarouselModalContent";
 import ModalContainer from "./ModalContainer";
 import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
@@ -31,7 +32,8 @@ const MODAL_COMPONENTS = {
     "choiceEvent": ChoiceEventModalContent,
     "setFavoriteLinks": SetFavoriteLinksModalContent,
     "rating": RatingModalContent,
-    "selectDeployment": SelectDeploymentModalContent
+    "selectDeployment": SelectDeploymentModalContent,
+    "imageCarousel": ImageCarouselModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -113,6 +115,10 @@ export function ModalProvider({ children }) {
         openModal("selectDeployment", { initialActive, identityIds, activeSinners, onSave });
     }
 
+    const openImageCarouselModal = ({ imageIds, startingPosition }) => {
+        openModal("imageCarousel", { imageIds, startingPosition });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -144,6 +150,7 @@ export function ModalProvider({ children }) {
         openSetFavoriteLinksModal,
         openRatingModal,
         openSelectDeploymentModal,
+        openImageCarouselModal,
         setModalBeforeClose,
         closeModal,
         clearModals

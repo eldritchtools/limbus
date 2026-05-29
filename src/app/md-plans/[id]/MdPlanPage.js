@@ -17,6 +17,7 @@ import RecommendedBuildsDisplay from "@/app/components/mdPlans/RecommendedBuilds
 import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
 import { HorizontalDivider } from "@/app/components/objects/Dividers";
+import ImageCarousel from "@/app/components/objects/ImageCarousel";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import SkillReplace from "@/app/components/skill/SkillReplace";
 import { keywordIdMapping } from "@/app/database/keywordIds";
@@ -247,6 +248,12 @@ export default function MdPlanPage({ id }) {
                 </>
                 }
             </div>
+
+            {plan?.image_ids?.length > 0 && <>
+                <span style={{ fontSize: "1.2rem" }}>Images</span>
+                <ImageCarousel imageIds={plan.image_ids} />
+                </>
+            }
 
             <HorizontalDivider />
 

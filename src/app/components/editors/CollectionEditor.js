@@ -1,12 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import MdPlan from "../contentCards/MdPlan";
 import TeamBuild from "../contentCards/TeamBuild";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import { useModal } from "../modals/ModalProvider";
+import ImageCarousel from "../objects/ImageCarousel";
+import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
 import Username from "../user/Username";
@@ -108,6 +110,7 @@ export default function CollectionEditor({ mode, collectionId }) {
     const [shortDesc, setShortDesc] = useState('');
     const [contributions, setContributions] = useState('closed');
     const [tags, setTags] = useState([]);
+    const [imageIds, setImageIds] = useState([]);
     const [items, setItems] = useState([]);
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
@@ -120,7 +123,7 @@ export default function CollectionEditor({ mode, collectionId }) {
     const router = useRouter();
 
     useEffect(() => {
-        if(!loading) return;
+        if (!loading) return;
         if (mode === "edit") {
             const handleCollection = collection => {
                 if (!collection || (collection.user_id && collection.user_id !== user.id)) {
@@ -134,6 +137,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                     setContributions(collection.submission_mode);
                     setItems(collection.items.filter(x => x.data));
                     setTags(collection.tags.map(t => tagToTagSelectorOption(t?.name ?? t)));
+                    setImageIds(collection.image_ids);
                     setIsPublished(collection.is_published);
                     setBlockDiscovery(collection.block_discovery ?? false);
                     setLoading(false);
@@ -179,6 +183,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 items: trimmedItems,
                 submissionMode: contributions,
                 tags: tagsConverted,
+                imageIds: imageIds,
                 published: isPublished,
                 blockDiscovery
             }
@@ -199,6 +204,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 short_desc: shortDesc,
                 items: items,
                 tags: tagsConverted,
+                image_ids: imageIds,
                 block_discovery: blockDiscovery,
                 like_count: 0,
                 comment_count: 0,
@@ -237,6 +243,14 @@ export default function CollectionEditor({ mode, collectionId }) {
         <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your curated list here..."} />
         </div>
+
+        {user && <React.Fragment>
+            <span style={{ fontSize: "1.2rem" }}>Images</span>
+            <span className="sub-text">{uiStrings.postImages}</span>
+            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1} />
+            <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
+        </React.Fragment>}
+
         {!isLocalId(collectionId) || (mode === "create" && user) ? <>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ fontSize: "1.2rem" }}>Contributions: </span>

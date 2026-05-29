@@ -296,7 +296,7 @@ begin
 end;
 $$;
 
-create or replace function public.create_md_plan_v3(
+create or replace function public.create_md_plan_v4(
   p_title text,
   p_body text,
   p_recommendation_mode text,
@@ -316,7 +316,8 @@ create or replace function public.create_md_plan_v3(
   p_is_published boolean,
   p_block_discovery boolean,
   p_build_ids uuid[],
-  p_tags text[]
+  p_tags text[],
+  p_image_ids uuid[]
 )
 returns uuid
 language plpgsql
@@ -403,6 +404,19 @@ begin
 
   end loop;
 
+  INSERT INTO image_attachments (
+    image_id,
+    target_type,
+    target_id,
+    position
+  )
+  SELECT
+    unnest(p_image_ids),
+    'md_plan'::target_type_enum,
+    v_plan_id,
+    generate_subscripts(p_image_ids, 1) - 1;
+
+
   foreach build_id in array p_build_ids loop
 
     insert into public.md_plan_builds (
@@ -425,7 +439,7 @@ begin
 end;
 $$;
 
-create or replace function public.update_md_plan_v3(
+create or replace function public.update_md_plan_v4(
   p_plan_id uuid,
   p_title text,
   p_body text,
@@ -446,7 +460,8 @@ create or replace function public.update_md_plan_v3(
   p_is_published boolean,
   p_block_discovery boolean,
   p_build_ids uuid[],
-  p_tags text[]
+  p_tags text[],
+  p_image_ids uuid[]
 )
 returns void
 language plpgsql
@@ -548,10 +563,26 @@ begin
   select p_plan_id, unnest(_tag_ids)
   on conflict do nothing;
 
+  DELETE FROM image_attachments
+  WHERE target_type = 'md_plan'::target_type_enum
+  AND target_id = p_plan_id;
+
+  INSERT INTO image_attachments (
+    image_id,
+    target_type,
+    target_id,
+    position
+  )
+  SELECT
+    unnest(p_image_ids),
+    'md_plan'::target_type_enum,
+    p_plan_id,
+    generate_subscripts(p_image_ids, 1) - 1;
+
 end;
 $$;
 
-create or replace function public.get_md_plan_v4(
+create or replace function public.get_md_plan_v5(
   p_plan_id uuid
 )
 returns jsonb
@@ -669,6 +700,12 @@ begin
     'comment_count', p.comment_count,
     'block_discovery', p.block_discovery,
     'tags', coalesce(t.tags, '[]'::jsonb),
+    'image_ids', COALESCE((
+      SELECT jsonb_agg(ia.image_id ORDER BY ia.position)
+      FROM public.image_attachments ia
+      WHERE ia.target_type = 'md_plan'::target_type_enum
+      AND ia.target_id = p.id
+    ), '[]'::jsonb),
     'builds', coalesce(b.builds, '[]'::jsonb),
     'pinned_comment', CASE
       WHEN p.pinned_comment_id IS NULL THEN NULL
@@ -760,5 +797,46 @@ BEGIN
       p_published := TRUE,
       p_ignore_block_discovery := TRUE
     );
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION delete_md_plan(
+  p_plan_id UUID
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  image_ids uuid[];
+BEGIN
+
+  -- ownership check
+  IF NOT EXISTS (
+    SELECT 1
+    FROM md_plans
+    WHERE id = p_plan_id
+    AND user_id = auth.uid()
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  -- get images first
+  SELECT array_agg(image_id)
+  INTO image_ids
+  FROM image_attachments
+  WHERE target_type = 'md_plan'::target_type_enum
+  AND target_id = p_plan_id;
+
+  -- delete attachments
+  DELETE FROM image_attachments
+  WHERE target_type = 'md_plan'::target_type_enum
+  AND target_id = p_plan_id;
+
+  -- delete md_plan
+  DELETE FROM md_plans
+  WHERE id = p_plan_id;
+
+  RETURN;
 END;
 $$;

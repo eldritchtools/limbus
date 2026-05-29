@@ -18,6 +18,8 @@ import RecommendedBuildsDisplay from "../mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "../mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "../mdPlans/RecommendedSpecBuildDisplay";
 import { useModal } from "../modals/ModalProvider";
+import ImageCarousel from "../objects/ImageCarousel";
+import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
 import SkillReplace from "../skill/SkillReplace";
@@ -76,6 +78,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
 
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
+    const [imageIds, setImageIds] = useState([]);
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
     const [blockDiscovery, setBlockDiscovery] = useState(false);
@@ -115,6 +118,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                     setFloors(mdPlan.floors.map((x, i) => ({ ...x, key: i })));
                     setYoutubeVideo(mdPlan.youtube_video_id ?? '');
                     setTags(mdPlan.tags.map(t => tagToTagSelectorOption(t?.name ?? t)));
+                    setImageIds(mdPlan.image_ids);
                     setIsPublished(mdPlan.is_published);
                     setBlockDiscovery(mdPlan.block_discovery ?? false);
                     setLoading(false);
@@ -216,7 +220,8 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 published: isPublished,
                 blockDiscovery,
                 buildIds: planBuilds.map(build => build.id),
-                tags: tagsConverted
+                tags: tagsConverted,
+                imageIds: imageIds
             }
 
             if (mode === "edit") {
@@ -249,6 +254,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 is_published: isPublished,
                 block_discovery: blockDiscovery,
                 tags: tagsConverted,
+                image_ids: imageIds,
                 builds: planBuilds,
                 created_at: createdAt ?? Date.now(),
                 updated_at: Date.now(),
@@ -465,6 +471,14 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
         <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your run plan here..."} />
         </div>
+        
+        {user && <React.Fragment>
+            <span style={{ fontSize: "1.2rem" }}>Images</span>
+            <span className="sub-text">{uiStrings.postImages}</span>
+            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1}/>
+            <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
+        </React.Fragment>}
+
         <span style={{ fontSize: "1.2rem" }}>Skill Replacements</span>
         <span className="sub-text">Skills to replace on recommended identities. Only identities with changed skills will be shown.</span>
         {recommendationMode === "specbuild" ?

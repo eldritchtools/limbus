@@ -35,7 +35,8 @@ const createParams = {
     tags: "p_tags",
     extraOpts: "p_extra_opts",
     blockDiscovery: "p_block_discovery",
-    published: "p_published"
+    published: "p_published",
+    imageIds: "p_image_ids"
 };
 
 export async function getPopularBuilds(page = 1, pageSize = null) {
@@ -47,20 +48,21 @@ export async function searchBuilds(params, page = 1, pageSize = null) {
 }
 
 export async function getBuild(id, forEdit = false) {
-    return callRPC("get_build_v6", { p_build_id: id, p_for_edit: forEdit });
+    return callRPC("get_build_v7", { p_build_id: id, p_for_edit: forEdit });
 }
 
 export async function insertBuild(params) {
-    return callRPC("create_build_v4", convertParams(params, createParams));
+    return callRPC("create_build_v5", convertParams(params, createParams));
 }
 
 export async function updateBuild(params) {
-    await callRPC("update_build_v4", convertParams(params, createParams));
+    await callRPC("update_build_v5", convertParams(params, createParams));
     return params.buildId;
 }
 
 export async function deleteBuild(build_id) {
-    return deleteObject("builds", build_id);
+    await callRPC("delete_build", { p_build_id: build_id });
+    return { deleted: true };
 }
 
 export async function pinBuildComment(buildId, commentId) {
@@ -72,5 +74,5 @@ export async function unpinBuildComment(buildId) {
 }
 
 export async function getSavedBuilds(user_id, page = 1, pageSize = null) {
-    return callRPC("get_saved_builds_v5", paginateParams({p_user_id: user_id}, page, pageSize ?? contentConfig.builds.defaultPageSize))
+    return callRPC("get_saved_builds_v5", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.builds.defaultPageSize))
 }
