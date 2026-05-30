@@ -11,5 +11,5 @@ export function constructUploadedImgSrc(id, type) {
 export default function UploadedImage({ id, type, className, style = {} }) {
     if (!id) return null;
     const src = constructUploadedImgSrc(id, type);
-    return <img src={src} alt="image" className={className} style={style} />
+    return <img src={src} alt={id} className={className} style={style} />
 }

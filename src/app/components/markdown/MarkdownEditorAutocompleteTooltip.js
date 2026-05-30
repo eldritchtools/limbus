@@ -4,6 +4,7 @@ import { getAdditionalIconSrc } from "../icons/AdditionalIcon";
 import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
 import { getIdentityImgSrc } from "../icons/IdentityIcon";
+import { getSinnerIconSrc } from "../icons/SinnerIcon";
 import { getStatusImgSrc } from "../icons/StatusIcon";
 import { getThemePackImgSrc, getThemePackOverlayImgSrc } from "../icons/ThemePackIcon";
 
@@ -170,6 +171,18 @@ function constructIconAutocompleteTooltip(entry) {
     return wrapper;
 }
 
+function constructSinnerIconAutocompleteTooltip(entry) {
+    const wrapper = constructWrapper(40);
+    
+    const img = document.createElement("img");
+    img.style.width = "32px";
+    img.style.height = "32px";
+    img.src = getSinnerIconSrc(entry);
+    wrapper.appendChild(img);
+
+    return wrapper;
+}
+
 export default function constructMarkdownEditorAutocompleteTooltip(entry, type, otherData = null) {
     if (type === "identity") return constructIdentityAutocompleteTooltip(entry);
     if (type === "ego") return constructEgoAutocompleteTooltip(entry);
@@ -178,5 +191,6 @@ export default function constructMarkdownEditorAutocompleteTooltip(entry, type, 
     if (type === "themepack") return constructThemePackAutocompleteTooltip(entry);
     // if (type === "encounter") return constructEncounterAutocompleteTooltip(entry);
     if (type === "icon") return constructIconAutocompleteTooltip(entry);
+    if (type === "sinnericon") return constructSinnerIconAutocompleteTooltip(entry);
     return null;
 }

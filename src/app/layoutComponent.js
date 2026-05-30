@@ -34,7 +34,8 @@ const paths = [
             { path: "/md-plans/new", title: "New MD Plan" },
             { path: "/collections", title: "Collections" },
             { path: "/collections/new", title: "New Collection" },
-            { path: "/rankings", title: "Community Rankings" }
+            { path: "/rankings", title: "Community Rankings" },
+            { path: "/community-assets", title: "Community Assets"}
         ]
     },
     {

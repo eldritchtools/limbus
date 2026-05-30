@@ -15,7 +15,9 @@ import { convertMarkdownAlias } from "./MarkdownAliases";
 import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
 import AdditionalIcon from "../icons/AdditionalIcon";
+import CommunityAsset from "../icons/CommunityAsset";
 import KeywordIcon, { isValidKeywordId } from "../icons/KeywordIcon";
+import SinnerIcon from "../icons/SinnerIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
 import NoPrefetchLink from "../NoPrefetchLink";
 import Status from "../objects/Status";
@@ -197,10 +199,10 @@ function EncounterItem({ str }) {
     } else if (!(cat in encounters) || !(enc in encounters[cat])) {
         return <span>{`{encounter:${str}}`}</span>;
     } else {
-        return <LinkWithTooltip 
-            href={`/encounters?category=${cat}&encounter=${enc}`} 
-            tooltipProps={getEncounterTooltipProps(cat, enc)} 
-            className="text-link" 
+        return <LinkWithTooltip
+            href={`/encounters?category=${cat}&encounter=${enc}`}
+            tooltipProps={getEncounterTooltipProps(cat, enc)}
+            className="text-link"
             style={{ textDecoration: "underline" }}
         >
             {encounterCategoryLabels[cat]}: {encounters[cat][enc]}
@@ -348,6 +350,19 @@ export default function MarkdownRenderer({ content }) {
                             } catch (err) {
                                 return <span>{`{${tokenType}:${tokenValues[0]}}`}</span>;
                             }
+                        case "sinnericon":
+                            try {
+                                return <SinnerIcon num={tokenValues[0]} style={{ width: "2rem", display: "inline", verticalAlign: "middle" }} />;
+                            } catch (err) {
+                                return <span>{`{${tokenType}:${tokenValues[0]}}`}</span>;
+                            }
+                        case "emote":
+                            return <CommunityAsset
+                                id={tokenValues[0]} type={"sm"}
+                                style={{ display: "inline", height: "2rem", verticalAlign: "middle" }}
+                            />;
+                        case "sticker":
+                            return <CommunityAsset id={tokenValues[0]} type={"lg"} style={{ display: "block" }} />;
                         default:
                             return <span>{`{${tokenType}:${tokenValues.join(":")}}`}</span>;
                     }

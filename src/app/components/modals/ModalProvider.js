@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
+import CommunityAssetModalContent from "./CommunityAssetModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
@@ -33,7 +34,8 @@ const MODAL_COMPONENTS = {
     "setFavoriteLinks": SetFavoriteLinksModalContent,
     "rating": RatingModalContent,
     "selectDeployment": SelectDeploymentModalContent,
-    "imageCarousel": ImageCarouselModalContent
+    "imageCarousel": ImageCarouselModalContent,
+    "communityAsset": CommunityAssetModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -119,6 +121,10 @@ export function ModalProvider({ children }) {
         openModal("imageCarousel", { imageIds, startingPosition });
     }
 
+    const openCommunityAssetModal = ({ imageId }) => {
+        openModal("communityAsset", { imageId });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -151,6 +157,7 @@ export function ModalProvider({ children }) {
         openRatingModal,
         openSelectDeploymentModal,
         openImageCarouselModal,
+        openCommunityAssetModal,
         setModalBeforeClose,
         closeModal,
         clearModals

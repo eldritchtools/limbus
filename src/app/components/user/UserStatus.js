@@ -11,6 +11,35 @@ import Notification from "../objects/Notification";
 import { useAuth } from "@/app/database/authProvider";
 import { getNotifications, getUnreadNotificationsCount } from "@/app/database/notifications";
 
+let lastFetchTime = 0;
+let inFlight = null;
+
+const REFRESH_MS = 5 * 60 * 1000;
+
+async function fetchNotifications(userId, setNotifs, setUnreadCount) {
+    const now = Date.now();
+    if (now - lastFetchTime < REFRESH_MS) return;
+    if (inFlight) return inFlight;
+
+    inFlight = (async () => {
+        try {
+            const [notifs, unread] = await Promise.all([
+                getNotifications(userId, 5),
+                getUnreadNotificationsCount(userId),
+            ]);
+
+            setNotifs(notifs);
+            setUnreadCount(unread);
+
+            lastFetchTime = Date.now();
+        } finally {
+            inFlight = null;
+        }
+    })();
+
+    return inFlight;
+}
+
 function UserStatus() {
     const { user, profile, loading, logout } = useAuth();
     const router = useRouter();
@@ -36,19 +65,23 @@ function UserStatus() {
     useEffect(() => {
         if (!user) return;
 
-        const refreshNotifications = async () => {
-            setNotifs(await getNotifications(user.id, 5));
-            setUnreadCount(await getUnreadNotificationsCount(user.id));
+        fetchNotifications(user.id, setNotifs, setUnreadCount);
+
+        const onVisible = () => {
+            if (document.visibilityState === "visible") {
+                fetchNotifications(user.id, setNotifs, setUnreadCount);
+            }
         };
 
-        refreshNotifications();
+        document.addEventListener("visibilitychange", onVisible);
 
-        const onFocus = () => refreshNotifications();
-
-        window.addEventListener("focus", onFocus);
+        const interval = setInterval(() => {
+            fetchNotifications(user.id, setNotifs, setUnreadCount);
+        }, 5 * 60 * 1000);
 
         return () => {
-            window.removeEventListener("focus", onFocus);
+            document.removeEventListener("visibilitychange", onVisible);
+            clearInterval(interval);
         };
     }, [user]);
 
@@ -66,7 +99,7 @@ function UserStatus() {
                 </div>
                 {user ?
                     <div style={{ display: "flex", alignItems: "end" }}>
-                        <button onClick={() => logout()} className={styles.logInOut} style={{flex: 1}}>Logout</button>
+                        <button onClick={() => logout()} className={styles.logInOut} style={{ flex: 1 }}>Logout</button>
                         <div style={{ position: "relative" }} ref={popoverRef}>
                             <button onClick={() => setNotifsOpen(p => !p)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", fontSize: "1rem" }}>
                                 🔔

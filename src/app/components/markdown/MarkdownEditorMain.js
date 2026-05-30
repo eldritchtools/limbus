@@ -5,7 +5,7 @@ import { EditorSelection, EditorState } from '@codemirror/state';
 import { Transaction } from "@codemirror/state";
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap, placeholder as cmPlaceholder } from '@codemirror/view';
-import { useEffect, useImperativeHandle, useRef } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import {
     FaBold, FaItalic, FaHeading, FaQuoteRight,
     FaLink, FaImage, FaListUl, FaListOl, FaQuestionCircle,
@@ -15,6 +15,8 @@ import {
 import { backspaceTriggersCompletion, tabAcceptsCompletion, tokenAutocomplete, useAutocompleteDataFacetExtension } from './MarkdownEditorAutocomplete';
 import { markdownStyling } from './MarkdownEditorStyling';
 import "./MarkdownEditorMain.css"
+import CommunityAssetPicker from '../communityAssets/CommunityAssetPicker';
+import { EmoteSolid, StickerSolid } from '../contentActions/Symbols';
 import { getGeneralTooltipProps } from '../tooltips/GeneralTooltip';
 
 /* ---------- Helpers ---------- */
@@ -195,6 +197,55 @@ function guideClick() {
     window.open('https://www.markdownguide.org/basic-syntax/', '_blank');
 }
 
+function CommunityAssetPickerButton({ type, getView }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    const handleClick = id => {
+        setOpen(false);
+        const view = getView();
+        if (!view) return;
+
+        const { from, to } = safeSelection(view);
+        // const selected = view.state.doc.sliceString(from, to);
+        const token = `{${type}:${id}}`;
+        safeDispatch(view,
+            { from, to, insert: token },
+            { anchor: from + token.length, head: from + token.length }
+        );
+        view.focus();
+    }
+
+    return <div ref={ref} style={{ display: "inline", position: "relative" }}>
+        <button onClick={() => setOpen(o => !o)} {...getGeneralTooltipProps(`Insert ${type}`)}>
+            {type === "emote" ?
+                <EmoteSolid size={16} /> :
+                <StickerSolid size={16} />
+            }
+        </button>
+
+        {open && (
+            <div style={{
+                position: "absolute", top: "100%", background: "var(--bg-secondary)",
+                border: "1px solid var(--secondary-border-color)", borderRadius: "8px",
+                zIndex: 10, padding: "0.2rem", boxSizing: "border-box"
+            }}>
+                <CommunityAssetPicker type={type} onClick={handleClick} />
+            </div>
+        )}
+    </div>;
+}
+
 /* ---------- Component ---------- */
 
 export default function MarkdownEditorMain({
@@ -268,6 +319,8 @@ export default function MarkdownEditorMain({
             {/* Toolbar */}
             {mini ? null :
                 <div style={{ marginBottom: 4 }}>
+                    <CommunityAssetPickerButton type={"emote"} getView={() => viewRef.current} />
+                    <CommunityAssetPickerButton type={"sticker"} getView={() => viewRef.current} />
                     <button {...getGeneralTooltipProps("Bold")} onClick={() => toggleWrap(viewRef.current, "**")}>
                         <FaBold />
                     </button>

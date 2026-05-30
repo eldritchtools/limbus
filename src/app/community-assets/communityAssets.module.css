@@ -1,0 +1,11 @@
+.asset {
+    cursor: pointer;
+    padding: 0.2rem;
+    border-radius: 8px;
+    transition: 0.2s all ease;
+}
+
+.asset:hover {
+    filter: brightness(1.2);
+    background-color: var(--bg-hover);
+}

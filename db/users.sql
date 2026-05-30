@@ -49,3 +49,20 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
 after insert on auth.users
 for each row execute function public.handle_new_user();
+
+CREATE TABLE public.user_moderation (
+  user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+
+  asset_upload_disabled_until TIMESTAMPTZ DEFAULT NULL,
+  moderator_note TEXT,
+
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.user_moderation ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "users can view own moderation status"
+ON public.user_moderation
+FOR SELECT
+USING (auth.uid() = user_id);

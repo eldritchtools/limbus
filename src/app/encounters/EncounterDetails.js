@@ -2,6 +2,7 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useState } from "react";
 
 import styles from "./EncounterDetails.module.css";
+import ChoiceEvent from "../components/choiceEvent/ChoiceEvent";
 import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import EnemyIcon from "../components/icons/EnemyIcon";
@@ -118,6 +119,7 @@ export default function EncounterDetails({ data }) {
     const [wave, setWave] = useState(0);
     const [phase, setPhase] = useState(0);
     const [targetIndex, setTargetIndex] = useState(0);
+    const [viewingEvents, setViewingEvents] = useState(false);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -126,7 +128,7 @@ export default function EncounterDetails({ data }) {
         setPhase(0);
         setTargetIndex(0);
     }, [data]);
-    
+
     if (!data) return <div>
         <h3>No encounter data.</h3>
     </div>
@@ -155,7 +157,7 @@ export default function EncounterDetails({ data }) {
                 {Array.from({ length: battles }, (_, i) =>
                     <div
                         key={i} className={`tab-header ${battle === i ? "active" : ""}`}
-                        onClick={() => { setBattle(i); setWave(0); setPhase(0); setTargetIndex(0); }}
+                        onClick={() => { setBattle(i); setWave(0); setPhase(0); setTargetIndex(0); setViewingEvents(false); }}
                     >
                         Battle {i + 1}
                     </div>
@@ -168,7 +170,7 @@ export default function EncounterDetails({ data }) {
                 {Array.from({ length: waves }, (_, i) =>
                     <div
                         key={i} className={`tab-header ${wave === i ? "active" : ""}`}
-                        onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); }}
+                        onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); setViewingEvents(false); }}
                     >
                         Wave {i + 1}
                     </div>
@@ -181,7 +183,7 @@ export default function EncounterDetails({ data }) {
                 {Array.from({ length: phases }, (_, i) =>
                     <div
                         key={i} className={`tab-header ${phase === i ? "active" : ""}`}
-                        onClick={() => { setPhase(i); setTargetIndex(0); }}
+                        onClick={() => { setPhase(i); setTargetIndex(0); setViewingEvents(false); }}
                     >
                         Phase {i + 1}
                     </div>
@@ -203,17 +205,28 @@ export default function EncounterDetails({ data }) {
             <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
                 <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
                     {targets.map((target, i) =>
-                        <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => setTargetIndex(i)}>
+                        <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => { setTargetIndex(i); setViewingEvents(false); }}>
                             <EnemyIcon id={target.portrait} style={{ width: "100%", height: "100%" }} />
                             {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
                         </div>
                     )}
+                    {
+                        targetsData.choiceEvents &&
+                        <div className={`${styles.targetIconContainer} ${viewingEvents ? styles.active : ""}`} style={{ display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setViewingEvents(true)}>
+                            Events
+                        </div>
+                    }
                 </div>
             </div>
         }
 
-        {targets &&
-            <TargetComponent target={targets[targetIndex]} />
+        {viewingEvents ?
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                {targetsData.choiceEvents.map((event, i) => <div key={i} className="panel-container" style={{ maxWidth: "min(800px, 95%)" }}>
+                    <ChoiceEvent event={event} />
+                </div>)}
+            </div> :
+            (targets && <TargetComponent target={targets[targetIndex]} />)
         }
     </div>
 }
