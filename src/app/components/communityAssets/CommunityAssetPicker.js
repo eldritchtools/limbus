@@ -1,3 +1,5 @@
+"use client";
+
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,7 +11,7 @@ import { getUserCommunityAssets, searchCommunityAssets } from "@/app/database/co
 import useLocalState from "@/app/lib/useLocalState";
 
 export default function CommunityAssetPicker({ type, onClick }) {
-    const [recent, setRecent] = useLocalState(`${type}RecentPicks`, []);
+    const [recent] = useLocalState(`${type}RecentPicks`, []);
     const [search, setSearch] = useState("");
     const [mode, setMode] = useState("default");
     const [loading, setLoading] = useState(false);
@@ -56,7 +58,8 @@ export default function CommunityAssetPicker({ type, onClick }) {
     }, [search, type, user, first]);
 
     const handleClick = id => {
-        setRecent(p => ([id, ...p.filter(x => x !== id)]).slice(0, 20));
+        const newRecent = ([id, ...recent.filter(x => x !== id)]).slice(0, 20);
+        localStorage.setItem(`${type}RecentPicks`, JSON.stringify(newRecent));
         if (onClick) onClick(id);
     }
 
