@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState, useMemo, useEffect } from "react";
+import Select from "react-select";
 
 import BuildEditingComponent from "./BuildEditingComponent";
 import { useData } from "../DataProvider";
@@ -20,10 +21,13 @@ import { handleCreateTag } from "@/app/database/tags";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { getEncounterCategoryOptions, getEncounterOptions } from "@/app/lib/encounters";
+import { checkFilterMatch } from "@/app/lib/filter";
 import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
+import { selectStyle } from "@/app/styles/selectStyle";
 
 
 export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds, initTag }) {
@@ -53,6 +57,17 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const router = useRouter();
 
     const [identitiesMini, identitiesMiniLoading] = useData("identities_mini");
+    const [encounters, encountersLoading] = useData("encounters");
+
+    const [category, setCategory] = useState(null);
+    const [encounter, setEncounter] = useState(null);
+    const [addEncounterTagLoading, setAddEncounterTagLoading] = useState(false);
+
+    const categoryOptions = useMemo(() => getEncounterCategoryOptions(true), []);
+    const encounterOptions = useMemo(() =>
+        encountersLoading || !category ? [] : getEncounterOptions(encounters, category),
+        [encountersLoading, encounters, category]
+    );
 
     useEffect(() => {
         if (!loading) return;
@@ -126,6 +141,15 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
 
         handleInitTag();
     }, [initTag]);
+
+    const handleAddEncounterTag = async () => {
+        if(!category || !encounter) return;
+        setAddEncounterTagLoading(true);
+        const tag = `${category.value}-${encounter.value}`;
+        const dbTag = await handleCreateTag(tag);
+        setTags(p => [...p, tagToTagSelectorOption(dbTag)]);
+        setAddEncounterTagLoading(false);
+    }
 
     const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
         if (id && id in identitiesMini) {
@@ -287,6 +311,33 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             null}
         <span style={{ fontSize: "1.2rem" }}>Tags</span>
         <TagSelector selected={tags} onChange={setTags} creatable={true} />
+        <span className="sub-text">
+            If this build is for a specific encounter, you can tag it so it shows up in that encounter&apos;s page.
+        </span>
+        <div style={{display: "flex", gap: "0.2rem", alignItems: "center", flexWrap: "wrap"}}>
+            <Select
+                options={categoryOptions}
+                value={category}
+                onChange={x => {setCategory(x); setEncounter(null);}}
+                placeholder={"Choose category..."}
+                filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
+                styles={selectStyle}
+            />
+            <Select
+                options={encounterOptions}
+                value={encounter}
+                onChange={setEncounter}
+                placeholder={"Choose encounter..."}
+                filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                styles={selectStyle}
+            />
+
+            <button onClick={handleAddEncounterTag} disabled={addEncounterTagLoading}>
+                Add Encounter Tag
+            </button>
+
+        </div>
+
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div>
                 <button className={otherSettings ? "toggle-button-active" : "toggle-button"} onClick={() => setOtherSettings(p => !p)}>
