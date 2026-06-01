@@ -49,3 +49,47 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
 after insert on auth.users
 for each row execute function public.handle_new_user();
+
+CREATE TABLE public.user_moderation (
+  user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+
+  asset_upload_disabled_until TIMESTAMPTZ DEFAULT NULL,
+  moderator_note TEXT,
+
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.user_moderation ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "users can view own moderation status"
+ON public.user_moderation
+FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE OR REPLACE FUNCTION block_user_asset_uploads(
+  p_user_id UUID,
+  p_days INT DEFAULT 7,
+  p_note TEXT DEFAULT NULL
+)
+RETURNS VOID AS $$
+BEGIN
+  INSERT INTO user_moderation (
+    user_id,
+    asset_upload_disabled_until,
+    moderator_note,
+    updated_at
+  )
+  VALUES (
+    p_user_id,
+    NOW() + (p_days || ' days')::INTERVAL,
+    p_note,
+    NOW()
+  )
+  ON CONFLICT (user_id)
+  DO UPDATE SET
+    asset_upload_disabled_until = NOW() + (p_days || ' days')::INTERVAL,
+    moderator_note = COALESCE(p_note, user_moderation.moderator_note),
+    updated_at = NOW();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

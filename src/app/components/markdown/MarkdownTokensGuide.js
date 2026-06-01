@@ -30,7 +30,10 @@ const options = {
     "mdplan": "mdplan",
     "collection": "collection",
     "user": "user",
-    "sinner": "sinner"
+    "sinner": "sinner",
+    "sinnericon": "sinnericon",
+    "emote": "emote",
+    "sticker": "sticker"
 }
 
 const desc = {
@@ -48,7 +51,10 @@ const desc = {
     "mdplan": "Reference an md plan with {mdplan:id}. This will show the name of the md plan and a tooltip with its search overview on hover. You can find the id of an md plan on its url. Copying the full url below will automatically isolate the id.",
     "collection": "Reference a collection with {collection:id}. This will show the name of the collection and a tooltip with its search overview on hover. You can find the id of a collection on its url. Copying the full url below will automatically isolate the id.",
     "user": "Reference a user with {user:username}. This will show a link to the user's profile. Note that if the user changes their username, this will break. Usernames are also case-sensitive.",
-    "sinner": "Reference a sinner with {sinner:id}. This will show the name of the sinner. Useful if you want to accurately type Ryōshū."
+    "sinner": "Reference a sinner with {sinner:id}. This will show the name of the sinner. Useful if you want to accurately type Ryōshū.",
+    "sinnericon": "Reference a sinner with {sinnericon:id}. This will show the icon of the sinner.",
+    "emote": "Show an emote uploaded through Community Assets. Use the picker menu on the editor interface to get the ids.",
+    "sticker": "Show a sticker uploaded through Community Assets. Use the picker menu on the editor interface to get the ids."
 }
 
 function GuideBase({ type, editorRef, onChange, guideValue, children }) {
@@ -111,7 +117,8 @@ function SelectorGuide({ type, editorRef, onChange, guideValue, setGuideValue })
         "themepack": ThemePackDropdownSelector,
         "encounter": EncounterDropdownSelector,
         "icon": AdditionalIconDropdownSelector,
-        "sinner": SinnerDropdownSelector
+        "sinner": SinnerDropdownSelector,
+        "sinnericon": SinnerDropdownSelector
     }[type];
 
     return <GuideBase type={type} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue}>
@@ -178,15 +185,39 @@ function InputGuide({ type, editorRef, onChange, guideValue, setGuideValue }) {
             </div>
         </GuideBase>
     }
+    if (type === "emote") {
+        const handleTestEmote = () => {
+            setGuideValue(value);
+        }
+
+        return <GuideBase type={type} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue}>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <input value={value} onChange={e => setValue(e.target.value)} style={{ width: "20rem" }} />
+                <button onClick={handleTestEmote}>Test Emote</button>
+            </div>
+        </GuideBase>
+    }
+    if (type === "sticker") {
+        const handleTestSticker = () => {
+            setGuideValue(value);
+        }
+
+        return <GuideBase type={type} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue}>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <input value={value} onChange={e => setValue(e.target.value)} style={{ width: "20rem" }} />
+                <button onClick={handleTestSticker}>Test Sticker</button>
+            </div>
+        </GuideBase>
+    }
 
     return null;
 }
 
 function GuideAssembler({ guideTab, editorRef, onChange, guideValue, setGuideValue }) {
-    if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "themepack", "encounter", "icon", "sinner"].includes(guideTab))
+    if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "themepack", "encounter", "icon", "sinner", "sinnericon"].includes(guideTab))
         return <SelectorGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
-    if (["build", "mdplan", "collection", "user"].includes(guideTab))
+    if (["build", "mdplan", "collection", "user", "emote", "sticker"].includes(guideTab))
         return <InputGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
     return null;

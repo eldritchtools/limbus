@@ -1,0 +1,13 @@
+.asset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.asset:hover {
+    filter: brightness(1.2);
+    background-color: var(--bg-hover);
+}

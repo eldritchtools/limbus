@@ -16,7 +16,7 @@ function createAutocompleteLabel(entry, type) {
         return `${encounterCategoryLabels[entry.cat]}: ${entry.name}`;
     if (type === "icon")
         return entry.name;
-    if (type === "keyword" || type === "sinner")
+    if (type === "keyword" || type === "sinner" || type === "sinnericon")
         return entry;
     return "";
 }

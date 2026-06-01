@@ -4,9 +4,11 @@ import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
+import CommunityAssetModalContent from "./CommunityAssetModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
+import ImageCarouselModalContent from "./ImageCarouselModalContent";
 import ModalContainer from "./ModalContainer";
 import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
@@ -31,7 +33,9 @@ const MODAL_COMPONENTS = {
     "choiceEvent": ChoiceEventModalContent,
     "setFavoriteLinks": SetFavoriteLinksModalContent,
     "rating": RatingModalContent,
-    "selectDeployment": SelectDeploymentModalContent
+    "selectDeployment": SelectDeploymentModalContent,
+    "imageCarousel": ImageCarouselModalContent,
+    "communityAsset": CommunityAssetModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -113,6 +117,14 @@ export function ModalProvider({ children }) {
         openModal("selectDeployment", { initialActive, identityIds, activeSinners, onSave });
     }
 
+    const openImageCarouselModal = ({ imageIds, startingPosition }) => {
+        openModal("imageCarousel", { imageIds, startingPosition });
+    }
+
+    const openCommunityAssetModal = ({ imageId }) => {
+        openModal("communityAsset", { imageId });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -144,6 +156,8 @@ export function ModalProvider({ children }) {
         openSetFavoriteLinksModal,
         openRatingModal,
         openSelectDeploymentModal,
+        openImageCarouselModal,
+        openCommunityAssetModal,
         setModalBeforeClose,
         closeModal,
         clearModals

@@ -1,0 +1,83 @@
+.imageItem {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.image {
+  display: block;
+  /* width: 100%;
+  height: auto; */
+
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+
+  cursor: pointer;
+}
+
+.imageItem:hover .image {
+  filter: brightness(0.8);
+}
+
+.removeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  
+  font-size: 12px;
+  line-height: 1;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  cursor: pointer;
+}
+
+.imageItem:hover .removeButton {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.removeButton:hover {
+  background: rgba(220, 50, 50, 0.9);
+  transform: scale(1.05);
+}
+
+.imageItem:has(.removeButton:hover) .image {
+  filter: brightness(1);
+}
+
+@media (hover: none) {
+  .removeButton {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.imageItem:hover .image {
+  filter: brightness(0.8);
+  transform: scale(1.02);
+}

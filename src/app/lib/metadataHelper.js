@@ -60,9 +60,46 @@ const getMetadataIndexData = async (type) => {
     return (await getMetadataIndex())?.[type] ?? {};
 }
 
-export const getIdentitiesForMetadata = async () => await getMetadataIndexData("identities");
-export const getEgosForMetadata = async () => await getMetadataIndexData("egos");
-export const getEncountersForMetadata = async () => await getMetadataIndexData("encounters");
+const backupCache = new LRUCache({ max: 100, ttl: 1000 * 60 * 5 });
+
+async function getMetadataFromDatabase(key) {
+    const cached = backupCache.get(key);
+    if (cached !== undefined) return cached;
+
+    const { data, error } = await getSupabase()
+        .from("page_metadata")
+        .select("title")
+        .eq("slug", key)
+        .maybeSingle()
+
+    if (error) return null;
+
+    if (!data) {
+        backupCache.set(key, null);
+        return null;
+    }
+
+    backupCache.set(key, data.title);
+    return data.title;
+}
+
+export const getIdentityMetadata = async (id) => {
+    const metadataIndex = await getMetadataIndexData("identities");
+    if (String(id) in metadataIndex) return metadataIndex[String(id)];
+    return getMetadataFromDatabase(`identities/${id}`);
+}
+
+export const getEgoMetadata = async (id) => {
+    const metadataIndex = await getMetadataIndexData("egos");
+    if (String(id) in metadataIndex) return metadataIndex[String(id)];
+    return getMetadataFromDatabase(`egos/${id}`);
+}
+
+export const getEncounterMetadata = async (category, encounter) => {
+    const metadataIndex = await getMetadataIndexData("encounters");
+    if (category in metadataIndex && encounter in metadataIndex[category]) return metadataIndex[category][encounter];
+    return getMetadataFromDatabase(`encounters/${category}/${encounter}`);
+}
 
 export function cleanMetadataDescription(text = "") {
     if (!text) return "";

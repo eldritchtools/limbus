@@ -359,7 +359,7 @@ begin
 end;
 $$;
 
-create or replace function public.create_collection_v1(
+create or replace function public.create_collection_v2(
   p_title text,
   p_body text,
   p_short_desc text,
@@ -367,7 +367,8 @@ create or replace function public.create_collection_v1(
   p_block_discovery boolean,
   p_items jsonb,
   p_submission_mode collection_submission_mode,
-  p_tags TEXT[]
+  p_tags TEXT[],
+  p_image_ids uuid[]
 )
 returns uuid
 language plpgsql
@@ -449,11 +450,24 @@ begin
     ON CONFLICT DO NOTHING;
   END LOOP;
 
+  INSERT INTO image_attachments (
+    image_id,
+    target_type,
+    target_id,
+    position
+  )
+  SELECT
+    unnest(p_image_ids),
+    'collection'::target_type_enum,
+    v_collection_id,
+    generate_subscripts(p_image_ids, 1) - 1;
+
+
   return v_collection_id;
 end;
 $$;
 
-create or replace function public.update_collection_v1(
+create or replace function public.update_collection_v2(
   p_collection_id uuid,
   p_title text,
   p_body text,
@@ -462,7 +476,8 @@ create or replace function public.update_collection_v1(
   p_is_published boolean,
   p_block_discovery boolean,
   p_items jsonb,
-  p_tags TEXT[]
+  p_tags TEXT[],
+  p_image_ids uuid[]
 )
 returns void
 language plpgsql
@@ -551,10 +566,26 @@ begin
   INSERT INTO public.collection_tags (collection_id, tag_id)
   SELECT p_collection_id, unnest(_tag_ids)
   ON CONFLICT DO NOTHING;
+
+  DELETE FROM image_attachments
+  WHERE target_type = 'collection'::target_type_enum
+  AND target_id = p_collection_id;
+
+  INSERT INTO image_attachments (
+    image_id,
+    target_type,
+    target_id,
+    position
+  )
+  SELECT
+    unnest(p_image_ids),
+    'collection'::target_type_enum,
+    p_collection_id,
+    generate_subscripts(p_image_ids, 1) - 1;
 end;
 $$;
 
-create or replace function public.get_collection_v4(
+create or replace function public.get_collection_v5(
   p_collection_id uuid
 )
 returns jsonb
@@ -734,6 +765,12 @@ begin
     'comment_count', c.comment_count,
     'block_discovery', c.block_discovery,
     'tags', COALESCE(ct.tags, '[]'::jsonb),
+    'image_ids', COALESCE((
+      SELECT jsonb_agg(ia.image_id ORDER BY ia.position)
+      FROM public.image_attachments ia
+      WHERE ia.target_type = 'collection'::target_type_enum
+      AND ia.target_id = c.id
+    ), '[]'::jsonb),
     'items', COALESCE(i.items, '[]'::jsonb),
     'pinned_comment', CASE
       WHEN c.pinned_comment_id IS NULL THEN NULL
@@ -761,6 +798,47 @@ begin
   return v_result;
 
 end;
+$$;
+
+CREATE OR REPLACE FUNCTION delete_collection(
+  p_collection_id UUID
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  image_ids uuid[];
+BEGIN
+
+  -- ownership check
+  IF NOT EXISTS (
+    SELECT 1
+    FROM collections
+    WHERE id = p_collection_id
+    AND user_id = auth.uid()
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  -- get images first
+  SELECT array_agg(image_id)
+  INTO image_ids
+  FROM image_attachments
+  WHERE target_type = 'collection'::target_type_enum
+  AND target_id = p_collection_id;
+
+  -- delete attachments
+  DELETE FROM image_attachments
+  WHERE target_type = 'collection'::target_type_enum
+  AND target_id = p_collection_id;
+
+  -- delete collection
+  DELETE FROM collections
+  WHERE id = p_collection_id;
+
+  RETURN;
+END;
 $$;
 
 CREATE TABLE public.collection_submissions (

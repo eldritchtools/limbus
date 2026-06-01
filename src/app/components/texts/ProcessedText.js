@@ -7,6 +7,9 @@ const tagMap = {
     b: ({ children, key }) => <span key={key} style={{ fontWeight: "bold" }}>{children}</span>,
     u: ({ children, key }) => <span key={key} style={{ textDecoration: "underline" }}>{children}</span>,
     s: ({ children, key }) => <span key={key} style={{ textDecoration: "line-through" }}>{children}</span>,
+    // 
+    Bloodfiend: ({children, key}) => <span key={key}>{`<Bloodfiend>`}{children}</span>,
+    "La Manchaland[TabExplain]": ({children, key}) => <span key={key}>{`<La Manchaland>`}{children}</span>,
 };
 
 function parseToTree(input) {
@@ -46,7 +49,7 @@ function parseToTree(input) {
 
         if (input[i] === "<") {
             const match = input.slice(i).match(
-                /^<([a-zA-Z0-9]+)(?:=([^\s>]+)|((?:\s+[a-zA-Z0-9]+=[^\s>]+)*))\s*>/
+                /^<([a-zA-Z0-9\[\] ]+)(?:=([^\s>]+)|((?:\s+[a-zA-Z0-9\[\] ]+=[^\s>]+)*))\s*>/
             );
 
             if (!match) {

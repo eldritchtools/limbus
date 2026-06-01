@@ -1,11 +1,11 @@
 import IdentityPage from "./IdentityPage";
 
 import JsonLd from "@/app/lib/jsonLd";
-import { getIdentitiesForMetadata } from "@/app/lib/metadataHelper";
+import { getIdentityMetadata } from "@/app/lib/metadataHelper";
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
-    const identity = (await getIdentitiesForMetadata())[String(id)];
+    const identity = await getIdentityMetadata(id);
 
     if (!identity) {
         return { title: "Identity not found" };
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
 }
 
 const schema = async id => {
-    const identity = (await getIdentitiesForMetadata())[String(id)] ?? "Temporary missing name";
+    const identity = (await getIdentityMetadata(id)) ?? "Temporary missing name";
 
     return {
         "@context": "https://schema.org",

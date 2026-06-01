@@ -33,7 +33,8 @@ const createParams = {
     published: "p_is_published",
     blockDiscovery: "p_block_discovery",
     buildIds: "p_build_ids",
-    tags: "p_tags"
+    tags: "p_tags",
+    imageIds: "p_image_ids"
 }
 
 export async function searchMdPlans(params, page, pageSize = null) {
@@ -41,20 +42,21 @@ export async function searchMdPlans(params, page, pageSize = null) {
 }
 
 export async function getMdPlan(planId) {
-    return callRPC("get_md_plan_v4", { p_plan_id: planId });
+    return callRPC("get_md_plan_v5", { p_plan_id: planId });
 }
 
 export async function createMdPlan(params) {
-    return callRPC("create_md_plan_v3", convertParams(params, createParams));
+    return callRPC("create_md_plan_v4", convertParams(params, createParams));
 }
 
 export async function updateMdPlan(params) {
-    await callRPC("update_md_plan_v3", convertParams(params, createParams));
+    await callRPC("update_md_plan_v4", convertParams(params, createParams));
     return params.planId;
 }
 
 export async function deleteMdPlan(planId) {
-    return deleteObject("md_plans", planId);
+    await callRPC("delete_md_plan", { p_plan_id: planId });
+    return { deleted: true };
 }
 
 export async function pinMdPlanComment(planId, commentId) {

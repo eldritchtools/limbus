@@ -14,7 +14,9 @@ import {
     UserPlusIcon as UserPlusIconSolid,
     ClipboardDocumentCheckIcon as ClipboardDocumentCheckIconSolid,
     ArrowLeftIcon as ArrowLeftIconSolid,
-    BellIcon as BellIconSolid
+    BellIcon as BellIconSolid,
+    FaceSmileIcon as FaceSmileIconSolid,
+    RectangleStackIcon as RectangleStackIconSolid
 } from '@heroicons/react/24/solid'
 
 
@@ -85,4 +87,12 @@ export function BellOutline({ size = 20, text }) {
 
 export function BellSolid({ size = 20, text }) {
     return constructSymbol(BellIconSolid, size, text);
+}
+
+export function EmoteSolid({ size = 20, text }) {
+    return constructSymbol(FaceSmileIconSolid, size, text);
+}
+
+export function StickerSolid({ size = 20, text }) {
+    return constructSymbol(RectangleStackIconSolid, size, text);
 }

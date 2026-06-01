@@ -132,6 +132,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                     return !iconsLoading && icons;
                 case "keyword":
                 case "sinner":
+                case "sinnericon":
                     return true;
                 default:
                     return false;
@@ -179,7 +180,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                     return { entries: Object.entries(icons).map(([id, name]) => ({ id: id, label: name, item: { id: id, name: name } })) || [], multi: false };
                 case "keyword":
                     return { entries: Object.keys(keywordToIdMapping).map(kw => ({ id: kw, label: kw, item: kw })) || [], multi: false };
-                case "sinner":
+                case "sinner": 
+                case "sinnericon":
                     return { entries: Object.entries(sinnerIdMapping).map(([id, name]) => ({ id: id, label: name, item: name })) || [], multi: false };
                 default:
                     return { entries: [], multi: false };
@@ -235,7 +237,11 @@ async function tokenCompletionSource(context) {
 
     const type = convertMarkdownAlias(parts[0]);
     if (!type) return null;
-    if (!["identity", "ego", "status", "statusicon", "giftname", "gifticons", "themepack", "encounter", "icon", "keyword", "sinner"].includes(type)) return null;
+    if (![
+        "identity", "ego", "status", "statusicon", 
+        "giftname", "gifticons", "themepack", "encounter", 
+        "icon", "keyword", "sinner", "sinnericon"
+    ].includes(type)) return null;
 
     const rest = parts.slice(1);
     const query = rest.length ? rest[rest.length - 1] : "";
@@ -293,6 +299,8 @@ async function tokenCompletionSource(context) {
                 info: () => {
                     if (type === "giftname" || type === "gifticons") {
                         return constructMarkdownEditorAutocompleteTooltip(entry.item, type, dataProvider.getOriginalData("status"));
+                    } else if(type === "sinnericon") {
+                        return constructMarkdownEditorAutocompleteTooltip(entry.id, type);
                     } else {
                         return constructMarkdownEditorAutocompleteTooltip(entry.item, type);
                     }

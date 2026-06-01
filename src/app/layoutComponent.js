@@ -34,7 +34,8 @@ const paths = [
             { path: "/md-plans/new", title: "New MD Plan" },
             { path: "/collections", title: "Collections" },
             { path: "/collections/new", title: "New Collection" },
-            { path: "/rankings", title: "Community Rankings" }
+            { path: "/rankings", title: "Community Rankings" },
+            { path: "/community-assets", title: "Community Assets"}
         ]
     },
     {
@@ -102,7 +103,7 @@ function Announcement() {
                     <span style={{ lineHeight: "1.3" }}>
                         Hi! I&apos;m conducting a short survey to help me plan the future of the site. If you&apos;d like to share your thoughts, you can find it <NoPrefetchLink className="text-link" href="https://docs.google.com/forms/d/e/1FAIpQLSc0XlDQcYslTdljCgGFBElg1HNbSVMOc1bl-izbHQ8X7jaCNg/viewform">here</NoPrefetchLink>. (Google Forms, no login)
                         <br/>
-                        The survey will be up until at least June 1 (about 1 week from when I launched it), but if I still receive responses around that time, I&apos;ll keep it up longer.
+                        I&apos;ve still been receiving responses recently, so I will keep the survey up to a few more days, but I may stop responses any time soon.
                         <br/>
                         If you&apos;re curious about the partial results, I have them up <NoPrefetchLink className="text-link" href="/survey">here</NoPrefetchLink>. I also answer some common concerns I noticed.
                     </span>

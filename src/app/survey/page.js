@@ -49,39 +49,39 @@ export default function SurveyPage() {
             </span>
         </div>
 
-        <h3 style={{margin: 0}}>Partial Results as of 2026/05/27</h3>
+        <h3 style={{margin: 0}}>Partial Results as of 2026/06/01</h3>
         <span className="sub-text">Sorry for the formatting. This is just a quick and dirty version for now since it&apos;s just partial results.</span>
         <div style={{borderTop: "1px solid var(--secondary-border-color", padding: "0.5rem", display: "flex", flexDirection: "column"}}>
             <h3 style={{margin: 0}}>Site Usage</h3>
             <span>
                 Which of these main features or pages do you use regularly (at least once every so often or when the game updates) or have found useful at least once or twice?
             </span>
-            <span>Team Builds - 64%</span>
-            <span>MD Plans - 54%</span>
-            <span>Collections - 18%</span>
-            <span>Community Ranking and Reviews - 34%</span>
-            <span>Identity/E.G.O Pages - 76%</span>
-            <span>Encounters Page - 40%</span>
-            <span>Timers and Roadmap Page - 56%</span>
-            <span>MD Achievement Tracker - 30%</span>
-            <span>MD Reference Pages - 70%</span>
-            <span>Daily Randomized Team - 4%</span>
-            <span>Dispense and Training Calculator - 30%</span>
-            <span>Team Solver - 30%</span>
-            <span>Team Randomizer - 6%</span>
-            <span>Floor Planner - 48%</span>
+            <span>Team Builds - 66.1%</span>
+            <span>MD Plans - 49.2%</span>
+            <span>Collections - 13.6%</span>
+            <span>Community Ranking and Reviews - 38.1%</span>
+            <span>Identity/E.G.O Pages - 78.8%</span>
+            <span>Encounters Page - 39.8%</span>
+            <span>Timers and Roadmap Page - 49.2%</span>
+            <span>MD Achievement Tracker - 34.7%</span>
+            <span>MD Reference Pages - 62.7%</span>
+            <span>Daily Randomized Team - 7.6%</span>
+            <span>Dispense and Training Calculator - 24.6%</span>
+            <span>Team Solver - 33.9%</span>
+            <span>Team Randomizer - 11%</span>
+            <span>Floor Planner - 39%</span>
             <br/>
             <span>Which of these secondary features do you use regularly (at least once every so often or when the game updates) or have found useful at least once or twice?</span>
-            <span>Tokens - 28%</span>
-            <span>Display Type - 42%</span>
-            <span>Tracking Mode for MD Plans - 28%</span>
-            <span>Reviewers Tab - 20%</span>
-            <span>Review Bumping - 14%</span>
-            <span>Basic/Advanced Compare Mode for Identities/E.G.O - 34%</span>
-            <span>Uptie/Threadspin Compare Mode - 40%</span>
-            <span>Encounter Tags for Builds - 20%</span>
-            <span>Company Page - 26%</span>
-            <span>Site Customization - 24%</span>
+            <span>Tokens - 21.2%</span>
+            <span>Display Type - 38.1%</span>
+            <span>Tracking Mode for MD Plans - 28.8%</span>
+            <span>Reviewers Tab - 26.3%</span>
+            <span>Review Bumping - 13.6%</span>
+            <span>Basic/Advanced Compare Mode for Identities/E.G.O - 29.7%</span>
+            <span>Uptie/Threadspin Compare Mode - 35.6%</span>
+            <span>Encounter Tags for Builds - 11.0%</span>
+            <span>Company Page - 22.9%</span>
+            <span>Site Customization - 16.9%</span>
         </div>
         
         <div style={{borderTop: "1px solid var(--secondary-border-color", padding: "0.5rem", display: "flex", flexDirection: "column"}}>
@@ -89,42 +89,42 @@ export default function SurveyPage() {
             <span>
                 How interested would you be in extraction-related features? (e.g. extraction simulator, extraction probability calculator)
             </span>
-            <span>1 - 8%</span>
-            <span>2 - 16%</span>
-            <span>3 - 8%</span>
-            <span>4 - 24%</span>
-            <span>5 - 44%</span>
-            <span>Avg - 3.8</span>
+            <span>1 - 11.9%</span>
+            <span>2 - 10.2%</span>
+            <span>3 - 11.9%</span>
+            <span>4 - 27.1%</span>
+            <span>5 - 39.0%</span>
+            <span>Avg - 3.71</span>
             <br/>
             <span>
                 How interested would you be in more game utility features? (similar to the team solver/randomizer or floor planner)
             </span>
-            <span>1 - 0%</span>
-            <span>2 - 2%</span>
-            <span>3 - 24%</span>
-            <span>4 - 20%</span>
-            <span>5 - 54%</span>
-            <span>Avg - 4.26</span>
+            <span>1 - 3.4%</span>
+            <span>2 - 2.5%</span>
+            <span>3 - 18.6%</span>
+            <span>4 - 29.7%</span>
+            <span>5 - 45.8%</span>
+            <span>Avg - 4.12</span>
             <br/>
             <span>
                 How interested would you be in more community-focused features? (e.g. popularity poll, spotlights, creators section, forum-like sections)
             </span>
-            <span>1 - 6%</span>
-            <span>2 - 14%</span>
-            <span>3 - 26%</span>
-            <span>4 - 20%</span>
-            <span>5 - 34%</span>
-            <span>Avg - 3.62</span>
+            <span>1 - 6.8%</span>
+            <span>2 - 13.6%</span>
+            <span>3 - 22.9%</span>
+            <span>4 - 26.3%</span>
+            <span>5 - 30.5%</span>
+            <span>Avg - 3.60</span>
             <br/>
             <span>
                 How interested would you be in non-gameplay features? (e.g. abno observation logs, dante&apos;s notes, though these already exist in the wiki)
             </span>
-            <span>1 - 14%</span>
-            <span>2 - 18%</span>
-            <span>3 - 30%</span>
-            <span>4 - 10%</span>
-            <span>5 - 28%</span>
-            <span>Avg - 3.2</span>
+            <span>1 - 11.9%</span>
+            <span>2 - 20.3%</span>
+            <span>3 - 28.0%</span>
+            <span>4 - 12.7%</span>
+            <span>5 - 27.1%</span>
+            <span>Avg - 3.23</span>
         </div>
         
         <div style={{borderTop: "1px solid var(--secondary-border-color", padding: "0.5rem", display: "flex", flexDirection: "column"}}>
@@ -132,32 +132,32 @@ export default function SurveyPage() {
             <span>
                 How comfortable are you with a Patreon support option?
             </span>
-            <span>1 - 0%</span>
-            <span>2 - 2%</span>
-            <span>3 - 36%</span>
-            <span>4 - 10%</span>
-            <span>5 - 52%</span>
-            <span>Avg - 4.12</span>
+            <span>1 - 3.4%</span>
+            <span>2 - 0.8%</span>
+            <span>3 - 30.5%</span>
+            <span>4 - 25.4%</span>
+            <span>5 - 39.8%</span>
+            <span>Avg - 3.97</span>
             <br/>
             <span>
                 How comfortable are you with header, sidebar, or footer ads being added to the site?
             </span>
-            <span>1 - 6%</span>
-            <span>2 - 10%</span>
-            <span>3 - 24%</span>
-            <span>4 - 28%</span>
-            <span>5 - 32%</span>
-            <span>Avg - 3.7</span>
+            <span>1 - 6.8%</span>
+            <span>2 - 15.3%</span>
+            <span>3 - 32.2%</span>
+            <span>4 - 20.3%</span>
+            <span>5 - 25.4%</span>
+            <span>Avg - 3.42</span>
             <br/>
             <span>
                 How comfortable are you with in-content ads (between content sections) being added to the site?
             </span>
-            <span>1 - 30%</span>
-            <span>2 - 28%</span>
-            <span>3 - 28%</span>
-            <span>4 - 10%</span>
-            <span>5 - 4%</span>
-            <span>Avg - 2.3</span>
+            <span>1 - 39.8%</span>
+            <span>2 - 30.5%</span>
+            <span>3 - 20.3%</span>
+            <span>4 - 5.9%</span>
+            <span>5 - 3.4%</span>
+            <span>Avg - 2.03</span>
         </div>
     </div>
 }

@@ -141,11 +141,11 @@ export default function TimersTable({ timers }) {
             <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={isMobile} />
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-            {timers?.events?.main && <TimerRow title={timers.events.main.name} src={timers.events.main.src} endDate={timers.events.main.endDate} column={isMobile} />}
+            {timers?.events?.main && <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={isMobile} />}
             {(timers?.events?.others ?? []).map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} startDate={timer.startDate} endDate={timer.endDate} column={isMobile} />)}
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-            {timers?.banners?.main && <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} endDate={timers.banners.main.endDate} column={isMobile} />}
+            {timers?.banners?.main && <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} startDate={timers.banners.main.startDate} endDate={timers.banners.main.endDate} column={isMobile} />}
             {(timers?.banners?.others ?? []).map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} startDate={timer.startDate} endDate={timer.endDate} column={isMobile} />)}
         </div>
     </div>
@@ -164,11 +164,11 @@ export function HomepageTimers() {
             <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={true} />
         </div>
         {timers?.events ?
-            <TimerRow title={timers.events.main.name} src={timers.events.main.src} endDate={timers.events.main.endDate} column={true} tooltip={"events"} /> :
+            <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={true} tooltip={"events"} /> :
             null
         }
         {timers?.banners ?
-            <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} endDate={timers.banners.main.endDate} column={true} tooltip={"banners"} /> :
+            <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} startDate={timers.banners.main.startDate} endDate={timers.banners.main.endDate} column={true} tooltip={"banners"} /> :
             null
         }
     </div>

@@ -264,7 +264,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION create_build_v4(
+CREATE OR REPLACE FUNCTION create_build_v5(
   p_user_id uuid,
   p_title TEXT,
   p_body TEXT,
@@ -278,7 +278,8 @@ CREATE OR REPLACE FUNCTION create_build_v4(
   p_tags TEXT[],
   p_extra_opts TEXT,
   p_block_discovery BOOLEAN,
-  p_published BOOLEAN
+  p_published BOOLEAN,
+  p_image_ids uuid[]
 )
 RETURNS uuid
 AS $$
@@ -347,11 +348,23 @@ BEGIN
     ON CONFLICT DO NOTHING;
   END LOOP;
 
+  INSERT INTO image_attachments (
+    image_id,
+    target_type,
+    target_id,
+    position
+  )
+  SELECT
+    unnest(p_image_ids),
+    'build'::target_type_enum,
+    new_build_id,
+    generate_subscripts(p_image_ids, 1) - 1;
+
   RETURN new_build_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION update_build_v4(
+CREATE OR REPLACE FUNCTION update_build_v5(
   p_build_id UUID,
   p_user_id UUID,
   p_title TEXT,
@@ -366,7 +379,8 @@ CREATE OR REPLACE FUNCTION update_build_v4(
   p_tags TEXT[],
   p_extra_opts TEXT,
   p_block_discovery BOOLEAN,
-  p_published BOOLEAN
+  p_published BOOLEAN,
+  p_image_ids uuid[]
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -449,10 +463,26 @@ BEGIN
   INSERT INTO public.build_tags (build_id, tag_id)
   SELECT p_build_id, unnest(_tag_ids)
   ON CONFLICT DO NOTHING;
+
+  DELETE FROM image_attachments
+  WHERE target_type = 'build'::target_type_enum
+  AND target_id = p_build_id;
+
+  INSERT INTO image_attachments (
+    image_id,
+    target_type,
+    target_id,
+    position
+  )
+  SELECT
+    unnest(p_image_ids),
+    'build'::target_type_enum,
+    p_build_id,
+    generate_subscripts(p_image_ids, 1) - 1;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_build_v6(
+CREATE OR REPLACE FUNCTION public.get_build_v7(
   p_build_id UUID,
   p_for_edit BOOLEAN DEFAULT FALSE
 )
@@ -502,6 +532,12 @@ BEGIN
       'ego_ids', b.ego_ids,
       'keyword_ids', b.keyword_ids,
       'tags', COALESCE(jsonb_agg(DISTINCT t.name) FILTER (WHERE t.id IS NOT NULL), '[]'::JSONB),
+      'image_ids', COALESCE((
+        SELECT jsonb_agg(ia.image_id ORDER BY ia.position)
+        FROM public.image_attachments ia
+        WHERE ia.target_type = 'build'::target_type_enum
+        AND ia.target_id = b.id
+      ), '[]'::jsonb),
       'extra_opts', b.extra_opts,
       'is_published', b.is_published,
       'block_discovery', b.block_discovery
@@ -535,6 +571,12 @@ BEGIN
         'id', t.id,
         'name', t.name
       )) FILTER (WHERE t.id IS NOT NULL), '[]'::JSONB),
+      'image_ids', COALESCE((
+        SELECT jsonb_agg(ia.image_id ORDER BY ia.position)
+        FROM public.image_attachments ia
+        WHERE ia.target_type = 'build'::target_type_enum
+        AND ia.target_id = b.id
+      ), '[]'::jsonb),
       'extra_opts', b.extra_opts,
       'like_count', b.like_count,
       'comment_count', b.comment_count,
@@ -634,5 +676,46 @@ BEGIN
       p_published := TRUE,
       p_ignore_block_discovery := TRUE
     );
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION delete_build(
+  p_build_id UUID
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  image_ids uuid[];
+BEGIN
+
+  -- ownership check
+  IF NOT EXISTS (
+    SELECT 1
+    FROM builds
+    WHERE id = p_build_id
+    AND user_id = auth.uid()
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  -- get images first
+  SELECT array_agg(image_id)
+  INTO image_ids
+  FROM image_attachments
+  WHERE target_type = 'build'::target_type_enum
+  AND target_id = p_build_id;
+
+  -- delete attachments
+  DELETE FROM image_attachments
+  WHERE target_type = 'build'::target_type_enum
+  AND target_id = p_build_id;
+
+  -- delete build
+  DELETE FROM builds
+  WHERE id = p_build_id;
+
+  RETURN;
 END;
 $$;

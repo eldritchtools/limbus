@@ -6,7 +6,7 @@
 import { sinnerIdMapping } from "@/app/lib/constants";
 import { ASSETS_ROOT } from "@/app/paths";
 
-function getSinnerIconSrc(num) {
+export function getSinnerIconSrc(num) {
     return `${ASSETS_ROOT}/sinners/${num}.png`;
 }
 

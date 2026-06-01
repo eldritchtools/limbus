@@ -22,7 +22,8 @@ const createParams = {
     published: "p_is_published",
     blockDiscovery: "p_block_discovery",
     items: "p_items",
-    tags: "p_tags"
+    tags: "p_tags",
+    imageIds: "p_image_ids"
 };
 
 export async function searchCollections(params, page = 1, pageSize = null) {
@@ -30,20 +31,21 @@ export async function searchCollections(params, page = 1, pageSize = null) {
 }
 
 export async function getCollection(id) {
-    return callRPC("get_collection_v4", { p_collection_id: id })
+    return callRPC("get_collection_v5", { p_collection_id: id })
 }
 
 export async function insertCollection(params) {
-    return callRPC("create_collection_v1", convertParams(params, createParams));
+    return callRPC("create_collection_v2", convertParams(params, createParams));
 }
 
 export async function updateCollection(params) {
-    await callRPC("update_collection_v1", convertParams(params, createParams));
+    await callRPC("update_collection_v2", convertParams(params, createParams));
     return params.collectionId;
 }
 
 export async function deleteCollection(collection_id) {
-    return deleteObject("collections", collection_id);
+    await callRPC("delete_collection", { p_collection_id: collection_id });
+    return { deleted: true };
 }
 
 export async function pinCollectionComment(collectionId, commentId) {

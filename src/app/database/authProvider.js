@@ -17,20 +17,36 @@ const AuthContext = createContext({
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
+    const [moderation, setModeration] = useState(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     const loadProfile = useCallback(async (userId) => {
         try {
-            const { data, error } = await getSupabase()
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .maybeSingle();
+            const [profileRes, modRes] = await Promise.all([
+                getSupabase()
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .maybeSingle(),
 
-            if (error) throw error;
-            setProfile(data);
-            if(!data?.username) router.push("/login/setup");
+                getSupabase()
+                    .from('user_moderation')
+                    .select('asset_upload_disabled_until')
+                    .eq('user_id', userId)
+                    .maybeSingle()
+            ]);
+
+            if (profileRes.error) throw profileRes.error;
+            if (modRes.error) throw modRes.error;
+
+            setProfile(profileRes.data);
+            setModeration(modRes.data);
+
+            if (!profileRes.data?.username) {
+                router.push("/login/setup");
+            }
+
         } catch (err) {
             console.error(err);
         } finally {
@@ -122,6 +138,7 @@ export function AuthProvider({ children }) {
     const value = {
         user,
         profile,
+        moderation,
         loading,
         refreshProfile: () => user && loadProfile(user.id),
         updateUsername,

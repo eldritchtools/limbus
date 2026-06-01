@@ -8,6 +8,7 @@ import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import DropdownButton from "@/app/components/objects/DropdownButton";
+import ImageCarousel from "@/app/components/objects/ImageCarousel";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import Username from "@/app/components/user/Username";
 import { getCollection } from "@/app/database/collections";
@@ -115,6 +116,11 @@ export default function CollectionPage({ id }) {
             </>
             }
 
+            {collection?.image_ids?.length > 0 && <>
+                <span style={{ fontSize: "1.2rem" }}>Images</span>
+                <ImageCarousel imageIds={collection.image_ids} />
+                </>
+            }
             <HorizontalDivider />
 
             {isMobile ? null :

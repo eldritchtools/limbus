@@ -17,3 +17,10 @@
   color: var(--secondary-text-color);
   font-style: italic;
 }
+
+.markdown-p img,
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
