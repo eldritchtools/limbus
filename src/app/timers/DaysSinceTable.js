@@ -48,7 +48,13 @@ export default function DaysSinceTable({ entries, identities, egos }) {
     const constructRow = id => {
         return <tr key={id} style={{ borderTop: "1px var(--secondary-border-color) solid" }}>
             <td>
-                {isNaN(Number(id)) ? <KeywordIcon id={id} size={48} /> : <SinnerIcon num={id} style={{ width: "48px", height: "48px" }} />}
+                {id === "walp" ?
+                    <span style={{display: "flex", justifyContent: "center"}}>Walp</span> :
+                    (isNaN(Number(id)) ? 
+                        <KeywordIcon id={id} size={48} /> : 
+                        <SinnerIcon num={id} style={{ width: "48px", height: "48px" }} />
+                    )
+                }
             </td>
             {/* <td>{constructCell(id, "identity")}</td> */}
             <td>{constructCell(id, "00")}</td>
@@ -79,6 +85,7 @@ export default function DaysSinceTable({ entries, identities, egos }) {
             <tbody>
                 {Array.from({ length: 12 }, (_, i) => constructRow(i + 1))}
                 {keywords.slice(0, 7).map(kw => constructRow(kw))}
+                {constructRow("walp")}
             </tbody>
         </table>
     </div>

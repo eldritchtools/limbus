@@ -413,7 +413,9 @@ export default function RankingsPage({ tab, username }) {
         <div className="sub-text">
             Click on an Identity or E.G.O to submit your own rating or leave a review.
             <br /> <br />
-            Rankings are based on community-submitted ratings when the page loads. Refresh to update results.
+            Rankings are based on community-submitted ratings and are not the official views of the site. Expect ratings to be subject to personal preferences, trends, memes, and joke ratings. 
+            <br /> <br />
+            Rankings are retrieved when the page loads. Refresh to update results.
             <br /> <br />
             Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
         </div>

@@ -51,7 +51,7 @@ SELECT cron.schedule(
   $$SELECT public.add_homepage_showcase_build();$$
 );
 
-CREATE OR REPLACE FUNCTION public.get_homepage_posts_v4(
+CREATE OR REPLACE FUNCTION public.get_homepage_posts_v5(
   popular_limit INTEGER DEFAULT 3,
   newest_limit INTEGER DEFAULT 3,
   showcase_limit INTEGER DEFAULT 3,
@@ -125,6 +125,51 @@ BEGIN
           p_offset := 0
         )
       ) c
+    ),
+
+    'poll', (
+      with current_poll as (
+        select *
+        from polls
+        where start_ts <= now()
+          and (end_ts is null or end_ts > now())
+        order by start_ts desc
+        limit 1
+      ),
+      recent_polls as (
+        select p.*
+        from polls p
+        where p.start_ts < (select start_ts from current_poll)
+        order by p.start_ts desc
+        limit 5
+      )
+      select json_build_object(
+        'current', (
+          select json_build_object(
+            'id', cp.id,
+            'question', cp.question,
+            'type', cp.type,
+            'options', cp.options,
+            'votes', cp.votes,
+            'total_votes', cp.total_votes,
+            'start_ts', cp.start_ts,
+            'user_answer', pa.answer
+          )
+          from current_poll cp
+          left join poll_answers pa
+            on pa.user_id = auth.uid()
+          and pa.poll_id = cp.id
+          limit 1
+        ),
+
+        'recent', (
+          select coalesce(
+            json_agg(r order by r.start_ts desc),
+            '[]'::json
+          )
+          from recent_polls r
+        )
+      )
     )
   )
   INTO result;

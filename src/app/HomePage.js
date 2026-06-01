@@ -3,6 +3,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import React, { useEffect, useMemo, useState } from "react";
 
+import CommunityPoll from "./CommunityPoll";
 import MdPlan from "./components/contentCards/MdPlan";
 import TeamBuild from "./components/contentCards/TeamBuild";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "./components/dataHooks/upcoming";
@@ -103,15 +104,17 @@ export default function HomePage() {
     const [newest, setNewest] = useState([]);
     const [showcase, setShowcase] = useState([]);
     const [mdplans, setMdplans] = useState([]);
+    const [poll, setPoll] = useState(null);
     const { isDesktop } = useBreakpoint();
 
     useEffect(() => {
         const getBuilds = async () => {
-            const { popular, newest, showcase, mdplans } = await getHomepagePosts();
+            const { popular, newest, showcase, mdplans, poll } = await getHomepagePosts();
             setPopular(popular);
             setNewest(newest);
             setShowcase(showcase);
             setMdplans(mdplans);
+            setPoll(poll);
         }
 
         getBuilds();
@@ -138,7 +141,7 @@ export default function HomePage() {
     }, [identities, identitiesLoading, egos, egosLoading]);
 
     return <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", width: "100%", height: "100%" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.5rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.25rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
             <h1 style={{ marginTop: "0.25rem", marginBottom: "0.25rem" }}>Limbus Company Tools</h1>
             <p>
                 Welcome, Manager!
@@ -150,6 +153,7 @@ export default function HomePage() {
             <APR />
             <LinksMenu />
             <HomepageTimers />
+            <CommunityPoll poll={poll} setPoll={setPoll} />
             <RandomTips />
             <RecentAdditions />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>

@@ -25,12 +25,12 @@ export default function TimersPage() {
             results[key] = {
                 "00": null,
                 "000": null,
-                identity: null,
+                // identity: null,
                 ZAYIN: null,
                 TETH: null,
                 HE: null,
                 WAW: null,
-                ego: null
+                // ego: null
             }
         }
 
@@ -48,16 +48,20 @@ export default function TimersPage() {
 
         Array.from({ length: 12 }, (_, i) => i).forEach(i => insertDefault(i + 1));
         keywords.slice(0, 7).forEach(kw => insertDefault(kw));
+        insertDefault("walp");
 
         Object.values(identities).forEach(identity => {
             const key = identity.sinnerId;
-            handleEntry(key, "identity", identity);
+            // handleEntry(key, "identity", identity);
             const rank = '0'.repeat(identity.rank);
             handleEntry(key, rank, identity);
             (identity.skillKeywordList || []).forEach(kw => {
-                handleEntry(kw, "identity", identity);
+                // handleEntry(kw, "identity", identity);
                 handleEntry(kw, rank, identity);
             })
+            if(identity.season >= 9100) {
+                handleEntry("walp", rank, identity);
+            }
         });
 
         const statusKeywordMapping = {
@@ -72,15 +76,18 @@ export default function TimersPage() {
 
         Object.values(egos).forEach(ego => {
             const key = ego.sinnerId;
-            handleEntry(key, "ego", ego);
+            // handleEntry(key, "ego", ego);
             const rank = ego.rank;
             handleEntry(key, rank, ego);
             (ego.statuses || []).forEach(kw => {
                 if (kw in statusKeywordMapping) {
-                    handleEntry(statusKeywordMapping[kw], "ego", ego);
+                    // handleEntry(statusKeywordMapping[kw], "ego", ego);
                     handleEntry(statusKeywordMapping[kw], rank, ego);
                 }
             });
+            if(ego.season >= 9100) {
+                handleEntry("walp", rank, ego);
+            }
         });
 
         return results;
