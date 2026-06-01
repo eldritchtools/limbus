@@ -20,7 +20,7 @@ function permute(array) {
     return array;
 }
 
-function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSinners, keywordTargets, statusTargets, tagTargets, solvers }) {
+function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholders, deployedSinners, keywordTargets, statusTargets, tagTargets, solvers }) {
     const solutionsPerSolver = Math.ceil(MAX_SOLUTIONS / solvers);
     const kwToIndex = Object.fromEntries(Object.entries(keywordTargets).filter(([, cnt]) => cnt > 0).map(([kw], i) => ([kw, i])));
     let condCount = Object.keys(kwToIndex).length;
@@ -71,6 +71,31 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
         });
 
         condPerIdentity[identity.id] = conds;
+    });
+
+    placeholders.forEach((identity, i) => {
+        if (!(identity.sinnerId in identitiesPerSinner)) return;
+
+        const conds = Array.from({ length: condCount }, () => false);
+        let matches = 0;
+        (identity.keywords ?? []).forEach(kw => {
+            if (kw in kwToIndex) {
+                conds[kwToIndex[kw]] = true;
+                matches++;
+            }
+        });
+
+        if(matches === 0) return;
+
+        matchCountPerSinner[identity.sinnerId][matches - 1]++;
+
+        identitiesPerSinner[identity.sinnerId].push({
+            id: `ph-${i}`,
+            sinnerId: identity.sinnerId,
+            conds: conds
+        });
+
+        condPerIdentity[`ph-${i}`] = conds;
     });
 
     const initRequirement = Array.from({ length: condCount }, () => 0);
@@ -201,7 +226,15 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, deployedSi
                 if (!solutions.has(k)) {
                     solutions.add(k);
                     solver.solutionsAllowed--;
-                    self.postMessage({ type: "result", result: result });
+                    const resultOutput = result.map(id => {
+                        if(`${id}`[0] === "p") {
+                            const phIndex = Number(id.split("-")[1]);
+                            return placeholders[phIndex];
+                        } else {
+                            return id;
+                        }
+                    });
+                    self.postMessage({ type: "result", result: resultOutput });
                 }
             }
 

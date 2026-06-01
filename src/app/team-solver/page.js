@@ -16,8 +16,11 @@ import NumberInputWithButtons from "../components/objects/NumberInputWithButtons
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
+import IconsSelector from "../components/selectors/IconsSelector";
 import { IdentityMenuSelector } from "../components/selectors/IdentitySelectors";
+import { SinnerMenuSelector } from "../components/selectors/SinnerSelectors";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { useAuth } from "../database/authProvider";
 import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
@@ -25,25 +28,57 @@ import { bitsetFunctions } from "../lib/bitset";
 import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
+import { constructTeamCode } from "../lib/teamCodeEncoding";
 
 function ResultComponent({ identities, result, keywordTargets, statusTargets, router, isMobile }) {
-    const counts = Object.fromEntries(keywords.slice(0, 7).map(kw => [kw, 0]));
-    const stCounts = Object.fromEntries(statusTargets.filter(({ status, num }) => status && num).map(({ status }) => [status, 0]));
+    const [copied, setCopied] = useState(null);
 
-    result.forEach(id => {
-        if (!id) return;
-        (identities[id].skillKeywordList ?? []).forEach(kw => counts[kw]++);
-        (identities[id].statuses ?? []).forEach(st => { if (st in stCounts) stCounts[st]++ });
-    });
+    const [counts, stCounts, identityIds, styles] = useMemo(() => {
+        const counts = Object.fromEntries(keywords.slice(0, 7).map(kw => [kw, 0]));
+        const stCounts = Object.fromEntries(statusTargets.filter(({ status, num }) => status && num).map(({ status }) => [status, 0]));
+        const identityIds = [];
+        const styles = [];
+
+        result.forEach(item => {
+            if (!item) {
+                identityIds.push(null);
+                styles.push({ filter: "brightness(0.5)" });
+            } else if (typeof item === 'object') {
+                identityIds.push(null);
+                styles.push({ filter: "brightness(1.3)" });
+                (item.keywords ?? []).forEach(kw => counts[kw]++);
+            } else {
+                identityIds.push(item);
+                styles.push({});
+                (identities[item].skillKeywordList ?? []).forEach(kw => counts[kw]++);
+                (identities[item].statuses ?? []).forEach(st => { if (st in stCounts) stCounts[st]++ });
+            }
+        });
+
+        return [counts, stCounts, identityIds, styles];
+    }, [identities, result, statusTargets])
 
     const copyToBuild = () => {
-        const params = new URLSearchParams({ identityIds: result.join(",") });
+        const params = new URLSearchParams({ identityIds: result.map(x => typeof x === "object" ? null : x).join(",") });
         router.push(`/builds/new?${params.toString()}`)
     }
 
+    const copyTeamCode = async () => {
+        try {
+            const code = constructTeamCode(identityIds, null, null);
+            await navigator.clipboard.writeText(code);
+            setCopied("Copied!");
+
+            setTimeout(() => { setCopied(null); }, 2000);
+        } catch (err) {
+            setCopied("Error Copying");
+            setTimeout(() => { setCopied(null); }, 2000);
+        }
+    }
+
     return <div className="panel-container" style={{ gap: "0.5rem", alignItems: "center" }}>
-        <BuildIdentitiesGrid identityIds={result} scale={isMobile ? .2 : .33} />
-        <div style={{ display: "flex", gap: "0.2rem" }}>
+        <BuildIdentitiesGrid identityIds={identityIds} scale={isMobile ? .2 : .33} identityStyles={styles} />
+        <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
             {Object.entries(counts).map(([kw, cnt], i) =>
                 <div key={kw} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
                     <KeywordIcon id={kw} />
@@ -57,9 +92,15 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
                 </div>)
             }
 
-            <button onClick={() => copyToBuild()}>
-                Create Build
-            </button>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                <button style={{ fontSize: "0.8rem" }} onClick={() => copyTeamCode()}>
+                    {copied ?? "Copy Team Code"}
+                </button>
+
+                <button style={{ fontSize: "0.8rem" }} onClick={() => copyToBuild()}>
+                    Create Build
+                </button>
+            </div>
         </div>
     </div>
 }
@@ -74,6 +115,8 @@ export default function TeamSolverPage() {
     const [statusTargets, setStatusTargets] = useState([]);
     const [tagTargets, setTagTargets] = useState([]);
     const [solvers, setSolvers] = useState(5);
+
+    const [placeholders, setPlaceholders] = useState([]);
 
     const [wbMode, setWbMode] = useState("b");
     const [wbList, setWbList] = useState([]);
@@ -102,6 +145,7 @@ export default function TeamSolverPage() {
             if (data.statusTargets) setStatusTargets(data.statusTargets);
             if (data.tagTargets) setTagTargets(data.tagTargets);
             if (data.solvers) setSolvers(data.solvers);
+            if (data.placeholders) setPlaceholders(data.placeholders);
             if (data.wbMode) setWbMode(data.wbMode);
             if (data.wbList) setWbList(data.wbList);
             if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
@@ -121,8 +165,8 @@ export default function TeamSolverPage() {
             const data = {
                 id: "main",
                 fixedIdentityIds, enabledSinners, deployedSinners,
-                keywordTargets, statusTargets, tagTargets, solvers,
-                wbMode, wbList, wbListDisplay, wbListOpen
+                keywordTargets, statusTargets, tagTargets, placeholders,
+                solvers, wbMode, wbList, wbListDisplay, wbListOpen
             }
 
             await getLocalStore("teamSolver").save(data);
@@ -140,7 +184,7 @@ export default function TeamSolverPage() {
 
         return () => clearTimeout(saveTimeout.current);
     }, [initializing, fixedIdentityIds, enabledSinners, deployedSinners,
-        keywordTargets, statusTargets, tagTargets, solvers,
+        keywordTargets, statusTargets, tagTargets, placeholders, solvers,
         wbMode, wbList, wbListDisplay, wbListOpen]);
 
     const handleSetFixedIdentityId = (index, id) => {
@@ -199,8 +243,10 @@ export default function TeamSolverPage() {
                 const { type, result: result } = e.data;
 
                 if (type === "result") {
-                    const converted = result.reduce((acc, id) => {
-                        acc[identities[id].sinnerId - 1] = id;
+                    const converted = result.reduce((acc, item) => {
+                        if (typeof item === 'object') acc[item.sinnerId - 1] = item;
+                        else acc[identities[item].sinnerId - 1] = item;
+
                         return acc;
                     }, Array.from({ length: 12 }, () => null));
 
@@ -227,6 +273,7 @@ export default function TeamSolverPage() {
                     }, {}),
                 enabledSinnerIds:
                     enabledSinners.map((enabled, i) => enabled ? i + 1 : null).filter(x => x),
+                placeholders: placeholders,
                 deployedSinners: deployedSinners,
                 keywordTargets:
                     keywordTargets.reduce((acc, cnt, i) => {
@@ -328,6 +375,34 @@ export default function TeamSolverPage() {
                 <button onClick={() => toggleSinnerEnabled(i)}>
                     {enabledSinners[i] ? "Disable Sinner" : "Enable Sinner"}
                 </button>
+            </div>)}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            <button 
+                {...getGeneralTooltipProps("Add placeholder identities to solve for teams with identities that do not exist yet. Teams that use placeholders will use their base identities for the team code.")}
+                onClick={() => setPlaceholders(p => [...p, { sinnerId: null, keywords: [] }])}
+                >
+                    Add Placeholder Identity
+            </button>
+            {placeholders.map((placeholder, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
+                <button
+                    onClick={() => setPlaceholders(p => p.filter((x, ind) => i !== ind))}
+                    style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
+                >
+                    x
+                </button>
+
+                <SinnerMenuSelector
+                    value={placeholder.sinnerId}
+                    setValue={id => setPlaceholders(p => p.map((x, ind) => ind === i ? { ...x, sinnerId: id } : x))}
+                />
+
+                <IconsSelector
+                    type={"row"} categories={["status"]}
+                    values={placeholder.keywords}
+                    setValues={kws => setPlaceholders(p => p.map((x, ind) => ind === i ? { ...x, keywords: kws } : x))}
+                    noExclude={true} noClear={true}
+                />
             </div>)}
         </div>
 
@@ -455,7 +530,11 @@ export default function TeamSolverPage() {
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem" }}>
             {results.map((result, i) =>
-                <ResultComponent key={i} identities={identities} result={result} keywordTargets={keywordTargets} statusTargets={statusTargets} router={router} isMobile={isMobile} />
+                <ResultComponent key={i}
+                    identities={identities} placeholders={placeholders}
+                    result={result} keywordTargets={keywordTargets} statusTargets={statusTargets}
+                    router={router} isMobile={isMobile}
+                />
             )}
         </div>
 
