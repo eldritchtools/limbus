@@ -291,6 +291,7 @@ function ManageComponent({ type }) {
 }
 
 export default function CommunityAssetsPage() {
+    const { user } = useAuth();
     const [mode, setMode] = useLocalState("communityAssetsMode", "search");
     const [type, setType] = useLocalState("communityAssetsType", "emote");
 
@@ -316,13 +317,15 @@ export default function CommunityAssetsPage() {
             >
                 Search
             </div>
-            <div
-                {...getGeneralTooltipProps("Upload new assets or edit assets you've previously uploaded")}
-                className={`tab-header ${mode === "manage" ? "active" : ""}`}
-                onClick={() => setMode("manage")}
-            >
-                Manage
-            </div>
+            {user &&
+                <div
+                    {...getGeneralTooltipProps("Upload new assets or edit assets you've previously uploaded")}
+                    className={`tab-header ${mode === "manage" ? "active" : ""}`}
+                    onClick={() => setMode("manage")}
+                >
+                    Manage
+                </div>
+            }
         </div>
 
         {mode === "search" ?
