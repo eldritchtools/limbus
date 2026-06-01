@@ -45,7 +45,12 @@ export default function CommunityPoll({ poll, setPoll }) {
         padding: "0.5rem", display: "flex", flexDirection: "column"
     }}>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <span className="title-text">Community Poll</span>
+            <span 
+                {...getGeneralTooltipProps("New poll questions go live at the game's daily reset and remain open for at least a few days.")} 
+                className="hover-text title-text"
+            >
+                Community Poll
+            </span>
             <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
                 <button className={styles.arrowButton} onClick={() => setViewIndex(p => p + 1)} disabled={!poll?.recent || viewIndex >= poll?.recent?.length}>◀</button>
                 <span>{timeString}</span>
