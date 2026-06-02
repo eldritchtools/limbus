@@ -34,7 +34,7 @@
 }
 
 .hoverHint:hover .container {
-    transform: translateX(-10px);
+    transform: translateX(var(--hint-distance));
 }
 
 .hoverHint:not(:hover) .container {

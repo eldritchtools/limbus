@@ -97,7 +97,7 @@ export default function BuildEditingComponent({
                         <div className={styles.buildDisplay} style={{ alignSelf: "center" }}>
                             {Array.from({ length: 12 }, (_, index) => {
                                 const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, index + 1);
-                                return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                                return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", minWidth: 0 }}>
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid`, borderRadius: "0.5rem" }}>
                                         <div style={{ gridColumn: "1", gridRow: "1 / 5" }}>
                                             <IdentityMenuSelector value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} options={identityOptions[index + 1]} num={index + 1} />

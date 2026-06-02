@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import styles from "./DragContainer.module.css";
 
-export default function DragContainer({ children, className, style }) {
+export default function DragContainer({ children, className, style, hintDistance=10 }) {
     const ref = useRef(null);
 
     const isDragging = useRef(false);
@@ -82,7 +82,7 @@ export default function DragContainer({ children, className, style }) {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
     >
-        <div className={styles.container}>
+        <div className={styles.container} style={{"--hint-distance": `-${hintDistance}px`}}>
             {children}
         </div>
     </div>
