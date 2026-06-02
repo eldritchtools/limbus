@@ -26,11 +26,11 @@ function buildRadarData(type, globalData, userData) {
     ));
 }
 
-export default function StatsRadarChart({ type, globalData, userData, includeLabels = true, maxValue = 10, scale = 1 }) {
+export default function StatsRadarChart({ type, globalData, userData, includeLabels = true, includeHelp = true, maxValue = 10, scale = 1 }) {
     const data = buildRadarData(type, globalData, userData);
 
     return <div style={{ position: "relative" }}>
-        {includeLabels &&
+        {includeLabels && includeHelp &&
             <div {...getRatingHelpTooltipProps(type)} style={{ color: "var(--secondary-text-color)", position: "absolute", top: 5, right: 5, zIndex: 1 }}>
                 <InformationCircleIcon width={20 * scale} height={20 * scale} />
             </div>

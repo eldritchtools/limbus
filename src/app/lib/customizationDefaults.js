@@ -7,5 +7,6 @@ export const customizationDefaults = {
     textScale: 1,
     font: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     filterSelectionMode: "ieo",
-    disableShareMenu: false
+    disableShareMenu: false,
+    ratingsOnTooltips: false
 }

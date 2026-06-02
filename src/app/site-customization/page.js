@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 
 import ColorPicker from "./ColorPicker";
+import EgoIcon from "../components/icons/EgoIcon";
 import GiftIcon from "../components/icons/GiftIcon";
+import IdentityIcon from "../components/icons/IdentityIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
@@ -219,6 +221,28 @@ export default function SiteCustomizationPage() {
                 values={filterPreview} setValues={setFilterPreview}
                 filterModeOverride={currentFilterSelectionMode}
             />
+        </SettingContainer>
+        
+        <SettingContainer
+            name={"Ratings on Tooltips"}
+            desc={"Show community ratings on identity and E.G.O tooltips. As always, remember that ratings are community-submitted and not always reliable."}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.ratingsOnTooltips ?? customizationDefaults.ratingsOnTooltips}
+                    onChange={e => setData(p => ({ ...p, ratingsOnTooltips: e.target.checked }))}
+                />
+                <span>Show Ratings on Tooltips</span>
+            </label>
+            
+            <div style={{display: "flex"}}>
+                <div style={{ width: "128px", height: "128px" }}>
+                    <IdentityIcon id={10101} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} forceRatingsOnTooltip={data.ratingsOnTooltips ? "show" : "hide"} />
+                </div>
+                <div style={{ width: "128px", height: "128px" }}>
+                    <EgoIcon id={20101} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} forceRatingsOnTooltip={data.ratingsOnTooltips ? "show" : "hide"} />
+                </div>
+            </div>
         </SettingContainer>
         
         <SettingContainer

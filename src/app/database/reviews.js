@@ -2,6 +2,8 @@ import { getSupabase } from "./connection";
 import { callRPC, withRetry } from "./supabaseTemplates";
 
 export const defaultReviewsPageSize = 20;
+const aggregatesByType = {};
+const userReviewsByType = {};
 
 export async function submitReview({ itemType, itemId, criteria1, criteria2, criteria3, criteria4, criteria5, reviewText }) {
     return callRPC("submit_review", {
@@ -57,7 +59,9 @@ export async function getUserReview({ userId, itemType, itemId }) {
     });
 }
 
-export async function getUserReviews({ userId, itemType }) {
+export async function getUserReviews({ userId, itemType, forced=false }) {
+    if(itemType in userReviewsByType && !forced) return userReviewsByType[itemType];
+
     try {
         const data = await withRetry(async () => {
             let query = getSupabase()
@@ -65,7 +69,7 @@ export async function getUserReviews({ userId, itemType }) {
                 .select("*")
                 .eq("user_id", userId)
 
-            if(itemType) 
+            if (itemType)
                 query = query.eq("item_type", itemType);
 
             const { data, error } = await query;
@@ -73,10 +77,13 @@ export async function getUserReviews({ userId, itemType }) {
             return data;
         });
 
-        return Object.fromEntries(data.map(item => {
+        const result = Object.fromEntries(data.map(item => {
             const scores = getReviewScores(item);
             return [item.item_id, { ...item, overallRating: getOverallScore(scores), rating: scores, review_text: item.review_text }]
         }));
+
+        userReviewsByType[itemType] = result;
+        return result;
     } catch (err) {
         return {};
     }
@@ -156,7 +163,9 @@ export async function getItemAggregates({ itemType, itemId }) {
     }
 }
 
-export async function getAggregatesByType({ itemType }) {
+export async function getAggregatesByType({ itemType, forced = false }) {
+    if (itemType in aggregatesByType && !forced) return aggregatesByType[itemType];
+
     try {
         const data = await withRetry(async () => {
             const { data, error } = await getSupabase()
@@ -168,10 +177,13 @@ export async function getAggregatesByType({ itemType }) {
             return data;
         });
 
-        return Object.fromEntries(data.map(item => {
+        const result = Object.fromEntries(data.map(item => {
             const scores = aggregateData(item);
             return [item.item_id, { votes: item.vote_count, overallRating: getOverallScore(scores), rating: scores }]
         }));
+
+        aggregatesByType[itemType] = result;
+        return result;
     } catch (err) {
         return {};
     }

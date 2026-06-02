@@ -180,7 +180,7 @@ function ReviewerDisplay({
                 }
             }
 
-            const result = await getUserReviews({ userId });
+            const result = await getUserReviews({ userId, forced: true });
             const processedResult = Object.entries(result).reduce((acc, [id, review]) => {
                 acc[id] = { ...review, votes: 1 };
                 return acc;
@@ -348,11 +348,11 @@ export default function RankingsPage({ tab, username }) {
         if (viewMode === "identity" || viewMode === "reviewer") {
             if (!identityReviewsLoaded) {
                 const fetchReviews = async () => {
-                    const reviews = await getAggregatesByType({ itemType: "identity" });
+                    const reviews = await getAggregatesByType({ itemType: "identity", forced: true });
                     setReviews(p => ({ ...p, ...reviews }));
 
                     if (user) {
-                        const userReviews = await getUserReviews({ userId: user.id, itemType: "identity" })
+                        const userReviews = await getUserReviews({ userId: user.id, itemType: "identity", forced: true })
                         setUserReviews(p => ({ ...p, ...userReviews }));
                     }
                     setIdentityReviewsLoaded(true);
@@ -365,11 +365,11 @@ export default function RankingsPage({ tab, username }) {
         if (viewMode === "ego" || viewMode === "reviewer") {
             if (!egoReviewsLoaded) {
                 const fetchReviews = async () => {
-                    const reviews = await getAggregatesByType({ itemType: "ego" });
+                    const reviews = await getAggregatesByType({ itemType: "ego", forced: true });
                     setReviews(p => ({ ...p, ...reviews }));
 
                     if (user) {
-                        const userReviews = await getUserReviews({ userId: user.id, itemType: "ego" })
+                        const userReviews = await getUserReviews({ userId: user.id, itemType: "ego", forced: true })
                         setUserReviews(p => ({ ...p, ...userReviews }));
                     }
                     setEgoReviewsLoaded(true);
@@ -413,7 +413,7 @@ export default function RankingsPage({ tab, username }) {
         <div className="sub-text">
             Click on an Identity or E.G.O to submit your own rating or leave a review.
             <br /> <br />
-            Rankings are based on community-submitted ratings and are not the official views of the site. Expect ratings to be subject to personal preferences, trends, memes, and joke ratings. 
+            Rankings are based on community-submitted ratings and are not the official views of the site. Expect ratings to be subject to personal preferences, trends, memes, and joke ratings.
             <br /> <br />
             Rankings are retrieved when the page loads. Refresh to update results.
             <br /> <br />

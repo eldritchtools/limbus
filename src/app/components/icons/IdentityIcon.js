@@ -17,20 +17,20 @@ export function getIdentityImgSrc(identity, uptie = 4) {
     return `${ASSETS_ROOT}/identities/${identity.id}_${type}_profile.png`;
 }
 
-function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null }) {
+function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null, forceRatingsOnTooltip }) {
     // const img = <Image src={getIdentityImgSrc(identity, uptie)} alt={identity.name} title={identity.name} width={192} height={192} style={{ ...style, objectFit: "cover" }} />
     const img = <img src={getIdentityImgSrc(identity, uptie)} alt={identity.name} title={identity.name} style={{ ...style,  width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
 
     return <div
         style={{ position: "relative", width: style.width, aspectRatio: "1/1", containerType: "size" }}
-        {...(includeTooltip ? getIdentityTooltipProps(identity.id) : {})}
+        {...(includeTooltip && !identity.upcoming ? getIdentityTooltipProps(identity.id, forceRatingsOnTooltip) : {})}
     >
         {img}
         {displayRarity ?
             (
                 identity.upcoming ?
                     <div style={{
-                        position: "absolute", top: "4px", left: "4px", display: "block", textAlign: "left", color: "#ddd", fontWeight: "600",
+                        position: "absolute", top: "4px", left: "4px", display: "block", textAlign: "left", color: "#ddd", fontWeight: "bold",
                         textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000", fontSize: "0.9rem", overflow: "hidden"
                     }}>
                         UPCOMING

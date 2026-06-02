@@ -1,6 +1,7 @@
 "use client";
 
 import { isTouchDevice } from "@eldritchtools/shared-components";
+import { useEffect, useMemo, useState } from "react";
 
 import NoPrefetchLink from "../NoPrefetchLink";
 import TooltipTemplate from "./TooltipTemplate";
@@ -9,12 +10,17 @@ import { useData } from "../DataProvider";
 import EgoIcon from "../icons/EgoIcon";
 import KeywordIcon from "../icons/KeywordIcon";
 import Status from "../objects/Status";
+import StatsRadarChart from "../ratings/RadarChart";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 import { AtkWeight } from "../skill/AtkWeight";
+
+import { useAuth } from "@/app/database/authProvider";
+import { getAggregatesByType, getUserReviews } from "@/app/database/reviews";
 
 const TOOLTIP_ID = "ego-tooltip";
 
-function EgoTooltipContent({ id, ego, uptie = 4 }) {
-    const {awakeningSkills, corrosionSkills} = useSkillData("ego", id, uptie);
+function EgoTooltipContent({ id, ego, uptie = 4, forceRatings }) {
+    const { awakeningSkills, corrosionSkills } = useSkillData("ego", id, uptie);
     const types = [];
 
     types.push(ego.awakeningType.affinity);
@@ -25,8 +31,34 @@ function EgoTooltipContent({ id, ego, uptie = 4 }) {
     if (ego.corrosionType && ego.awakeningType.type !== ego.corrosionType.type)
         types.push(ego.corrosionType.type);
 
-    return <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", flexDirection: "row", padding: "0.5rem", gap: "0.5rem", alignItems: "center" }}>
+    const { getCustomizationValue } = useSiteCustomization();
+    const [rating, setRating] = useState(null);
+    const [userRating, setUserRating] = useState(null);
+    const { user } = useAuth();
+
+    const showRatings = useMemo(() => {
+        return forceRatings ? (forceRatings === "show") : getCustomizationValue("ratingsOnTooltips");
+    }, [getCustomizationValue, forceRatings]);
+
+    useEffect(() => {
+        if (!showRatings) return;
+
+        const fetchRating = async () => {
+            setRating(null);
+            setUserRating(null);
+            const rating = (await getAggregatesByType({ itemType: "ego" }))[id];
+            setRating(rating);
+            if (user) {
+                const userRating = (await getUserReviews({ userId: user.id, itemType: "ego" }))[id];
+                setUserRating(userRating);
+            }
+        }
+
+        fetchRating();
+    }, [showRatings, id, user]);
+
+    return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem" }}>
+        <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
             <div><EgoIcon ego={ego} type={"awaken"} displayName={true} displayRarity={true} style={{ width: "128px", height: "128px" }} /></div>
             <div style={{ display: "flex", flexDirection: "column", width: "192px", minHeight: "128px" }}>
                 {awakeningSkills.length > 0 ?
@@ -60,30 +92,50 @@ function EgoTooltipContent({ id, ego, uptie = 4 }) {
                 </div>
             </div>
         </div>
+        {showRatings && rating && <>
+            <StatsRadarChart type={"ego"} globalData={rating?.rating} userData={userRating?.rating} includeHelp={false} />
+            <div style={{ display: "flex", textAlign: "center" }}>
+                <span style={{ flex: 1 }}>Votes: {rating.votes}</span>
+                <span style={{ flex: 1 }}>Rating: {rating.overallRating.toFixed(2)}</span>
+            </div>
+        </>
+        }
         {isTouchDevice() ? <NoPrefetchLink href={`/egos/${ego.id}`} style={{ alignSelf: "center", fontSize: "1.2rem" }}>Go to page</NoPrefetchLink> : null}
     </div>
 }
 
-function TooltipLoader({ id, uptie }) {
+function TooltipLoader({ id, uptie, forceRatings }) {
     const [egos, egosLoading] = useData("egos");
     if (!id || egosLoading || !(id in egos)) return null;
 
-    if (uptie) return <EgoTooltipContent id={id} ego={egos[id]} uptie={uptie} />
-    return <EgoTooltipContent id={id} ego={egos[id]} />
+    const props = {
+        id: id,
+        ego: egos[id],
+        uptie: uptie,
+        forceRatings: forceRatings
+    }
+
+    return <EgoTooltipContent {...props} />
 }
 
 export default function EgoTooltip() {
     return <TooltipTemplate id={TOOLTIP_ID} contentFunc={content => {
         if (!content) return null;
         const parts = content.split("|");
-        if (parts.length > 1) return <TooltipLoader id={parts[0]} uptie={Number(parts[1])} />
-        else return <TooltipLoader id={content} />
+        const props = { id: parts[0] };
+        parts.forEach((part, i) => {
+            if (i === 0) return;
+            if (!isNaN(part)) props.uptie = Number(part);
+            if (part === "show" || part === "hide") props.forceRatings = part;
+        })
+
+        return <TooltipLoader {...props} />
     }} clickable={isTouchDevice()} />
 }
 
-export function getEgoTooltipProps(id) {
+export function getEgoTooltipProps(id, forceRatings) {
     return {
         "data-tooltip-id": TOOLTIP_ID,
-        "data-tooltip-content": id
+        "data-tooltip-content": forceRatings ? `${id}|${forceRatings}` : id,
     }
 }
