@@ -1,6 +1,6 @@
 "use client";
 
-import { isTouchDevice } from "@eldritchtools/shared-components";
+import { isTouchDevice, useBreakpoint } from "@eldritchtools/shared-components";
 import * as Select from "@radix-ui/react-select";
 import { useMemo, useRef, useState } from "react";
 
@@ -8,7 +8,9 @@ import { useData } from "../DataProvider";
 import DropdownSelectorWithExclusion from "./DropdownSelectorWithExclusion";
 import styles from "./IdentitySelectors.module.css";
 import IdentityIcon from "../icons/IdentityIcon";
+import KeywordIcon from "../icons/KeywordIcon";
 import SinnerIcon from "../icons/SinnerIcon";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
 import { uiColors } from "@/app/lib/colors";
@@ -45,11 +47,13 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
     />;
 }
 
-export function IdentityMenuSelector({ value, setValue, options, num }) {
+export function IdentityMenuSelector({ value, setValue, options, num, menuStyleOverride }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const [altNames, altNamesLoading] = useData("alt_names");
     const [filter, setFilter] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
+    const { isMobile } = useBreakpoint();
 
     const filtered = useMemo(() => {
         if (!filter) return options;
@@ -61,6 +65,45 @@ export function IdentityMenuSelector({ value, setValue, options, num }) {
     const handleOpenChange = (open) => {
         setIsOpen(open);
         setFilter("");
+    }
+
+    const buildOption = option => {
+        switch (menuStyleOverride ?? getCustomizationValue("idEgoSelectionMenuStyle")) {
+            case "iconkw":
+                return <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
+                    <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
+                        <IdentityIcon identity={option} uptie={4} displayName={true} displayRarity={true} />
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {(option?.skillKeywordList ?? []).map(kw => 
+                                <KeywordIcon key={kw} id={kw} size={isMobile ? 24 : 32}/>
+                            )}
+                        </div>
+                    </div>
+                </Select.Item>
+            case "minikw":
+                return <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
+                    <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
+                        <div style={{display: "flex", width: "100%", alignItems: "start"}}>
+                            <IdentityIcon identity={option} uptie={4} style={{width: "25%", aspectRatio: "1/1"}}/>
+                            <span style={{fontSize: "0.8rem", width: "75%"}}>
+                                {option.name}
+                            </span>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {(option?.skillKeywordList ?? []).map(kw => 
+                                <KeywordIcon key={kw} id={kw} size={isMobile ? 24 : 32}/>
+                            )}
+                        </div>
+                    </div>
+                </Select.Item>
+            case "icon":
+            default:
+                return <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
+                    <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
+                        <IdentityIcon identity={option} uptie={4} displayName={true} displayRarity={true} />
+                    </div>
+                </Select.Item>
+        }
     }
 
     return <Select.Root value={value ? value.id : null} onValueChange={v => setValue(v)} open={isOpen} onOpenChange={handleOpenChange}>
@@ -86,13 +129,7 @@ export function IdentityMenuSelector({ value, setValue, options, num }) {
 
                 <Select.Viewport>
                     <div className={styles.identityMenuSelectorGrid}>
-                        {filtered.map((option) =>
-                            <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
-                                <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
-                                    <IdentityIcon identity={option} uptie={4} displayName={true} displayRarity={true} />
-                                </div>
-                            </Select.Item>
-                        )}
+                        {filtered.map((option) => buildOption(option))}
                         {value ? <Select.Item key={"cancel"} value={null} className={styles.identityMenuSelectorItem}>
                             <div className={styles.identityMenuItemInner} style={{ height: "100%", justifyContent: "center", color: uiColors.red, fontSize: "3rem", fontWeight: "bold" }}>
                                 ✕

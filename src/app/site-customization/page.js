@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import ColorPicker from "./ColorPicker";
+import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import GiftIcon from "../components/icons/GiftIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";
@@ -13,6 +14,7 @@ import DropdownButton from "../components/objects/DropdownButton";
 import Slider from "../components/objects/Slider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import IconsSelector from "../components/selectors/IconsSelector";
+import { IdentityMenuSelector } from "../components/selectors/IdentitySelectors";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { useAuth } from "../database/authProvider";
@@ -41,6 +43,12 @@ const filterModeDescriptions = {
     "st": "Simple Toggle: Left clicking on a filter toggles between include and off. No exclude."
 }
 
+const idEgoSelectionStyles = {
+    "icon": "Icons Only",
+    "iconkw": "Icons with Keywords",
+    "minikw": "Mini Icons with Keywords"
+}
+
 const presetOptions = {
     "default": "Dark Mode (default)",
     "deep-dark": "Deep Dark",
@@ -67,6 +75,7 @@ const fontOptions = {
 };
 
 export default function SiteCustomizationPage() {
+    const [identities, identitiesLoading] = useData("identities");
     const { customizationData, setCustomization, createPreviewContainer } = useSiteCustomization();
     const [data, setData] = useState(customizationData);
     const [loading, setLoading] = useState(true);
@@ -139,7 +148,7 @@ export default function SiteCustomizationPage() {
 
     }
 
-    const [currentPreset, currentFont, currentFilterSelectionMode] = useMemo(() => {
+    const [currentPreset, currentFont, currentFilterSelectionMode, currentIdEgoSelectionMenuStyle] = useMemo(() => {
         if (loading) return ["default", fontOptions["Default"]];
         const preset = Object.entries(presets).find(([id, [bg, text, sc]]) =>
             ((data.baseBackgroundColor ?? customizationDefaults.baseBackgroundColor) === bg) &&
@@ -151,10 +160,13 @@ export default function SiteCustomizationPage() {
 
         const filterMode = Object.entries(filterSelectionModes).find(([value]) => (data.filterSelectionMode ?? customizationDefaults.filterSelectionMode) === value)
 
+        const idEgoSelectionMenuStyle = Object.entries(idEgoSelectionStyles).find(([value]) => (data.idEgoSelectionMenuStyle ?? customizationDefaults.idEgoSelectionMenuStyle) === value)
+
         return [
             preset ? preset[0] : "custom",
             font ? font[0] : "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-            filterMode ? filterMode[0] : "ieo"
+            filterMode ? filterMode[0] : "ieo",
+            idEgoSelectionMenuStyle ? idEgoSelectionMenuStyle[0] : "icon"
         ]
     }, [data, loading]);
 
@@ -194,6 +206,14 @@ export default function SiteCustomizationPage() {
         setData(p => ({ ...p, filterSelectionMode: list[index] }));
     }
 
+    const changeIdEgoSelectionMenuStyle = delta => {
+        const list = Object.keys(idEgoSelectionStyles);
+        let index = list.findIndex(x => x === currentIdEgoSelectionMenuStyle) + delta;
+        if (index < 0) index = list.length - 1;
+        else if (index >= list.length) index = 0;
+        setData(p => ({ ...p, idEgoSelectionMenuStyle: list[index] }));
+    }
+
     if (loading) return <LoadingContentPageTemplate />
 
     return <div style={{
@@ -222,22 +242,6 @@ export default function SiteCustomizationPage() {
             </div>
             <div>
                 Current List: {data.favoriteLinks ? <HomepageLinkList links={data.favoriteLinks} style={{ maxWidth: "min(1000px, 90vw)" }} /> : "Not Set"}
-            </div>
-        </SettingContainer>
-
-        <SettingContainer
-            name={"Show Gift Tag Strips"}
-            desc={"When set, E.G.O gifts will have colored strips on their side, showing their tags at a quick glance. Examples of tags include Enhanceable, Fusion Only, Hard Only, and so on."}
-        >
-            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                <input type="checkbox"
-                    checked={data.giftTagStrips ?? customizationDefaults.giftTagStrips}
-                    onChange={e => setData(p => ({ ...p, giftTagStrips: e.target.checked }))}
-                />
-                <span>Toggle Gift Tag Strips</span>
-            </label>
-            <div style={{ alignSelf: "center" }}>
-                <GiftIcon id={"9003"} forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} />
             </div>
         </SettingContainer>
 
@@ -284,6 +288,22 @@ export default function SiteCustomizationPage() {
         </SettingContainer>
 
         <SettingContainer
+            name={"Identity & E.G.O Selection Menu Style"}
+            desc={"Change the format of the different Identities and E.G.Os in the menu when selecting them for making builds and in other parts of the site."}
+        >
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <button onClick={() => changeIdEgoSelectionMenuStyle(-1)}>{"<"}</button>
+                <DropdownButton value={currentIdEgoSelectionMenuStyle} setValue={v => setData(p => ({ ...p, idEgoSelectionMenuStyle: v }))} options={idEgoSelectionStyles} />
+                <button onClick={() => changeIdEgoSelectionMenuStyle(1)}>{">"}</button>
+            </div>
+            {!identitiesLoading &&
+                <div style={{ width: "128px", height: "128px" }}>
+                    <IdentityMenuSelector options={Object.values(identities).filter(x => x.sinnerId === 1)} num={1} menuStyleOverride={data.idEgoSelectionMenuStyle} />
+                </div>
+            }
+        </SettingContainer>
+
+        <SettingContainer
             name={"Share Button Behavior"}
             desc={"By default, the share button will use your browser's share menu. You can disable this if you want it to simply copy the page link."}
         >
@@ -294,6 +314,22 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Disable Share Menu</span>
             </label>
+        </SettingContainer>
+
+        <SettingContainer
+            name={"Show Gift Tag Strips"}
+            desc={"When set, E.G.O gifts will have colored strips on their side, showing their tags at a quick glance. Examples of tags include Enhanceable, Fusion Only, Hard Only, and so on."}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.giftTagStrips ?? customizationDefaults.giftTagStrips}
+                    onChange={e => setData(p => ({ ...p, giftTagStrips: e.target.checked }))}
+                />
+                <span>Toggle Gift Tag Strips</span>
+            </label>
+            <div style={{ alignSelf: "center" }}>
+                <GiftIcon id={"9003"} forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} />
+            </div>
         </SettingContainer>
 
         <SettingContainer
@@ -402,7 +438,7 @@ export default function SiteCustomizationPage() {
             </div>
         </SettingContainer>
 
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem"}}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
             <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
                 <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>
                 <button onClick={resetCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Reset All to Default</button>

@@ -1,4 +1,4 @@
-import { sinnerIdMapping } from "./constants";
+import { keywordStatusMapping, sinnerIdMapping } from "./constants";
 import { filterCategories } from "../components/selectors/IconsSelector";
 
 export function normalizeString(str) {
@@ -21,16 +21,6 @@ export function buildSearchStrings(item, altNames) {
     else
         return [item.name, sinnerIdMapping[item.sinnerId]];
 }
-
-const keywordStatusMapping = {
-    "Burn": "Combustion",
-    "Bleed": "Laceration",
-    "Tremor": "Vibration",
-    "Rupture": "Burst",
-    "Sinking": "Sinking",
-    "Poise": "Breath",
-    "Charge": "Charge"
-};
 
 const identityFilterMatchFunctions = {
     "identityTier": (filter, item) => filter.length === item.rank,

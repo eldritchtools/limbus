@@ -8,5 +8,6 @@ export const customizationDefaults = {
     font: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     filterSelectionMode: "ieo",
     disableShareMenu: false,
-    ratingsOnTooltips: false
+    ratingsOnTooltips: false,
+    idEgoSelectionMenuStyle: "icon"
 }

@@ -43,8 +43,6 @@ function IdentityTooltipContent({ identity, forceRatings }) {
         fetchRating();
     }, [showRatings, identity, user]);
 
-    console.log(rating, userRating);
-
     return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", height: "128px" }}>
             <div>

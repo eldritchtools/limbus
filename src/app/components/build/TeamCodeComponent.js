@@ -1,3 +1,4 @@
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRef, useState } from "react";
 
 import BuildDisplayMenuCard from "./BuildDisplayMenuCard";
@@ -7,6 +8,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
     const teamCodeRef = useRef(null);
     const [copySuccess, setCopySuccess] = useState('');
+    const { isMobile } = useBreakpoint();
 
     const handleTeamCodeCopy = async () => {
         if (teamCodeRef.current) {
@@ -31,7 +33,7 @@ export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
                 ref={teamCodeRef}
                 value={teamCode}
                 readOnly={!editable}
-                style={{ width: "200px", height: "3.5rem", cursor: "pointer" }}
+                style={{ width: isMobile ? "150px" : "200px", height: "3.5rem", cursor: "pointer" }}
                 onClick={editable ? null : handleTeamCodeCopy}
                 onChange={editable ? e => setTeamCode(e.target.value) : undefined}
                 onFocus={editable ? e => e.target.select() : null}
