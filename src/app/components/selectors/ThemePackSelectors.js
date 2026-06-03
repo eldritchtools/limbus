@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useData } from "../DataProvider";
 import DropdownSelectorWithExclusion from "./DropdownSelectorWithExclusion";
 import ThemePackIcon from "../icons/ThemePackIcon";
@@ -19,7 +21,7 @@ export function ThemePackDropdownSelector({ selected, setSelected, isMulti = fal
                 value: id,
                 label: <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <ThemePackIcon id={id} scale={.1} />
-                    <span>{name}</span>
+                    <span style={{flex: 1}}>{name}</span>
                 </div>,
                 name: name
             })
