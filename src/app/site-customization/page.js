@@ -15,6 +15,8 @@ import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentP
 import IconsSelector from "../components/selectors/IconsSelector";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { useAuth } from "../database/authProvider";
+import { deleteCustomization, loadCustomization, saveCustomization } from "../database/customization";
 import { uiColors } from "../lib/colors";
 import { customizationDefaults } from "../lib/customizationDefaults";
 import { HomepageLinkList } from "../lib/homepageLinks";
@@ -72,6 +74,7 @@ export default function SiteCustomizationPage() {
     const [applying, setApplying] = useState(false);
     const [message, setMessage] = useState(null);
     const [filterPreview, setFilterPreview] = useState([]);
+    const { user } = useAuth();
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -99,6 +102,41 @@ export default function SiteCustomizationPage() {
         setApplying(false);
 
         setTimeout(() => setMessage(null), 3000);
+    }
+
+    const handleSaveCustomization = async () => {
+        setApplying(true);
+        const result = await saveCustomization(user.id, customizationData);
+        if (result)
+            setMessage(`Settings saved!`)
+        else
+            setMessage("Failed to save.")
+        setApplying(false);
+
+        setTimeout(() => setMessage(null), 3000);
+    }
+
+    const handleLoadCustomization = async () => {
+        setApplying(true);
+        const result = await loadCustomization();
+        if (result) {
+            setCustomization(result.settings);
+            setMessage(`Saved settings loaded!`)
+        } else
+            setMessage("Failed to load.")
+        setApplying(false);
+
+        setTimeout(() => setMessage(null), 3000);
+    }
+
+    const handleDeleteCustomization = async () => {
+        setApplying(true);
+        await deleteCustomization(user.id);
+        setMessage(`Settings deleted!`)
+        setApplying(false);
+
+        setTimeout(() => setMessage(null), 3000);
+
     }
 
     const [currentPreset, currentFont, currentFilterSelectionMode] = useMemo(() => {
@@ -166,7 +204,7 @@ export default function SiteCustomizationPage() {
         <span style={{ textAlign: "center" }}>Customize site settings and appearance preferences.</span>
         <div className="sub-text">
             Settings are saved locally on your device and persist even when logged in.
-            <br/> <br/>
+            <br /> <br />
             More customization options will be added over time. Suggestions can be submitted via the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.</div>
 
         <SettingContainer
@@ -222,7 +260,7 @@ export default function SiteCustomizationPage() {
                 filterModeOverride={currentFilterSelectionMode}
             />
         </SettingContainer>
-        
+
         <SettingContainer
             name={"Ratings on Tooltips"}
             desc={"Show community ratings on identity and E.G.O tooltips. As always, remember that ratings are community-submitted and not always reliable."}
@@ -234,8 +272,8 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Show Ratings on Tooltips</span>
             </label>
-            
-            <div style={{display: "flex"}}>
+
+            <div style={{ display: "flex" }}>
                 <div style={{ width: "128px", height: "128px" }}>
                     <IdentityIcon id={10101} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} forceRatingsOnTooltip={data.ratingsOnTooltips ? "show" : "hide"} />
                 </div>
@@ -244,7 +282,7 @@ export default function SiteCustomizationPage() {
                 </div>
             </div>
         </SettingContainer>
-        
+
         <SettingContainer
             name={"Share Button Behavior"}
             desc={"By default, the share button will use your browser's share menu. You can disable this if you want it to simply copy the page link."}
@@ -364,12 +402,21 @@ export default function SiteCustomizationPage() {
             </div>
         </SettingContainer>
 
-        <div style={{ alignSelf: "center" }}>
-            <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>
-            <button onClick={resetCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Reset All to Default</button>
-        </div>
-        <div style={{ alignSelf: "center" }}>
-            <span>{message}</span>
+        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem"}}>
+            <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
+                <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>
+                <button onClick={resetCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Reset All to Default</button>
+            </div>
+            <span>Customization Backup</span>
+            <span className="sub-text">Backup your currently applied settings to more easily transfer them between devices.</span>
+            <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
+                <button onClick={handleSaveCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Backup</button>
+                <button onClick={handleLoadCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Restore</button>
+                <button onClick={handleDeleteCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Delete Backup</button>
+            </div>
+            <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
+                <span>{message}</span>
+            </div>
         </div>
     </div>
 }
