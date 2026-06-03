@@ -63,7 +63,7 @@ export default function CommunityAssetPicker({ type, onClick }) {
         if (onClick) onClick(id);
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", maxWidth: isMobile ? "100%" : "800px" }}>
+    return <div style={{ display: "flex", flexDirection: "column", maxWidth: isMobile ? "85vw" : "800px" }}>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." />
         <div style={{
             height: isMobile ? "200px" : "300px", overflowY: "auto", overflowX: "hidden", width: "min(95vw, 600px)",

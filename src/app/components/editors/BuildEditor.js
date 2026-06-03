@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Select from "react-select";
 
 import BuildEditingComponent from "./BuildEditingComponent";
@@ -12,6 +12,7 @@ import ImageCarousel from "../objects/ImageCarousel";
 import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption, validateTag } from "../selectors/TagSelector";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
@@ -62,6 +63,8 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [category, setCategory] = useState(null);
     const [encounter, setEncounter] = useState(null);
     const [addEncounterTagLoading, setAddEncounterTagLoading] = useState(false);
+    const [encounterTagOpen, setEncounterTagOpen] = useState(false);
+    const encounterTagRef = useRef(null);
 
     const categoryOptions = useMemo(() => getEncounterCategoryOptions(true), []);
     const encounterOptions = useMemo(() =>
@@ -132,8 +135,8 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         if (!initTag) return;
 
         const handleInitTag = async () => {
-            const {valid, value} = validateTag(initTag);
-            if(valid) {
+            const { valid, value } = validateTag(initTag);
+            if (valid) {
                 const dbTag = await handleCreateTag(value);
                 setTags([tagToTagSelectorOption(dbTag)]);
             }
@@ -142,12 +145,30 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         handleInitTag();
     }, [initTag]);
 
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            if (encounterTagRef.current && !encounterTagRef.current.contains(e.target)) {
+                setEncounterTagOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    const handleOpenEncounterTag = () => {
+        setEncounterTagOpen(true);
+        setCategory(null);
+        setEncounter(null);
+    }
+
     const handleAddEncounterTag = async () => {
-        if(!category || !encounter) return;
+        if (!category || !encounter) return;
         setAddEncounterTagLoading(true);
         const tag = `${category.value}-${encounter.value}`;
         const dbTag = await handleCreateTag(tag);
         setTags(p => [...p, tagToTagSelectorOption(dbTag)]);
+        setEncounterTagOpen(false);
         setAddEncounterTagLoading(false);
     }
 
@@ -272,7 +293,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         {user && <React.Fragment>
             <span style={{ fontSize: "1.2rem" }}>Images</span>
             <span className="sub-text">{uiStrings.postImages}</span>
-            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1}/>
+            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1} />
             <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
         </React.Fragment>}
 
@@ -309,34 +330,49 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         {youtubeVideo.length > 0 ?
             <span className="sub-text">Youtube Video Id: {extractYouTubeId(youtubeVideo.trim()) ?? "Not found"}</span> :
             null}
-        <span style={{ fontSize: "1.2rem" }}>Tags</span>
-        <TagSelector selected={tags} onChange={setTags} creatable={true} />
-        <span className="sub-text">
-            If this build is for a specific encounter, you can tag it so it shows up in that encounter&apos;s page.
-        </span>
-        <div style={{display: "flex", gap: "0.2rem", alignItems: "center", flexWrap: "wrap"}}>
-            <Select
-                options={categoryOptions}
-                value={category}
-                onChange={x => {setCategory(x); setEncounter(null);}}
-                placeholder={"Choose category..."}
-                filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
-                styles={selectStyle}
-            />
-            <Select
-                options={encounterOptions}
-                value={encounter}
-                onChange={setEncounter}
-                placeholder={"Choose encounter..."}
-                filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
-                styles={selectStyle}
-            />
 
-            <button onClick={handleAddEncounterTag} disabled={addEncounterTagLoading}>
-                Add Encounter Tag
-            </button>
+        <div style={{ display: "flex", gap: "0.2rem", flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ fontSize: "1.2rem" }}>Tags</span>
 
+            <div ref={encounterTagRef} style={{ position: "relative" }}>
+                <button 
+                    {...getGeneralTooltipProps("If this build is for a specific encounter, you can tag it so it shows up in that encounter's page.")} 
+                    onClick={handleOpenEncounterTag} 
+                    disabled={addEncounterTagLoading}
+                    style={{fontSize: "0.8rem"}}
+                >
+                    Add Encounter Tag
+                </button>
+                {encounterTagOpen &&
+                    <div style={{ 
+                        position: "absolute", top: "100%", left: 0, zIndex: 10, padding: "0.5rem",
+                        background: "var(--bg-secondary)", border: "1px solid var(--secondary-border-color)", borderRadius: "4px",
+                        display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" 
+                        }}>
+                        <Select
+                            options={categoryOptions}
+                            value={category}
+                            onChange={x => { setCategory(x); setEncounter(null); }}
+                            placeholder={"Choose category..."}
+                            filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
+                            styles={selectStyle}
+                        />
+                        <Select
+                            options={encounterOptions}
+                            value={encounter}
+                            onChange={setEncounter}
+                            placeholder={"Choose encounter..."}
+                            filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                            styles={selectStyle}
+                        />
+                        <button onClick={handleAddEncounterTag} disabled={addEncounterTagLoading}>
+                            Add Encounter Tag
+                        </button>
+                    </div>
+                }
+            </div>
         </div>
+        <TagSelector selected={tags} onChange={setTags} creatable={true} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div>
