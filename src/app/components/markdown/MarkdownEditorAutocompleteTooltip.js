@@ -1,5 +1,6 @@
 "use client";
 
+import { tokensDescs } from "./tokens";
 import { getAdditionalIconSrc } from "../icons/AdditionalIcon";
 import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
@@ -193,4 +194,13 @@ export default function constructMarkdownEditorAutocompleteTooltip(entry, type, 
     if (type === "icon") return constructIconAutocompleteTooltip(entry);
     if (type === "sinnericon") return constructSinnerIconAutocompleteTooltip(entry);
     return null;
+}
+
+export function constructMarkdownEditorTypeTooltip(type) {
+    const wrapper = constructWrapper(320);
+
+    wrapper.appendChild(constructTitleElement(type));
+    wrapper.appendChild(constructTextElement(tokensDescs[type]));
+
+    return wrapper;
 }

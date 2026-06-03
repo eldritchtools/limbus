@@ -11,7 +11,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { visit } from "unist-util-visit";
 
-import { convertMarkdownAlias } from "./MarkdownAliases";
+import { convertTokenAlias } from "./tokens";
 import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
 import AdditionalIcon from "../icons/AdditionalIcon";
@@ -310,7 +310,7 @@ export default function MarkdownRenderer({ content }) {
                 tokenNode: ({ node }) => {
                     const { tokenType, tokenValues } = node.properties;
 
-                    switch (convertMarkdownAlias(tokenType)) {
+                    switch (convertTokenAlias(tokenType)) {
                         case "identity":
                             return <IdentityItem id={tokenValues[0]} />;
                         case "ego":
