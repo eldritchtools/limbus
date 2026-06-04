@@ -124,7 +124,7 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
                             }>🗑 Delete</button>
                         </>
                         }
-                        {user?.id === buildOwnerId ? (
+                        {buildOwnerId && user?.id === buildOwnerId ? (
                             pinned ?
                                 <button onClick={handleUnpin} disabled={pinLoading}>📌 Unpin</button> :
                                 <button onClick={handlePin} disabled={pinLoading}>📌 Pin</button>
