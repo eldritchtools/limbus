@@ -10,5 +10,5 @@
 }
 
 .clickableIcon.unowned {
-    filter: brightness(0.5) grayscale(0.5);
+    filter: brightness(0.5) grayscale(0.75);
 }

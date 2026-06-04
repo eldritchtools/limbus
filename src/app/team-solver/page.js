@@ -42,7 +42,7 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
         result.forEach(item => {
             if (!item) {
                 identityIds.push(null);
-                styles.push({ filter: "brightness(0.5) grayscale(0.5)" });
+                styles.push({ filter: "brightness(0.5) grayscale(0.75)" });
             } else if (typeof item === 'object') {
                 identityIds.push(null);
                 styles.push({ filter: "brightness(1.3)" });
