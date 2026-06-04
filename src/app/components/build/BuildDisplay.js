@@ -49,7 +49,7 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
                         egoThreadspins={threadspins ? threadspins[index] : null}
                         deploymentOrder={deploymentOrder}
                         activeSinners={activeSinners}
-                        swapIcon={iconSwaps.includes(index + 1)}
+                        swapIcon={iconSwaps?.includes(index + 1)}
                         otherOpts={otherOpts}
                     />
                     {skillReplaces?.[index + 1] ?
