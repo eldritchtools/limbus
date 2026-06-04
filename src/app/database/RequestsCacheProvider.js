@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useCallback, useRef } from "react"
 import { useAuth } from "./authProvider";
 import { getSupabase } from './connection';
 import { withRetry } from "./supabaseTemplates";
+import { checkFollowThread, followThread, unfollowThread } from "./threads";
 import { checkFollow, followUser, unfollowUser } from "./users";
 
 const RequestsCacheContext = createContext(null);
@@ -16,6 +17,7 @@ export function RequestsCacheProvider({ children }) {
     const [likedMap, setLikedMap] = useState({});
     const [savedMap, setSavedMap] = useState({});
     const [followedMap, setFollowedMap] = useState({});
+    const [followedThreadMap, setFollowedThreadMap] = useState({});
 
     const loadedKeys = useRef(new Set());
     const queuedKeys = useRef(new Set());
@@ -140,15 +142,15 @@ export function RequestsCacheProvider({ children }) {
     const checkFollowed = async (id) => {
         if (!user || !id) return;
 
-        if(id in followedMap) return followedMap[id];
+        if (id in followedMap) return followedMap[id];
 
         try {
             const data = await checkFollow(user.id, id);
 
-            if(data)
-                setFollowedMap(prev => ({...prev, [id]: true}))
+            if (data)
+                setFollowedMap(prev => ({ ...prev, [id]: true }))
             else
-                setFollowedMap(prev => ({...prev, [id]: false}))
+                setFollowedMap(prev => ({ ...prev, [id]: false }))
         } catch (err) {
             console.error(`Error loading follow`, err);
             return;
@@ -158,12 +160,42 @@ export function RequestsCacheProvider({ children }) {
     const toggleFollowed = async (id) => {
         if (!user || !id) return;
 
-        if(followedMap[id]) {
+        if (followedMap[id]) {
             const data = await unfollowUser(id);
-            setFollowedMap(prev => ({...prev, [id]: false}));
+            setFollowedMap(prev => ({ ...prev, [id]: false }));
         } else {
             const data = await followUser(id);
-            setFollowedMap(prev => ({...prev, [id]: true}));
+            setFollowedMap(prev => ({ ...prev, [id]: true }));
+        }
+    }
+
+    const checkFollowedThread = async (type, id) => {
+        if (!user || !type || !id) return;
+
+        if (type in followedThreadMap && id in followedThreadMap[type]) return followedThreadMap[type][id];
+
+        try {
+            const data = await checkFollowThread(user.id, type, id);
+
+            if (data)
+                setFollowedThreadMap(prev => ({ ...prev, [type]: { ...(prev.type ?? {}), [id]: true } }))
+            else
+                setFollowedThreadMap(prev => ({ ...prev, [type]: { ...(prev.type ?? {}), [id]: false } }))
+        } catch (err) {
+            console.error(`Error loading followed thread`, err);
+            return;
+        }
+    };
+
+    const toggleFollowedThread = async (type, id) => {
+        if (!user || !type || !id) return;
+
+        if (followedThreadMap?.[type]?.[id]) {
+            const data = await unfollowThread(type, id);
+            setFollowedThreadMap(prev => ({ ...prev, [type]: { ...(prev.type ?? {}), [id]: false } }))
+        } else {
+            const data = await followThread(type, id);
+            setFollowedThreadMap(prev => ({ ...prev, [type]: { ...(prev.type ?? {}), [id]: true } }))
         }
     }
 
@@ -175,7 +207,9 @@ export function RequestsCacheProvider({ children }) {
             toggleLike: (type, id) => toggleInteraction("likes", type, id),
             toggleSave: (type, id) => toggleInteraction("saves", type, id),
             checkFollowed,
-            toggleFollowed
+            toggleFollowed,
+            checkFollowedThread,
+            toggleFollowedThread
         }}
     >
         {children}

@@ -34,14 +34,15 @@ const eventString = {
     "new_post": "has posted a new"
 }
 
-function constructNotifMessage(notif, category, encounter) {
+function constructNotifMessage(notif) {
     const actorsStr = constructActorStr(notif.actors);
 
     if (notif.target_type === "fixed")
         return `${actorsStr} ${eventString[notif.type]} ${commentsTargetIdsReversed[notif.target_id]} page`;
 
     if (notif.target_type === "encounter") {
-        const name = metadataIndex?.encounters?.[category]?.[encounter] ?? "";
+        const [cat, enc] = notif.title.split("|");
+        const name = metadataIndex?.encounters?.[cat]?.[enc] ?? "";
         return `${actorsStr} ${eventString[notif.type]} ${targetTypeMapping[notif.target_type]} ${name}`;
     }
 
@@ -50,22 +51,6 @@ function constructNotifMessage(notif, category, encounter) {
 
 export default function Notification({ notif, updateNotif }) {
     const router = useRouter();
-    const [category, setCategory] = useState(null);
-    const [encounter, setEncounter] = useState(null);
-
-    useEffect(() => {
-        if(notif.target_type !== "encounter") return;
-
-        const fetchData = async () => {
-            const data = await fetchEncounter(notif.target_id);
-            if(data) {
-                setCategory(data.category);
-                setEncounter(data.slug);
-            }
-        }
-
-        fetchData();
-    }, [notif]);
 
     const handleNotifClick = async (notif) => {
         await setNotificationRead(notif.id);
@@ -92,22 +77,21 @@ export default function Notification({ notif, updateNotif }) {
                         return;
                 }
             case "encounter":
-                if(category && encounter) {
-                    const params = new URLSearchParams();
-                    params.set("category", category);
-                    params.set("encounter", encounter);
+                const [category, encounter] = notif.title.split("|");
+                const params = new URLSearchParams();
+                params.set("category", category);
+                params.set("encounter", encounter);
 
-                    router.push(`/encounters?${params.toString()}`);
-                }
-                return
+                router.push(`/encounters?${params.toString()}`);
+                return;
             default:
-                return
+                return;
         }
     }
 
     return <div onClick={() => handleNotifClick(notif)} className={notif.is_read ? styles.notifRead : styles.notif}>
         <div style={{ fontSize: "1rem", marginBottom: "4px" }} onClick={() => handleNotifClick(notif)}>
-            {constructNotifMessage(notif, category, encounter)}
+            {constructNotifMessage(notif)}
         </div>
         <div className="sub-text">
             <ReactTimeAgo date={notif.created_at} locale="en-US" timeStyle="mini" />

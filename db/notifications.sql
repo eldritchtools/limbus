@@ -80,7 +80,7 @@ BEGIN
   IF NEW.parent_id IS NOT NULL 
      AND parent_owner IS NOT NULL
      AND parent_owner != NEW.user_id
-     AND parent_owner != target_owner THEN
+     AND (target_owner IS NULL OR parent_owner != target_owner) THEN
 
     SELECT id INTO existing_notif
     FROM notifications
@@ -115,7 +115,7 @@ AFTER INSERT ON public.comments
 FOR EACH ROW
 EXECUTE FUNCTION handle_comment_notifications();
 
-CREATE OR REPLACE FUNCTION public.get_user_notifications_v3(
+CREATE OR REPLACE FUNCTION public.get_user_notifications_v4(
   p_user_id UUID,
   p_limit INT DEFAULT 20,
   p_offset INT DEFAULT 0
@@ -139,22 +139,14 @@ AS $$
     ARRAY_AGG(DISTINCT a.username ORDER BY a.username) AS actors,
     n.target_type,
     n.target_id,
-    COALESCE(b.title, c.title, p.title) AS title,
+    tm.title,
     n.is_read,
     n.created_at
   FROM public.notifications AS n
 
-  LEFT JOIN public.builds b
-    ON n.target_type = 'build'
-   AND b.id = n.target_id
-
-  LEFT JOIN public.collections c
-    ON n.target_type = 'collection'
-   AND c.id = n.target_id
-
-  LEFT JOIN public.md_plans p
-    ON n.target_type = 'md_plan'
-   AND p.id = n.target_id
+  LEFT JOIN target_metadata tm
+    ON tm.target_type = n.target_type
+   AND tm.target_id = n.target_id
    
   LEFT JOIN LATERAL (
     SELECT u.username
@@ -162,7 +154,7 @@ AS $$
     WHERE u.id = ANY(n.actor_ids)
   ) AS a ON TRUE
   WHERE n.user_id = p_user_id
-  GROUP BY n.id, n.type, n.target_type, n.target_id, b.title, c.title, p.title, n.is_read, n.created_at
+  GROUP BY n.id, n.type, n.target_type, n.target_id, tm.title, n.is_read, n.created_at
   ORDER BY n.created_at DESC
   LIMIT p_limit OFFSET p_offset;
 $$;

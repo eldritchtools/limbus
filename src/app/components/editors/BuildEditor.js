@@ -9,7 +9,6 @@ import { useData } from "../DataProvider";
 import KeywordIcon from "../icons/KeywordIcon";
 import StatusIcon from "../icons/StatusIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
-import { VerticalDivider } from "../objects/Dividers";
 import ImageCarousel from "../objects/ImageCarousel";
 import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
