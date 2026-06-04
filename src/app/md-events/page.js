@@ -100,7 +100,7 @@ export default function MDEventsPage() {
             themePacks[id].eventPool.forEach(x => events.add(x))
         );
 
-        return [...events].map(id => choiceEvents[id]);
+        return [...events].map(id => choiceEvents[id]).filter(x => x);
     }, [selectedThemePacks, themePacks, choiceEvents, themePacksLoading, choiceEventsLoading])
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>

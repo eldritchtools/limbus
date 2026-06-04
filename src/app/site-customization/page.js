@@ -114,6 +114,7 @@ export default function SiteCustomizationPage() {
     }
 
     const handleSaveCustomization = async () => {
+        if (!user) return;
         setApplying(true);
         const result = await saveCustomization(user.id, customizationData);
         if (result)
@@ -139,6 +140,7 @@ export default function SiteCustomizationPage() {
     }
 
     const handleDeleteCustomization = async () => {
+        if (!user) return;
         setApplying(true);
         await deleteCustomization(user.id);
         setMessage(`Settings deleted!`)
@@ -443,13 +445,15 @@ export default function SiteCustomizationPage() {
                 <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>
                 <button onClick={resetCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Reset All to Default</button>
             </div>
-            <span>Customization Backup</span>
-            <span className="sub-text">Backup your currently applied settings to more easily transfer them between devices.</span>
-            <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
-                <button onClick={handleSaveCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Backup</button>
-                <button onClick={handleLoadCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Restore</button>
-                <button onClick={handleDeleteCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Delete Backup</button>
-            </div>
+            {user && <>
+                <span>Customization Backup</span>
+                <span className="sub-text">Backup your currently applied settings to more easily transfer them between devices.</span>
+                <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
+                    <button onClick={handleSaveCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Backup</button>
+                    <button onClick={handleLoadCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Restore</button>
+                    <button onClick={handleDeleteCustomization} disabled={applying} style={{ fontSize: "1rem" }}>Delete Backup</button>
+                </div>
+            </>}
             <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
                 <span>{message}</span>
             </div>
