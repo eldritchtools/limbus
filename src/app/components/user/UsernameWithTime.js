@@ -9,20 +9,21 @@ import Avatar from "../icons/Avatar";
 import { isLocalId } from "@/app/database/localDB";
 
 export default function UsernameWithTime({ data, scale = 1, clickable = true, includeUpdatedAt = true, avatarId, withFollowButton }) {
-    return <div style={{ fontSize: `${scale}rem` }}>
-        {!isLocalId(data.id) ?
-            <span style={{display: "inline-flex", alignItems: "center", verticalAlign: "center", gap: "0.2rem"}}>by
-                <Avatar avatarId={avatarId} size={24} style={{display: "inline"}} />
+    return <div style={{ display: "inline", fontSize: `${scale}rem`, verticalAlign: "middle" }}>
+        {!isLocalId(data.id) &&
+            <>
+                by&nbsp;
+                {avatarId && <>
+                    <Avatar avatarId={avatarId} size={24} style={{ display: "inline", verticalAlign: "-0.5rem" }} />&nbsp;
+                </>}
                 <Username username={data.username} flair={data.user_flair} clickable={clickable} />
-                {withFollowButton && <FollowButton targetId={data.user_id} />}
-                •&nbsp;
-            </span> :
-            null
+                {withFollowButton && <FollowButton targetId={data.user_id} style={{verticalAlign: "-0.2rem"}} />}
+                &nbsp;•&nbsp;
+            </>
         }
         <ReactTimeAgo date={data.published_at ?? data.created_at} locale="en-US" timeStyle="mini" />
-        {includeUpdatedAt && data.updated_at !== (data.published_at ?? data.created_at) ?
-            <span> • Last edited <ReactTimeAgo date={data.updated_at} locale="en-US" timeStyle="mini" /></span> :
-            null
+        {includeUpdatedAt && data.updated_at !== (data.published_at ?? data.created_at) &&
+            <span> • Last edited <ReactTimeAgo date={data.updated_at} locale="en-US" timeStyle="mini" /></span>
         }
     </div>
 }

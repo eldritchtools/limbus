@@ -88,17 +88,19 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
 
     return <>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
-            <div onClick={handleBack}>
-                <button><BackSolid text={"Go Back"} /></button>
+            <div>
+                <button onClick={handleBack} className="text-link" style={{ background: "transparent", border: "none", padding: "0" }}>
+                    <BackSolid text={"Go Back"} />
+                </button>
             </div>
             <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap", marginTop: 0, marginBottom: "0.5rem" }}>
                     {titleIcons}
                     {content.title}
                 </h2>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
-                        <UsernameWithTime data={content} scale={.9} avatarId={content.user_avatar_id} withFollowButton={true} />
+                        <UsernameWithTime data={content} scale={0.9} avatarId={content.user_avatar_id} withFollowButton={true} />
                     </div>
                     {sideComponent}
                 </div>

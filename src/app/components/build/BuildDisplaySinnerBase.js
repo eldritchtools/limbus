@@ -13,13 +13,16 @@ import { deploymentColors } from "@/app/lib/colors";
 import { egoRanks } from "@/app/lib/constants";
 import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
 
-function Identity({ identity, displayType, sinnerId, uptie, level }) {
+function Identity({ identity, displayType, sinnerId, uptie, level, swapIcon }) {
     if (!identity)
         return <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <SinnerIcon num={sinnerId} style={{ width: "75%", height: "75%" }} />
         </div>
 
-    const props = { displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp", displayRarity: true, style: {borderRadius: ".5rem"} };
+    const props = { 
+        displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp", 
+        displayRarity: true, style: {borderRadius: ".5rem"}, swapIcon: swapIcon
+    };
     if (uptie) {
         props.uptie = uptie;
         props.displayUptie = true;
@@ -73,7 +76,11 @@ function Ego({ ego, displayType, rank, threadspin }) {
         <div style={{ width: "100%", aspectRatio: "4/1", boxSizing: "border-box" }} />
 }
 
-export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity, egos, uptie, level, threadspins, deploymentOrder, activeSinners }) {
+export default function BuildDisplaySinnerBase({ 
+    displayType, sinnerId, identity, egos, 
+    uptie, level, threadspins, swapIcon,
+    deploymentOrder, activeSinners
+}) {
     const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
 
     if (displayType === "ids")
@@ -84,6 +91,7 @@ export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity
                 sinnerId={sinnerId}
                 uptie={uptie}
                 level={level}
+                swapIcon={swapIcon}
             />
             <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
         </div>
@@ -98,6 +106,7 @@ export default function BuildDisplaySinnerBase({ displayType, sinnerId, identity
                 sinnerId={sinnerId}
                 uptie={uptie}
                 level={level}
+                swapIcon={swapIcon}
             />
             <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
         </div>

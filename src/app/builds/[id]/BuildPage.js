@@ -8,6 +8,7 @@ import DisplayTypeButton from "@/app/components/build/DisplayTypeButton";
 import Distribution from "@/app/components/build/Distribution";
 import TeamCodeComponent from "@/app/components/build/TeamCodeComponent";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
+import StatusIcon from "@/app/components/icons/StatusIcon";
 import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import DragContainer from "@/app/components/objects/DragContainer";
 import ImageCarousel from "@/app/components/objects/ImageCarousel";
@@ -29,6 +30,8 @@ export default function BuildPage({ id }) {
     const [identityUpties, setIdentityUpties] = useState(null);
     const [egoThreadspins, setEgoThreadspins] = useState(null);
     const [sinnerNotes, setSinnerNotes] = useState(null);
+    const [addedIcons, setAddedIcons] = useState(null);
+    const [iconSwaps, setIconSwaps] = useState(null);
 
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
 
@@ -42,6 +45,8 @@ export default function BuildPage({ id }) {
                     if (extraOpts.identityUpties) setIdentityUpties(extraOpts.identityUpties);
                     if (extraOpts.egoThreadspins) setEgoThreadspins(extraOpts.egoThreadspins);
                     if (extraOpts.sinnerNotes) setSinnerNotes(extraOpts.sinnerNotes);
+                    if (extraOpts.addedIcons) setAddedIcons(extraOpts.addedIcons);
+                    if (extraOpts.iconSwaps) setIconSwaps(extraOpts.iconSwaps);
                 }
                 setLoading(false);
             }
@@ -60,7 +65,10 @@ export default function BuildPage({ id }) {
 
     return <ContentPageTemplate
         targetType={"build"} targetId={id} content={build}
-        titleIcons={build.keyword_ids.map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
+        titleIcons={[
+            ...build.keyword_ids.map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />),
+            ...(addedIcons ?? []).map(id => <StatusIcon key={id} id={id} style={{ width: "32px" }} />)
+        ]}
         actions={["like", "save", "share", "edit", "delete"]}
     >
         <BuildDisplay
@@ -70,6 +78,7 @@ export default function BuildPage({ id }) {
             identityLevels={identityLevels}
             egoThreadspins={egoThreadspins}
             sinnerNotes={sinnerNotes}
+            iconSwaps={iconSwaps}
             deploymentOrder={build.deployment_order}
             activeSinners={build.active_sinners}
             displayType={displayType}

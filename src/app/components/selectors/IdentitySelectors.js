@@ -47,7 +47,7 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
     />;
 }
 
-export function IdentityMenuSelector({ value, setValue, options, num, menuStyleOverride }) {
+export function IdentityMenuSelector({ value, setValue, options, num, menuStyleOverride, uptie=4, swapIcon }) {
     const { getCustomizationValue } = useSiteCustomization();
     const [altNames, altNamesLoading] = useData("alt_names");
     const [filter, setFilter] = useState("");
@@ -72,10 +72,10 @@ export function IdentityMenuSelector({ value, setValue, options, num, menuStyleO
             case "iconkw":
                 return <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
                     <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
-                        <IdentityIcon identity={option} uptie={4} displayName={true} displayRarity={true} />
+                        <IdentityIcon identity={option} uptie={uptie} displayName={true} displayRarity={true} />
                         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-                            {(option?.skillKeywordList ?? []).map(kw => 
-                                <KeywordIcon key={kw} id={kw} size={isMobile ? 24 : 32}/>
+                            {(option?.skillKeywordList ?? []).map(kw =>
+                                <KeywordIcon key={kw} id={kw} size={isMobile ? 24 : 32} />
                             )}
                         </div>
                     </div>
@@ -83,15 +83,15 @@ export function IdentityMenuSelector({ value, setValue, options, num, menuStyleO
             case "minikw":
                 return <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
                     <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
-                        <div style={{display: "flex", width: "100%", alignItems: "start"}}>
-                            <IdentityIcon identity={option} uptie={4} style={{width: "25%", aspectRatio: "1/1"}}/>
-                            <span style={{fontSize: "0.8rem", width: "75%"}}>
+                        <div style={{ display: "flex", width: "100%", alignItems: "start" }}>
+                            <IdentityIcon identity={option} uptie={uptie} style={{ width: "25%", aspectRatio: "1/1" }} />
+                            <span style={{ fontSize: "0.8rem", width: "75%" }}>
                                 {option.name}
                             </span>
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-                            {(option?.skillKeywordList ?? []).map(kw => 
-                                <KeywordIcon key={kw} id={kw} size={isMobile ? 24 : 32}/>
+                            {(option?.skillKeywordList ?? []).map(kw =>
+                                <KeywordIcon key={kw} id={kw} size={isMobile ? 24 : 32} />
                             )}
                         </div>
                     </div>
@@ -100,7 +100,7 @@ export function IdentityMenuSelector({ value, setValue, options, num, menuStyleO
             default:
                 return <Select.Item key={option.id} value={option.id} className={styles.identityMenuSelectorItem}>
                     <div className={styles.identityMenuItemInner} {...getIdentityTooltipProps(option.id)}>
-                        <IdentityIcon identity={option} uptie={4} displayName={true} displayRarity={true} />
+                        <IdentityIcon identity={option} uptie={uptie} displayName={true} displayRarity={true} />
                     </div>
                 </Select.Item>
         }
@@ -110,7 +110,7 @@ export function IdentityMenuSelector({ value, setValue, options, num, menuStyleO
         <Select.Trigger className={styles.identityMenuSelectorTrigger} ref={triggerRef}>
             {value ? <div {...(isTouchDevice() ? {} : getIdentityTooltipProps(value.id))}
                 style={{ width: "100%", position: "relative" }}>
-                <IdentityIcon identity={value} uptie={4} displayName={true} displayRarity={true} />
+                <IdentityIcon identity={value} uptie={uptie} displayName={true} displayRarity={true} swapIcon={swapIcon} />
             </div> : <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>
                 <SinnerIcon num={num} style={{ height: "75%", width: "75%" }} />
             </div>}

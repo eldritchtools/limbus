@@ -11,6 +11,7 @@ import SaveButton from "../contentActions/SaveButton";
 import HoverBlocker from "../HoverBlocker";
 import Avatar from "../icons/Avatar";
 import KeywordIcon from "../icons/KeywordIcon";
+import StatusIcon from "../icons/StatusIcon";
 import NoPrefetchLink from "../NoPrefetchLink";
 import Tag from "../objects/Tag";
 import UsernameWithTime from "../user/UsernameWithTime";
@@ -29,10 +30,14 @@ function getSizes(size, isMobile) {
 export default function TeamBuild({ build, size, complete = true, clickable = true, styleOverride = {} }) {
     const [blockHover, setBlockHover] = useState(false);
 
+    const addedIcons = [];
+
     const extraProps = {};
     if (build.extra_opts) {
-        const extraOpts = decodeBuildExtraOpts(build.extra_opts, ["iu"])
+        const extraOpts = decodeBuildExtraOpts(build.extra_opts, ["iu", "ai", "is"])
         if (extraOpts.identityUpties) extraProps.identityUpties = extraOpts.identityUpties;
+        if (extraOpts.addedIcons) addedIcons.push(...extraOpts.addedIcons);
+        if (extraOpts.iconSwaps) extraProps.iconSwaps = extraOpts.iconSwaps;
     }
 
     const { isMobile } = useBreakpoint();
@@ -40,16 +45,22 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
     if (!sizes) return null;
 
-    const hiddenIcons = build.keyword_ids.length - sizes.maxRailIcons;
+    const icons = [...build.keyword_ids.map(x => ["kw", x]), ...addedIcons.map(x => ["st", x])];
+
+    const hiddenIcons = icons.length - sizes.maxRailIcons;
 
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
     return <div className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null}`} style={{ width: sizes.width, ...styleOverride }}>
         {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} /> : null}
 
-        {build.keyword_ids.length > 0 ?
+        {icons.length > 0 ?
             <div className={styles.teamBuildIconRail}>
-                {build.keyword_ids.slice(0, sizes.maxRailIcons).map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} size={sizes.iconSize} />)}
+                {icons.slice(0, sizes.maxRailIcons).map(
+                    ([type, id]) => type === "kw" ?
+                    <KeywordIcon key={id} id={keywordIdMapping[id]} size={sizes.iconSize} /> :
+                    <StatusIcon key={id} id={id} style={{width: `${sizes.iconSize}px`}} />
+                )}
                 {hiddenIcons > 0 ? <span style={{
                     width: sizes.iconSize, height: sizes.iconSize, display: "flex",
                     alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "#7c6a55"

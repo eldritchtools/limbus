@@ -8,7 +8,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import { useAuth } from "@/app/database/authProvider";
 import { useRequestsCache } from "@/app/database/RequestsCacheProvider";
 
-export default function FollowButton({ targetId }) {
+export default function FollowButton({ targetId, style }) {
     const { checkFollowed, toggleFollowed } = useRequestsCache();
     const { user } = useAuth();
     const [followed, setFollowed] = useState(false);
@@ -36,7 +36,7 @@ export default function FollowButton({ targetId }) {
 
     return <button
         {...getGeneralTooltipProps("Follow to get a notification whenever this user publishes a new post.")}
-        style={{ background: "transparent", border: "transparent", padding: 0 }}
+        style={{ background: "transparent", border: "transparent", padding: 0, ...style }}
         disabled={loading} onClick={handleClick}
     >
         {component}

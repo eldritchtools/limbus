@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { useEffect, useMemo, useState } from "react";
 
 import BuildDisplay from "../build/BuildDisplay";
@@ -36,6 +37,7 @@ export default function BuildEditingComponent({
     identityLevels, setIdentityLevels,
     identityUpties, setIdentityUpties,
     egoThreadspins, setEgoThreadspins,
+    iconSwaps, setIconSwaps,
     sinnerNotes, setSinnerNotes,
     skillReplaces, setSkillReplaces,
     minimalEditor = false, replaceDeployment, insertPanel,
@@ -73,6 +75,7 @@ export default function BuildEditingComponent({
     const setIdentityUptie = (uptie, index) => setIdentityUpties(prev => prev.map((x, i) => i === index ? uptie : x));
     const setEgoThreadspin = (uptie, index, rank) => setEgoThreadspins(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? uptie : y) : x));
     const setSinnerNote = (note, index) => setSinnerNotes(prev => prev.map((x, i) => i === index ? note : x));
+    const toggleIconSwap = index => setIconSwaps(prev => prev.includes(index) ? prev.filter(x => x !== index) : [...prev, index]);
     const setSkillReplace = (rep, index) => setSkillReplaces(prev => ({ ...prev, [index]: rep }));
 
     useEffect(() => {
@@ -101,7 +104,11 @@ export default function BuildEditingComponent({
                                 return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", minWidth: 0 }}>
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid`, borderRadius: "0.5rem" }}>
                                         <div style={{ gridColumn: "1", gridRow: "1 / 5" }}>
-                                            <IdentityMenuSelector value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} options={identityOptions[index + 1]} num={index + 1} />
+                                            <IdentityMenuSelector 
+                                                value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} 
+                                                options={identityOptions[index + 1]} num={index + 1} 
+                                                uptie={identityUpties[index] === "" ? 4 : identityUpties[index]} swapIcon={iconSwaps.includes(index + 1)} 
+                                            />
                                         </div>
                                         <div style={{ gridColumn: "1", gridRow: "5", alignItems: "stretch", justifyContent: "stretch" }}>
                                             {!minimalEditor ?
@@ -116,11 +123,20 @@ export default function BuildEditingComponent({
                                         )}
                                     </div>
                                     {additionalToggle ? <>
-                                        <div style={{ display: "flex" }}>
-                                            <NumberInputWithButtons value={identityLevels[index]} setValue={v => setIdentityLevel(v, index)} max={LEVEL_CAP} allowEmpty={true} />
+                                        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)" }}>
+                                            <div style={{ gridColumn: "span 3", display: "flex", justifyContent: "center" }}>
+                                                <NumberInputWithButtons
+                                                    value={identityLevels[index]} setValue={v => setIdentityLevel(v, index)}
+                                                    max={LEVEL_CAP} allowEmpty={true} inputStyle={{ padding: "4px" }}
+                                                />
+                                            </div>
                                             <UptieSelector value={identityUpties[index]} setValue={v => setIdentityUptie(v, index)} allowEmpty={true} />
-                                        </div>
-                                        <div style={{ display: "flex" }}>
+                                            <button {...getGeneralTooltipProps("Swap identity icon used")}
+                                                onClick={() => toggleIconSwap(index + 1)}
+                                                style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+                                            >
+                                                <ArrowPathIcon style={{ width: "1.25rem", height: "1.25rem", transform: "rotate(90deg)" }} />
+                                            </button>
                                             {Array.from({ length: 5 }, (_, rank) =>
                                                 <UptieSelector
                                                     key={rank}
@@ -174,7 +190,7 @@ export default function BuildEditingComponent({
                     />
             )
         }
-        <DragContainer style={{alignSelf: "center", width: "max-content", maxWidth: "100%"}}>
+        <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
                 {insertPanel ? insertPanel : null}
                 {!minimalEditor ?
