@@ -6,12 +6,14 @@ import TooltipTemplate from "./TooltipTemplate";
 import { useData } from "../DataProvider";
 import EnemyIcon from "../icons/EnemyIcon";
 import NoPrefetchLink from "../NoPrefetchLink";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 import { encounterCategoryLabels } from "@/app/lib/encounters";
 
 const TOOLTIP_ID = "encounter-tooltip";
 
 function EncounterTooltipContent({ cat, id, encounter }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const handleTargets = (acc, targets) => {
         if(targets) acc.push(...targets);
     }
@@ -48,6 +50,7 @@ function EncounterTooltipContent({ cat, id, encounter }) {
     return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center", maxWidth: "100%" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <span>{encounterCategoryLabels[cat]}: {encounter.name}</span>
+            {getCustomizationValue("showIdsOnTooltips") && <span>&nbsp;({cat}|{id})</span>}
         </div>
         {targets.length > 0 ?
             <div style={{ display: "flex", gap: "0.2rem", maxWidth: "100%" }}>

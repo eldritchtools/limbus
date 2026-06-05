@@ -3,16 +3,19 @@
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import StatusIcon from "../icons/StatusIcon";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 const iconStyle = { display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" };
 const descStyle = { display: "inline-block", fontSize: "1rem", lineHeight: "1.5", maxWidth: "75rem", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" };
 const TOOLTIP_ID = "status-tooltip";
 
 function StatusTooltipContent({ status }) {
+    const { getCustomizationValue } = useSiteCustomization();
     return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
             <StatusIcon status={status} style={iconStyle} />
             <span>{status.name}</span>
+            {getCustomizationValue("showIdsOnTooltips") && <span>&nbsp;({status.id})</span>}
         </div>
         <div style={descStyle}>
             <span>{status.desc}</span>

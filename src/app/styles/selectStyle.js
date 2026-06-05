@@ -100,4 +100,39 @@ const selectStyleVariable = {
     }),
 };
 
-export { selectStyle, selectStyleWide, selectStyleVariable };
+const selectStyleSmall = {
+    ...selectStyle,
+    control: (provided, state) => ({
+        ...provided,
+        backgroundColor: "var(--bg-input)",
+        color: "var(--primary-text-color)",
+        borderColor: state.isFocused ? "var(--primary-border-color)" : "var(--secondary-border-color)",
+        boxShadow: "none",
+        "&:hover": { borderColor: "var(--primary-border-color)" },
+        minHeight: "20px",
+        width: "100%",
+        fontSize: "0.75rem"
+    }),
+    menu: (provided) => ({
+        ...provided,
+        backgroundColor: "var(--bg-input)",
+        border: "1px solid var(--secondary-border-color)",
+        minHeight: "28px",
+        minWidth: "max-content",
+        zIndex: 6
+    }),
+    singleValue: (provided) => ({
+        ...provided,
+        color: "var(--primary-text-color)"
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "0 2px"
+    }),
+    clearIndicator: (base) => ({
+        ...base,
+        padding: "0 2px"
+    }),
+};
+
+export { selectStyle, selectStyleWide, selectStyleVariable, selectStyleSmall };

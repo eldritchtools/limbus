@@ -10,6 +10,7 @@ import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import NoPrefetchLink from "../NoPrefetchLink";
+import AdvancedOptionsSelector, { AdvancedOptionsLabels, getFilterSortAdvancedOptionsData } from "../selectors/AdvancedOptionsSelector";
 import IconsSelector from "../selectors/IconsSelector";
 
 import { useAuth } from "@/app/database/authProvider";
@@ -25,7 +26,7 @@ const itemOwned = (bitsets, item) => bitsetFunctions.hasFlag(bitsets[item.sinner
 const setFlag = (bitset, item) => bitsetFunctions.setFlag(bitset, Number(item.id.slice(-2)) - 1);
 const unsetFlag = (bitset, item) => bitsetFunctions.unsetFlag(bitset, Number(item.id.slice(-2)) - 1);
 
-function IdentityDisplay({ identity, identityBitsets, setIdentityBitsets, editable }) {
+function IdentityDisplay({ identity, identityBitsets, setIdentityBitsets, editable, data, advancedOptions }) {
     const owned = itemOwned(identityBitsets, identity);
     const className = `${styles.clickableIcon} ${owned ? styles.owned : styles.unowned}`;
 
@@ -36,17 +37,23 @@ function IdentityDisplay({ identity, identityBitsets, setIdentityBitsets, editab
                 x)
             )
 
-        return <div onClick={handleClick} className={className}>
-            <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
+        return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+            <div onClick={handleClick} className={className} style={{alignSelf: "stretch"}}>
+                <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
+            </div>
+            <AdvancedOptionsLabels mode={"id"} advancedOptions={advancedOptions} data={data} />
         </div>
     } else {
-        return <NoPrefetchLink href={`/identities/${identity.id}`} className={className}>
-            <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
-        </NoPrefetchLink>
+        return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+            <NoPrefetchLink href={`/identities/${identity.id}`} className={className} style={{alignSelf: "stretch"}}>
+                <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
+            </NoPrefetchLink >
+            <AdvancedOptionsLabels mode={"id"} advancedOptions={advancedOptions} data={data} />
+        </div>
     }
 }
 
-function EgoDisplay({ ego, egoBitsets, setEgoBitsets, editable }) {
+function EgoDisplay({ ego, egoBitsets, setEgoBitsets, editable, data, advancedOptions }) {
     const owned = itemOwned(egoBitsets, ego);
     const className = `${styles.clickableIcon} ${owned ? styles.owned : styles.unowned}`;
 
@@ -57,12 +64,14 @@ function EgoDisplay({ ego, egoBitsets, setEgoBitsets, editable }) {
                 x)
             )
 
-        return <div onClick={handleClick} className={className}>
+        return <div onClick={handleClick} className={className} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <EgoIcon ego={ego} type={"awaken"} displayName={true} displayRarity={true} />
+            <AdvancedOptionsLabels mode={"ego"} advancedOptions={advancedOptions} data={data} />
         </div>
     } else {
-        return <NoPrefetchLink href={`/egos/${ego.id}`} className={className}>
+        return <NoPrefetchLink href={`/egos/${ego.id}`} className={className} style={{ display: "flex", flexDirection: "column", alignItems: "center", color: "var(--primary-text-color)", textDecoration: "none" }}>
             <EgoIcon ego={ego} type={"awaken"} displayName={true} displayRarity={true} />
+            <AdvancedOptionsLabels mode={"ego"} advancedOptions={advancedOptions} data={data} />
         </NoPrefetchLink>
     }
 }
@@ -72,9 +81,11 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
     const [activeTab, setActiveTab] = useLocalState("companyActiveTab", "both");
     const [ownedFilter, setOwnedFilter] = useLocalState("companyOwnedFilter", "both");
     const [separateSinners, setSeparateSinners] = useLocalState("companySeparateSinners", false);
-    const [strictFiltering, setStrictFiltering] = useLocalState("companyStrictFiltering", false);
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
+    const [identityAdvOpts, setIdentityAdvOpts] = useState([]);
+    const [egoAdvOpts, setEgoAdvOpts] = useState([]);
+    const [bothAdvOpts, setBothAdvOpts] = useState([]);
     const { isMobile } = useBreakpoint();
 
     const cycleOwnedFilter = () => {
@@ -83,36 +94,72 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
         else setOwnedFilter("both");
     }
 
-    const items = useMemo(() => {
-        const filtered = [];
+    const [items, count, totalCount] = useMemo(() => {
+        let filtered = [];
+        const sortFunctions = [];
+
+        const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs } =
+            getFilterSortAdvancedOptionsData(activeTab, activeTab === "both" ? bothAdvOpts : (activeTab === "id" ? identityAdvOpts : egoAdvOpts));
+
+        sortFunctions.push(...sortFuncs);
+
+        let count = 0, totalCount = 0;
 
         if (activeTab === "both" || activeTab === "id") {
-            filtered.push(...filterByFilters("identity",
+            const items = filterByFilters("identity",
                 Object.values(identities),
-                filters,
+                [...filters, ...addedFilters],
                 identity => {
                     if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(identity, altNamesLoading ? null : altNames))) return false;
                     if (ownedFilter === "yes" && !itemOwned(identityBitsets, identity)) return false;
                     if (ownedFilter === "no" && itemOwned(identityBitsets, identity)) return false;
+                    if (!filterFunction(identity)) return false;
                     return true;
                 },
-                strictFiltering
-            ).sort((a, b) => a.sinnerId === b.sinnerId ? b.id.localeCompare(a.id) : a.sinnerId - b.sinnerId))
+                strict
+            );
+
+            items.forEach(identity => {
+                totalCount += 1;
+                if (itemOwned(identityBitsets, identity)) count += 1;
+            });
+
+            filtered.push(...items);
         }
 
         if (activeTab === "both" || activeTab === "ego") {
-            filtered.push(...filterByFilters("ego",
+            const items = filterByFilters("ego",
                 Object.values(egos),
-                filters,
+                [...filters, ...addedFilters],
                 ego => {
                     if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames))) return false;
                     if (ownedFilter === "yes" && !itemOwned(egoBitsets, ego)) return false;
                     if (ownedFilter === "no" && itemOwned(egoBitsets, ego)) return false;
+                    if (!filterFunction(ego)) return false;
                     return true;
                 },
-                strictFiltering
-            ).sort((a, b) => a.sinnerId === b.sinnerId ? b.id.localeCompare(a.id) : a.sinnerId - b.sinnerId))
+                strict
+            );
+
+            items.forEach(ego => {
+                totalCount += 1;
+                if (itemOwned(egoBitsets, ego)) count += 1;
+            });
+
+            filtered.push(...items);
         }
+
+        sortFunctions.push((a, b) => a.sinnerId - b.sinnerId);
+        sortFunctions.push((a, b) => b.id.localeCompare(a.id));
+
+        filtered = filtered.sort((a, b) => {
+            for (let i = 0; i < sortFunctions.length; i++) {
+                const res = sortFunctions[i](a, b);
+                if (res === 0) continue;
+                return res;
+            }
+            return 0;
+        });
 
         if (separateSinners) {
             return filtered.reduce((acc, item) => {
@@ -122,15 +169,24 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
             }, {});
         }
 
-        return filtered;
-    }, [identityBitsets, egoBitsets, identities, egos, activeTab, ownedFilter, separateSinners, strictFiltering, searchString, filters, altNames, altNamesLoading]);
+        return [filtered, count, totalCount];
+    }, [identityBitsets, egoBitsets, identities, egos, activeTab, ownedFilter, separateSinners, searchString, filters, altNames, altNamesLoading, bothAdvOpts, identityAdvOpts, egoAdvOpts]);
 
     const contentDisplay = () => {
         const listToComponents = list =>
             <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
-                {list.map(obj => obj.id[0] === "1" ?
-                    <IdentityDisplay key={obj.id} identity={obj} identityBitsets={identityBitsets} setIdentityBitsets={setIdentityBitsets} editable={editable} /> :
-                    <EgoDisplay key={obj.id} ego={obj} egoBitsets={egoBitsets} setEgoBitsets={setEgoBitsets} editable={editable} />
+                {list.map(obj =>
+                    obj.id[0] === "1" ?
+                        <IdentityDisplay key={obj.id}
+                            identity={obj} identityBitsets={identityBitsets}
+                            setIdentityBitsets={setIdentityBitsets} editable={editable}
+                            data={obj} advancedOptions={activeTab === "both" ? bothAdvOpts : identityAdvOpts}
+                        /> :
+                        <EgoDisplay key={obj.id}
+                            ego={obj} egoBitsets={egoBitsets}
+                            setEgoBitsets={setEgoBitsets} editable={editable}
+                            data={obj} advancedOptions={activeTab === "both" ? bothAdvOpts : egoAdvOpts}
+                        />
                 )}
             </div>
 
@@ -186,7 +242,7 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
     }
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
-        {editable && <div style={{display: "flex", alignItems: "center", alignSelf: "center", gap: "0.2rem"}}>
+        {editable && <div style={{ display: "flex", alignItems: "center", alignSelf: "center", gap: "0.2rem" }}>
             <button onClick={() => setForceSave(true)}>
                 Save Changes
             </button>
@@ -209,10 +265,6 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
                 Separate by Sinner
             </label>
-            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                Strict Filtering
-            </label>
             {editable && <>
                 <button onClick={setAllFiltered}>
                     Set All Filtered Items
@@ -230,6 +282,16 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 <IconsSelector type={"row"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} borderless={true} /> :
                 <IconsSelector type={"row"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} borderless={true} />
         }
+
+        <AdvancedOptionsSelector
+            mode={activeTab}
+            options={activeTab === "both" ? bothAdvOpts : activeTab === "id" ? identityAdvOpts : egoAdvOpts}
+            setOptions={activeTab === "both" ? setBothAdvOpts : activeTab === "id" ? setIdentityAdvOpts : setEgoAdvOpts}
+        />
+
+        <span style={{ fontWeight: "bold", alignSelf: "center", fontSize: "1.2rem" }}>
+            Owned Stats: {count}/{totalCount} ({(100 * count / totalCount).toFixed(2)}%)
+        </span>
 
         {contentDisplay()}
     </div>

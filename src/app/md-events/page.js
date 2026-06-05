@@ -11,10 +11,12 @@ import ChoiceEventIcon from "../components/icons/ChoiceEventIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { affinities } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
+import { selectStyle, selectStyleVariable, selectStyleWide } from "../styles/selectStyle";
 
 function ChoiceEventCard({ choiceEvent }) {
     const { openChoiceEventModal } = useModal();
@@ -57,14 +59,14 @@ function EventsList({ searchString, includeGifts, choiceEvents, giftsData }) {
     const { isMobile } = useBreakpoint();
 
     const list = useMemo(() =>
-        Object.entries(choiceEvents).filter(([, x]) => {
+        choiceEvents.filter(x => {
             if (searchString.length !== 0) {
                 const filterStrings = [x.name, ...(x.messages)];
                 if (includeGifts) x.gifts?.forEach(giftId => filterStrings.push(giftsData[giftId].names[0]));
                 return checkFilterMatch(searchString, filterStrings);
             }
             return true;
-        }).map(([, x]) => x),
+        }),
         [searchString, includeGifts, choiceEvents, giftsData]
     );
 
@@ -78,10 +80,28 @@ function EventsList({ searchString, includeGifts, choiceEvents, giftsData }) {
 
 export default function MDEventsPage() {
     const [choiceEvents, choiceEventsLoading] = useData("md_choice_events");
+    const [themePacks, themePacksLoading] = useData("md_theme_packs");
     const [gifts, giftsLoading] = useData("gifts");
 
     const [searchString, setSearchString] = useState("");
     const [includeGifts, setIncludeGifts] = useLocalState("MDEventIncludeGifts", true);
+    const [selectedThemePacks, setSelectedThemePacks] = useState([]);
+
+    const themePackList = useMemo(() => {
+        if(themePacksLoading) return [];
+        return Object.entries(themePacks).filter(([id, pack]) => "eventPool" in pack && pack.eventPool.length > 0).map(([id]) => id)
+    }, [themePacks, themePacksLoading]);
+
+    const packEvents = useMemo(() => {
+        if(choiceEventsLoading) return [];
+        if(themePacksLoading || selectedThemePacks.length === 0) return Object.values(choiceEvents);
+        const events = new Set();
+        selectedThemePacks.forEach(id => 
+            themePacks[id].eventPool.forEach(x => events.add(x))
+        );
+
+        return [...events].map(id => choiceEvents[id]).filter(x => x);
+    }, [selectedThemePacks, themePacks, choiceEvents, themePacksLoading, choiceEventsLoading])
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Choice Events</h1>
@@ -98,6 +118,14 @@ export default function MDEventsPage() {
                     </span>
                 </label>
             </div>
+            <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
+            <ThemePackDropdownSelector
+                selected={selectedThemePacks}
+                setSelected={setSelectedThemePacks}
+                isMulti={true}
+                options={themePackList}
+                prefixCategory={true}
+            />
         </div>
         <HorizontalDivider />
         {choiceEventsLoading || giftsLoading ?
@@ -105,7 +133,7 @@ export default function MDEventsPage() {
             <EventsList
                 searchString={searchString}
                 includeGifts={includeGifts}
-                choiceEvents={choiceEvents}
+                choiceEvents={packEvents}
                 giftsData={gifts}
             />
         }

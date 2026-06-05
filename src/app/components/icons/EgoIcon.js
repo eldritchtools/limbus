@@ -21,7 +21,7 @@ const rarityStyle = { position: "absolute", top: "4px", left: "4px", height: "1.
 const threadspinStyle = { position: "absolute", textAlign: "right", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000" };
 const nameStyle = { position: "absolute", overflow: "hidden", textWrap: "balance", fontWeight: "bold", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 8px #000, -2px -2px 8px #000" }
 
-function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, includeTooltip = false, threadspin = null }) {
+function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, includeTooltip = false, threadspin = null, forceRatingsOnTooltip }) {
     const src = getEgoImgSrc(ego, type);
     const { width, height } = style;
 
@@ -33,7 +33,7 @@ function EgoIconMain({ ego, style, type, banner = false, displayName = false, di
             display: "flex", alignItems: "center", justifyContent: "center", position: "relative",
             width: width, height: height, aspectRatio: banner ? "4/1" : "1/1", containerType: "size"
         }}
-        {...(includeTooltip ? getEgoTooltipProps(ego.id) : {})}
+        {...(includeTooltip && !ego.upcoming ? getEgoTooltipProps(ego.id, forceRatingsOnTooltip) : {})}
     >
         {img}
         {displayRarity ?

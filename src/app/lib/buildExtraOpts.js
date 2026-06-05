@@ -1,4 +1,4 @@
-export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityUpties, identityLevels, egoThreadspins, sinnerNotes, skillReplaces }) {
+export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityUpties, identityLevels, egoThreadspins, sinnerNotes, skillReplaces, addedIcons, iconSwaps }) {
     let encoded = [];
     if (deploymentOrder) {
         const deo = deploymentOrder.join(",");
@@ -49,6 +49,14 @@ export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityU
             return acc;
         }, []).join(",");
         if (sr.length > 0) encoded.push(`sr:${sr}`);
+    }
+
+    if (addedIcons) {
+        encoded.push(`ai:${addedIcons.join(",")}`)
+    }
+
+    if (iconSwaps) {
+        encoded.push(`is:${iconSwaps.join(",")}`)
     }
 
     return encoded.join("|");
@@ -111,6 +119,12 @@ export function decodeBuildExtraOpts(string, parts = null) {
                 return acc;
             case "sr":
                 acc.skillReplaces = decodePart3(vals);
+                return acc;
+            case "ai":
+                acc.addedIcons = vals.split(",");
+                return acc;
+            case "is":
+                acc.iconSwaps = vals.split(",").map(x => Number(x));
                 return acc;
         }
     }, {});

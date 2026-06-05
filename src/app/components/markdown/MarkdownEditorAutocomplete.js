@@ -5,10 +5,11 @@ import { Facet } from "@codemirror/state";
 import { keymap } from "@codemirror/view";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { convertMarkdownAlias } from "./MarkdownAliases";
 import { createAutocompleteLabel } from "./MarkdownEditorAutocompleteLabel";
-import constructMarkdownEditorAutocompleteTooltip from "./MarkdownEditorAutocompleteTooltip";
+import constructMarkdownEditorAutocompleteTooltip, { constructMarkdownEditorTypeTooltip } from "./MarkdownEditorAutocompleteTooltip";
 import { useData } from "../DataProvider";
+import { convertTokenAlias, tokenAliases } from "./tokens";
+import { tokensDescs } from "./tokens";
 
 import { keywordToIdMapping } from "@/app/database/keywordIds";
 import { sinnerIdMapping } from "@/app/lib/constants";
@@ -113,7 +114,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 icons, iconsLoading
             } = dataRef.current;
 
-            switch (convertMarkdownAlias(type)) {
+            switch (convertTokenAlias(type)) {
                 case "identity":
                     return !identitiesLoading && identities;
                 case "ego":
@@ -140,7 +141,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
         },
 
         load(type) {
-            setRequestedTypes(prev => new Set(prev).add(convertMarkdownAlias(type)));
+            setRequestedTypes(prev => new Set(prev).add(convertTokenAlias(type)));
         },
 
         get(type) {
@@ -154,7 +155,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 icons
             } = dataRef.current;
 
-            switch (convertMarkdownAlias(type)) {
+            switch (convertTokenAlias(type)) {
                 case "identity":
                     return { entries: Object.entries(identities).map(([id, identity]) => ({ id: id, label: identity.name, item: identity })) || [], multi: false };
                 case "ego":
@@ -180,7 +181,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                     return { entries: Object.entries(icons).map(([id, name]) => ({ id: id, label: name, item: { id: id, name: name } })) || [], multi: false };
                 case "keyword":
                     return { entries: Object.keys(keywordToIdMapping).map(kw => ({ id: kw, label: kw, item: kw })) || [], multi: false };
-                case "sinner": 
+                case "sinner":
                 case "sinnericon":
                     return { entries: Object.entries(sinnerIdMapping).map(([id, name]) => ({ id: id, label: name, item: name })) || [], multi: false };
                 default:
@@ -199,7 +200,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
                 icons
             } = dataRef.current;
 
-            switch (convertMarkdownAlias(type)) {
+            switch (convertTokenAlias(type)) {
                 case "identity": return identities;
                 case "ego": return egos;
                 case "status":
@@ -228,18 +229,66 @@ function useAutocompleteDataFacetExtension(viewRef) {
     return facetExtension;
 }
 
+async function tokenCompletionSourceType(context) {
+    const word = context.matchBefore(/\{([a-zA-Z]*)$/);
+    if (!word) return null;
+
+    const query = word.text.slice(1);
+    const from = word.from + 1;
+    const to = context.pos;
+
+    return new Promise(resolve => {
+        let matches = [];
+
+        Object.entries(tokensDescs).forEach(([id, desc]) => matches.push({
+            entry: id,
+            isAlias: false,
+            score: fuzzyScore(query, `${id} ${desc}`)
+        }))
+
+        Object.entries(tokenAliases).forEach(([alias, id]) => matches.push({
+            entry: alias,
+            isAlias: true,
+            score: fuzzyScore(query, `${id} ${tokensDescs[id]}`)
+        }))
+
+        matches = matches
+            .filter(m => m.score > -Infinity)
+            .sort((a, b) => a.score === b.score ? a.entry.localeCompare(b.entry) : b.score - a.score);
+
+        const options = matches.map(m => {
+            const entry = m.entry;
+            const isAlias = m.isAlias
+
+            return {
+                label: entry,
+                detail: `(${isAlias ? tokenAliases[entry] : entry})`,
+                apply: entry + ":",
+                info: () => constructMarkdownEditorTypeTooltip(isAlias ? tokenAliases[entry] : entry)
+            };
+        })
+
+        resolve({
+            from,
+            to,
+            options,
+            filter: false
+        });
+    });
+}
+
 async function tokenCompletionSource(context) {
     const word = context.matchBefore(/\{([a-zA-Z]+):([^}]*)$/);
-    if (!word) return null;
+    if (!word) return tokenCompletionSourceType(context);
 
     const inside = word.text.slice(1);
     const parts = inside.split(":");
 
-    const type = convertMarkdownAlias(parts[0]);
+    const type = convertTokenAlias(parts[0]);
     if (!type) return null;
     if (![
-        "identity", "ego", "status", "statusicon", 
-        "giftname", "gifticons", "themepack", "encounter", 
+        "identity", "ego", "status", "statusicon",
+        "giftname", "gifticons", "themepack", "encounter",
         "icon", "keyword", "sinner", "sinnericon"
     ].includes(type)) return null;
 
@@ -299,7 +348,7 @@ async function tokenCompletionSource(context) {
                 info: () => {
                     if (type === "giftname" || type === "gifticons") {
                         return constructMarkdownEditorAutocompleteTooltip(entry.item, type, dataProvider.getOriginalData("status"));
-                    } else if(type === "sinnericon") {
+                    } else if (type === "sinnericon") {
                         return constructMarkdownEditorAutocompleteTooltip(entry.id, type);
                     } else {
                         return constructMarkdownEditorAutocompleteTooltip(entry.item, type);

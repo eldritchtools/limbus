@@ -1,6 +1,6 @@
 "use client";
 
-import { isTouchDevice } from "@eldritchtools/shared-components";
+import { isTouchDevice, useBreakpoint } from "@eldritchtools/shared-components";
 import * as Select from "@radix-ui/react-select";
 import { useMemo, useRef, useState } from "react";
 
@@ -8,11 +8,13 @@ import { useData } from "../DataProvider";
 import DropdownSelectorWithExclusion from "./DropdownSelectorWithExclusion";
 import styles from "./EgoSelectors.module.css";
 import EgoIcon from "../icons/EgoIcon";
+import KeywordIcon from "../icons/KeywordIcon";
 import RarityIcon from "../icons/RarityIcon";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 
 import { affinityColorMapping, uiColors } from "@/app/lib/colors";
-import { egoRanks, sinnerIdMapping } from "@/app/lib/constants";
+import { egoRanks, keywordStatusMappingReversed, sinnerIdMapping } from "@/app/lib/constants";
 import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
@@ -44,9 +46,50 @@ export function EgoDropdownSelector({ selected, setSelected, isMulti = false, st
     />;
 }
 
-export function EgoMenuSelector({ value, setValue, options, rank }) {
+export function EgoMenuSelector({ value, setValue, options, rank, menuStyleOverride }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
+    const { isMobile } = useBreakpoint();
+
+    const buildOption = option => {
+        switch (menuStyleOverride ?? getCustomizationValue("idEgoSelectionMenuStyle")) {
+            case "iconkw":
+                return <Select.Item key={option.id} value={option.id} className={styles.egoMenuSelectorItem}>
+                    <div className={styles.egoMenuItemInner} {...getEgoTooltipProps(option.id)}>
+                        <EgoIcon ego={option} type={"awaken"} displayName={true} displayRarity={true} />
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {(option?.statuses ?? []).filter(x => x in keywordStatusMappingReversed).map(kw =>
+                                <KeywordIcon key={kw} id={keywordStatusMappingReversed[kw]} size={isMobile ? 24 : 32} />
+                            )}
+                        </div>
+                    </div>
+                </Select.Item>
+            case "minikw":
+                return <Select.Item key={option.id} value={option.id} className={styles.egoMenuSelectorItem}>
+                    <div className={styles.egoMenuItemInner} {...getEgoTooltipProps(option.id)}>
+                        <div style={{ display: "flex", width: "100%", alignItems: "start" }}>
+                            <EgoIcon ego={option} type={"awaken"} style={{ width: "25%", aspectRatio: "1/1" }} />
+                            <span style={{ fontSize: "0.8rem", width: "75%" }}>
+                                {option.name}
+                            </span>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {(option?.statuses ?? []).filter(x => x in keywordStatusMappingReversed).map(kw =>
+                                <KeywordIcon key={kw} id={keywordStatusMappingReversed[kw]} size={isMobile ? 24 : 32} />
+                            )}
+                        </div>
+                    </div>
+                </Select.Item>
+            case "icon":
+            default:
+                return <Select.Item key={option.id} value={option.id} className={styles.egoMenuSelectorItem}>
+                    <div className={styles.egoMenuItemInner} {...getEgoTooltipProps(option.id)}>
+                        <EgoIcon ego={option} type={"awaken"} displayName={true} displayRarity={true} />
+                    </div>
+                </Select.Item>
+        }
+    }
 
     return <Select.Root value={value ? value.id : null} onValueChange={v => setValue(v)} open={isOpen} onOpenChange={setIsOpen}>
         <Select.Trigger className={styles.egoMenuSelectorTrigger} ref={triggerRef}
@@ -54,7 +97,7 @@ export function EgoMenuSelector({ value, setValue, options, rank }) {
         >
             {value ? <div {...(isTouchDevice() ? {} : getEgoTooltipProps(value.id))}
                 style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "99%" }}>
-                <EgoIcon ego={value} banner={true} type={"awaken"} displayName={true} displayRarity={false} style={{width: "100%", height: "99%", borderRadius: "0.5rem"}}/>
+                <EgoIcon ego={value} banner={true} type={"awaken"} displayName={true} displayRarity={false} style={{ width: "100%", height: "99%", borderRadius: "0.5rem" }} />
             </div> : <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "18%", height: "auto" }} />
             </div>}
@@ -65,13 +108,7 @@ export function EgoMenuSelector({ value, setValue, options, rank }) {
                 {options.length === 0 ? <div style={{ fontSize: "1.2rem", padding: "0.5rem" }}>No Options</div> : null}
                 <Select.Viewport>
                     <div className={styles.egoMenuSelectorGrid}>
-                        {options.map((option) =>
-                            <Select.Item key={option.id} value={option.id} className={styles.egoMenuSelectorItem}>
-                                <div className={styles.egoMenuItemInner} {...getEgoTooltipProps(option.id)} >
-                                    <EgoIcon ego={option} type={"awaken"} displayName={true} displayRarity={false} />
-                                </div>
-                            </Select.Item>
-                        )}
+                        {options.map((option) => buildOption(option))}
                         {value ? <Select.Item key={"cancel"} value={null} className={styles.egoMenuSelectorItem}>
                             <div className={styles.egoMenuItemInner} style={{ height: "100%", width: "128px", justifyContent: "center", color: uiColors.red, fontSize: "3rem", fontWeight: "bold" }}>
                                 ✕

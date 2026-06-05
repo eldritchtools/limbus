@@ -30,7 +30,7 @@ export const uptie = {
 }
 
 export function getUptieCost(rank, start, target) {
-    if (target <= start) return [0, 0];
+    if (target <= start) return [0, 0, 0];
     let thread = 0;
     let shard = 0;
     let spinchain = 0;

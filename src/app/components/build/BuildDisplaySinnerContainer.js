@@ -131,7 +131,11 @@ function EgoStatsOverlay({ egos, displayType }) {
     </div>
 }
 
-export default function BuildDisplaySinnerContainer({ displayType, sinnerId, identity, egos, identityLevel, egoThreadspins, identityUptie, deploymentOrder, activeSinners, otherOpts }) {
+export default function BuildDisplaySinnerContainer({ 
+    displayType, sinnerId, identity, egos, 
+    identityLevel, egoThreadspins, identityUptie, deploymentOrder, swapIcon,
+    activeSinners, otherOpts 
+}) {
     const baseComponent = <BuildDisplaySinnerBase
         displayType={displayType}
         sinnerId={sinnerId}
@@ -140,6 +144,7 @@ export default function BuildDisplaySinnerContainer({ displayType, sinnerId, ide
         uptie={identityUptie}
         level={identityLevel}
         threadspins={egoThreadspins}
+        swapIcon={swapIcon}
         deploymentOrder={deploymentOrder}
         activeSinners={activeSinners}
     />

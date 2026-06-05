@@ -329,52 +329,50 @@ export default function MarkdownEditorMain({
     return (
         <div style={{ position: 'relative', border: "1px var(--secondary-border-color) solid", borderRadius: "4px" }}>
             {/* Toolbar */}
-            {mini ? null :
-                <div>
-                    <DragContainer>
-                        <div style={{ display: "flex", width: "max-content" }}>
-                            <CommunityAssetPickerButton type={"emote"} getView={() => viewRef.current} />
-                            <CommunityAssetPickerButton type={"sticker"} getView={() => viewRef.current} />
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Bold")} onClick={() => toggleWrap(viewRef.current, "**")}>
-                                <FaBold />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Italic")} onClick={() => toggleWrap(viewRef.current, "*")}>
-                                <FaItalic />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Inline Code")} onClick={() => toggleWrap(viewRef.current, "`")}>
-                                <FaCode />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Heading")} onClick={() => insertOrCycleHeading(viewRef.current)}>
-                                <FaHeading />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Blockquote")} onClick={() => insertQuote(viewRef.current)}>
-                                <FaQuoteRight />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Bulleted List")} onClick={() => insertBullet(viewRef.current)}>
-                                <FaListUl />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Numbered List")} onClick={() => insertNumbered(viewRef.current)}>
-                                <FaListOl />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Insert Link")} onClick={() => insertLink(viewRef.current)}>
-                                <FaLink />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Insert Image")} onClick={() => insertImage(viewRef.current)}>
-                                <FaImage />
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Inline Math (LaTeX)")} onClick={() => insertInlineLaTeX(viewRef.current)}>
-                                <span style={{ fontWeight: "bold", transform: "translateY(-2px)" }}>$</span>
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Math Block (LaTeX)")} onClick={() => insertBlockLaTeX(viewRef.current)}>
-                                <span style={{ fontWeight: "bold", transform: "translateY(-2px)" }}>$$</span>
-                            </button>
-                            <button className="editor-button-style" {...getGeneralTooltipProps("Markdown Guide")} onClick={guideClick}>
-                                <FaQuestionCircle />
-                            </button>
-                        </div>
-                    </DragContainer>
-                </div>
-            }
+            <div>
+                <DragContainer hintDistance={5}>
+                    <div style={{ display: "flex", width: "max-content" }}>
+                        <CommunityAssetPickerButton type={"emote"} getView={() => viewRef.current} />
+                        <CommunityAssetPickerButton type={"sticker"} getView={() => viewRef.current} />
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Bold")} onClick={() => toggleWrap(viewRef.current, "**")}>
+                            <FaBold />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Italic")} onClick={() => toggleWrap(viewRef.current, "*")}>
+                            <FaItalic />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Inline Code")} onClick={() => toggleWrap(viewRef.current, "`")}>
+                            <FaCode />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Heading")} onClick={() => insertOrCycleHeading(viewRef.current)}>
+                            <FaHeading />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Blockquote")} onClick={() => insertQuote(viewRef.current)}>
+                            <FaQuoteRight />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Bulleted List")} onClick={() => insertBullet(viewRef.current)}>
+                            <FaListUl />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Numbered List")} onClick={() => insertNumbered(viewRef.current)}>
+                            <FaListOl />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Insert Link")} onClick={() => insertLink(viewRef.current)}>
+                            <FaLink />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Insert Image")} onClick={() => insertImage(viewRef.current)}>
+                            <FaImage />
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Inline Math (LaTeX)")} onClick={() => insertInlineLaTeX(viewRef.current)}>
+                            <span style={{ fontWeight: "bold", transform: "translateY(-2px)" }}>$</span>
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Math Block (LaTeX)")} onClick={() => insertBlockLaTeX(viewRef.current)}>
+                            <span style={{ fontWeight: "bold", transform: "translateY(-2px)" }}>$$</span>
+                        </button>
+                        <button className="editor-button-style" {...getGeneralTooltipProps("Markdown Guide")} onClick={guideClick}>
+                            <FaQuestionCircle />
+                        </button>
+                    </div>
+                </DragContainer>
+            </div>
 
             {/* Editor container */}
             <div

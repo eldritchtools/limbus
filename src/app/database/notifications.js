@@ -4,7 +4,7 @@ import { callRPC, withRetry } from "./supabaseTemplates";
 export async function getNotifications(userId, limit = null) {
     let options = { p_user_id: userId };
     if (limit) options.p_limit = limit;
-    return callRPC("get_user_notifications_v3", options);
+    return callRPC("get_user_notifications_v4", options);
 }
 
 export async function setNotificationRead(id) {
@@ -30,4 +30,9 @@ export async function getUnreadNotificationsCount(userId) {
         if (error) throw error;
         return count ?? 0;
     });
+}
+
+
+export async function getNotificationBellData(userId) {
+    return callRPC("get_user_bell_v1", {p_user_id: userId});
 }

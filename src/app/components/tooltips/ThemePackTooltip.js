@@ -4,16 +4,21 @@ import { useFloorsForPack } from "../dataHooks/mdFloors";
 import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import ThemePackIcon from "../icons/ThemePackIcon";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 import { uiColors } from "@/app/lib/colors";
 
 const TOOLTIP_ID = "theme-pack-tooltip";
 
 function ThemePackTooltipContent({ id, themePack }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const { normal, hard } = useFloorsForPack(id);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0.75rem" }}>
-        <div style={{ fontSize: "1.5em", fontWeight: "bold" }}>{themePack.name}</div>
+        <div style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+            {themePack.name}
+            {getCustomizationValue("showIdsOnTooltips") && <span>&nbsp;({id})</span>}
+        </div>
         <ThemePackIcon themePack={themePack} scale={0.5} />
         <div style={{ display: "grid", width: "190px", gridTemplateColumns: "1fr 1fr" }} >
             <div style={{ color: uiColors.green }}>Normal</div>

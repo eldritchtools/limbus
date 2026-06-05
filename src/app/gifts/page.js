@@ -10,6 +10,7 @@ import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import IconsSelector from "../components/selectors/IconsSelector";
+import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getLocalStore } from "../database/localDB";
 import { affinityColorMapping } from "../lib/colors";
@@ -133,6 +134,7 @@ export default function GiftsPage() {
     const [strictFiltering, setStrictFiltering] = useLocalState("giftsStrictFiltering", false);
     const [tagFilters, setTagFilters] = useState([]);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
+    const [selectedThemePacks, setSelectedThemePacks] = useState([]);
     const { isDesktop } = useBreakpoint();
 
     const newGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.new), [giftsData, giftsLoading]);
@@ -143,9 +145,19 @@ export default function GiftsPage() {
     const saveTimeout = useRef(null);
     const [firstSave, setFirstSave] = useState(true);
 
+    const themePackList = useMemo(() => {
+        if(giftsLoading) return [];
+        const packs = new Set();
+        Object.values(giftsData).forEach(gift => {
+            if ("exclusiveTo" in gift) packs.add(...gift.exclusiveTo);
+        });
+        return [...packs].sort();
+    }, [giftsData, giftsLoading]);
+
     const filteredGifts = useMemo(() => {
         if (giftsLoading) return [];
         const combinedFilters = [...filters, ...tagFilters.map(tag => ["tag", tag])];
+        const packSet = new Set(selectedThemePacks);
 
         return filterByFilters(
             "gift",
@@ -157,11 +169,15 @@ export default function GiftsPage() {
                     if (includeDescription) filterStrings.push(gift.search_desc);
                     if (!checkFilterMatch(searchString, filterStrings)) return false;
                 }
+                if (selectedThemePacks.length !== 0) {
+                    if(!("exclusiveTo" in gift)) return false;
+                    if (!gift.exclusiveTo.some(x => packSet.has(x))) return false;
+                }
                 return true;
             },
             strictFiltering
         ).map(x => [x.id, x]);
-    }, [filters, tagFilters, giftsData, giftsLoading, searchString, includeDescription, strictFiltering]);
+    }, [filters, tagFilters, giftsData, giftsLoading, searchString, includeDescription, strictFiltering, selectedThemePacks]);
 
     useEffect(() => {
         if (loading) {
@@ -267,6 +283,14 @@ export default function GiftsPage() {
                         <span className="sub-text">(Require all selected tags)</span>
                     </label>
                 </div>
+                <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
+                <ThemePackDropdownSelector
+                    selected={selectedThemePacks}
+                    setSelected={setSelectedThemePacks}
+                    isMulti={true}
+                    options={themePackList}
+                    prefixCategory={true}
+                />
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Display Type</span>
                 <div style={{ display: "flex", gap: "0.2rem", alignItems: "start" }}>
                     <label>
@@ -304,7 +328,7 @@ export default function GiftsPage() {
             }
         </div>
         <HorizontalDivider />
-        {filters.length === 0 && tagFilters.length === 0 && searchString.length === 0 ?
+        {filters.length === 0 && tagFilters.length === 0 && searchString.length === 0 && selectedThemePacks.length === 0 ?
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", width: "100%" }}>
                 {newGifts.length > 0 ? <React.Fragment>
                     <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>New</span>

@@ -8,8 +8,8 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import { useAuth } from "@/app/database/authProvider";
 import { useRequestsCache } from "@/app/database/RequestsCacheProvider";
 
-export default function FollowButton({ targetId, style }) {
-    const { checkFollowed, toggleFollowed } = useRequestsCache();
+export default function FollowThreadButton({ targetType, targetId, style }) {
+    const { checkFollowedThread, toggleFollowedThread } = useRequestsCache();
     const { user } = useAuth();
     const [followed, setFollowed] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -17,11 +17,11 @@ export default function FollowButton({ targetId, style }) {
     useEffect(() => {
         if (!user) return;
         const load = async () => {
-            setFollowed(await checkFollowed(targetId));
+            setFollowed(await checkFollowedThread(targetType, targetId));
         }
 
         load();
-    }, [user, targetId, checkFollowed]);
+    }, [user, targetType, targetId, checkFollowedThread]);
 
     if (!user) return null;
 
@@ -29,13 +29,13 @@ export default function FollowButton({ targetId, style }) {
 
     const handleClick = async () => {
         setLoading(true);
-        await toggleFollowed(targetId);
+        await toggleFollowedThread(targetType, targetId);
         setFollowed(p => !p);
         setLoading(false);
     };
 
     return <button
-        {...getGeneralTooltipProps("Follow to get a notification whenever this user publishes a new post.")}
+        {...getGeneralTooltipProps("Follow to get a notification whenever someone leaves a comment on this comment thread.")}
         style={{ background: "transparent", border: "transparent", padding: 0, ...style }}
         disabled={loading} onClick={handleClick}
     >

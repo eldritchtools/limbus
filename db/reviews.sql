@@ -472,3 +472,35 @@ select cron.schedule(
 
 grant select on public.user_review_stats_v2 to anon;
 grant select on public.user_review_stats_v2 to authenticated;
+
+create or replace function public.can_insert_review_new_account_rate_limited(
+    user_id uuid
+)
+returns boolean
+language plpgsql
+security definer
+as $$
+begin
+  -- If the user is older than 2 hours, allow.
+  select case
+    when u.created_at < now() - interval '2 hours' then true
+    else (
+      (
+        select count(*)
+        from public.reviews r
+        where r.user_id = _user_id
+          and r.created_at >= now() - interval '10 minutes'
+      ) < 3
+    )
+  end
+  from public.users u
+  where u.id = _user_id;
+end;
+$$;
+
+alter policy "users can insert own reviews"
+on public.reviews
+to public
+with check (
+    ((auth.uid() = user_id) AND can_insert_review_new_account_rate_limited(auth.uid))
+);

@@ -35,12 +35,21 @@ function getCategoryItems(category) {
     return categoryItems[category] ?? additionalCategories[category];
 }
 
-export default function IconsSelector({ type, categories, values, setValues, borderless = false, filterModeOverride }) {
+export default function IconsSelector({ type, categories, values, setValues, borderless = false, filterModeOverride, noExclude = false, noClear = false }) {
     const { getCustomizationValue } = useSiteCustomization();
     const filterSelectionMode = filterModeOverride ?? getCustomizationValue("filterSelectionMode");
 
     const clickProps = useMemo(() => {
-        if (filterSelectionMode === "ieo") {
+        if (filterSelectionMode === "st" || noExclude) {
+            return {
+                "onClick": (filter, selected, excluded, event) => {
+                    if (selected)
+                        setValues(values.filter(x => x !== filter));
+                    else
+                        setValues([...values, filter]);
+                }
+            }
+        } else if (filterSelectionMode === "ieo") {
             return {
                 "onClick": (filter, selected, excluded, event) => {
                     if (selected)
@@ -71,17 +80,8 @@ export default function IconsSelector({ type, categories, values, setValues, bor
                         setValues([...values, `-${filter}`]);
                 }
             }
-        } else if (filterSelectionMode === "st") {
-            return {
-                "onClick": (filter, selected, excluded, event) => {
-                    if (selected)
-                        setValues(values.filter(x => x !== filter));
-                    else
-                        setValues([...values, filter]);
-                }
-            }
         }
-    }, [filterSelectionMode, values, setValues]);
+    }, [filterSelectionMode, values, setValues, noExclude]);
 
     const clearAll = () => {
         setValues([]);
@@ -154,12 +154,14 @@ export default function IconsSelector({ type, categories, values, setValues, bor
                 </div>)
             }
         })
-        pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", marginTop: "0.2rem" }} onClick={clearAll}>Clear All</div>)
+        if(!noClear)
+            pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", marginTop: "0.2rem" }} onClick={clearAll}>Clear All</div>)
     } else {
         categories.forEach(category => {
             getCategoryItems(category).forEach(filter => pieces.push(toggleComponent(category, filter)))
         })
-        pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={clearAll}>Clear All</div>)
+        if(!noClear)
+            pieces.push(<div key={"clear"} style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={clearAll}>Clear All</div>)
     }
 
     return <div className={`${styles.iconSelectorContainer} ${type === "row" ? styles.wrappingRow : null} ${type === "column" ? styles.column : null} ${borderless ? styles.borderless : null}`}>

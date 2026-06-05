@@ -10,6 +10,7 @@ import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import ThemePackIcon from "../components/icons/ThemePackIcon";
+import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -34,7 +35,7 @@ function FloorSelector({ value, setValue, options, isSmall }) {
 
         <Select.Content className={styles.floorSelectContent} position="popper">
             <Select.Viewport>
-                <div className={styles.floorSelectGrid} style={{gridTemplateColumns: `repeat(auto-fill, minmax(${380 * (isSmall ? .15 : .25)}px, 1fr))`}}>
+                <div className={styles.floorSelectGrid} style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${380 * (isSmall ? .15 : .25)}px, 1fr))` }}>
                     {options.map((option) =>
                         <Select.Item key={option} value={option} className={styles.floorSelectItem}>
                             <div className={styles.floorItemInner}>
@@ -192,6 +193,7 @@ export default function FloorPlannerPage() {
     const [selectedFloors, setSelectedFloors] = useLocalState("floorPlannerFloors", new Array(15).fill(null));
     const [difficulty, setDifficulty] = useLocalState("floorPlannerDifficulty", "E");
     const [showExclusiveHelper, setShowExclusiveHelper] = useLocalState("floorPlannerShowExclusiveHelper", false);
+    const [showEncounters, setShowEncounters] = useLocalState("floorPlannerShowEncounters", false);
     const [firstSelect, setFirstSelect] = useState(true);
 
     const router = useRouter();
@@ -212,7 +214,7 @@ export default function FloorPlannerPage() {
 
     const setSelectedFloor = (value, index) => {
         setSelectedFloors(selectedFloors.map((f, i) => i === index ? value : f));
-        if(firstSelect) {
+        if (firstSelect) {
             setFirstSelect(false);
             triggerToolUsedGAEvent("Floor Planner");
         }
@@ -246,7 +248,7 @@ export default function FloorPlannerPage() {
             <label>
                 <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
                     className="hover-text"
-                    style={{marginRight: "0.2rem"}}
+                    style={{ marginRight: "0.2rem" }}
                 >
                     Select Difficulty:
                 </span>
@@ -261,29 +263,49 @@ export default function FloorPlannerPage() {
             <button {...getGeneralTooltipProps("Find recommended theme packs based on the exclusive gifts you want to get.")} onClick={() => setShowExclusiveHelper(p => !p)}>
                 {showExclusiveHelper ? "Hide " : "Show "}Exclusive Gifts Helper
             </button>
+            <button onClick={() => setShowEncounters(p => !p)}>
+                {showEncounters ? "Hide " : "Show "}Encounters
+            </button>
             <button onClick={copyToMdPlan}>Copy to MD Plan</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${size})`, justifyContent: "center", width: "100%", gap: "0.5rem" }}>
             {Array.from({ length: floors }).map((_, index) =>
-                <div key={index} style={{ display: "grid", gridTemplateColumns: "1fr auto", width: size }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <span>Floor {index + 1}</span>
+                <div key={index} style={{ display: "flex", flexDirection: "column", padding: "0.25rem 0" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr auto", width: size }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <span>Floor {index + 1}</span>
+                            {
+                                selectedFloors[index] && "exclusive_gifts" in themePacks[selectedFloors[index]] ?
+                                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+                                        {themePacks[selectedFloors[index]].exclusive_gifts.map(giftId =>
+                                            <Gift key={giftId} id={giftId} includeTooltip={true} scale={isDesktop ? .66 : .5} />
+                                        )}
+                                    </div> :
+                                    null
+                            }
+                        </div>
+                        <FloorSelector
+                            value={selectedFloors[index]}
+                            setValue={v => setSelectedFloor(v, index)}
+                            options={getOptions(index + 1)}
+                            isSmall={!isDesktop}
+                        />
+                    </div>
+                    {selectedFloors[index] && showEncounters && <>
                         {
-                            selectedFloors[index] && "exclusive_gifts" in themePacks[selectedFloors[index]] ?
-                                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                                    {themePacks[selectedFloors[index]].exclusive_gifts.map(giftId =>
-                                        <Gift key={giftId} id={giftId} includeTooltip={true} scale={isDesktop ? .66 : .5} />
+                            themePacks[selectedFloors[index]]["bossEncounters"] ?
+                                <div style={{ display: "flex", flexDirection: "column", justifySelf: "start", textAlign: "center", padding: "0 1rem" }}>
+                                    <span>Possible Bosses:</span>
+                                    {themePacks[selectedFloors[index]]["bossEncounters"].map(enc =>
+                                        <MarkdownRenderer key={enc} content={`{enc:${enc}}`} />
                                     )}
                                 </div> :
-                                null
+                                <div style={{ textAlign: "center" }}>
+                                    Boss data to be added
+                                </div>
                         }
-                    </div>
-                    <FloorSelector
-                        value={selectedFloors[index]}
-                        setValue={v => setSelectedFloor(v, index)}
-                        options={getOptions(index + 1)}
-                        isSmall={!isDesktop}
-                    />
+                    </>
+                    }
                 </div>
             )}
         </div>

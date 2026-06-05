@@ -30,7 +30,7 @@
     border: 1px solid var(--secondary-border-color);
     border-radius: 5px;
     padding: 0.5rem;
-    max-height: 400px;
+    max-height: min(400px, 50vh);
     z-index: 1000;
     overflow-y: auto;
     max-width: clamp(330px, 85vw, 900px);
@@ -38,7 +38,7 @@
 
 .identityMenuSelectorFadeBottom {
     position: sticky;
-    bottom: 0;
+    bottom: -0.5rem;
     height: 24px;
     pointer-events: none;
     display: flex;

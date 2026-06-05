@@ -1,3 +1,4 @@
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useMemo } from "react";
 
 import { useData } from "../DataProvider";
@@ -11,6 +12,7 @@ import useLocalState from "@/app/lib/useLocalState";
 export default function Distribution({ identityIds, deploymentOrder, activeSinners }) {
     const [mode, setMode] = useLocalState("buildDistributionType", "kw-act");
     const [identities, identitiesLoading] = useData("identities");
+    const { isMobile } = useBreakpoint();
 
     const [modeItem, modeType, modeSkill] = useMemo(() => (mode ?? "all-a").split("-"), [mode]);
 
@@ -72,7 +74,7 @@ export default function Distribution({ identityIds, deploymentOrder, activeSinne
         <div style={{ display: "flex", flexWrap: "wrap" }}>
             {(modeItem === "kw" ? keywords.slice(0, 7) : affinities).map(key =>
                 <div key={key} style={{ display: "grid", gridTemplateRows: "repeat(2, auto)", justifyItems: "center" }}>
-                    <KeywordIcon id={key} />
+                    <KeywordIcon id={key} size={isMobile ? 24 : 32} />
                     <div style={{ fontWeight: "bold", "color": values[key] ? "var(--primary-text-color)" : "var(--secondary-text-color)" }}>
                         {values[key]}
                     </div>

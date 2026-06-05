@@ -52,7 +52,7 @@ export default function UpdateHistoryPage() {
                             {list.map(obj => obj.id[0] === "1" ?
                                 (obj.upcoming ?
                                     <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} style={{ pointerEvents: "none" }} />
                                     </div> :
                                     <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
                                         <div style={{ width: "128px", height: "128px" }}>
@@ -62,7 +62,7 @@ export default function UpdateHistoryPage() {
                                 ) :
                                 (obj.upcoming ?
                                     <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} style={{ pointerEvents: "none" }} />
                                     </div> :
                                     <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
                                         <div style={{ width: "128px", height: "128px" }}>

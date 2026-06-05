@@ -1,16 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import Select from "react-select";
 
 import BuildEditingComponent from "./BuildEditingComponent";
 import { useData } from "../DataProvider";
 import KeywordIcon from "../icons/KeywordIcon";
+import StatusIcon from "../icons/StatusIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import ImageCarousel from "../objects/ImageCarousel";
 import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
+import { StatusDropdownSelector } from "../selectors/StatusSelectors";
 import TagSelector, { tagToTagSelectorOption, validateTag } from "../selectors/TagSelector";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
@@ -20,10 +24,13 @@ import { handleCreateTag } from "@/app/database/tags";
 import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
+import { getEncounterCategoryOptions, getEncounterOptions } from "@/app/lib/encounters";
+import { checkFilterMatch } from "@/app/lib/filter";
 import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
 import { parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
+import { selectStyle } from "@/app/styles/selectStyle";
 
 
 export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds, initTag }) {
@@ -42,6 +49,8 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [egoThreadspins, setEgoThreadspins] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => "")));
     const [sinnerNotes, setSinnerNotes] = useState(Array.from({ length: 12 }, () => ""));
     const [additionalToggle, setAdditionalToggle] = useState(false);
+    const [addedIcons, setAddedIcons] = useState([]);
+    const [iconSwaps, setIconSwaps] = useState([]);
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
     const [blockDiscovery, setBlockDiscovery] = useState(false);
@@ -53,6 +62,19 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const router = useRouter();
 
     const [identitiesMini, identitiesMiniLoading] = useData("identities_mini");
+    const [encounters, encountersLoading] = useData("encounters");
+
+    const [category, setCategory] = useState(null);
+    const [encounter, setEncounter] = useState(null);
+    const [addEncounterTagLoading, setAddEncounterTagLoading] = useState(false);
+    const [encounterTagOpen, setEncounterTagOpen] = useState(false);
+    const encounterTagRef = useRef(null);
+
+    const categoryOptions = useMemo(() => getEncounterCategoryOptions(true), []);
+    const encounterOptions = useMemo(() =>
+        encountersLoading || !category ? [] : getEncounterOptions(encounters, category),
+        [encountersLoading, encounters, category]
+    );
 
     useEffect(() => {
         if (!loading) return;
@@ -86,6 +108,8 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                         if ("identityUpties" in extraOpts) setIdentityUpties(extraOpts.identityUpties);
                         if ("egoThreadspins" in extraOpts) setEgoThreadspins(extraOpts.egoThreadspins);
                         if ("sinnerNotes" in extraOpts) setSinnerNotes(extraOpts.sinnerNotes);
+                        if ("addedIcons" in extraOpts) setAddedIcons(extraOpts.addedIcons);
+                        if ("iconSwaps" in extraOpts) setIconSwaps(extraOpts.iconSwaps);
                     }
 
                     if (build.created_at) setCreatedAt(build.created_at);
@@ -117,8 +141,8 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         if (!initTag) return;
 
         const handleInitTag = async () => {
-            const {valid, value} = validateTag(initTag);
-            if(valid) {
+            const { valid, value } = validateTag(initTag);
+            if (valid) {
                 const dbTag = await handleCreateTag(value);
                 setTags([tagToTagSelectorOption(dbTag)]);
             }
@@ -126,6 +150,33 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
 
         handleInitTag();
     }, [initTag]);
+
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            if (encounterTagRef.current && !encounterTagRef.current.contains(e.target)) {
+                setEncounterTagOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    const handleOpenEncounterTag = () => {
+        setEncounterTagOpen(true);
+        setCategory(null);
+        setEncounter(null);
+    }
+
+    const handleAddEncounterTag = async () => {
+        if (!category || !encounter) return;
+        setAddEncounterTagLoading(true);
+        const tag = `${category.value}-${encounter.value}`;
+        const dbTag = await handleCreateTag(tag);
+        setTags(p => [...p, tagToTagSelectorOption(dbTag)]);
+        setEncounterTagOpen(false);
+        setAddEncounterTagLoading(false);
+    }
 
     const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
         if (id && id in identitiesMini) {
@@ -159,7 +210,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             return;
         }
 
-        const extraOpts = encodeBuildExtraOpts({ identityUpties, identityLevels, egoThreadspins, sinnerNotes });
+        const extraOpts = encodeBuildExtraOpts({ identityUpties, identityLevels, egoThreadspins, sinnerNotes, addedIcons, iconSwaps });
 
         setSaving(true);
         if (user) {
@@ -237,6 +288,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             identityLevels={identityLevels} setIdentityLevels={setIdentityLevels}
             identityUpties={identityUpties} setIdentityUpties={setIdentityUpties}
             egoThreadspins={egoThreadspins} setEgoThreadspins={setEgoThreadspins}
+            iconSwaps={iconSwaps} setIconSwaps={setIconSwaps}
             sinnerNotes={sinnerNotes} setSinnerNotes={setSinnerNotes}
             defaultAdditionalToggle={additionalToggle}
         />
@@ -248,32 +300,63 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         {user && <React.Fragment>
             <span style={{ fontSize: "1.2rem" }}>Images</span>
             <span className="sub-text">{uiStrings.postImages}</span>
-            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1}/>
+            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1} />
             <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
         </React.Fragment>}
 
-        <span style={{ fontSize: "1.2rem" }}>Keywords</span>
+        <span style={{ fontSize: "1.2rem" }}>Keywords and Icons</span>
         <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", minHeight: "50px", flexWrap: "wrap" }}>
-                <span style={{ paddingRight: "0.2rem" }}>Selected:</span>
-                {keywordIds.map(x =>
-                    <button key={x} onClick={() => setKeywordIds(p => p.filter(k => k !== x))} style={{ display: "flex", alignItems: "center", fontSize: "1rem" }}>
-                        <KeywordIcon id={x} />
-                    </button>
-                )}
+                <span
+                    {...getGeneralTooltipProps("Selected keywords and icons that will be shown on the build. Keywords will always be shown before additional icons.")}
+                    className="hover-text" style={{ marginRight: "0.2rem" }}>
+                        Selected:
+                </span>
+                <div style={{ display: "flex", flexWrap: "wrap", padding: "0.25rem", border: "1px var(--primary-border-color) solid", borderRadius: "1rem" }}>
+                    {keywordIds.map(x =>
+                        <button key={x}
+                            onClick={() => setKeywordIds(p => p.filter(k => k !== x))}
+                            style={{ background: "none", border: "none", padding: 0, margin: 0 }}>
+                            <KeywordIcon id={x} size={32} />
+                        </button>
+                    )}
+                    {addedIcons.map(x =>
+                        <button key={x}
+                            onClick={() => setAddedIcons(p => p.filter(k => k !== x))}
+                            style={{ background: "none", border: "none", padding: 0, margin: 0 }}>
+                            <StatusIcon id={x} style={{width: "32px", height: "32px"}} />
+                        </button>
+                    )}
+                </div>
             </div>
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", minHeight: "50px", flexWrap: "wrap" }}>
-                <span style={{ paddingRight: "0.2rem" }}>Recommended:</span>
-                {
-                    Object.entries(keywordOptions)
+                <span
+                    {...getGeneralTooltipProps("Recommended keywords to tag the build with. These can be used with filters when searching builds.")}
+                    className="hover-text" style={{ marginRight: "0.2rem" }}>
+                        Recommended:
+                </span>
+                <div style={{ display: "flex", flexWrap: "wrap", padding: "0.25rem", border: "1px var(--primary-border-color) solid", borderRadius: "1rem" }}>
+                    {Object.entries(keywordOptions)
                         .filter(([x, _]) => !keywordIds.includes(x))
                         .sort((a, b) => b[1] === a[1] ? keywordToIdMapping[a[0]] - keywordToIdMapping[b[0]] : b[1] - a[1])
                         .map(([x, n]) =>
-                            <button key={x} onClick={() => setKeywordIds(p => [...p, x])} style={{ display: "flex", alignItems: "center", fontSize: "1rem" }}>
+                            <button key={x}
+                                onClick={() => setKeywordIds(p => [...p, x])}
+                                style={{ background: "none", border: "none", padding: 0, margin: 0 }}
+                            >
                                 <KeywordIcon id={x} />
                             </button>
                         )
-                }
+                    }
+                </div>
+            </div>
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", minHeight: "50px", flexWrap: "wrap" }}>
+                <span
+                    {...getGeneralTooltipProps("Additional icons to display. These are purely cosmetic and do not have a filter involved.")}
+                    className="hover-text" style={{ marginRight: "0.2rem" }}>
+                        Additional:
+                </span>
+                <StatusDropdownSelector selected={null} setSelected={x => setAddedIcons(p => p.includes(x) ? p : [...p, x])} />
             </div>
         </div>
         <div>
@@ -285,8 +368,50 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         {youtubeVideo.length > 0 ?
             <span className="sub-text">Youtube Video Id: {extractYouTubeId(youtubeVideo.trim()) ?? "Not found"}</span> :
             null}
-        <span style={{ fontSize: "1.2rem" }}>Tags</span>
+
+        <div style={{ display: "flex", gap: "0.2rem", flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ fontSize: "1.2rem" }}>Tags</span>
+
+            <div ref={encounterTagRef} style={{ position: "relative" }}>
+                <button
+                    {...getGeneralTooltipProps("If this build is for a specific encounter, you can tag it so it shows up in that encounter's page.")}
+                    onClick={handleOpenEncounterTag}
+                    disabled={addEncounterTagLoading}
+                    style={{ fontSize: "0.8rem" }}
+                >
+                    Add Encounter Tag
+                </button>
+                {encounterTagOpen &&
+                    <div style={{
+                        position: "absolute", top: "100%", left: 0, zIndex: 10, padding: "0.5rem",
+                        background: "var(--bg-secondary)", border: "1px solid var(--secondary-border-color)", borderRadius: "4px",
+                        display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center"
+                    }}>
+                        <Select
+                            options={categoryOptions}
+                            value={category}
+                            onChange={x => { setCategory(x); setEncounter(null); }}
+                            placeholder={"Choose category..."}
+                            filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
+                            styles={selectStyle}
+                        />
+                        <Select
+                            options={encounterOptions}
+                            value={encounter}
+                            onChange={setEncounter}
+                            placeholder={"Choose encounter..."}
+                            filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+                            styles={selectStyle}
+                        />
+                        <button onClick={handleAddEncounterTag} disabled={addEncounterTagLoading}>
+                            Add Encounter Tag
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
         <TagSelector selected={tags} onChange={setTags} creatable={true} />
+
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div>
                 <button className={otherSettings ? "toggle-button-active" : "toggle-button"} onClick={() => setOtherSettings(p => !p)}>

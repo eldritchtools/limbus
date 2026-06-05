@@ -4,6 +4,7 @@ import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import { GiftTagLabels } from "../gifts/GiftTags";
 import GiftIcon from "../icons/GiftIcon";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 import ProcessedText from "../texts/ProcessedText";
 
 import { affinityColorMapping } from "@/app/lib/colors";
@@ -12,6 +13,7 @@ const tooltipDescStyle = { display: "inline-block", fontSize: "1rem", lineHeight
 const TOOLTIP_ID = "gift-tooltip";
 
 function GiftTooltipContent({ gift, enhanceRank = 0, expandable = true }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const [themePacks, themePacksLoading] = useData("md_theme_packs");
 
     const exclusiveText = list => themePacksLoading ? null :
@@ -24,6 +26,7 @@ function GiftTooltipContent({ gift, enhanceRank = 0, expandable = true }) {
     return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem" }}>
         <div style={{ marginBottom: "0.5rem", fontSize: "1.5rem", fontWeight: "bold", textAlign: "center", color: affinityColorMapping[gift.affinity] }}>
             {gift.names[enhanceRank]}
+            {getCustomizationValue("showIdsOnTooltips") && <span> ({gift.id})</span>}
         </div>
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.2rem", minWidth: "100px" }}>

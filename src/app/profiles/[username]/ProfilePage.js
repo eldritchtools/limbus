@@ -68,7 +68,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
 
         if (tab === "reviews") {
             const loadReviews = async () => {
-                const result = await getUserReviews({ userId: userId });
+                const result = await getUserReviews({ userId: userId, forced: true });
                 setReviews(result);
             }
 
