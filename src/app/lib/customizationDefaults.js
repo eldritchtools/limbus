@@ -9,5 +9,6 @@ export const customizationDefaults = {
     filterSelectionMode: "ieo",
     disableShareMenu: false,
     ratingsOnTooltips: false,
-    idEgoSelectionMenuStyle: "icon"
+    idEgoSelectionMenuStyle: "icon",
+    showIdsOnTooltips: false
 }

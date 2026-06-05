@@ -44,6 +44,7 @@ function IdentityTooltipContent({ identity, forceRatings }) {
     }, [showRatings, identity, user]);
 
     return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem" }}>
+        {getCustomizationValue("showIdsOnTooltips") && <span className="title-text" style={{textAlign: "center"}}>{identity.id}</span>}
         <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", height: "128px" }}>
             <div>
                 <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} style={{ width: "128px", height: "128px" }} />
@@ -60,13 +61,16 @@ function IdentityTooltipContent({ identity, forceRatings }) {
                 </div>
             </div>
         </div>
-        {showRatings && rating && <>
-            <StatsRadarChart type={"identity"} globalData={rating?.rating} userData={userRating?.rating} includeHelp={false} />
-            <div style={{ display: "flex", textAlign: "center" }}>
-                <span style={{ flex: 1 }}>Votes: {rating.votes}</span>
-                <span style={{ flex: 1 }}>Rating: {rating.overallRating.toFixed(2)}</span>
-            </div>
-        </>
+        {showRatings &&
+            (rating ? <>
+                <StatsRadarChart type={"identity"} globalData={rating?.rating} userData={userRating?.rating} includeHelp={false} />
+                <div style={{ display: "flex", textAlign: "center" }}>
+                    <span style={{ flex: 1 }}>Votes: {rating.votes}</span>
+                    <span style={{ flex: 1 }}>Rating: {rating.overallRating.toFixed(2)}</span>
+                </div>
+            </> :
+                <div style={{color: "var(--secondary-text-color)", textAlign: "center"}}>Loading...</div>
+            )
         }
         {isTouchDevice() ? <NoPrefetchLink href={`/identities/${identity.id}`} style={{ alignSelf: "center", fontSize: "1.2rem" }}>Go to page</NoPrefetchLink> : null}
     </div>

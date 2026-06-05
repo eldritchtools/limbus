@@ -58,6 +58,7 @@ function EgoTooltipContent({ id, ego, uptie = 4, forceRatings }) {
     }, [showRatings, id, user]);
 
     return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem" }}>
+        {getCustomizationValue("showIdsOnTooltips") && <span className="title-text" style={{textAlign: "center"}}>{ego.id}</span>}
         <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
             <div><EgoIcon ego={ego} type={"awaken"} displayName={true} displayRarity={true} style={{ width: "128px", height: "128px" }} /></div>
             <div style={{ display: "flex", flexDirection: "column", width: "192px", minHeight: "128px" }}>
@@ -92,13 +93,16 @@ function EgoTooltipContent({ id, ego, uptie = 4, forceRatings }) {
                 </div>
             </div>
         </div>
-        {showRatings && rating && <>
+        {showRatings &&
+            (rating ? <>
             <StatsRadarChart type={"ego"} globalData={rating?.rating} userData={userRating?.rating} includeHelp={false} />
-            <div style={{ display: "flex", textAlign: "center" }}>
-                <span style={{ flex: 1 }}>Votes: {rating.votes}</span>
-                <span style={{ flex: 1 }}>Rating: {rating.overallRating.toFixed(2)}</span>
-            </div>
-        </>
+                <div style={{ display: "flex", textAlign: "center" }}>
+                    <span style={{ flex: 1 }}>Votes: {rating.votes}</span>
+                    <span style={{ flex: 1 }}>Rating: {rating.overallRating.toFixed(2)}</span>
+                </div>
+            </> :
+                <div style={{color: "var(--secondary-text-color)", textAlign: "center"}}>Loading...</div>
+            )
         }
         {isTouchDevice() ? <NoPrefetchLink href={`/egos/${ego.id}`} style={{ alignSelf: "center", fontSize: "1.2rem" }}>Go to page</NoPrefetchLink> : null}
     </div>

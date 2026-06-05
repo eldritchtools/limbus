@@ -7,6 +7,7 @@ import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import GiftIcon from "../components/icons/GiftIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";
+import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
@@ -332,6 +333,19 @@ export default function SiteCustomizationPage() {
             <div style={{ alignSelf: "center" }}>
                 <GiftIcon id={"9003"} forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} />
             </div>
+        </SettingContainer>
+
+        <SettingContainer
+            name={"Show Ids on Tooltips"}
+            desc={"When set, normally hidden ids for things like identities and gifts are shown on tooltips across the site. These are the same ids used to refer to them in tokens."}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.showIdsOnTooltips ?? customizationDefaults.showIdsOnTooltips}
+                    onChange={e => setData(p => ({ ...p, showIdsOnTooltips: e.target.checked }))}
+                />
+                <span>Show ids on tooltips</span>
+            </label>
         </SettingContainer>
 
         <SettingContainer
