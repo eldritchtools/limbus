@@ -77,10 +77,9 @@ export default function CommunityPoll({ poll, setPoll }) {
                 {current.options.map((option, i) => {
                     const pct = current.total_votes ? (100 * current.votes[i] / current.total_votes) : 0;
                     return <React.Fragment key={i}>
-                        <div style={{ textAlign: "start", fontWeight: checkOption(i) ? "bold": "none" }}>
-                            {option}
+                        <div style={{ textAlign: "start", fontWeight: checkOption(i) ? "bold": "none", gridColumn: "span 2" }}>
+                            {option}{` (${current.votes[i]} vote${current.votes[i] !== 1 ? "s" : ""})`}
                         </div>
-                        <div />
 
                         <div className={styles.bar}>
                             <div className={styles.barFill} style={{ width: `${pct}%` }} />
