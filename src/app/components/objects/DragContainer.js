@@ -32,8 +32,7 @@ export default function DragContainer({ children, className, style, hintDistance
 
         if (Math.abs(walk) > 5 && !moved.current) {
             moved.current = true;
-
-            // 👇 only now take control
+            
             ref.current.setPointerCapture(e.pointerId);
             document.body.style.userSelect = "none";
         }
@@ -82,7 +81,7 @@ export default function DragContainer({ children, className, style, hintDistance
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
     >
-        <div className={styles.container} style={{"--hint-distance": `-${hintDistance}px`}}>
+        <div className={styles.container} style={{"--hint-distance": `-${hintDistance}px`, paddingLeft: isScrollable ? "10px" : 0}}>
             {children}
         </div>
     </div>

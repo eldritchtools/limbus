@@ -51,11 +51,11 @@ export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityU
         if (sr.length > 0) encoded.push(`sr:${sr}`);
     }
 
-    if (addedIcons) {
+    if (addedIcons && addedIcons.length > 0) {
         encoded.push(`ai:${addedIcons.join(",")}`)
     }
 
-    if (iconSwaps) {
+    if (iconSwaps && iconSwaps.length > 0) {
         encoded.push(`is:${iconSwaps.join(",")}`)
     }
 
