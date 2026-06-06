@@ -38,14 +38,14 @@ function IdentityDisplay({ identity, identityBitsets, setIdentityBitsets, editab
             )
 
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            <div onClick={handleClick} className={className} style={{alignSelf: "stretch"}}>
+            <div onClick={handleClick} className={className} style={{ alignSelf: "stretch" }}>
                 <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
             </div>
             <AdvancedOptionsLabels mode={"id"} advancedOptions={advancedOptions} data={data} />
         </div>
     } else {
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            <NoPrefetchLink href={`/identities/${identity.id}`} className={className} style={{alignSelf: "stretch"}}>
+            <NoPrefetchLink href={`/identities/${identity.id}`} className={className} style={{ alignSelf: "stretch" }}>
                 <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
             </NoPrefetchLink >
             <AdvancedOptionsLabels mode={"id"} advancedOptions={advancedOptions} data={data} />
@@ -150,6 +150,7 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
         }
 
         sortFunctions.push((a, b) => a.sinnerId - b.sinnerId);
+        sortFunctions.push((a, b) => a.id[0] - b.id[0]);
         sortFunctions.push((a, b) => b.id.localeCompare(a.id));
 
         filtered = filtered.sort((a, b) => {
@@ -162,11 +163,15 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
         });
 
         if (separateSinners) {
-            return filtered.reduce((acc, item) => {
-                if (item.sinnerId in acc) acc[item.sinnerId].push(item);
-                else acc[item.sinnerId] = [item];
-                return acc;
-            }, {});
+            return [
+                filtered.reduce((acc, item) => {
+                    if (item.sinnerId in acc) acc[item.sinnerId].push(item);
+                    else acc[item.sinnerId] = [item];
+                    return acc;
+                }, {}),
+                count,
+                totalCount
+            ];
         }
 
         return [filtered, count, totalCount];
