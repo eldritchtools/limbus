@@ -34,7 +34,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
     const extraProps = {};
     if (build.extra_opts) {
-        const extraOpts = decodeBuildExtraOpts(build.extra_opts, ["iu", "ai", "is"])
+        const extraOpts = decodeBuildExtraOpts(build.extra_opts, ["iu", "ai", "is"]);
         if (extraOpts.identityUpties) extraProps.identityUpties = extraOpts.identityUpties;
         if (extraOpts.addedIcons) addedIcons.push(...extraOpts.addedIcons);
         if (extraOpts.iconSwaps) extraProps.iconSwaps = extraOpts.iconSwaps;

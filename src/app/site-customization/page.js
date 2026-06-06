@@ -1,5 +1,6 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useMemo, useState } from "react";
 
 import ColorPicker from "./ColorPicker";
@@ -11,6 +12,7 @@ import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import DragContainer from "../components/objects/DragContainer";
 import DropdownButton from "../components/objects/DropdownButton";
 import Slider from "../components/objects/Slider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -85,6 +87,7 @@ export default function SiteCustomizationPage() {
     const [message, setMessage] = useState(null);
     const [filterPreview, setFilterPreview] = useState([]);
     const { user } = useAuth();
+    const { isMobile } = useBreakpoint();
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -219,6 +222,10 @@ export default function SiteCustomizationPage() {
 
     if (loading) return <LoadingContentPageTemplate />
 
+    const chunked = [];
+    if (data.favoriteLinks) for (let i = 0; i < data.favoriteLinks.length; i += 5) chunked.push(data.favoriteLinks.slice(i, i + 5));
+    const favoritesSectionWidth = isMobile ? "160px" : "200px";
+
     return <div style={{
         display: "flex", flexDirection: "column", alignItems: "stretch", gap: "1rem",
         justifySelf: "center", width: "100%", maxWidth: "min(1000px, 95vw)", boxSizing: "border-box"
@@ -244,7 +251,17 @@ export default function SiteCustomizationPage() {
                 <button onClick={() => setData(p => ({ ...p, favoriteLinks: customizationDefaults.favoriteLinks }))}>Reset to Default</button>
             </div>
             <div>
-                Current List: {data.favoriteLinks ? <HomepageLinkList links={data.favoriteLinks} style={{ maxWidth: "min(1000px, 90vw)" }} /> : "Not Set"}
+                Current List: {data.favoriteLinks ?
+                    <DragContainer>
+                        <div style={{ display: "flex", justifyContent: isMobile ? "start" : "center", width: isMobile ? "max-content" : "100%" }}>
+                            {chunked.map((items, index) =>
+                                <div key={index} className="panel-container" style={{ width: favoritesSectionWidth }}>
+                                    <HomepageLinkList links={items} includeNew={true} clickable={true} style={{ width: favoritesSectionWidth }} />
+                                </div>)
+                            }
+                        </div>
+                    </DragContainer>
+                    : "Not Set"}
             </div>
         </SettingContainer>
 

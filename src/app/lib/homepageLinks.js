@@ -65,12 +65,12 @@ function LinkComponent({ href, title, icon, clickable }) {
     if (clickable)
         return <NoPrefetchLink className="text-link" href={href} style={{ textDecoration: "none", display: "flex", alignItems: "center", maxWidth: "100%" }}>
             {icon ? <StatusIcon id={icon} style={iconStyle} /> : null}
-            <span style={{ width: "100%", textWrap: "wrap" }}>{title}</span>
+            <span style={{ flex: 1, textWrap: "wrap", textAlign: "start" }}>{title}</span>
         </NoPrefetchLink>
     else
         return <div className="text-link" style={{ display: "flex", alignItems: "center", maxWidth: "100%" }}>
             {icon ? <StatusIcon id={icon} style={iconStyle} /> : null}
-            <span style={{ width: "100%", textWrap: "wrap" }}>{title}</span>
+            <span style={{ maxWidth: "calc(100%-32px)", textWrap: "wrap", textAlign: "start" }}>{title}</span>
         </div>
 }
 
@@ -84,11 +84,10 @@ export function HomepageLink({ href, link, includeNew = false, clickable = false
 }
 
 export function HomepageLinkList({ links, includeNew = false, clickable = false, style={} }) {
-    return <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "0.5rem", ...style }}>
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem", maxWidth: "100%", ...style }}>
         {links
             .map(link => typeof link === "string" ? homepageLinksMapping[link] : link)
             .map(link => <HomepageLink key={link.href} link={link} includeNew={includeNew} clickable={clickable} />)
-            .reduce((acc, curr, i) => i === 0 ? [curr] : [...acc, <span key={i}>•</span>, curr], [])
         }
     </div>
 }

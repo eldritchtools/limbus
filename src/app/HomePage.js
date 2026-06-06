@@ -59,24 +59,45 @@ function RecentAdditions() {
 
 }
 
-function LinksMenu() {
+function LinksMenu({ isMobile }) {
     const { getCustomizationValue } = useSiteCustomization();
     const favorite = getCustomizationValue("favoriteLinks");
     const [forceOpen, setForceOpen] = useState(false);
 
-    return <div className={styles.LinksMenu}>
-        {favorite !== null && favorite.length > 0 ? <HomepageLinkList links={favorite} includeNew={true} clickable={true} /> : null}
-        {forceOpen || favorite === null ?
-            homepageLinks.map((section, i) => <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                {section.category ? <span className={styles.LinksCategory}>{section.category}</span> : null}
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                    <HomepageLinkList links={section.links} includeNew={true} clickable={true} />
+    const chunked = [];
+    if (favorite) for (let i = 0; i < favorite.length; i += 5) chunked.push(favorite.slice(i, i + 5));
+    const sectionWidth = isMobile ? "160px" : "200px";
+
+    return <div style={{
+        display: "flex", flexDirection: "column", width: "100%",
+        alignSelf: "start", alignItems: "center"
+    }}>
+        {favorite && favorite.length > 0 &&
+            <DragContainer>
+                <div className={styles.LinksMenu} style={{ justifyContent: isMobile ? "start" : "center", width: isMobile ? "max-content" : "100%" }}>
+                    {chunked.map((items, index) =>
+                        <div key={index} className="panel-container" style={{ width: sectionWidth }}>
+                            <HomepageLinkList links={items} includeNew={true} clickable={true} style={{ width: sectionWidth }} />
+                        </div>)
+                    }
                 </div>
-            </div>) :
+            </DragContainer>
+        }
+
+        {forceOpen || !favorite ?
+            <DragContainer>
+                <div className={styles.LinksMenu} style={{ justifyContent: isMobile ? "start" : "center", width: isMobile ? "max-content" : "100%" }}>
+                    {homepageLinks.map((section, i) => <div key={i} className="panel-container" style={{ display: "flex", flexDirection: "column", width: sectionWidth }}>
+                        {section.category ? <span className={styles.LinksCategory}>{section.category}</span> : null}
+                        <HomepageLinkList links={section.links} includeNew={true} clickable={true} style={{ width: sectionWidth }} />
+                    </div>)}
+                </div>
+            </DragContainer> :
             null
         }
+
         {
-            !forceOpen && favorite !== null ?
+            !forceOpen && favorite ?
                 <span className="text-link" onClick={() => setForceOpen(true)}>▾ Expand Links ▾</span> :
                 null
         }
@@ -104,7 +125,7 @@ export default function HomePage() {
     const [showcase, setShowcase] = useState([]);
     const [mdplans, setMdplans] = useState([]);
     const [poll, setPoll] = useState(null);
-    const { isDesktop } = useBreakpoint();
+    const { isMobile, isDesktop } = useBreakpoint();
 
     useEffect(() => {
         const getBuilds = async () => {
@@ -139,6 +160,8 @@ export default function HomePage() {
         }).slice(0, 10).map(x => [x, dates[x]]);
     }, [identities, identitiesLoading, egos, egosLoading]);
 
+    const latestSize = isMobile ? "96px" : "128px";
+
     return <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", width: "100%", height: "100%" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.25rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
             <h1 style={{ marginTop: "0.25rem", marginBottom: "0.25rem" }}>Limbus Company Tools</h1>
@@ -150,7 +173,7 @@ export default function HomePage() {
                 Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to customize your profile or site experience.
             </p>
             <APR />
-            <LinksMenu />
+            <LinksMenu isMobile={isMobile} />
             <HomepageTimers />
             <CommunityPoll poll={poll} setPoll={setPoll} />
             <RandomTips />
@@ -164,25 +187,25 @@ export default function HomePage() {
                                 {latest.map(([date, list]) =>
                                     <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
                                         <div>{date}</div>
-                                        <div style={{ display: "flex" }}>
+                                        <div style={{ display: "flex", gap: "1px" }}>
                                             {list.map(obj => obj.id[0] === "1" ?
                                                 (obj.upcoming ?
-                                                    <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                                    <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
+                                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                                     </div> :
                                                     <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
-                                                        <div style={{ width: "128px", height: "128px" }}>
-                                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                                        <div style={{ width: latestSize, height: latestSize }}>
+                                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                                         </div>
                                                     </NoPrefetchLink>
                                                 ) :
                                                 (obj.upcoming ?
-                                                    <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                                    <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
+                                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                                     </div> :
                                                     <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
-                                                        <div style={{ width: "128px", height: "128px" }}>
-                                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                                        <div style={{ width: latestSize, height: latestSize }}>
+                                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                                         </div>
                                                     </NoPrefetchLink>
                                                 )

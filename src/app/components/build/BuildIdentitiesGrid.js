@@ -22,7 +22,7 @@ export default function BuildIdentitiesGrid({ identityIds, scale, deploymentOrde
                     />
                 }
 
-                <DeploymentPositionOverlay sinnerId={i + 1} deploymentOrder={deploymentOrder} activeSinners={activeSinners} />
+                <DeploymentPositionOverlay sinnerId={i + 1} deploymentOrder={deploymentOrder} activeSinners={activeSinners} scale={scale} />
             </div>
         )}
     </div>

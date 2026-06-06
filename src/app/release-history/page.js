@@ -38,6 +38,8 @@ export default function UpdateHistoryPage() {
         }).slice(0, limit).map(x => [x, dates[x]]);
     }, [identities, identitiesLoading, egos, egosLoading, limit]);
 
+    const latestSize = isMobile ? "96px" : "128px";
+
     if (identitiesLoading || egosLoading) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem" }}>
@@ -48,25 +50,25 @@ export default function UpdateHistoryPage() {
                 <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
                     <div>{date}</div>
                     <DragContainer>
-                        <div style={{ display: "flex" }}>
+                        <div style={{ display: "flex", gap: "1px" }}>
                             {list.map(obj => obj.id[0] === "1" ?
                                 (obj.upcoming ?
-                                    <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} style={{ pointerEvents: "none" }} />
+                                    <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
+                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                     </div> :
                                     <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
-                                        <div style={{ width: "128px", height: "128px" }}>
-                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                        <div style={{ width: latestSize, height: latestSize }}>
+                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                         </div>
                                     </NoPrefetchLink>
                                 ) :
                                 (obj.upcoming ?
-                                    <div key={obj.id} style={{ width: "128px", height: "128px" }}>
-                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} style={{ pointerEvents: "none" }} />
+                                    <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
+                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                     </div> :
                                     <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
-                                        <div style={{ width: "128px", height: "128px" }}>
-                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none" }} />
+                                        <div style={{ width: latestSize, height: latestSize }}>
+                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
                                         </div>
                                     </NoPrefetchLink>
                                 )
