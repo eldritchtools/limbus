@@ -44,9 +44,9 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>Users can now follow comment threads to receive notifications whenever anyone leaves a comment. This works on all comment threads including builds, md plans, the release history page, encounter pages, and so on.</li>
                 <li>You can now attach images to Builds, MD Plans, and Collections. For now, posts are limited to 1 image each, but if things go well I will increase this limit in the future. For more images, the {wrapLink("Community Assets", "/community-assets")} page has been added allowing people to upload emotes and stickers to the site which can then be used with the new token types. Buttons to open pickers for both have also been added to editors.</li>
                 <li>Users can now follow other users when clicking the bell icon near their username on builds, md plans, collections, or their profile pages. Notifications will be sent whenever users you follow publish a new build, md plan, or collection.</li>
-                <li>Profile pictures have been added to the site! Upload yours in the {wrapLink("Edit Profile", "/edit-profile")} page. The exact positioning and styling of profile pictures are subject to change since I&apos;m still experimenting on where best to put them. The will be no change to the affected parts of the site if no profile picture is provided.</li>
             </ul>
         </div> : null}
 
