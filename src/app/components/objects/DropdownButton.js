@@ -13,7 +13,7 @@ export default function DropdownButton({ value, setValue, options, defaultDispla
 
     useEffect(() => {
         const handleClick = (e) => {
-            if (ref.current && !ref.current.contains(e.target)) {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
                 setOpen(false);
             }
         };
@@ -41,7 +41,7 @@ export default function DropdownButton({ value, setValue, options, defaultDispla
             createPortal(
                 <div ref={menuRef} className={styles.dropdownMenu} style={extraStyle}>
                     {Object.entries(options).map(([k, v]) => (
-                        <div key={k} className={styles.dropdownButtonOption} onClick={k => { setValue(k); setOpen(false); }} >
+                        <div key={k} className={styles.dropdownButtonOption} onClick={() => {setValue(k); setOpen(false); }} >
                             {v}
                         </div>
                     ))}
