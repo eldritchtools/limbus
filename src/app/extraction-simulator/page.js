@@ -20,7 +20,6 @@ import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
 import { bitsetFunctions } from "../lib/bitset";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
-import { selectStyleVariable } from "../styles/selectStyle";
 
 let modes = {
     "all": "All",
@@ -45,8 +44,10 @@ function CustomBanner({ identityIds, setIdentityIds, egoIds, setEgoIds, announce
     >
         <span style={{ textAlign: "center" }}>Custom Banner</span>
         <div style={{ display: "flex", flexDirection: "column", alignSelf: "start", maxWidth: "min(350px, 85vw)" }}>
-            <IdentityDropdownSelector selected={identityIds} setSelected={setIdentityIds} isMulti={true} styles={selectStyleVariable} />
-            <EgoDropdownSelector selected={egoIds} setSelected={setEgoIds} isMulti={true} styles={selectStyleVariable} />
+            <span>Identities</span>
+            <IdentityDropdownSelector selected={identityIds} setSelected={setIdentityIds} isMulti={true} />
+            <span>E.G.Os</span>
+            <EgoDropdownSelector selected={egoIds} setSelected={setEgoIds} isMulti={true} />
         </div>
     </div>
 }
@@ -491,7 +492,7 @@ export default function ExtractionSimulatorPage() {
                 <span>
                     {
                         calculatedMode === "all" ?
-                            `Probability of getting all banner items from ${calculatedBanner}.` :
+                            `Probability of getting all banner 000s, E.G.Os, and announcers from ${calculatedBanner}.` :
                             `Probability of getting at least n unique banner ${modes[calculatedMode]} from ${calculatedBanner}.`
                     }
                 </span>
