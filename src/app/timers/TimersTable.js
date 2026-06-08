@@ -66,9 +66,11 @@ function TimeComponent({ date, dateString, label = "Date"}) {
 
     if (date) {
         const target = date;
-        const y = date.getUTCFullYear();
-        const m = date.getUTCMonth() + 1;
-        const d = date.getUTCDate();
+        const krDate = new Date(date);
+        krDate.setHours(krDate.getHours() + 9);
+        const y = krDate.getUTCFullYear();
+        const m = krDate.getUTCMonth() + 1;
+        const d = krDate.getUTCDate();
         return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center" }}>
             <span>{label}: {y}-{padDigit(m)}-{padDigit(d)}</span>
             <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}><TimeString date={target} /></span>

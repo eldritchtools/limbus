@@ -40,7 +40,8 @@ export const homepageLinks = [
             { href: "/training-calc", title: "Dispense and Training Calculator", icon: "ResultEnhancement" },
             { href: "/team-solver", title: "Team Solver", icon: "ThreeMirrorpartYiSang" },
             { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
-            { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" }
+            { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" },
+            { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass"}
         ]
     },
     {

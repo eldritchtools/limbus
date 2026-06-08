@@ -107,7 +107,7 @@ export default function BuildEditingComponent({
                                             <IdentityMenuSelector 
                                                 value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} 
                                                 options={identityOptions[index + 1]} num={index + 1} 
-                                                uptie={identityUpties[index] === "" ? 4 : identityUpties[index]} swapIcon={iconSwaps.includes(index + 1)} 
+                                                uptie={identityUpties?.[index] === "" ? 4 : identityUpties?.[index]} swapIcon={iconSwaps?.includes(index + 1)} 
                                             />
                                         </div>
                                         <div style={{ gridColumn: "1", gridRow: "5", alignItems: "stretch", justifyContent: "stretch" }}>

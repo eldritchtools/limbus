@@ -72,7 +72,8 @@ const paths = [
             { path: "/training-calc", title: "Dispense and Training Calculator" },
             { path: "/team-solver", title: "Team Solver" },
             { path: "/team-randomizer", title: "Team Randomizer" },
-            { path: "/floor-planner", title: "Floor Planner" }
+            { path: "/floor-planner", title: "Floor Planner" },
+            { path: "/extraction-simulator", title: "Extraction Simulator"}
         ]
     },
     {
@@ -91,35 +92,34 @@ const description = <span>
     Limbus Company Tools is a community-driven website for users to share and discover team builds and Mirror Dungeon plans, view an Identities and E.G.Os database complete with community ratings and reviews, use Mirror Dungeon reference pages with an Achievemenet Tracker, or use tools such as calculators, solvers, randomizers, and planners.
 </span>;
 
-function Announcement() {
-    const [hidden, setHidden] = useState(false);
+// function Announcement() {
+//     const [hidden, setHidden] = useState(false);
 
-    if (hidden) return null;
+//     if (hidden) return null;
 
-    return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
-        <div style={{ backgroundColor: "var(--bg-hover)", borderRadius: "1rem", border: "1px solid var(--secondary-border-color)", maxWidth: "1200px", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
-            <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
-                    <span style={{ lineHeight: "1.3" }}>
-                        Hi! I&apos;m conducting a short survey to help me plan the future of the site. If you&apos;d like to share your thoughts, you can find it <NoPrefetchLink className="text-link" href="https://docs.google.com/forms/d/e/1FAIpQLSc0XlDQcYslTdljCgGFBElg1HNbSVMOc1bl-izbHQ8X7jaCNg/viewform">here</NoPrefetchLink>. (Google Forms, no login)
-                        <br/>
-                        I&apos;ve still been receiving responses recently, so I will keep the survey up to a few more days, but I may stop responses any time soon.
-                        <br/>
-                        If you&apos;re curious about the partial results, I have them up <NoPrefetchLink className="text-link" href="/survey">here</NoPrefetchLink>. I also answer some common concerns I noticed.
-                    </span>
-                </div>
+//     return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
+//         <div style={{ backgroundColor: "var(--bg-hover)", borderRadius: "1rem", border: "1px solid var(--secondary-border-color)", maxWidth: "1200px", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
+//             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+//                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
+//                     <span style={{ lineHeight: "1.3" }}>
+//                         Hi! I&apos;m conducting a short survey to help me plan the future of the site. If you&apos;d like to share your thoughts, you can find it <NoPrefetchLink className="text-link" href="https://docs.google.com/forms/d/e/1FAIpQLSc0XlDQcYslTdljCgGFBElg1HNbSVMOc1bl-izbHQ8X7jaCNg/viewform">here</NoPrefetchLink>. (Google Forms, no login)
+//                         <br/>
+//                         I&apos;ve still been receiving responses recently, so I will keep the survey up to a few more days, but I may stop responses any time soon.
+//                         <br/>
+//                         If you&apos;re curious about the partial results, I have them up <NoPrefetchLink className="text-link" href="/survey">here</NoPrefetchLink>. I also answer some common concerns I noticed.
+//                     </span>
+//                 </div>
 
-                <button
-                    style={{ background: "none", border: "none", color: "var(--secondary-text-color)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold" }}
-                    onClick={() => setHidden(true)}
-                >
-                    ✕
-                </button>
-            </div>
-        </div>
-    </div>;
-}
-
+//                 <button
+//                     style={{ background: "none", border: "none", color: "var(--secondary-text-color)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold" }}
+//                     onClick={() => setHidden(true)}
+//                 >
+//                     ✕
+//                 </button>
+//             </div>
+//         </div>
+//     </div>;
+// }
 
 export default function LayoutComponent({ children }) {
     const [lastUpdated, setLastUpdated] = useState(process.env.NEXT_PUBLIC_LAST_UPDATED);
@@ -144,7 +144,7 @@ export default function LayoutComponent({ children }) {
                 >
                     <DataProvider>
                         <ModalProvider>
-                            <Announcement />
+                            {/* <Announcement /> */}
                             {children}
                             <AllTooltips />
                         </ModalProvider>
