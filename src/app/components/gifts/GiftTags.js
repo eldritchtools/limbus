@@ -1,12 +1,11 @@
 import React from "react";
-import Select from "react-select";
 
 import Gift from "./Gift";
 import DropdownSelectorWithExclusion from "../selectors/DropdownSelectorWithExclusion";
 
 import { giftTagColors } from "@/app/lib/colors";
 import { checkFilterMatch } from "@/app/lib/filter";
-import { selectStyle, selectStyleVariable } from "@/app/styles/selectStyle";
+import { selectStyle } from "@/app/styles/selectStyle";
 
 export function GiftTagStrips({ gift, scale }) {
     const scaledSize = { width: `${12 * scale}px`, height: `${4 * scale}px` };
@@ -38,7 +37,7 @@ export function GiftTagLabels({ gift, full = false, enhanceLevel, setEnhanceLeve
                             onClick={() => setEnhanceLevel(index)}
                         >
                             {index === 0 ? "-" :
-                                <span style={{ fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "20px", color: "#ffd84d" }}>
+                                <span style={{ fontFamily: "'Archivo Narrow', sans-serif", fontWeight: "bold", fontSize: "20px", color: "#ffd84d", whiteSpace: "nowrap" }}>
                                     {"+".repeat(index)}
                                 </span>
                             }

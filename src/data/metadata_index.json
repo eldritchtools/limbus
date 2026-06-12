@@ -44,6 +44,7 @@
     "20506": "Electric Screaming",
     "20507": "Yearning-Mircalla",
     "20508": "Crushbound Past",
+    "20509": "Shadow-vested Bladesinger [着影揮刀]",
     "20601": "Land of Illusion",
     "20602": "Roseate Desire",
     "20603": "Dimension Shredder",
@@ -219,6 +220,7 @@
       "lcb-checkup-bg": "LCB Regular Check-up BokGak",
       "miracle-district-20": "Miracle in District 20",
       "miracle-district-20-bg": "Miracle in District 20 BokGak",
+      "mnestic-experience": "Mnestic Experience",
       "motwe": "Murder on the WARP Express",
       "motwe-bg": "Murder on the WARP Express BokGak",
       "nocturnal-sweeping": "Nocturnal Sweeping",
@@ -253,7 +255,9 @@
     "story": {
       "7-5-24-bg": "Nocturnal Sweeping BokGak (7.5-24)",
       "7-5-25-bg": "Nocturnal Sweeping BokGak (7.5-25)",
-      "9-5-12": "Twining Threads (9.5-12)"
+      "9-5-12": "Twining Threads (9.5-12)",
+      "9-5-24": "Mnestic Experience (9.5-24)",
+      "9-5-25": "Mnestic Experience Dungeon (9.5-25)"
     }
   },
   "identities": {
@@ -345,6 +349,7 @@
     "10612": "R Corp. 4th Pack Reindeer",
     "10613": "The Lord of Hongyuan",
     "10614": "The House of Spiders: The Ring Nursefather",
+    "10615": "S Corp. Ch'unokkun",
     "10701": "LCB Sinner",
     "10702": "Shi Assoc. South Section 5",
     "10703": "R Corp. 4th Pack Rabbit",
@@ -374,6 +379,7 @@
     "10812": "Family Hierarch Candidate",
     "10813": "Jeong's Office Rep",
     "10814": "The House of Spiders: The Middle Apprentice",
+    "10815": "LCD OSIR Team",
     "10901": "LCB Sinner",
     "10902": "Kurokumo Clan Wakashu",
     "10903": "LCCB Assistant Manager",

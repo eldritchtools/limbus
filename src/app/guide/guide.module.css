@@ -1,0 +1,21 @@
+.guideItem {
+  border: 1px solid var(--primary-border-color);
+  border-radius: 0.5rem;
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+}
+
+.guideItem:hover {
+  background: var(--bg-hover);
+}
+
+.guideItemSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  cursor: pointer;
+}
+
+.guideItemSummary::-webkit-details-marker {
+  display: none;
+}

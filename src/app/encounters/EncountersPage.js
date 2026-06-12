@@ -150,7 +150,7 @@ export default function EncountersPage() {
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Encounters</h1>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>Browse encounter details, related team builds, and community comments.</span>
-        <div className="sub-text">This is an early version of this page. More encounters, details, and quality-of-life improvements will gradually be added to this page over time. Suggestions for encounters to prioritize are welcome.</div>
+        <div className="sub-text">More encounters and details will gradually be added to this page over time. Suggestions for encounters to prioritize are welcome.</div>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>

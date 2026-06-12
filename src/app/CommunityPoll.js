@@ -4,7 +4,7 @@ import styles from "./CommunityPoll.module.css";
 import { getGeneralTooltipProps } from "./components/tooltips/GeneralTooltip";
 import { useAuth } from "./database/authProvider";
 import { submitPollVote } from "./database/polls";
-import { triggerToolUsedGAEvent } from "./lib/gaEvents";
+import { triggerPollAnsweredEvent } from "./lib/gaEvents";
 
 export default function CommunityPoll({ poll, setPoll }) {
     const { user } = useAuth();
@@ -34,7 +34,7 @@ export default function CommunityPoll({ poll, setPoll }) {
         const result = (await submitPollVote(user.id, poll.current.id, answer))[0];
         setPoll(p => ({ ...p, current: { ...p.current, user_answer: answer, votes: result.votes, total_votes: result.total_votes } }));
         setMode("view");
-        triggerToolUsedGAEvent("Community Poll Submit");
+        triggerPollAnsweredEvent();
         setLoading(false);
     }
 

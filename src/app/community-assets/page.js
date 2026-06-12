@@ -10,7 +10,7 @@ import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { useAuth } from "../database/authProvider";
 import { createCommunityAsset, deleteCommunityAsset, getCommunityAsset, getRecentCommunityAssets, getUserCommunityAssets, searchCommunityAssets, updateCommunityAsset } from "../database/communityAssets";
 import { uiColors } from "../lib/colors";
-import { triggerToolUsedGAEvent } from "../lib/gaEvents";
+import { triggerCommunityAssetUploadedEvent } from "../lib/gaEvents";
 import useLocalState from "../lib/useLocalState";
 
 function SearchComponent({ type }) {
@@ -160,7 +160,7 @@ function ManageComponent({ type }) {
 
             await createCommunityAsset(data.id, type, name.trim(), keywords.trim());
 
-            triggerToolUsedGAEvent("Community Asset Uploaded");
+            triggerCommunityAssetUploadedEvent();
             setFile(null);
             setPreview(null);
             setName("");

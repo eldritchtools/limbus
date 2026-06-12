@@ -301,7 +301,7 @@ export default function MarkdownEditorMain({
                 tabAcceptsCompletion,
                 dataFacetExtension,
                 tokenAutocomplete,
-                cmPlaceholder(placeholder),
+                cmPlaceholder(`${placeholder} (Type { to start a token)`),
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         onChange?.(update.state.doc.toString());
@@ -380,7 +380,7 @@ export default function MarkdownEditorMain({
                 id="editor-root"
                 className="cm-editor-container"
                 style={{
-                    '--placeholder': `"${placeholder}"`,
+                    '--placeholder': `"${placeholder} (Type { to start a token)"`,
                     borderTop: '1px solid var(--secondary-border-color)',
                     // borderRadius: 4,
                     minHeight: short ? 100 : 200,

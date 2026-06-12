@@ -45,3 +45,11 @@ export function triggerReviewBumpGAEvent(item_id, user_id, review_id, reviewer_i
 export function triggerToolUsedGAEvent(tool_name) {
     triggerGAEvent("tool_used", { tool_name })
 }
+
+export function triggerCommunityAssetUploadedEvent() {
+    triggerGAEvent("community_asset_uploaded", {})
+}
+
+export function triggerPollAnsweredEvent() {
+    triggerGAEvent("community_poll_answered", {})
+}

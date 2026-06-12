@@ -95,8 +95,10 @@ function generateTeam(identities, offset = 0) {
         const tagOptions = Object.entries(tags).filter(([, list]) => list.length >= 4).map(([tag]) => tag).sort();
         const permuted = takeNItems(rng, tagOptions.length, tagOptions);
         const idsPerSinner = {};
-        while (Object.keys(idsPerSinner).length < 12) {
+        let tagCount = 0;
+        while (Object.keys(idsPerSinner).length < 12 || tagCount < 5) {
             const tag = permuted.shift();
+            tagCount++;
             tags[tag].forEach(identity => {
                 if (identity.sinnerId in idsPerSinner) {
                     if (!idsPerSinner[identity.sinnerId].includes(identity.id))
@@ -151,7 +153,7 @@ export default function DailyRandomizedPage() {
         <span style={{ maxWidth: "1000px", textAlign: "start", lineHeight: "1.3" }}>
             The type of random team it generates differs depending on the day of the week. These rules may change at any moment if I think of or if people suggest more interesting ones.
             <ul style={{ margin: 0 }}>
-                <li>Mon, Wed, Fri: All identity Tags/Factions with at least 4 identities are pooled together, then randomly picked one at a time until it&apos;s possible to generate a team with the selected ones. The team is randomized based on the identities in the chosen Tags/Factions.</li>
+                <li>Mon, Wed, Fri: All identity Tags/Factions with at least 4 identities are pooled together, then randomly picked one at a time until at least 5 tags/factions have been chosen and it&apos;s possible to generate a team with the selected ones. The team is randomized based on the identities in the chosen Tags/Factions.</li>
                 <li>Tue, Thu, Sat: 1-3 keywords are randomly selected. A team is randomized based on all identities with at least one of those keywords. Identities with other keywords may be selected, as long as they have at least one of the randomized keywords.</li>
                 <li>Sun: A team is randomized from all identities in the game.</li>
             </ul>
