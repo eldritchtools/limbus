@@ -329,6 +329,12 @@ export default function IdentityPage({ params }) {
                         <div style={{ borderBottom: "1px var(--secondary-border-color) solid" }}>Keywords</div>
                         <div style={{ marginTop: "0.2rem" }}>{(identityData.skillKeywordList || []).map(x => <KeywordIcon key={x} id={x} />)}</div>
                     </div>
+                    <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.2rem", textAlign: "center", display: "flex", flexDirection: "column" }}>
+                        <div style={{ borderBottom: "1px var(--secondary-border-color) solid" }}>Tags/Factions</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", marginTop: "0.2rem" }}>
+                            {(identityData.tags || []).map(x => <span key={x} style={{padding: "0 0.5rem"}}>{x}</span>)}
+                        </div>
+                    </div>
                     <div style={{ display: "flex", flexDirection: "column", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", gap: "0.2rem" }}>
                         <div style={{ overflowX: "auto", alignSelf: "center", maxWidth: "100%", paddingBottom: "0.5rem" }}>
                             <div style={{ display: "flex", gap: "1rem", width: "max-content" }}>
