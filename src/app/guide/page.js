@@ -1,5 +1,10 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
 import styles from "./guide.module.css";
 import { guideData } from "./guideData";
+import { fuzzyScore, paragraphScore } from "../lib/scoring";
 
 function GuideItem({ item }) {
     return (
@@ -23,6 +28,22 @@ function GuideItem({ item }) {
 }
 
 export default function GuidePage() {
+    const [searchString, setSearchString] = useState("");
+
+    const searchResults = useMemo(() => {
+        if (searchString.length === 0) return [];
+
+        const items = [];
+        guideData.forEach(section => {
+            section.items.forEach(item => {
+                const score = fuzzyScore(searchString, item.title + "|" + item.description + "|" + item.details.join("|"));
+                items.push([score, item, section.id]);
+            })
+        })
+
+        return items.sort((a, b) => b[0] - a[0]);
+    }, [searchString]);
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Manager&apos;s Guide</h1>
         <span>
@@ -32,34 +53,54 @@ export default function GuidePage() {
             Please note that this page may not always be up to date.
         </span>
 
-        <nav style={{ marginBottom: "1rem", padding: "0 12px", border: "1px solid var(--primary-border-color)", borderRadius: "8px" }}>
-            <h2 style={{ margin: 0 }}>Contents</h2>
-            <ul style={{ margin: 0, paddingLeft: "1rem" }}>
+        <input
+            value={searchString}
+            onChange={e => setSearchString(e.target.value)}
+            placeholder={"Search section or topic"}
+        />
+
+        {searchString.length === 0 &&
+            <nav style={{ marginBottom: "1rem", padding: "0 12px", border: "1px solid var(--primary-border-color)", borderRadius: "8px" }}>
+                <h2 style={{ margin: 0 }}>Contents</h2>
+                <ul style={{ margin: 0, paddingLeft: "1rem" }}>
+                    {guideData.map(section => (
+                        <li key={section.id} style={{ margin: "6px 0" }}>
+                            <a href={`#${section.id}`} className="text-link">
+                                {section.title}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        }
+
+        {searchString.length === 0 &&
+            <div>
                 {guideData.map(section => (
-                    <li key={section.id} style={{ margin: "6px 0" }}>
-                        <a href={`#${section.id}`} className="text-link">
+                    <section key={section.id} id={section.id} style={{ paddingTop: "2rem" }}>
+                        <h2 style={{ margin: "0.5rem 0" }}>
                             {section.title}
-                        </a>
-                    </li>
+                        </h2>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            {section.items.map(item => (
+                                <GuideItem key={item.title} item={item} />
+                            ))}
+                        </div>
+                    </section>
                 ))}
-            </ul>
-        </nav>
+            </div>
+        }
 
-        <div>
-            {guideData.map(section => (
-                <section key={section.id} id={section.id} style={{ paddingTop: "2rem" }}>
-                    <h2 style={{ margin: "0.5rem 0" }}>
-                        {section.title}
-                    </h2>
+        {
+            searchString.length > 0 &&
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {searchResults.slice(0, 10).map(([,item, sectionId]) => (
+                    <GuideItem key={`${sectionId}-${item.title}`} item={item} />
+                ))}
+            </div>
+        }
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                        {section.items.map(item => (
-                            <GuideItem key={item.title} item={item} />
-                        ))}
-                    </div>
-                </section>
-            ))}
-        </div>
     </div>
 }
 
