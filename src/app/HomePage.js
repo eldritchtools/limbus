@@ -44,6 +44,7 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>An {wrapLink("Archive", "/archive")} page has been added for pages on older stuff. The results to the previous survey have been posted there.</li>
                 <li>The {wrapLink("Extraction Simulator", "/extraction-simulator")} page has been added. Allowing users to simulate pulls for current, future, or custom banners. It also contains a probability calculator to compute the probability of getting banner items depending on how many pulls you use.</li>
                 <li>Users can now follow comment threads to receive notifications whenever anyone leaves a comment. This works on all comment threads including builds, md plans, the release history page, encounter pages, and so on.</li>
                 <li>You can now attach images to Builds, MD Plans, and Collections. For now, posts are limited to 1 image each, but if things go well I will increase this limit in the future. For more images, the {wrapLink("Community Assets", "/community-assets")} page has been added allowing people to upload emotes and stickers to the site which can then be used with the new token types. Buttons to open pickers for both have also been added to editors.</li>
@@ -171,6 +172,8 @@ export default function HomePage() {
                 Limbus Company Tools is a hub for sharing team builds and Mirror Dungeon plans. View an Identities and E.G.Os database complete with community ratings and reviews. Use calculators, planners, team randomizers, and other reference tools for the game.
                 <br /> <br />
                 Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to customize your profile or site experience.
+                <br /> <br />
+                Curious or confused on what you can do on the site? Check out the <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink> for details on each of the pages and features.
             </p>
             <APR />
             <LinksMenu isMobile={isMobile} />

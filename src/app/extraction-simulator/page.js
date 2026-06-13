@@ -418,10 +418,10 @@ export default function ExtractionSimulatorPage() {
         <span className="sub-text">
             There may be some inaccuracies due to possible differences between how the randomization is implemented.
         </span>
-        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.25rem" }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.25rem", maxWidth: "min(1600px, 100vw)" }}>
             <div className="panel-container">
                 <h3 style={{ margin: 0, textAlign: "center" }}>Banner Selection</h3>
-                <div style={{ overflowY: "auto", overflowX: "hidden", maxHeight: "450px" }}>
+                <div style={{ overflowY: "auto", overflowX: "hidden", maxHeight: "450px", minWidth: "300px" }}>
                     <CustomBanner
                         identityIds={customIdentityIds} setIdentityIds={setCustomIdentityIds}
                         egoIds={customEgoIds} setEgoIds={setCustomEgoIds}
@@ -465,12 +465,12 @@ export default function ExtractionSimulatorPage() {
             </div>
         </div>
 
-        <div className="panel-container">
+        <div className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)"}}>
             <h3 style={{ display: "flex", gap: "0.5rem", alignItems: "center", margin: 0 }}>
                 Extractable E.G.Os
                 <button onClick={applyCompanyData} disabled={companyLoading}>Apply Company Data</button>
             </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxHeight: "500px", overflowY: "auto", justifyContent: "center" }}>
                 {extractableEgoComponents}
             </div>
         </div>

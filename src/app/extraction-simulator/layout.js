@@ -2,7 +2,7 @@ import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 export const metadata = {
     title: "Extraction Simulator",
-    description: "Simulate extractions on banners in Limbus Company.",
+    description: "Simulate extractions on banners or calculate your pulling odds in Limbus Company.",
     alternates: {
         canonical: "/extraction-simulator"
     }
@@ -13,7 +13,7 @@ const schema = {
     "@graph": [
         getWebPageSchema({
             title: "Extraction Simulator",
-            description: "Simulate extractions on banners in Limbus Company.",
+            description: "Simulate extractions on banners or calculate your pulling odds in Limbus Company.",
             url: "https://limbus.eldritchtools.com/extraction-simulator"
         })
     ]
