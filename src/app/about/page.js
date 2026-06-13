@@ -11,7 +11,7 @@ export default function AboutPage() {
                 <br/> <br/>
                 It provides tools, reference databases, and community features to support gameplay planning and experimentation.
                 <br/> <br/>
-                This site is independently maintained by a single developer, with feedback and support from the community as it continues to grow.
+                This site is independently maintained by a single developer, with feedback and support from the community.
             </p>
 
             <h2 style={{ margin: 0 }}>Site Links</h2>

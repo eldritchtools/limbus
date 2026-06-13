@@ -1,0 +1,13 @@
+.bar {
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 999px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.barFill {
+    height: 100%;
+    background: var(--primary-border-color);
+    transition: 0.2s all ease;
+}

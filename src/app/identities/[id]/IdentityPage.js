@@ -332,7 +332,11 @@ export default function IdentityPage({ params }) {
                     <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.2rem", textAlign: "center", display: "flex", flexDirection: "column" }}>
                         <div style={{ borderBottom: "1px var(--secondary-border-color) solid" }}>Tags/Factions</div>
                         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", marginTop: "0.2rem" }}>
-                            {(identityData.tags || []).map(x => <span key={x} style={{padding: "0 0.5rem"}}>{x}</span>)}
+                            {(identityData.tags || []).map(x => <span key={x} 
+                                style={{padding: "0.1rem 0.2rem", margin: "0.1rem 0.25rem", background: "var(--bg-hover)", borderRadius: "0.5rem"}}>
+                                    {x}
+                                </span>
+                            )}
                         </div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", gap: "0.2rem" }}>

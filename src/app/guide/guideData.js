@@ -379,6 +379,16 @@ export const guideData = [
                 ]
             },
             {
+                title: "Manager's Guide",
+                description: "(This page) A listing of all site pages and features.",
+                details: []
+            },
+            {
+                title: "Archive",
+                description: "An archive of old pages for past events.",
+                details: []
+            },
+            {
                 title: "Update History",
                 description: "Update history of the site, linked from the homepage.",
                 details: []

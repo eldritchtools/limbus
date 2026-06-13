@@ -81,6 +81,8 @@ const paths = [
             { path: "/about", title: "About" },
             { path: "/supporters", title: "Supporters" },
             { path: "/feedback", title: "Feedback / Contact" },
+            { path: "/guide", title: "Manager's Guide" },
+            { path: "/archive", title: "Archive" },
             { path: "/update-history", title: "Update History" },
             { path: "/privacy", title: "Privacy Policy" },
             { path: "/terms", title: "Terms of Service" }
