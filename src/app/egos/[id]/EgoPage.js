@@ -36,7 +36,7 @@ function HeaderComponent({ egoData }) {
     const [offsets, offsetsLoading] = useData("ego_header_offsets");
     const { openImageModal } = useModal();
 
-    const offset = offsetsLoading ? null : (offsets[egoData.id] ?? null)
+    const offset = offsetsLoading ? null : (offsets?.[egoData.id] ?? null)
 
     return <div className={styles.header}>
         <EgoImage

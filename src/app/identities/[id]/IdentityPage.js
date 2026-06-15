@@ -41,7 +41,7 @@ function HeaderComponent({ identityData }) {
     const [uptie, setUptie] = useState(true);
     const { openImageModal } = useModal();
 
-    const offset = offsetsLoading ? null : (offsets[identityData.id]?.[uptie ? 1 : 0] ?? null)
+    const offset = offsetsLoading ? null : (offsets?.[identityData.id]?.[uptie ? 1 : 0] ?? null)
 
     return <div className={styles.header}>
         <IdentityImage
