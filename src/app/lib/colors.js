@@ -9,6 +9,17 @@ export const affinityColorMapping = {
     "none": "#aaa"
 }
 
+export const affinityColorMappingAlt = {
+    wrath: "#3d0000",
+    lust: "#401800",
+    sloth: "#3d300a",
+    gluttony: "#264000",
+    gloom: "#03303b",
+    pride: "#06183d",
+    envy: "#240036",
+    none: "#222222"
+}
+
 export const giftTagColors = {
     enhanceable: "#4ade80",
     ingredient: "#f97316",

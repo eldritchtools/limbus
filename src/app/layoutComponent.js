@@ -35,7 +35,7 @@ const paths = [
             { path: "/collections", title: "Collections" },
             { path: "/collections/new", title: "New Collection" },
             { path: "/rankings", title: "Community Rankings" },
-            { path: "/community-assets", title: "Community Assets"}
+            { path: "/community-assets", title: "Community Assets" }
         ]
     },
     {
@@ -73,7 +73,7 @@ const paths = [
             { path: "/team-solver", title: "Team Solver" },
             { path: "/team-randomizer", title: "Team Randomizer" },
             { path: "/floor-planner", title: "Floor Planner" },
-            { path: "/extraction-simulator", title: "Extraction Simulator"}
+            { path: "/extraction-simulator", title: "Extraction Simulator" }
         ]
     },
     {
@@ -132,26 +132,26 @@ export default function LayoutComponent({ children }) {
     return <AuthProvider>
         <RequestsCacheProvider>
             <SiteCustomizationProvider>
-                <Layout
-                    title={"Limbus Company Tools"}
-                    lastUpdated={lastUpdated}
-                    // linkSet={"limbus"}
-                    description={description}
-                    gameName={"Limbus Company"}
-                    developerName={"Project Moon"}
-                    githubLink={"https://github.com/eldritchtools/limbus"}
-                    paths={paths}
-                    LinkComponent={NoPrefetchLink}
-                    topComponent={<UserStatus />}
-                >
-                    <DataProvider>
-                        <ModalProvider>
+                <DataProvider>
+                    <ModalProvider>
+                        <Layout
+                            title={"Limbus Company Tools"}
+                            lastUpdated={lastUpdated}
+                            // linkSet={"limbus"}
+                            description={description}
+                            gameName={"Limbus Company"}
+                            developerName={"Project Moon"}
+                            githubLink={"https://github.com/eldritchtools/limbus"}
+                            paths={paths}
+                            LinkComponent={NoPrefetchLink}
+                            topComponent={<UserStatus />}
+                        >
                             {/* <Announcement /> */}
                             {children}
                             <AllTooltips />
-                        </ModalProvider>
-                    </DataProvider>
-                </Layout>
+                        </Layout>
+                    </ModalProvider>
+                </DataProvider>
             </SiteCustomizationProvider>
         </RequestsCacheProvider>
     </AuthProvider>

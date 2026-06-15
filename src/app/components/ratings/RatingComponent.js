@@ -31,7 +31,7 @@ export default function RatingComponent({ type, id, globalData, userData, onChan
                 }
                 setIsReviewing(true);
             }}>
-                {userData ? "Edit Rating" : "Create Rating"}
+                {userData ? "Edit Rating or Review" : "Create Rating or Review"}
             </button> :
             <span>Login to submit a rating</span>
 
@@ -91,6 +91,11 @@ export default function RatingComponent({ type, id, globalData, userData, onChan
                         <button onClick={() => { setRating(null); setReviewText(""); setIsReviewing(false); }} disabled={submitting}>Cancel</button>
                         <button onClick={() => submitRating(rating)} disabled={submitting}>Submit Rating</button>
                     </div>
+                    <span className="sub-text" style={{textAlign: "center"}}>
+                        Ratings with all 0s are not counted in the overall score. 
+                        <br/>
+                        Submit a review without a rating by leaving all scores at 0.
+                    </span>
                 </> :
                 <>
                     {globalData ?
