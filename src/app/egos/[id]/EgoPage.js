@@ -210,6 +210,7 @@ export default function EgoPage({ params }) {
     const [uptie, setUptie] = useState(4);
     const [preuptie, setPreuptie] = useState(1);
     const [activeTab, setActiveTab] = useLocalState("egoActiveTab", "notes");
+    const [panelOpen, setPanelOpen] = useLocalState("egoPanelOpen", true);
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
 
@@ -336,12 +337,18 @@ export default function EgoPage({ params }) {
                 </div>}
                 />
                 {
-                    activeTab === "notes" ?
-                        <NotesTab notes={notes} /> :
-                        activeTab === "rating" ?
-                            <RatingTab id={id} isMobile={isMobile} /> :
-                            <BuildsTab builds={builds} />
+                    panelOpen && (
+                        activeTab === "notes" ?
+                            <NotesTab notes={notes} /> :
+                            activeTab === "rating" ?
+                                <RatingTab id={id} isMobile={isMobile} /> :
+                                <BuildsTab builds={builds} />
+                    )
                 }
+
+                <span className="text-link" style={{ alignSelf: "center" }} onClick={() => setPanelOpen(p => !p)}>
+                    {panelOpen ? "▴ Click to Collapse ▴" : "▾ Click to Expand ▾"}
+                </span>
             </div>
 
             <SkillsTab
