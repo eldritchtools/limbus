@@ -1,3 +1,4 @@
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useMemo } from "react";
 
 import { AtkWeight, DiffedAtkWeight } from "./AtkWeight";
@@ -5,6 +6,7 @@ import Coin from "./Coin";
 import { computeSkillValues } from "./SkillCalc";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
+import SkillIcon from "../icons/SkillIcon";
 import NamePill from "../objects/NamePill";
 import DiffedText from "../texts/DiffedText";
 import ProcessedText from "../texts/ProcessedText";
@@ -13,7 +15,9 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import { affinityColorMapping } from "@/app/lib/colors";
 import { constructOffDefLevel } from "@/app/lib/skill";
 
-export default function SkillCard({ skill, label = "", count = 0, level, mini = false, pre, includeSkillValues = true }) {
+export default function SkillCard({ skill, label = "", count = 0, level, mini = false, pre, includeSkillValues = true, noBorder = false }) {
+    const {isMobile} = useBreakpoint();
+
     const skillValues = useMemo(() => {
         if (!skill || !includeSkillValues) return null;
         return computeSkillValues(skill);
@@ -21,8 +25,8 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
 
     if (!skill) return null;
 
-    let iconSize = mini ? 24 : 32;
-    let coinSize = mini ? 18 : 24;
+    let iconSize = isMobile || mini ? 24 : 32;
+    let coinSize = isMobile || mini ? 18 : 24;
     let coinStyle = { width: `${coinSize}px`, height: `${coinSize}px` };
     let iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
@@ -34,44 +38,48 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
 
     return <div style={{
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
-        border: `1px ${affinityColorMapping[skill.affinity]} solid`, borderRadius: "0.5rem",
+        border: noBorder ? "" : `1px ${affinityColorMapping[skill.affinity]} solid`, borderRadius: "0.5rem",
         padding: "0.5rem", boxSizing: "border-box", fontSize: mini ? "0.8rem" : "1rem",
         backgroundColor: diffNew ? "rgba(46, 160, 67, 0.35)" : null
     }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "0.25rem" }}>
-            <div style={{ display: "flex", flexDirection: "row", gap: mini ? "0.1rem" : "0.25rem", alignItems: "center" }}>
-                {skill.affinity !== "none" ?
-                    (pre?.affinity === "none" ?
-                        <KeywordIcon id={skill.affinity} size={iconSize} style={{ backgroundColor: "rgba(46, 160, 67, 0.35)", padding: "0 2px", borderRadius: "3px" }} /> :
-                        <KeywordIcon id={skill.affinity} size={iconSize} />) :
-                    null}
-                {skill.defType !== "attack" ? <KeywordIcon id={skill.defType} size={iconSize} /> : null}
-                {skill.defType === "attack" || skill.defType === "counter" ? <KeywordIcon id={skill.atkType} size={iconSize} /> : null}
-                <NamePill name={skill.name} affinity={skill.affinity} />
-                {count > 0 ? <div style={{ color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem" }}>x{count}</div> : null}
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <SkillIcon skillData={skill} scale={isMobile || mini ? 0.6 : 0.8} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                    <span style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", alignItems: "center", fontSize: `${coinSize - 2}px`, fontWeight: "bold" }}>
+                        {skill.defType !== "attack" ? <KeywordIcon id={skill.defType} size={iconSize} /> : null}
+                        {skill.defType === "attack" || skill.defType === "counter" ? <KeywordIcon id={skill.atkType} size={iconSize} /> : null}
+                        {diff ? <DiffedText
+                            before={`${pre.baseValue} ${pre.coinValue < 0 ? pre.coinValue : `+${pre.coinValue}`}`}
+                            after={`${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`}
+                        /> :
+                            `${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`
+                        }
+                        <span style={{ display: "flex", flexWrap: "wrap", gap: "0" }}>
+                            {
+                                skill.coins.map((coin, i) =>
+                                    <Icon key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} style={coinStyle} />
+                                )
+                            }
+                        </span>
+                    </span>
+
+                    <div style={{ display: "flex", flexDirection: "row", gap: mini ? "0.1rem" : "0.25rem", alignItems: "center" }}>
+                        <NamePill name={skill.name} affinity={skill.affinity} />
+                        {count > 0 ? 
+                            <div style={{ color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", zIndex: 1 }}>
+                                x{count}
+                            </div> : 
+                            null
+                        }
+                    </div>
+                </div>
             </div>
             <div style={{ flex: "0 0 auto", color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
                 {label}
             </div>
         </div>
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.1rem", marginBottom: "0.25rem", alignItems: "center" }}>
-            <span style={pillStyle}>
-                <span>
-                    Power: {diff ? <DiffedText
-                        before={`${pre.baseValue} ${pre.coinValue < 0 ? pre.coinValue : `+${pre.coinValue}`}`}
-                        after={`${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`}
-                    /> :
-                        `${skill.baseValue} ${skill.coinValue < 0 ? skill.coinValue : `+${skill.coinValue}`}`
-                    }
-                </span>
-                <span style={{ display: "flex", gap: "0" }}>
-                    {
-                        skill.coins.map((coin, i) =>
-                            <Icon key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} style={coinStyle} />
-                        )
-                    }
-                </span>
-            </span>
             <span style={pillStyle}>
                 {skill.defType === "attack" || skill.defType === "counter" ?
                     <Icon path={"offense level"} style={iconStyle} /> :

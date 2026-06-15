@@ -1,0 +1,47 @@
+.header {
+  max-width: 1920px;
+  width: 100%;
+  position: relative;
+  aspect-ratio: 40 / 9;
+  overflow: hidden;
+}
+
+.headerImage {
+  width: 100%;
+  aspect-ratio: 32 / 9;
+  object-position: center var(--position, 30%);
+
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 75%);
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+
+  mask-image: linear-gradient(to bottom, black 50%, transparent 75%);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+.headerOverlay {
+  position: absolute;
+  inset: 0;
+  color: #ddd;
+}
+
+.headerButtons {
+  position: absolute;
+  top: min(5%, 10px);
+  left: min(1%, 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.headerText {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.2rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}

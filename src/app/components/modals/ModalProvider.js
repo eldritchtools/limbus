@@ -9,6 +9,7 @@ import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
 import ImageCarouselModalContent from "./ImageCarouselModalContent";
+import ImageModalContent from "./ImageModalContent";
 import ModalContainer from "./ModalContainer";
 import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
@@ -35,6 +36,7 @@ const MODAL_COMPONENTS = {
     "rating": RatingModalContent,
     "selectDeployment": SelectDeploymentModalContent,
     "imageCarousel": ImageCarouselModalContent,
+    "image": ImageModalContent,
     "communityAsset": CommunityAssetModalContent
 };
 
@@ -121,6 +123,10 @@ export function ModalProvider({ children }) {
         openModal("imageCarousel", { imageIds, startingPosition });
     }
 
+    const openImageModal = ({ type, data, mod }) => {
+        openModal("image", { type, data, mod });
+    }
+
     const openCommunityAssetModal = ({ imageId }) => {
         openModal("communityAsset", { imageId });
     }
@@ -157,6 +163,7 @@ export function ModalProvider({ children }) {
         openRatingModal,
         openSelectDeploymentModal,
         openImageCarouselModal,
+        openImageModal,
         openCommunityAssetModal,
         setModalBeforeClose,
         closeModal,

@@ -12,7 +12,6 @@ import ReviewButton from "../contentActions/ReviewButton";
 import SaveButton from "../contentActions/SaveButton";
 import ShareButton from "../contentActions/ShareButton";
 import { BackSolid, ViewSolid } from "../contentActions/Symbols";
-import Avatar from "../icons/Avatar";
 import { HorizontalDivider } from "../objects/Dividers";
 import Tag from "../objects/Tag";
 import SocialsDisplay from "../user/SocialsDisplay";
@@ -20,6 +19,7 @@ import UsernameWithTime from "../user/UsernameWithTime";
 
 import { useAuth } from "@/app/database/authProvider";
 import { isLocalId } from "@/app/database/localDB";
+import { contentConfig } from "@/app/lib/contentConfig";
 
 export function LoadingContentPageTemplate() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", fontSize: "1.5rem", fontWeight: "bold" }}>
@@ -56,7 +56,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
         if (window.history.length > 1) {
             router.back()
         } else {
-            router.push(`/${targetType}`)
+            router.push(`/${contentConfig[targetType].path}`)
         }
     }
 
