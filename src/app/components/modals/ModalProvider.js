@@ -141,6 +141,13 @@ export function ModalProvider({ children }) {
         );
     };
 
+    const canNavigateAway = async () => {
+        if(stack.length === 0) return true;
+        const topModal = stack[stack.length - 1];
+        if (!topModal?.beforeClose) return true;
+        return await topModal.beforeClose();
+    };
+
     const closeModal = () => {
         setStack(prev => prev.slice(0, -1));
     };
@@ -166,6 +173,7 @@ export function ModalProvider({ children }) {
         openImageModal,
         openCommunityAssetModal,
         setModalBeforeClose,
+        canNavigateAway,
         closeModal,
         clearModals
     }
