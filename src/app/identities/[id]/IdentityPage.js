@@ -4,7 +4,6 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { ArrowPathIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
 
-import { getIdentityHeaderAdjustment } from "./IdentityHeaderAdjustments";
 import styles from "./IdentityPage.module.css";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
@@ -38,13 +37,16 @@ import { constructSkillLabel } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
 function HeaderComponent({ identityData }) {
+    const [offsets, offsetsLoading] = useData("identity_header_offsets");
     const [uptie, setUptie] = useState(true);
     const { openImageModal } = useModal();
 
+    const offset = offsetsLoading ? null : (offsets[identityData.id]?.[uptie ? 1 : 0] ?? null)
+
     return <div className={styles.header}>
-        <IdentityImage 
-            className={styles.headerImage} identity={identityData} uptie={uptie} 
-            style={{"--position": getIdentityHeaderAdjustment(identityData.id, uptie)}} 
+        <IdentityImage
+            className={styles.headerImage} identity={identityData} uptie={uptie}
+            style={{ "--position": offset }}
         />
 
         <div className={styles.headerOverlay}>
@@ -442,7 +444,7 @@ export default function IdentityPage({ params }) {
                     activeTab === "notes" ?
                         <NotesTab notes={notes} /> :
                         activeTab === "rating" ?
-                            <RatingTab id={id} isMobile={isMobile}/> :
+                            <RatingTab id={id} isMobile={isMobile} /> :
                             <BuildsTab builds={builds} />
                 }
             </div>

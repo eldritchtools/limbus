@@ -4,7 +4,6 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useMemo, useState } from "react";
 
-import { getEgoHeaderAdjustment } from "./EgoHeaderAdjustments";
 import styles from "./EgoPage.module.css";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
@@ -34,12 +33,15 @@ import { constructSkillLabel } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
 function HeaderComponent({ egoData }) {
+    const [offsets, offsetsLoading] = useData("ego_header_offsets");
     const { openImageModal } = useModal();
+
+    const offset = offsetsLoading ? null : (offsets[egoData.id] ?? null)
 
     return <div className={styles.header}>
         <EgoImage
             className={styles.headerImage} ego={egoData}
-            style={{ "--position": getEgoHeaderAdjustment(egoData.id) }}
+            style={{ "--position": offset }}
         />
 
         <div className={styles.headerOverlay}>
