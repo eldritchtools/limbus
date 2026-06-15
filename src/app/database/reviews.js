@@ -6,7 +6,7 @@ const aggregatesByType = {};
 const userReviewsByType = {};
 
 export async function submitReview({ itemType, itemId, criteria1, criteria2, criteria3, criteria4, criteria5, reviewText }) {
-    return callRPC("submit_review", {
+    return callRPC("submit_review_v2", {
         p_item_type: itemType,
         p_item_id: itemId,
 
@@ -21,7 +21,7 @@ export async function submitReview({ itemType, itemId, criteria1, criteria2, cri
 }
 
 export async function deleteReview({ itemType, itemId }) {
-    return callRPC("delete_review", {
+    return callRPC("delete_review_v2", {
         p_item_type: itemType,
         p_item_id: itemId,
     });

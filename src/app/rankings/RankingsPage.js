@@ -45,9 +45,11 @@ async function modalOnChange(id, x, {
             }
         }
 
-        const newRating = global.rating.map((score, i) => ((score * global.votes) + delta * userScores[i]) / (global.votes + delta));
+        const votesDelta = userScores.some(x => x > 0) ? delta : 0;
+
+        const newRating = global.rating.map((score, i) => ((score * global.votes) + delta * userScores[i]) / (global.votes + votesDelta));
         return {
-            votes: global.votes + delta,
+            votes: global.votes + votesDelta,
             rating: newRating,
             overallRating: getOverallScore(newRating)
         }

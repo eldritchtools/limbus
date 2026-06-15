@@ -28,6 +28,15 @@ create table public.reviews (
     unique(user_id, item_type, item_id)
 );
 
+alter table public.reviews
+add column is_rating boolean generated always as (
+    criteria_1 > 0
+    or criteria_2 > 0
+    or criteria_3 > 0
+    or criteria_4 > 0
+    or criteria_5 > 0
+) stored;
+
 create table public.item_rating_aggregates (
     item_type item_type_enum not null,
     item_id integer not null,
@@ -129,7 +138,7 @@ before update on public.reviews
 for each row
 execute function public.set_updated_at();
 
-create or replace function public.submit_review(
+create or replace function public.submit_review_v2(
     p_item_type item_type_enum,
     p_item_id integer,
 
@@ -150,6 +159,10 @@ declare
     existing_review public.reviews;
     result_review public.reviews;
     is_new boolean;
+
+    old_is_rating boolean;
+    new_is_rating boolean;
+    vote_delta integer;
 begin
 
     -- authentication check
@@ -166,6 +179,22 @@ begin
       and item_id = p_item_id;
 
     is_new := not found;
+        
+    old_is_rating := coalesce(existing_review.is_rating, false);
+
+    new_is_rating :=
+        p_criteria_1 > 0
+        or p_criteria_2 > 0
+        or p_criteria_3 > 0
+        or p_criteria_4 > 0
+        or p_criteria_5 > 0;
+
+    vote_delta :=
+        case
+            when not old_is_rating and new_is_rating then 1
+            when old_is_rating and not new_is_rating then -1
+            else 0
+        end;
 
     -- UPSERT REVIEW (single source of truth)
     insert into public.reviews (
@@ -224,7 +253,7 @@ begin
         p_criteria_3,
         p_criteria_4,
         p_criteria_5,
-        1
+        case when new_is_rating then 1 else 0 end
     )
     on conflict (item_type, item_id)
     do update set
@@ -258,16 +287,14 @@ begin
             - coalesce(existing_review.criteria_5, 0)
         ,
 
-        vote_count =
-            item_rating_aggregates.vote_count
-            + case when is_new then 1 else 0 end;
+        vote_count = item_rating_aggregates.vote_count + vote_delta;
 
     return result_review;
 
 end;
 $$;
 
-create or replace function public.delete_review(
+create or replace function public.delete_review_v2(
     p_item_type item_type_enum,
     p_item_id integer
 )
@@ -309,7 +336,7 @@ begin
         criteria_4_sum = criteria_4_sum - existing_review.criteria_4,
         criteria_5_sum = criteria_5_sum - existing_review.criteria_5,
 
-        vote_count = vote_count - 1
+        vote_count = vote_count - case when existing_review.is_rating then 1 else 0 end
     where item_type = p_item_type
       and item_id = p_item_id;
 
