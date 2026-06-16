@@ -16,14 +16,14 @@ export default function ReviewsComponent({ type, id, sortType, userReview }) {
             setLoading(true);
             const fetchedReviews = await getItemReviews({ itemType: type, itemId: id, page: page, sortType: sortType });
             const ids = fetchedReviews.map(({id}) => id);
-            await fetchReviewInteractions(ids);
+            if(user) await fetchReviewInteractions(ids);
 
             setReviews(fetchedReviews);
             setLoading(false);
         }
 
         loadReviews();
-    }, [type, id, page, sortType]);
+    }, [type, id, page, user, sortType]);
 
     if (loading)
         return <span style={{ color: "var(--disabled-text-color)", textAlign: "center", minWidth: "min(480px, 100%)", flex: 1 }}>
