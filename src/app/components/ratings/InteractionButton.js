@@ -26,7 +26,7 @@ export default function InteractionButton({ reviewId, count, type, userId, itemI
         }
 
         setState(p => !p);
-        triggerReviewInteractionGAEvent(itemId, user.id, reviewId, userId);
+        triggerReviewInteractionGAEvent(itemId, user?.id, reviewId, userId);
     }
 
     let opacity = 0;
