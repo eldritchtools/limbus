@@ -3,9 +3,9 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import ReactTimeAgo from "react-time-ago";
 
-import BumpArrow from "./BumpArrow";
 import StatsRadarChart from "./RadarChart";
 import { useData } from "../DataProvider";
+import InteractionButton from "./InteractionButton";
 import Avatar from "../icons/Avatar";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
@@ -71,17 +71,22 @@ export default function Review({ type, reviewData, backReview, frontReview, user
 
     return <div className="panel-container">
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", alignItems: isMobile ? "center" : "start" }}>
-            {expanded ?
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "350px" }}>
-                    {label}
-                    <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={true} scale={1} />
-                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} userId={reviewData.user_id} itemId={reviewData.item_id} />
-                </div> :
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "175px" }}>
-                    <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={false} scale={.5} />
-                    <BumpArrow reviewId={reviewData.id} count={reviewData.bump_count} userId={reviewData.user_id} itemId={reviewData.item_id} />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: expanded ? "350px" : "175px", flex: "0 0 0" }}>
+                {expanded ? label : null}
+                <StatsRadarChart type={type ?? reviewData.item_type} {...dataProp} includeLabels={expanded ? true : false} scale={expanded ? 1 : 0.5} />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                    <InteractionButton
+                        reviewId={reviewData.id}
+                        count={reviewData.upvote_count} type={"upvote"}
+                        userId={reviewData.user_id} itemId={reviewData.item_id}
+                    />
+                    <InteractionButton
+                        reviewId={reviewData.id}
+                        count={reviewData.funny_count} type={"funny"}
+                        userId={reviewData.user_id} itemId={reviewData.item_id}
+                    />
                 </div>
-            }
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.2rem", textWrap: "wrap" }}>
                     <span>by </span>

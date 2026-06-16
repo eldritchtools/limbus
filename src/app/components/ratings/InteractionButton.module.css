@@ -1,4 +1,4 @@
-.bumpArrow {
+.interactionButton {
     all: unset;
     transition: all 0.2s ease;
     background: transparent;
@@ -6,6 +6,6 @@
     height: 1rem;
 }
 
-.bumpArrow:hover {
+.interactionButton:hover {
     filter: brightness(1.3);
 }

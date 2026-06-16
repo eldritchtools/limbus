@@ -38,8 +38,8 @@ export function triggerReviewSubmitGAEvent(item_id, item_name) {
     triggerGAEvent("review_submit", { item_id, item_display_name: item_name, item_full_context: `${item_name} (${item_id.slice(0, 5)})`})
 }
 
-export function triggerReviewBumpGAEvent(item_id, user_id, review_id, reviewer_id) {
-    triggerGAEvent("review_bump", { item_id, user_id, review_id, reviewer_id })
+export function triggerReviewInteractionGAEvent(item_id, user_id, review_id, reviewer_id) {
+    triggerGAEvent("review_interaction", { item_id, user_id, review_id, reviewer_id })
 }
 
 export function triggerToolUsedGAEvent(tool_name) {

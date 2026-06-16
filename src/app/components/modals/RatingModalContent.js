@@ -233,6 +233,7 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
                     <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
                     <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
                     <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
+                    <div className={`tab-header ${tab === "funny" ? "active" : ""}`} onClick={() => setTab("funny")}>Funny</div>
                     <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>
                         {type === "identity" ? "Identity " : "E.G.O "}Details
                     </div>

@@ -112,8 +112,8 @@ export const guideData = [
                     "You can give ratings and reviews for all identities and E.G.Os in the game with each rating consisting of a 0-10 score across 5 different criteria.",
                     "All submitted ratings are collated and averaged to give the final ratings, which are then used to rank everything. Ratings that are all 0s are ignored.",
                     "The Rankings page allows you to view the current ranking with options to filter identities and E.G.Os based on number of ratings or the other usual filters. There is a toggle to switch between filtered and global rankings. You can also view rankings for specific criteria instead of the overall.",
-                    "Clicking on something will show a popup where you can view other ratings and reviews or submit your own. You can also 'bump' others' reviews if you found them useful. This will make them show up higher in the 'Active' or 'Top' reviews.",
-                    "The Reviewers tab shows you the users with the most bumped reviews, so you can find others with useful reviews. You can also search for the reviews of any user you want."
+                    "Clicking on something will show a popup where you can view other ratings and reviews or submit your own. You can also upvote others' reviews if you found them useful. This will make them show up higher in the 'Active' or 'Top' reviews.",
+                    "The Reviewers tab shows you the users with the most upvoted reviews, so you can find others with useful reviews. You can also search for the reviews of any user you want."
                 ],
             },
             {
