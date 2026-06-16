@@ -44,11 +44,11 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>The bumps system for Reviews have been reworked into a more standard Upvotes and Funny Votes system similar to Steam Reviews. Existing reviews with bump scores have been given a boost equivalent to their bumps.</li>
                 <li>The individual Identity and E.G.O pages have been redesigned. Check them out if you&apos;re interested! This also affects everywhere skills are displayed.</li>
                 <li>Community Rankings have been recomputed to ignore ratings that are all 0s. If you want to submit a joke review without affecting ratings, you can now submit one with all 0s.</li>
                 <li>An {wrapLink("Archive", "/archive")} page has been added for pages on older stuff. The results to the previous survey have been posted there.</li>
                 <li>The {wrapLink("Extraction Simulator", "/extraction-simulator")} page has been added. Allowing users to simulate pulls for current, future, or custom banners. It also contains a probability calculator to compute the probability of getting banner items depending on how many pulls you use.</li>
-                <li>Users can now follow comment threads to receive notifications whenever anyone leaves a comment. This works on all comment threads including builds, md plans, the release history page, encounter pages, and so on.</li>
             </ul>
         </div> : null}
 
