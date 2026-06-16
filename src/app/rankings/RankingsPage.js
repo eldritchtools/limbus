@@ -151,7 +151,7 @@ function ReviewerDisplay({
         if (!loading || topReviewers.length > 0) return;
         const loadReviewers = async () => {
             const result = await getPopularReviewers();
-            setTopReviewers(result.filter(x => x.username && x.total_bumps > 0));
+            setTopReviewers(result.filter(x => x.username && x.total_upvotes > 0));
             setLoading(false);
         }
 
