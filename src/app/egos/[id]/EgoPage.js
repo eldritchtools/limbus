@@ -116,6 +116,7 @@ function RatingTab({ id, isMobile }) {
                 <div className={`tab-header ${tab === "latest" ? "active" : ""}`} onClick={() => setTab("latest")}>Latest</div>
                 <div className={`tab-header ${tab === "active" ? "active" : ""}`} onClick={() => setTab("active")}>Active</div>
                 <div className={`tab-header ${tab === "top" ? "active" : ""}`} onClick={() => setTab("top")}>Top</div>
+                <div className={`tab-header ${tab === "funny" ? "active" : ""}`} onClick={() => setTab("funny")}>Funny</div>
             </div>
             {tabInitialized && <div style={{ maxHeight: "600px", overflowY: "auto" }}>
                 <ReviewsComponent type={"ego"} id={id} sortType={tab} userReview={userReview} />

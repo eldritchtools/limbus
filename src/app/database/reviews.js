@@ -4,6 +4,7 @@ import { callRPC, withRetry } from "./supabaseTemplates";
 export const defaultReviewsPageSize = 20;
 const aggregatesByType = {};
 const userReviewsByType = {};
+const interactions = {};
 
 export async function submitReview({ itemType, itemId, criteria1, criteria2, criteria3, criteria4, criteria5, reviewText }) {
     return callRPC("submit_review_v2", {
@@ -95,7 +96,7 @@ export async function getItemReviews({ itemType, itemId, page = 1, pageSize = de
     return await withRetry(async () => {
         let query = getSupabase()
             .from("reviews")
-            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, last_bumped_at, bump_count, user:users ( username, avatar_id )`)
+            .select(`id, user_id, criteria_1, criteria_2, criteria_3, criteria_4, criteria_5, review_text, updated_at, last_interacted_at, upvote_count, funny_count, user:users!reviews_user_id_fkey ( username, avatar_id )`)
             .eq("item_type", itemType)
             .eq("item_id", itemId)
             .not("review_text", "is", null)
@@ -104,13 +105,19 @@ export async function getItemReviews({ itemType, itemId, page = 1, pageSize = de
         switch (sortType) {
             case "active":
                 query = query
-                    .order("last_bumped_at", { ascending: false, nullsFirst: false })
+                    .order("last_interacted_at", { ascending: false, nullsFirst: false })
                     .order("updated_at", { ascending: false });
                 break;
 
             case "top":
                 query = query
-                    .order("bump_count", { ascending: false })
+                    .order("upvote_count", { ascending: false })
+                    .order("updated_at", { ascending: false });
+                break;
+
+            case "funny":
+                query = query
+                    .order("funny_count", { ascending: false })
                     .order("updated_at", { ascending: false });
                 break;
 
@@ -189,19 +196,71 @@ export async function getAggregatesByType({ itemType, forced = false }) {
     }
 }
 
-export async function bumpReview(reviewId) {
-    return callRPC("bump_review_v2", { p_review_id: reviewId });
-}
-
 export async function getPopularReviewers() {
     return await withRetry(async () => {
         const { data, error } = await getSupabase()
-            .from("user_review_stats_v2")
+            .from("user_review_stats_v3")
             .select("*")
-            .order("total_bumps", { ascending: false })
+            .order("total_upvotes", { ascending: false })
             .limit(50)
 
         if (error) throw error;
         return data;
     });
+}
+
+export async function toggleReviewUpvote(reviewId) {
+    callRPC("toggle_review_interaction", {p_review_id: reviewId, p_interaction: "upvote"});
+    if(reviewId in interactions) interactions[reviewId].upvote = !interactions[reviewId].upvote;
+    else interactions[reviewId] = {upvote: true, funny: false};
+    return interactions[reviewId];
+}
+
+export async function toggleReviewFunny(reviewId) {
+    callRPC("toggle_review_interaction", {p_review_id: reviewId, p_interaction: "funny"});
+    if(reviewId in interactions) interactions[reviewId].funny = !interactions[reviewId].funny;
+    else interactions[reviewId] = {upvote: false, funny: true};
+    return interactions[reviewId];
+}
+
+export async function fetchReviewInteractions(reviewIds) {
+    const [fetched, toFetch] = reviewIds.reduce(([f, t], id) => {
+        const reviewInteractions = interactions[id];
+        if(reviewInteractions) f[id] = reviewInteractions;
+        else t.push(id);
+        return [f, t];
+    }, [{}, []]);
+
+    if(toFetch.length === 0) return fetched;
+
+    const data = await withRetry(async () => {
+        const {data, error} = await getSupabase()
+            .from("review_votes")
+            .select("*")
+            .in("review_id", toFetch)
+
+        if(error) throw error;
+        return data;
+    });
+
+    data.forEach(({review_id, is_upvote, is_funny}) => {
+        fetched[review_id] = {upvote: is_upvote, funny: is_funny};
+        interactions[review_id] = {upvote: is_upvote, funny: is_funny};
+    })
+
+    toFetch.forEach(id => {
+        if(!(id in fetched)) {
+            fetched[id] = {upvote: false, funny: false};
+            interactions[id] = {upvote: false, funny: false};
+        }
+    });
+  
+    return fetched;
+}
+
+export async function getReviewInteraction(reviewId) {
+    const fetched = interactions[reviewId];
+    if(fetched) return fetched;
+
+    return fetchReviewInteractions([reviewId])[reviewId];
 }

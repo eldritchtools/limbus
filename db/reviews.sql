@@ -22,8 +22,9 @@ create table public.reviews (
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now(),
 
-    bump_count integer not null default 0,
-    last_bumped_at timestamptz,
+    upvote_count integer not null default 0,
+    funny_count integer not null default 0,
+    last_interacted_at timestamptz,
 
     unique(user_id, item_type, item_id)
 );
@@ -59,12 +60,16 @@ create index reviews_written_latest_idx
 on public.reviews (item_type, item_id, updated_at desc)
 where review_text is not null and length(trim(review_text)) > 0;
 
-create index reviews_written_active_idx
-on public.reviews (item_type, item_id, last_bumped_at desc)
+create index reviews_written_interacted_idx
+on public.reviews (item_type, item_id, last_interacted_at desc)
 where review_text is not null and length(trim(review_text)) > 0;
 
-create index reviews_written_top_idx
-on public.reviews (item_type, item_id, bump_count desc, updated_at desc)
+create index reviews_written_top_upvote_idx
+on public.reviews (item_type, item_id, upvote_count desc, updated_at desc)
+where review_text is not null and length(trim(review_text)) > 0;
+
+create index reviews_written_top_funny_idx
+on public.reviews (item_type, item_id, funny_count desc, updated_at desc)
 where review_text is not null and length(trim(review_text)) > 0;
 
 create index reviews_user_lookup_idx
@@ -462,43 +467,52 @@ begin
 end;
 $$;
 
-create materialized view public.user_review_stats_v2 as
+create materialized view public.user_review_stats_v3 as
 select
     r.user_id,
     u.username,
     u.avatar_id,
+
     count(*) as total_reviews,
-    coalesce(sum(r.bump_count), 0) as total_bumps,
-    coalesce(avg(r.bump_count), 0) as avg_bumps_per_review
+
+    coalesce(sum(r.upvote_count), 0) as total_upvotes,
+    coalesce(sum(r.funny_count), 0) as total_funnies,
+
+    coalesce(avg(r.upvote_count), 0) as avg_upvotes_per_review,
+    coalesce(avg(r.funny_count), 0) as avg_funnies_per_review
+
 from public.reviews r
 join public.users u on u.id = r.user_id
 where r.review_text is not null and length(trim(r.review_text)) > 0
 group by r.user_id, u.username, u.avatar_id;
 
-create unique index user_review_stats_v2_user_id_idx
-on public.user_review_stats_v2 (user_id);
+create unique index user_review_stats_v3_user_id_idx
+on public.user_review_stats_v3 (user_id);
 
-create index user_review_stats_v2_total_bumps_idx
-on public.user_review_stats_v2 (total_bumps desc);
+create index user_review_stats_v3_total_upvotes_idx
+on public.user_review_stats_v3 (total_upvotes desc);
 
-create or replace function public.refresh_user_review_stats_v2()
+create index user_review_stats_v3_total_funnies_idx
+on public.user_review_stats_v3 (total_funnies desc);
+
+create or replace function public.refresh_user_review_stats_v3()
 returns void
 language plpgsql
 security definer
 as $$
 begin
-    refresh materialized view concurrently public.user_review_stats_v2;
+    refresh materialized view concurrently public.user_review_stats_v3;
 end;
 $$;
 
 select cron.schedule(
-    'refresh-user-review-stats-v2',
+    'refresh-user-review-stats-v3',
     '*/30 * * * *',
-    $$ select public.refresh_user_review_stats_v2(); $$
+    $$ select public.refresh_user_review_stats_v3(); $$
 );
 
-grant select on public.user_review_stats_v2 to anon;
-grant select on public.user_review_stats_v2 to authenticated;
+grant select on public.user_review_stats_v3 to anon;
+grant select on public.user_review_stats_v3 to authenticated;
 
 create or replace function public.can_insert_review_new_account_rate_limited(
     user_id uuid
@@ -531,3 +545,153 @@ to public
 with check (
     ((auth.uid() = user_id) AND can_insert_review_new_account_rate_limited(auth.uid))
 );
+
+create table public.review_votes (
+    review_id bigint not null references public.reviews(id) on delete cascade,
+    user_id uuid not null references public.users(id) on delete cascade,
+
+    is_upvote boolean not null default false,
+    is_funny boolean not null default false,
+
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+
+    primary key (review_id, user_id),
+
+    check (is_upvote or is_funny)
+);
+
+create index review_votes_user_id_idx
+on public.review_votes(user_id);
+
+alter table public.review_votes enable row level security;
+
+create policy "review_votes_select"
+on public.review_votes
+for select
+using (auth.uid() = user_id);
+
+create policy "review_votes_insert"
+on public.review_votes
+for insert
+with check (auth.uid() = user_id);
+
+create policy "review_votes_update"
+on public.review_votes
+for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+
+create policy "review_votes_delete"
+on public.review_votes
+for delete
+using (auth.uid() = user_id);
+
+create type review_interaction_enum as enum (
+    'upvote',
+    'funny'
+);
+
+create or replace function public.toggle_review_interaction(
+    p_review_id bigint,
+    p_interaction review_interaction_enum
+)
+returns public.review_votes
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    v_vote public.review_votes;
+    v_result public.review_votes;
+
+    v_new_upvote boolean;
+    v_new_funny boolean;
+
+    v_delta integer;
+begin
+
+    if auth.uid() is null then
+        raise exception 'not authenticated';
+    end if;
+
+    if exists (
+        select 1
+        from public.reviews
+        where id = p_review_id
+        and user_id = auth.uid()
+    ) then
+        raise exception 'cannot interact with your own review';
+    end if;
+
+    select *
+    into v_vote
+    from public.review_votes
+    where review_id = p_review_id
+      and user_id = auth.uid();
+
+    if not found then
+
+        v_new_upvote := (p_interaction = 'upvote');
+        v_new_funny := (p_interaction = 'funny');
+
+        insert into public.review_votes (
+            review_id,
+            user_id,
+            is_upvote,
+            is_funny
+        )
+        values (
+            p_review_id,
+            auth.uid(),
+            v_new_upvote,
+            v_new_funny
+        )
+        returning *
+        into v_result;
+
+        v_delta := 1;
+    else
+        v_new_upvote := v_vote.is_upvote;
+        v_new_funny := v_vote.is_funny;
+
+        if p_interaction = 'upvote' then
+            v_new_upvote := not v_new_upvote;
+            v_delta := case when v_new_upvote then 1 else -1 end;
+        else
+            v_new_funny := not v_new_funny;
+            v_delta := case when v_new_funny then 1 else -1 end;
+        end if;
+
+        if not v_new_upvote and not v_new_funny then
+
+            delete from public.review_votes
+            where review_id = p_review_id
+              and user_id = auth.uid();
+
+            v_result := null;
+        else
+            update public.review_votes
+            set
+                is_upvote = v_new_upvote,
+                is_funny = v_new_funny,
+                updated_at = now()
+            where review_id = p_review_id
+              and user_id = auth.uid()
+            returning *
+            into v_result;
+
+        end if;
+
+    end if;
+
+    update public.reviews
+    set
+        upvote_count = upvote_count + case when p_interaction = 'upvote' then v_delta else 0 end,
+        funny_count = funny_count + case when p_interaction = 'funny' then v_delta else 0 end,
+        last_interacted_at = now()
+    where id = p_review_id;
+
+    return v_result;
+end;
+$$;
