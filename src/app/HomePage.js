@@ -44,6 +44,7 @@ function RecentAdditions() {
 
         {open ? <div>
             <ul style={{ lineHeight: "1.3" }}>
+                <li>The {wrapLink("Encounters", "/encounters")} page now supports submitting clear records which will show up on a leaderboard sorted by turn count. This is currently only supported for Reflectrials and Refraction Railway encounters and is still a work in progress.</li>
                 <li>The bumps system for Reviews have been reworked into a more standard Upvotes and Funny Votes system similar to Steam Reviews. Existing reviews with bump scores have been given a boost equivalent to their bumps.</li>
                 <li>The individual Identity and E.G.O pages have been redesigned. Check them out if you&apos;re interested! This also affects everywhere skills are displayed.</li>
                 <li>Community Rankings have been recomputed to ignore ratings that are all 0s. If you want to submit a joke review without affecting ratings, you can now submit one with all 0s.</li>

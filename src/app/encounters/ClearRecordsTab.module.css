@@ -1,0 +1,19 @@
+.actionButton {
+  background-color: var(--bg-input);
+  color: var(--primary-text-color);
+  border: 1px solid var(--secondary-border-color);
+  padding: 4px 4px 0px 4px;
+  border-radius: 4px;
+  margin: 2px;
+  transition: background-color 0.2s, border-color 0.2s;
+  font-size: 1rem;
+}
+
+.actionButton:hover {
+  background-color: var(--bg-hover);
+  cursor: pointer;
+}
+
+.actionButton:visited {
+    color: var(--primary-text-color);
+}

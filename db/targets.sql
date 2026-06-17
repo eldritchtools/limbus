@@ -3,7 +3,8 @@ CREATE TYPE target_type_enum AS ENUM (
   'collection',
   'md_plan',
   'fixed',
-  'encounter'
+  'encounter',
+  'encounter_clear_record'
 );
 
 CREATE TABLE fixed_pages (

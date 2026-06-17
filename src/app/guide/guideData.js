@@ -159,7 +159,8 @@ export const guideData = [
                 details: [
                     "This page lets you view the details of many encounters in the game, including skills and passives of enemies, total number of enemies, passive buffs, and choice events.",
                     "Each encounter has its own individual comment section where users can discuss the encounter.",
-                    "Non-md encounters also have a tag associated with them. Any Team Build assigned that tag will show up in the Builds tab of the enecounter. You can also find this in the Encounters tab when searching for Builds."
+                    "Non-md encounters also have a tag associated with them. Any Team Build assigned that tag will show up in the Builds tab of the enecounter. You can also find this in the Encounters tab when searching for Builds.",
+                    "Reflectrial and Refraction Railway encounters support uploading clear records which show up in a leaderboard. You can upload screenshots of your clears or see how fast the community is clearing the encounter."
                 ],
             },
             {
