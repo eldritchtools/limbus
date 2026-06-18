@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 
+import ClearRecordsTab from "./ClearRecordsTab";
 import EncounterDetails from "./EncounterDetails";
 import BuildsSearchDisplay from "../components/contentCardDisplays/BuildsSearchDisplay";
 import { useData } from "../components/DataProvider";
@@ -85,13 +86,16 @@ function Encounter({ category, categoryName, encounter }) {
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>Details</div>
             {["reflectrial", "story", "luxcavation", "rr"].includes(category) ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
+            {["reflectrial", "rr"].includes(category) ? <div className={`tab-header ${tab === "clears" ? "active" : ""}`} onClick={() => setTab("clears")}>Clear Records</div> : null}
         </div>
 
         {tab === "details" ?
             <EncounterDetails data={encounterData} /> :
             tab === "builds" ?
                 <BuildsSection tag={`${category}-${encounter}`} /> :
-                null
+                tab === "clears" ?
+                    <ClearRecordsTab siteId={encounterData.siteId} type={category} /> :
+                    null
         }
         <HorizontalDivider />
 

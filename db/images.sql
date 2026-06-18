@@ -5,7 +5,7 @@ CREATE TABLE images (
 
 CREATE TABLE image_attachments (
   image_id UUID NOT NULL,
-  target_type TEXT NOT NULL,
+  target_type target_type_enum NOT NULL,
   target_id UUID NOT NULL,
   position INT NOT NULL DEFAULT 0,
 
