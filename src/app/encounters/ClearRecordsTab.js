@@ -18,20 +18,20 @@ import { createClearRecord, deleteClearRecord, fetchClearRecords, fetchUserClear
 const cellStyle = { borderTop: "1px var(--primary-border-color) solid", padding: "0.5rem", textAlign: "center" };
 
 function isValidVideoUrl(url) {
-  try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.replace("www.", "");
+    try {
+        const parsed = new URL(url);
+        const host = parsed.hostname.replace("www.", "");
 
-    const isYouTube = ["youtube.com", "youtu.be", "m.youtube.com"].includes(host);
-    const isVimeo = ["vimeo.com", "player.vimeo.com"].includes(host);
+        const isYouTube = ["youtube.com", "youtu.be", "m.youtube.com"].includes(host);
+        const isVimeo = ["vimeo.com", "player.vimeo.com"].includes(host);
 
-    if (!isYouTube && !isVimeo) return false;
-    if (!parsed.pathname || parsed.pathname === "/") return false;
+        if (!isYouTube && !isVimeo) return false;
+        if (!parsed.pathname || parsed.pathname === "/") return false;
 
-    return true;
-  } catch {
-    return false;
-  }
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 function formatDateString(isoString) {
@@ -57,7 +57,11 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
             {!editable && <td style={cellStyle}>{i + startPosition}</td>}
             <td style={cellStyle}><Username username={record.username} /></td>
             <td style={cellStyle}>{record.turn_count}</td>
-            <td style={cellStyle}><ImageCarousel imageIds={record.image_ids} maxImages={3} mini={true} /></td>
+            <td style={cellStyle}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <ImageCarousel imageIds={record.image_ids} maxImages={3} mini={true} />
+                </div>
+            </td>
             <td style={cellStyle}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
                     <span>Submitted: {formatDateString(record.created_at)}</span>
@@ -66,13 +70,13 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
             </td>
             <td style={cellStyle}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-                    <div style={{ display: "flex", gap: "0" }}>
+                    <div style={{ display: "flex", gap: "0", justifyContent: "center" }}>
                         <button
-                            {...getGeneralTooltipProps("Expand")}
+                            {...getGeneralTooltipProps(expanded === record.id ? "Collapse" : "Expand")}
                             className={styles.actionButton}
                             onClick={() => setExpanded(expanded === record.id ? null : record.id)}
                         >
-                            <ChevronDownIcon style={{ width: "20px", height: "20px" }} />
+                            <ChevronDownIcon style={{ width: "20px", height: "20px", transform: expanded === record.id ? "rotate(180deg)" : null }} />
                         </button>
                         {record.video_url && <NoPrefetchLink
                             {...getGeneralTooltipProps("Video Link")}
@@ -81,7 +85,7 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
                             <PlayCircleIcon style={{ width: "20px", height: "20px" }} />
                         </NoPrefetchLink>}
                     </div>
-                    <div style={{ display: "flex", gap: "0" }}>
+                    <div style={{ display: "flex", gap: "0", justifyContent: "center" }}>
                         {editable &&
                             <button
                                 {...getGeneralTooltipProps("Edit")}
@@ -127,23 +131,26 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
             0,
             <tr key={`${expanded}-ex`}>
                 <td colSpan="100%">
-                    {buildsStr && <>
-                        <span style={{ fontWeight: "bold" }}>Teams:</span>
-                        <MarkdownRenderer content={buildsStr} />
-                    </>}
-                    {record.notes && record.notes.length > 0 && <>
-                        <span style={{ fontWeight: "bold" }}>Notes:</span>
-                        <MarkdownRenderer content={record.notes} />
-                    </>}
-                    {record.images && record.images.length > 0 &&
-                        <ImageCarousel imageIds={record.image_ids} maxImages={3} />
-                    }
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        {buildsStr && <>
+                            <span style={{ fontSize: "1.2rem", fontWeight: "bold", marginTop: "0.5rem" }}>Teams:</span>
+                            <MarkdownRenderer content={buildsStr} />
+                        </>}
+                        {record.notes && record.notes.length > 0 && <>
+                            <span style={{ fontSize: "1.2rem", fontWeight: "bold", marginTop: "0.5rem" }}>Notes:</span>
+                            <MarkdownRenderer content={record.notes} />
+                        </>}
+                        {record.image_ids && record.image_ids.length > 0 && <>
+                            <span style={{ fontSize: "1.2rem", fontWeight: "bold", marginTop: "0.5rem" }}>Images:</span>
+                            <ImageCarousel imageIds={record.image_ids} maxImages={3} />
+                        </>}
+                    </div>
                 </td>
             </tr>
         )
     }, [records, rows, expanded]);
 
-    return <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+    return <div style={{ overflowX: "auto", maxWidth: "min(100%, 1600px)" }}>
         <table style={{ borderCollapse: "collapse", width: "100%", maxWidth: "min(100%, 1600px)" }}>
             <thead>
                 <tr style={{ height: "1.25rem" }}>
@@ -163,7 +170,7 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
 }
 
 export default function ClearRecordsTab({ siteId, type }) {
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const [difficulty, setDifficulty] = useState(type === "reflectrial" ? "normal" : null);
     const [page, setPage] = useState(1);
     const [clearRecords, setClearRecords] = useState([]);
@@ -214,6 +221,7 @@ export default function ClearRecordsTab({ siteId, type }) {
     const handleSubmitStart = () => {
         setRecord({
             turn_count: 0,
+            username: profile.username,
             team_data: {},
             video_url: "",
             notes: "",
@@ -233,8 +241,13 @@ export default function ClearRecordsTab({ siteId, type }) {
         }
 
         const handleSubmit = async () => {
-            if(record.video_url.trim().length !== 0 && !isValidVideoUrl(record.video_url.trim())) {
-                setMessage("Invalid video url");
+            if (record.video_url.trim().length !== 0 && !isValidVideoUrl(record.video_url.trim())) {
+                setMessage("Invalid video url.");
+                return;
+            }
+
+            if (record.turn_count === 0) {
+                setMessage("Turn count cannot be 0.");
                 return;
             }
 
@@ -308,7 +321,7 @@ export default function ClearRecordsTab({ siteId, type }) {
                 <input value={record.video_url} onChange={e => setRecord(p => ({ ...p, video_url: e.target.value }))} placeholder="Paste a url to a clear video (optional)" style={{ width: "30ch" }} />
             </div>
 
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                 <button onClick={cancelSubmit} disabled={submitting}>Cancel</button>
                 <button onClick={handleSubmit} disabled={submitting}>Submit</button>
                 {message.length > 0 && <span>{message}</span>}
@@ -318,7 +331,7 @@ export default function ClearRecordsTab({ siteId, type }) {
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <span className="sub-text">
-            Clear records are not pre-vetted. Submissions that are obviously fake may be deleted without warning.
+            Clear records are not pre-vetted. Submissions that are obviously fake may be deleted without warning. This feature is still a work-in-progress, so there may be some issues.
         </span>
         {
             type === "reflectrial" ? <div style={{ display: "flex", gap: "1rem" }}>
