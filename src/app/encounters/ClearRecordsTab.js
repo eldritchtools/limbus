@@ -233,21 +233,21 @@ export default function ClearRecordsTab({ siteId, type }) {
         }
 
         const handleSubmit = async () => {
-            if(!isValidVideoUrl(record.video_url)) {
+            if(record.video_url.trim().length !== 0 && !isValidVideoUrl(record.video_url.trim())) {
                 setMessage("Invalid video url");
                 return;
             }
 
             if (record.id) {
                 setSubmitting(true);
-                const result = await updateClearRecord(record.id, difficulty, record.turn_count, record.team_data, record.video_url, record.notes, record.image_ids);
+                const result = await updateClearRecord(record.id, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, record.image_ids);
                 setUserRecords(p => p.map(r => r.id === record.id ? record : r));
                 setRecord(null);
                 setEditing(false);
                 setSubmitting(false);
             } else {
                 setSubmitting(true);
-                const result = await createClearRecord(siteId, difficulty, record.turn_count, record.team_data, record.video_url, record.notes, record.image_ids);
+                const result = await createClearRecord(siteId, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, record.image_ids);
                 setUserRecords(p => [{ id: result, ...record }, ...p]);
                 setRecord(null);
                 setEditing(false);
