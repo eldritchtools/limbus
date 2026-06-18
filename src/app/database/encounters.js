@@ -51,15 +51,6 @@ export async function createClearRecord(encounterId, difficulty, turnCount, team
 }
 
 export async function updateClearRecord(recordId, difficulty, turnCount, teamData, videoUrl, notes, imageIds) {
-    console.log({
-            p_id: recordId,
-            p_difficulty: difficulty,
-            p_turn_count: turnCount,
-            p_team_data: teamData,
-            p_video_url: videoUrl,
-            p_notes: notes,
-            p_image_ids: imageIds
-        })
     return callRPC("update_encounter_clear_record",
         {
             p_id: recordId,
