@@ -219,9 +219,11 @@ export default function ClearRecordsTab({ siteId, type }) {
     }
 
     const handleSubmitStart = () => {
+        if(!user || !profile) return;
+
         setRecord({
             turn_count: 0,
-            username: profile.username,
+            username: profile?.username,
             team_data: {},
             video_url: "",
             notes: "",
