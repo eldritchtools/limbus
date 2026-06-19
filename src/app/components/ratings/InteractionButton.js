@@ -38,8 +38,8 @@ export default function InteractionButton({ reviewId, count, type, userId, itemI
     useEffect(() => {
         const getInteraction = async () => {
             const data = await getReviewInteraction(reviewId);
-            if (type === "upvote") setState(data.upvote);
-            else if (type === "funny") setState(data.funny);
+            if (type === "upvote") setState(data?.upvote);
+            else if (type === "funny") setState(data?.funny);
         }
 
         if(user) getInteraction();

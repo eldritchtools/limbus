@@ -39,7 +39,7 @@ const iconStyle = (isMobile) => isMobile ?
 function CustomBanner({ identityIds, setIdentityIds, egoIds, setEgoIds, announcers, setAnnouncers, selected, setSelected }) {
     return <div
         className={`${styles.banner} ${selected ? styles.selected : ""}`}
-        style={{ alignItems: "center", maxWidth: "min(400px, 90vw)" }}
+        style={{ alignItems: "center", maxWidth: "min(500px, 90vw)", width: "100%" }}
         onClick={() => setSelected({ name: "custom" })}
     >
         <span style={{ textAlign: "center" }}>Custom Banner</span>
@@ -55,7 +55,7 @@ function CustomBanner({ identityIds, setIdentityIds, egoIds, setEgoIds, announce
 function Banner({ banner, identities, egos, isMobile, selected, setSelected }) {
     const items = { 3: [], 2: [], 1: [], "ego": [], "announcer": [], "offAnnouncer": [] };
     let isWalpurgis = false;
-    Object.entries(banner.bannerConds).forEach(([k, v]) => {
+    Object.entries(banner.bannerConds ?? []).forEach(([k, v]) => {
         switch (k) {
             case "ids":
                 v.forEach(x => {
@@ -271,7 +271,6 @@ export default function ExtractionSimulatorPage() {
             "offAnnouncer": []
         } : selected.items;
 
-        console.log(items);
         items.ego.forEach(x => extractableEgosTemp.add(x));
 
         const executeSinglePull = (noBase) => {
@@ -421,7 +420,7 @@ export default function ExtractionSimulatorPage() {
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.25rem", maxWidth: "min(1600px, 100vw)" }}>
             <div className="panel-container">
                 <h3 style={{ margin: 0, textAlign: "center" }}>Banner Selection</h3>
-                <div style={{ overflowY: "auto", overflowX: "hidden", maxHeight: "450px", minWidth: "300px" }}>
+                <div style={{ display: "flex", flexDirection: "column", overflowY: "auto", overflowX: "hidden", maxHeight: "450px", minWidth: "300px" }}>
                     <CustomBanner
                         identityIds={customIdentityIds} setIdentityIds={setCustomIdentityIds}
                         egoIds={customEgoIds} setEgoIds={setCustomEgoIds}
@@ -440,6 +439,10 @@ export default function ExtractionSimulatorPage() {
                             />
                         )
                     }
+                    <Banner banner={{name: "Standard Extraction", src: "standard"}}
+                        identities={identities} egos={egos}
+                        isMobile={isMobile} selected={selected?.name === "Standard Extraction"} setSelected={setSelected}
+                    />
                 </div>
             </div>
 
