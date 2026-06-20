@@ -6,7 +6,7 @@ export default function HintText({ hintText, setHintText, children }) {
     useEffect(() => {
         if (hintText && setHintText) {
             setTimeout(() => {
-                setHintText(false);
+                setHintText(null);
             }, 1500);
         }
     }, [hintText, setHintText]);

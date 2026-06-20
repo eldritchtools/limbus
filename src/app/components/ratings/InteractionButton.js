@@ -42,7 +42,7 @@ export default function InteractionButton({ reviewId, count, type, userId, itemI
             else if (type === "funny") setState(data?.funny);
         }
 
-        if(user) getInteraction();
+        if (user) getInteraction();
     }, [reviewId, type, user]);
 
     const icon = useMemo(() => {

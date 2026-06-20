@@ -418,7 +418,7 @@ export default function ClearRecordsTab({ siteId, type }) {
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <span className="sub-text">
-            Clear records are not pre-vetted. Submissions that are obviously fake may be deleted without warning. This feature is still a work-in-progress, so there may be some issues.
+            Clear records are not pre-vetted. Submissions that are obviously fake may be deleted without warning.
         </span>
         {
             type === "reflectrial" ? <div style={{ display: "flex", gap: "1rem" }}>
