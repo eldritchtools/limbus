@@ -30,6 +30,7 @@ const options = {
     "build": "build",
     "mdplan": "mdplan",
     "collection": "collection",
+    "teamcode": "teamcode",
     "user": "user",
     "sinner": "sinner",
     "sinnericon": "sinnericon",
@@ -197,7 +198,7 @@ function GuideAssembler({ guideTab, editorRef, onChange, guideValue, setGuideVal
     if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "themepack", "encounter", "icon", "sinner", "sinnericon"].includes(guideTab))
         return <SelectorGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
-    if (["build", "mdplan", "collection", "user", "emote", "sticker"].includes(guideTab))
+    if (["build", "mdplan", "collection", "teamcode", "user", "emote", "sticker"].includes(guideTab))
         return <InputGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
     return null;

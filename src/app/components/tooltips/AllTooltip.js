@@ -7,6 +7,7 @@ import { MarkdownTooltip } from "./MarkdownTooltip";
 import RatingHelpTooltip from "./RatingHelpTooltip";
 import RatingTooltip from "./RatingTooltip";
 import StatusTooltip from "./StatusTooltip";
+import TeamCodeTooltip from "./TeamCodeTooltip";
 import { ThemePackTooltip } from "./ThemePackTooltip";
 import TimerTooltip from "./TimerTooltip";
 
@@ -23,5 +24,6 @@ export default function AllTooltips() {
         <EncounterTooltip />
         <RatingTooltip />
         <RatingHelpTooltip />
+        <TeamCodeTooltip />
     </>;
 }

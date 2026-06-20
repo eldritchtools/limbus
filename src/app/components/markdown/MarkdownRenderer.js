@@ -20,12 +20,14 @@ import KeywordIcon, { isValidKeywordId } from "../icons/KeywordIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
 import NoPrefetchLink from "../NoPrefetchLink";
+import HintText from "../objects/HintText";
 import Status from "../objects/Status";
 import ThemePackNameWithTooltip from "../objects/ThemePackNameWithTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getEncounterTooltipProps } from "../tooltips/EncounterTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 import { getMarkdownTooltipProps } from "../tooltips/MarkdownTooltip";
+import { getTeamCodeTooltipProps } from "../tooltips/TeamCodeTooltip";
 
 import { searchBuilds } from "@/app/database/builds";
 import { searchCollections } from "@/app/database/collections";
@@ -300,6 +302,32 @@ function MdPlanItem({ id }) {
             </span>
 }
 
+function TeamCodeItem({ code }) {
+    const [hintText, setHintText] = useState(null);
+
+    const handleTeamCodeCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(code);
+            setHintText('Copied!');
+            setTimeout(() => setHintText(null), 1500);
+        } catch (err) {
+            setHintText('Failed to copy!');
+            setTimeout(() => setHintText(null), 1500);
+            console.error('Failed to copy text: ', err);
+        }
+    }
+
+    return <HintText hintText={hintText}>
+        <span
+            {...getTeamCodeTooltipProps(code)}
+            className="text-link"
+            onClick={handleTeamCodeCopy}
+        >
+            [Team Code]
+        </span>
+    </HintText>
+}
+
 export default function MarkdownRenderer({ content }) {
     const renderedMarkdown = useMemo(() => {
         return <ReactMarkdown
@@ -340,6 +368,8 @@ export default function MarkdownRenderer({ content }) {
                             return <CollectionItem id={tokenValues[0]} />;
                         case "mdplan":
                             return <MdPlanItem id={tokenValues[0]} />;
+                        case "teamcode":
+                            return <TeamCodeItem code={tokenValues[0]} />;
                         case "user":
                             return <NoPrefetchLink href={`/profiles/${tokenValues[0]}`} className="text-link" style={{ textDecoration: "underline" }}>
                                 {tokenValues[0]}

@@ -12,6 +12,7 @@ export const tokensDescs = {
     "build": "Reference a build with {build:id}. This will show the name of the build and a tooltip with its search overview on hover. You can find the id of a build on its url or using the share feature on its page. Copying the full url below will automatically isolate the id.",
     "mdplan": "Reference an md plan with {mdplan:id}. This will show the name of the md plan and a tooltip with its search overview on hover. You can find the id of an md plan on its url. Copying the full url below will automatically isolate the id.",
     "collection": "Reference a collection with {collection:id}. This will show the name of the collection and a tooltip with its search overview on hover. You can find the id of a collection on its url. Copying the full url below will automatically isolate the id.",
+    "teamcode": "Attach a teamcode that will display its identities on hover. Clicking on it will copy the code into the device's clipboard.",
     "user": "Reference a user with {user:username}. This will show a link to the user's profile. Note that if the user changes their username, this will break. Usernames are also case-sensitive.",
     "sinner": "Reference a sinner with {sinner:id}. This will show the name of the sinner. Useful if you want to accurately type Ryōshū.",
     "sinnericon": "Reference a sinner with {sinnericon:id}. This will show the icon of the sinner.",
@@ -27,7 +28,8 @@ export const tokenAliases = {
     "gi": "gifticons",
     "kw": "keyword",
     "tp": "themepack",
-    "enc": "encounter"
+    "enc": "encounter",
+    "tc": "teamcode"
 };
 
 export function convertTokenAlias(type) {
