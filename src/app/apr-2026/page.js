@@ -82,11 +82,7 @@ export default function APR2026Page() {
 
         <span>▾ Check out the schedule of events below ▾</span>
 
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-            <ImageHandler path={"apr_2026/sched_1.webp"} style={{ width: "50%", minWidth: "300px", maxWidth: "600px" }} />
-            <ImageHandler path={"apr_2026/sched_2.webp"} style={{ width: "50%", minWidth: "300px", maxWidth: "600px" }} />
-        </div>
-            <ImageHandler path={"apr_2026/week_3.jpg"} style={{ width: "50%", minWidth: "300px", maxWidth: "900px" }} />
+        <ImageHandler path={"apr_2026/week_4.jpg"} style={{ width: "50%", minWidth: "300px", maxWidth: "900px" }} />
 
         <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center" }}>Times are automatically adjusted to your local timezone. Some events may have inaccurate schedules if unexpected changes happen. Check the organizers&apos; channels for the most up to date information. More details and events will be added as they become available.</span>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
