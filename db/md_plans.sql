@@ -296,7 +296,7 @@ begin
 end;
 $$;
 
-create or replace function public.create_md_plan_v4(
+create or replace function public.create_md_plan_v5(
   p_title text,
   p_body text,
   p_recommendation_mode text,
@@ -404,6 +404,11 @@ begin
 
   end loop;
 
+  INSERT INTO public.images (id, created_at)
+  SELECT x.id, NOW()
+  FROM unnest(p_image_ids) AS x(id)
+  ON CONFLICT (id) DO NOTHING;
+
   INSERT INTO image_attachments (
     image_id,
     target_type,
@@ -439,7 +444,7 @@ begin
 end;
 $$;
 
-create or replace function public.update_md_plan_v4(
+create or replace function public.update_md_plan_v5(
   p_plan_id uuid,
   p_title text,
   p_body text,
@@ -562,6 +567,11 @@ begin
   insert into public.md_plan_tags (plan_id, tag_id)
   select p_plan_id, unnest(_tag_ids)
   on conflict do nothing;
+
+  INSERT INTO public.images (id, created_at)
+  SELECT x.id, NOW()
+  FROM unnest(p_image_ids) AS x(id)
+  ON CONFLICT (id) DO NOTHING;
 
   DELETE FROM image_attachments
   WHERE target_type = 'md_plan'::target_type_enum

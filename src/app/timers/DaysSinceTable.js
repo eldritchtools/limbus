@@ -10,7 +10,7 @@ import { keywords } from "../lib/constants";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export default function DaysSinceTable({ entries, identities, egos }) {
+export default function DaysSinceTable({ entries, identities, egos, show00 }) {
     const stickyHeaderStyle = { position: "sticky", top: 0, background: "var(--bg-input)", padding: "0.25rem", zIndex: 1 };
     const { isMobile } = useBreakpoint();
 
@@ -49,15 +49,15 @@ export default function DaysSinceTable({ entries, identities, egos }) {
         return <tr key={id} style={{ borderTop: "1px var(--secondary-border-color) solid" }}>
             <td>
                 {id === "walp" ?
-                    <span style={{display: "flex", justifyContent: "center"}}>Walp</span> :
-                    (isNaN(Number(id)) ? 
-                        <KeywordIcon id={id} size={48} /> : 
+                    <span style={{ display: "flex", justifyContent: "center" }}>Walp</span> :
+                    (isNaN(Number(id)) ?
+                        <KeywordIcon id={id} size={48} /> :
                         <SinnerIcon num={id} style={{ width: "48px", height: "48px" }} />
                     )
                 }
             </td>
             {/* <td>{constructCell(id, "identity")}</td> */}
-            <td>{constructCell(id, "00")}</td>
+            {show00 && <td>{constructCell(id, "00")}</td>}
             <td>{constructCell(id, "000")}</td>
             {/* <td>{constructCell(id, "ego")}</td> */}
             <td>{constructCell(id, "ZAYIN")}</td>
@@ -73,7 +73,7 @@ export default function DaysSinceTable({ entries, identities, egos }) {
                 <tr>
                     <th style={stickyHeaderStyle}></th>
                     {/* <th style={stickyHeaderStyle}>Identity</th> */}
-                    <th style={stickyHeaderStyle}><RarityIcon rarity={"00"} /></th>
+                    {show00 && <th style={stickyHeaderStyle}><RarityIcon rarity={"00"} /></th>}
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"000"} /></th>
                     {/* <th style={stickyHeaderStyle}>E.G.O</th> */}
                     <th style={stickyHeaderStyle}><RarityIcon rarity={"ZAYIN"} style={{ height: "1.5rem" }} /></th>

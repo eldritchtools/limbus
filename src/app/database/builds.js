@@ -52,11 +52,11 @@ export async function getBuild(id, forEdit = false) {
 }
 
 export async function insertBuild(params) {
-    return callRPC("create_build_v5", convertParams(params, createParams));
+    return callRPC("create_build_v6", convertParams(params, createParams));
 }
 
 export async function updateBuild(params) {
-    await callRPC("update_build_v5", convertParams(params, createParams));
+    await callRPC("update_build_v6", convertParams(params, createParams));
     return params.buildId;
 }
 

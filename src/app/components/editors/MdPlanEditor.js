@@ -18,7 +18,7 @@ import RecommendedBuildsDisplay from "../mdPlans/RecommendedBuildsDisplay";
 import RecommendedListDisplay from "../mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "../mdPlans/RecommendedSpecBuildDisplay";
 import { useModal } from "../modals/ModalProvider";
-import ImageCarousel from "../objects/ImageCarousel";
+import ImageCarousel, { finalizeImageIds } from "../objects/ImageCarousel";
 import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
@@ -79,6 +79,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
     const [imageIds, setImageIds] = useState([]);
+    const [draftImages, setDraftImages] = useState({});
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
     const [blockDiscovery, setBlockDiscovery] = useState(false);
@@ -202,8 +203,17 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             planIdentityIds = identityIds.filter(x => x && x !== "");
             planEgoIds = egoIds.flat().filter(x => x && x !== "");
         }
-
+                
         setSaving(true);
+        let finalizedImageIds;
+        try {
+            finalizedImageIds = await finalizeImageIds(imageIds, draftImages);
+        } catch(err) {
+            setSaving(false);
+            setMessage("Failed to upload images");
+            return;
+        }
+
         if (user) {
             const planData = {
                 title, body, recommendationMode, difficulty,
@@ -221,7 +231,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 blockDiscovery,
                 buildIds: planBuilds.map(build => build.id),
                 tags: tagsConverted,
-                imageIds: imageIds
+                imageIds: finalizedImageIds
             }
 
             if (mode === "edit") {
@@ -254,7 +264,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 is_published: isPublished,
                 block_discovery: blockDiscovery,
                 tags: tagsConverted,
-                image_ids: imageIds,
+                image_ids: finalizedImageIds,
                 builds: planBuilds,
                 created_at: createdAt ?? Date.now(),
                 updated_at: Date.now(),
@@ -474,9 +484,15 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
         
         {user && <React.Fragment>
             <span style={{ fontSize: "1.2rem" }}>Images</span>
-            <span className="sub-text">{uiStrings.postImages}</span>
-            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1}/>
-            <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
+            <span className="sub-text" style={{whiteSpace: "pre-wrap"}}>{uiStrings.postImages}</span>
+            <ImageCarousel 
+                imageIds={imageIds} 
+                onAddImages={ids => setImageIds(p => [...p, ...ids].slice(0, 4))} 
+                onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} 
+                draftImages={draftImages}
+                setDraftImages={setDraftImages}
+                editable={true}
+            />
         </React.Fragment>}
 
         <span style={{ fontSize: "1.2rem" }}>Skill Replacements</span>

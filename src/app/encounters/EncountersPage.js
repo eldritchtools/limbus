@@ -2,7 +2,7 @@
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 
 import ClearRecordsTab from "./ClearRecordsTab";
@@ -69,14 +69,10 @@ function BuildsSection({ tag }) {
     </div>
 }
 
-function Encounter({ category, categoryName, encounter }) {
+function Encounter({ category, categoryName, encounter, tab, handleSetTab }) {
     const [encounterData, encounterLoading] = useData(`encounters/${category}/${encounter}`);
-    const [tab, setTab] = useState("details");
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTab("details");
-    }, [category, categoryName, encounter])
+    const actualTab = tab ?? "details";
 
     if (encounterLoading) return <h3>Loading...</h3>;
 
@@ -84,16 +80,20 @@ function Encounter({ category, categoryName, encounter }) {
         <h3 style={{ margin: 0 }}>{categoryName}: {encounterData.name}</h3>
 
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>Details</div>
-            {["reflectrial", "story", "luxcavation", "rr"].includes(category) ? <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Builds</div> : null}
-            {["reflectrial", "rr"].includes(category) ? <div className={`tab-header ${tab === "clears" ? "active" : ""}`} onClick={() => setTab("clears")}>Clear Records</div> : null}
+            <div className={`tab-header ${actualTab === "details" ? "active" : ""}`} onClick={() => handleSetTab("details")}>Details</div>
+            {["reflectrial", "story", "luxcavation", "rr"].includes(category) && 
+                <div className={`tab-header ${actualTab === "builds" ? "active" : ""}`} onClick={() => handleSetTab("builds")}>Builds</div>
+            }
+            {["reflectrial", "rr"].includes(category) && 
+                <div className={`tab-header ${actualTab === "clears" ? "active" : ""}`} onClick={() => handleSetTab("clears")}>Clear Records</div>
+            }
         </div>
 
-        {tab === "details" ?
+        {actualTab === "details" ?
             <EncounterDetails data={encounterData} /> :
-            tab === "builds" ?
+            actualTab === "builds" ?
                 <BuildsSection tag={`${category}-${encounter}`} /> :
-                tab === "clears" ?
+                actualTab === "clears" ?
                     <ClearRecordsTab siteId={encounterData.siteId} type={category} /> :
                     null
         }
@@ -113,6 +113,7 @@ export default function EncountersPage() {
     const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
         if (f === "category") acc["category"] = v;
         if (f === "encounter") acc["encounter"] = v;
+        if (f === "tab") acc["tab"] = v;
         return acc;
     }, {});
 
@@ -149,6 +150,16 @@ export default function EncountersPage() {
         router.replace(`/encounters?${params.toString()}`, { scroll: false });
     };
 
+    const handleSetTab = useCallback(tab => {
+        if (!selectedCategory || !selectedEncounter || !tab) return;
+        const params = new URLSearchParams();
+        params.set("category", selectedCategory.value);
+        params.set("encounter", selectedEncounter.value);
+        params.set("tab", tab);
+
+        router.replace(`/encounters?${params.toString()}`, { scroll: false });
+    }, [selectedCategory, selectedEncounter, router]);
+
     if (encountersLoading) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
@@ -179,7 +190,13 @@ export default function EncountersPage() {
         </div>
         <HorizontalDivider />
         {selectedCategory && selectedEncounter ?
-            <Encounter category={selectedCategory.value} categoryName={selectedCategory.label} encounter={selectedEncounter.value} /> :
+            <Encounter 
+                category={selectedCategory.value} 
+                categoryName={selectedCategory.label} 
+                encounter={selectedEncounter.value} 
+                tab={searchParams.tab}
+                handleSetTab={handleSetTab}
+            /> :
             null
         }
     </div>;

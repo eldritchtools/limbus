@@ -15,5 +15,5 @@ export const uiStrings = {
     noLocalContent: type => `Locally saved ${type} are not supported.`,
     drafts: "Drafts can still be shared through the link, but aren't searchable and don't allow comments.",
     upcomingInContent: type => `Any upcoming identities or E.G.Os are subject to change. Please double check any ${type} that use them when they are released.`,
-    postImages: "Images will be displayed as attachments at the bottom of the description, but you can include it in the description using the Markdown snippet. For now, posts are limited to 1 image each. Removing an image and adding a new one may keep the old one available for a while, but they are not guaranteed to stay available for long."
+    postImages: "Images will be displayed as attachments at the bottom of the description.\nYou can include them in the description using the Markdown snippet which becomes available after confirming a new image. You only need to confirm images if you want to display it in the description using Markdown. All other images are automatically confirmed on save.\nPosts are limited to 4 images each. Removing an image and adding a new one may keep the old one available for a while, but they are not guaranteed to stay available for long."
 }

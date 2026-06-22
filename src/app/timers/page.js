@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import DaysSinceTable from "./DaysSinceTable";
 import Roadmap from "./Roadmap";
@@ -15,6 +15,7 @@ export default function TimersPage() {
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");
     const [timers, timersLoading] = useData("timers");
+    const [show00, setShow00] = useState(false);
 
     const entries = useMemo(() => {
         if (identitiesLoading || egosLoading) return {};
@@ -115,6 +116,12 @@ export default function TimersPage() {
         </DragContainer>
 
         <h3 style={{ margin: 0 }}>Days Since (12PM KST • {local12} local):</h3>
-        <DaysSinceTable entries={entries} identities={identities} egos={egos} />
+        <div>
+            <label>
+                <input type="checkbox" checked={show00} onChange={e => setShow00(e.target.checked)}/>
+                Show 00s
+            </label>
+        </div>
+        <DaysSinceTable entries={entries} identities={identities} egos={egos} show00={show00} />
     </div>;
 }

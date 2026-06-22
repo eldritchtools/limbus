@@ -46,11 +46,11 @@ export async function getMdPlan(planId) {
 }
 
 export async function createMdPlan(params) {
-    return callRPC("create_md_plan_v4", convertParams(params, createParams));
+    return callRPC("create_md_plan_v5", convertParams(params, createParams));
 }
 
 export async function updateMdPlan(params) {
-    await callRPC("update_md_plan_v4", convertParams(params, createParams));
+    await callRPC("update_md_plan_v5", convertParams(params, createParams));
     return params.planId;
 }
 

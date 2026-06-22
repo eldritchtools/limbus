@@ -12,6 +12,7 @@ import remarkMath from "remark-math";
 import { visit } from "unist-util-visit";
 
 import { convertTokenAlias } from "./tokens";
+import { useSkillData } from "../dataHooks/skills";
 import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
 import AdditionalIcon from "../icons/AdditionalIcon";
@@ -20,12 +21,15 @@ import KeywordIcon, { isValidKeywordId } from "../icons/KeywordIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
 import NoPrefetchLink from "../NoPrefetchLink";
+import HintText from "../objects/HintText";
 import Status from "../objects/Status";
 import ThemePackNameWithTooltip from "../objects/ThemePackNameWithTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getEncounterTooltipProps } from "../tooltips/EncounterTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 import { getMarkdownTooltipProps } from "../tooltips/MarkdownTooltip";
+import { getSkillTooltipProps } from "../tooltips/SkillTooltip";
+import { getTeamCodeTooltipProps } from "../tooltips/TeamCodeTooltip";
 
 import { searchBuilds } from "@/app/database/builds";
 import { searchCollections } from "@/app/database/collections";
@@ -104,6 +108,32 @@ function EgoItem({ id }) {
             </LinkWithTooltip>;
         else
             return <span>{`{ego:${id}}`}</span>;
+    }
+}
+
+function SkillItem({ val }) {
+    const [ownerId, skillId] = val.split("|");
+    const type = ownerId[0] === "1" ? "identity" : "ego";
+    const skillData = useSkillData(type, ownerId, 5);
+
+    const id = ownerId + skillId;
+
+    const skill = skillData ?
+        (
+            type === "identity" ? 
+                skillData.skills[id] :
+                ([...skillData.awakeningSkills, ...(skillData.corrosionSkills ?? [])]).find(x => x.data.id === id)
+        ) :
+        null;
+
+    if (skill)
+        return <span
+            {...getSkillTooltipProps(ownerId, skillId)}
+            style={{ display: "inline", fontWeight: "bold" }}>
+            <span>{skill.data.name}</span>
+        </span>
+    else {
+        return <span>{`{skill:${ownerId}|${skillId}}`}</span>
     }
 }
 
@@ -300,6 +330,32 @@ function MdPlanItem({ id }) {
             </span>
 }
 
+function TeamCodeItem({ code }) {
+    const [hintText, setHintText] = useState(null);
+
+    const handleTeamCodeCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(code);
+            setHintText('Copied!');
+            setTimeout(() => setHintText(null), 1500);
+        } catch (err) {
+            setHintText('Failed to copy!');
+            setTimeout(() => setHintText(null), 1500);
+            console.error('Failed to copy text: ', err);
+        }
+    }
+
+    return <HintText hintText={hintText}>
+        <span
+            {...getTeamCodeTooltipProps(code)}
+            className="text-link"
+            onClick={handleTeamCodeCopy}
+        >
+            [Team Code]
+        </span>
+    </HintText>
+}
+
 export default function MarkdownRenderer({ content }) {
     const renderedMarkdown = useMemo(() => {
         return <ReactMarkdown
@@ -315,6 +371,8 @@ export default function MarkdownRenderer({ content }) {
                             return <IdentityItem id={tokenValues[0]} />;
                         case "ego":
                             return <EgoItem id={tokenValues[0]} />;
+                        case "skill":
+                            return <SkillItem val={tokenValues[0]} />;
                         case "status":
                             return <StatusItem id={tokenValues[0]} />;
                         case "statusicon":
@@ -340,6 +398,8 @@ export default function MarkdownRenderer({ content }) {
                             return <CollectionItem id={tokenValues[0]} />;
                         case "mdplan":
                             return <MdPlanItem id={tokenValues[0]} />;
+                        case "teamcode":
+                            return <TeamCodeItem code={tokenValues[0]} />;
                         case "user":
                             return <NoPrefetchLink href={`/profiles/${tokenValues[0]}`} className="text-link" style={{ textDecoration: "underline" }}>
                                 {tokenValues[0]}

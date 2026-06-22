@@ -1,0 +1,41 @@
+.hint {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  background: var(--bg-secondary);
+  color: var(--primary-text-color);
+  font-size: 1rem;
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  animation: fadeHint 1.5s ease forwards;
+  z-index: 10000;
+}
+
+@keyframes fadeHint {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}

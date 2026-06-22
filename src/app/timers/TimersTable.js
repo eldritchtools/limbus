@@ -1,9 +1,10 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getNextDay, getNextDayOfWeek, kstToLocalTime } from "./timerFunc";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import { getTimerTooltipProps } from "../components/tooltips/TimerTooltip";
 import { getSeasonString } from "../lib/constants";
 
@@ -85,7 +86,7 @@ function TimeComponent({ date, dateString, label = "Date"}) {
     }
 }
 
-export function TimerRow({ title, src, date, startDate, endDate, column = false, tooltip }) {
+export function TimerRow({ title, src, date, startDate, endDate, column = false, tooltip, catenc }) {
     const { isMobile } = useBreakpoint();
     const style = isMobile ?
         { width: "170px", height: "75px" } :
@@ -110,6 +111,19 @@ export function TimerRow({ title, src, date, startDate, endDate, column = false,
         }
     }, [date, startDate, endDate]);
 
+    const leaderboardLink = useMemo(() => {
+        if(!catenc) return null;
+        const [cat, enc] = catenc.split("|");
+        const params = new URLSearchParams();
+        params.set("category", cat);
+        params.set("encounter", enc);
+        params.set("tab", "clears");
+        
+        return <NoPrefetchLink href={`/encounters?${params.toString()}`} className="text-link" style={{pointerEvents: "all"}}>
+            Clears Leaderboard
+        </NoPrefetchLink>
+    }, [catenc]);
+
     return <div
         style={{
             display: "flex", alignItems: "center",
@@ -119,6 +133,7 @@ export function TimerRow({ title, src, date, startDate, endDate, column = false,
     >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem", width: style.width, pointerEvents: "none" }}>
             <span style={{ textAlign: "center", whiteSpace: "pre-wrap" }}>{title}</span>
+            {leaderboardLink}
             {src ? <BannerIcon path={src} style={style} /> : null}
         </div>
         {timeComponent}
@@ -143,8 +158,8 @@ export default function TimersTable({ timers }) {
             <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={isMobile} />
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-            {timers?.events?.main && <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={isMobile} />}
-            {(timers?.events?.others ?? []).map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} startDate={timer.startDate} endDate={timer.endDate} column={isMobile} />)}
+            {timers?.events?.main && <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={isMobile} catenc={timers.events.main.catenc} />}
+            {(timers?.events?.others ?? []).map((timer, i) => <TimerRow key={i} title={timer.name} src={timer.src} startDate={timer.startDate} endDate={timer.endDate} column={isMobile} catenc={timer.catenc} />)}
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
             {timers?.banners?.main && <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} startDate={timers.banners.main.startDate} endDate={timers.banners.main.endDate} column={isMobile} />}

@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { createAutocompleteLabel } from "./MarkdownEditorAutocompleteLabel";
 import constructMarkdownEditorAutocompleteTooltip, { constructMarkdownEditorTypeTooltip } from "./MarkdownEditorAutocompleteTooltip";
+import { useSkillData } from "../dataHooks/skills";
 import { useData } from "../DataProvider";
 import { convertTokenAlias, tokenAliases } from "./tokens";
 import { tokensDescs } from "./tokens";
@@ -26,6 +27,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
     const [themePacks, themePacksLoading] = useData("md_theme_packs", requestedTypes.has("themepack"));
     const [encounters, encountersLoading] = useData("encounters", requestedTypes.has("encounter"));
     const [icons, iconsLoading] = useData("additional_icons", requestedTypes.has("icon"));
+    const [skillOwnerId, setSkillOwnerId] = useState(null);
+    const skillData = useSkillData(skillOwnerId ? (skillOwnerId[0] === '1' ? "identity" : "ego") : null, skillOwnerId, 5);
 
     const dataRef = useRef({
         requestedTypes,
@@ -35,7 +38,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
         gifts, giftsLoading,
         themePacks, themePacksLoading,
         encounters, encountersLoading,
-        icons, iconsLoading
+        icons, iconsLoading,
+        skillOwnerId, skillData
     });
 
     useEffect(() => {
@@ -47,7 +51,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
             gifts, giftsLoading,
             themePacks, themePacksLoading,
             encounters, encountersLoading,
-            icons, iconsLoading
+            icons, iconsLoading,
+            skillOwnerId, skillData
         };
     }, [
         requestedTypes,
@@ -57,7 +62,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
         gifts, giftsLoading,
         themePacks, themePacksLoading,
         encounters, encountersLoading,
-        icons, iconsLoading
+        icons, iconsLoading,
+        skillOwnerId, skillData
     ]);
 
     useEffect(() => {
@@ -90,6 +96,10 @@ function useAutocompleteDataFacetExtension(viewRef) {
         if (!iconsLoading && requestedTypes.has("icon")) {
             startCompletion(viewRef.current);
         }
+
+        if (skillData && skillOwnerId) {
+            startCompletion(viewRef.current);
+        }
     }, [
         viewRef,
         identitiesLoading,
@@ -99,6 +109,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
         themePacksLoading,
         encountersLoading,
         iconsLoading,
+        skillOwnerId,
+        skillData,
         requestedTypes
     ]);
 
@@ -119,6 +131,8 @@ function useAutocompleteDataFacetExtension(viewRef) {
                     return !identitiesLoading && identities;
                 case "ego":
                     return !egosLoading && egos;
+                case "skill":
+                    return !identitiesLoading && identities && !egosLoading && egos;
                 case "status":
                 case "statusicon":
                     return !statusesLoading && statuses;
@@ -140,8 +154,17 @@ function useAutocompleteDataFacetExtension(viewRef) {
             }
         },
 
+        hasSkillOwner(id) {
+            const { skillOwnerId, skillData } = dataRef.current;
+            return skillOwnerId === id && skillData;
+        },
+
         load(type) {
             setRequestedTypes(prev => new Set(prev).add(convertTokenAlias(type)));
+        },
+
+        loadSkillOwner(id) {
+            setSkillOwnerId(id);
         },
 
         get(type) {
@@ -160,6 +183,13 @@ function useAutocompleteDataFacetExtension(viewRef) {
                     return { entries: Object.entries(identities).map(([id, identity]) => ({ id: id, label: identity.name, item: identity })) || [], multi: false };
                 case "ego":
                     return { entries: Object.entries(egos).map(([id, ego]) => ({ id: id, label: ego.name, item: ego })) || [], multi: false };
+                case "skill":
+                    return {
+                        entries: [
+                            ...Object.entries(identities).map(([id, identity]) => ({ id: id, label: identity.name, item: identity })),
+                            ...Object.entries(egos).map(([id, ego]) => ({ id: id, label: ego.name, item: ego })),
+                        ], multi: false
+                    };
                 case "status":
                 case "statusicon":
                     return { entries: Object.entries(statuses).map(([id, status]) => ({ id: id, label: status.name, item: status })) || [], multi: false };
@@ -189,6 +219,14 @@ function useAutocompleteDataFacetExtension(viewRef) {
             }
         },
 
+        getSkills() {
+            const { skillOwnerId, skillData } = dataRef.current;
+            if (!skillOwnerId || !skillData) return [];
+
+            if (skillOwnerId[0] === '1') return Object.values(skillData.skills).map(x => ({ id: x.data.id, label: x.data.name, item: x.data }));
+            return [...skillData.awakeningSkills, ...(skillData.corrosionSkills ?? [])].map(x => ({ id: x.data.id, label: x.data.name, item: x.data }));
+        },
+
         getOriginalData(type) {
             const {
                 identities,
@@ -203,6 +241,7 @@ function useAutocompleteDataFacetExtension(viewRef) {
             switch (convertTokenAlias(type)) {
                 case "identity": return identities;
                 case "ego": return egos;
+                case "skill": return { ...identities, ...egos };
                 case "status":
                 case "statusicon":
                     return statuses;
@@ -263,8 +302,82 @@ async function tokenCompletionSourceType(context) {
             return {
                 label: entry,
                 detail: `(${isAlias ? tokenAliases[entry] : entry})`,
-                apply: entry + ":",
+                apply(view, completion, from, to) {
+                    view.dispatch({
+                        changes: {
+                            from,
+                            to,
+                            insert: entry + ":"
+                        }
+                    });
+
+                    startCompletion(view);
+                },
+                // apply: entry + ":",
                 info: () => constructMarkdownEditorTypeTooltip(isAlias ? tokenAliases[entry] : entry)
+            };
+        })
+
+        resolve({
+            from,
+            to,
+            options,
+            filter: false
+        });
+    });
+}
+
+async function tokenCompletionSourceSkill(context, ownerId, query) {
+    const from = context.matchBefore(/[^|]*$/).from;
+    const to = context.pos;
+
+    const dataProvider = context.state.facet(autocompleteDataFacet)[0];
+
+    if (!dataProvider.hasSkillOwner(ownerId)) {
+        dataProvider.loadSkillOwner(ownerId);
+
+        return {
+            from: context.pos,
+            to: context.pos,
+            filter: false,
+            options: [{
+                label: "Loading…",
+                type: "info",
+                boost: -1e9, // never selected
+                info: () => {
+                    const div = document.createElement("div");
+                    div.style.padding = "8px";
+                    div.style.opacity = "0.7";
+                    div.style.fontStyle = "italic";
+                    div.textContent = "Loading data…";
+                    return div;
+                }
+            }]
+        };
+    }
+
+    return new Promise(resolve => {
+        const entries = dataProvider.getSkills();
+
+        const matches = entries
+            .map(e => ({
+                entry: e,
+                score: fuzzyScore(query, e.label)
+            }))
+            .filter(m => m.score > -Infinity)
+            .sort((a, b) => a.score === b.score ? a.entry.id.localeCompare(b.entry.id) : b.score - a.score);
+
+        const options = matches.map(m => {
+            const entry = m.entry;
+            const token = entry.id.slice(-2);
+
+            return {
+                label: entry.item.name,
+                detail: `(${token})`,
+                apply: `${token}}`,
+                info: () => {
+                    return constructMarkdownEditorAutocompleteTooltip(entry.item, "skill");
+                }
             };
         })
 
@@ -287,13 +400,18 @@ async function tokenCompletionSource(context) {
     const type = convertTokenAlias(parts[0]);
     if (!type) return null;
     if (![
-        "identity", "ego", "status", "statusicon",
+        "identity", "ego", "skill", "status", "statusicon",
         "giftname", "gifticons", "themepack", "encounter",
         "icon", "keyword", "sinner", "sinnericon"
     ].includes(type)) return null;
 
     const rest = parts.slice(1);
     const query = rest.length ? rest[rest.length - 1] : "";
+
+    if (type === "skill") {
+        const skillParts = query.split("|");
+        if (skillParts.length === 2) return tokenCompletionSourceSkill(context, skillParts[0], skillParts[1]);
+    }
 
     const from = context.matchBefore(/[^:]*$/).from;
     const to = context.pos;
@@ -304,6 +422,11 @@ async function tokenCompletionSource(context) {
         dataProvider.load(type);
         if ((type === "giftname" || type === "gifticons") && !dataProvider.has("status")) {
             dataProvider.load("status");
+        }
+
+        if(type === "skill") {
+            dataProvider.load("identity");
+            dataProvider.load("ego");
         }
 
         return {
@@ -329,6 +452,14 @@ async function tokenCompletionSource(context) {
     return new Promise(resolve => {
         const { entries, multi } = dataProvider.get(type);
 
+        const getApplyString = (token) => {
+            if (type === "skill") return `${token}|`;
+            if (multi) return token;
+            return `${token}}`
+        }
+
+        const completeType = type === "skill" ? "skillOwner" : type;
+
         const matches = entries
             .map(e => ({
                 entry: e,
@@ -342,16 +473,30 @@ async function tokenCompletionSource(context) {
             const token = entry.id;
 
             return {
-                label: createAutocompleteLabel(entry.item, type),
+                label: createAutocompleteLabel(entry.item, completeType),
                 detail: `(${token})`,
-                apply: token + (multi ? "" : "}"),
+                apply(view, completion, from, to) {
+                    view.dispatch({
+                        changes: {
+                            from,
+                            to,
+                            insert: getApplyString(token)
+                        },
+                        selection: {
+                            anchor: from + token.length + 1,
+                            head: from + token.length + 1
+                        }
+                    });
+
+                    if (type === "skill") startCompletion(view);
+                },
                 info: () => {
                     if (type === "giftname" || type === "gifticons") {
                         return constructMarkdownEditorAutocompleteTooltip(entry.item, type, dataProvider.getOriginalData("status"));
                     } else if (type === "sinnericon") {
                         return constructMarkdownEditorAutocompleteTooltip(entry.id, type);
                     } else {
-                        return constructMarkdownEditorAutocompleteTooltip(entry.item, type);
+                        return constructMarkdownEditorAutocompleteTooltip(entry.item, completeType);
                     }
                 }
             };

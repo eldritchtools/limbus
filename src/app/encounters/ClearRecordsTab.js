@@ -5,9 +5,10 @@ import styles from "./ClearRecordsTab.module.css";
 import { DeleteSolid, EditSolid } from "../components/contentActions/Symbols";
 import MarkdownEditorWrapper from "../components/markdown/MarkdownEditorWrapper";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
+import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
-import ImageCarousel from "../components/objects/ImageCarousel";
+import ImageCarousel, { finalizeImageIds } from "../components/objects/ImageCarousel";
 import { ImageUploader } from "../components/objects/ImageUploader";
 import NumberInput from "../components/objects/NumberInput";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -58,9 +59,12 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
             <td style={cellStyle}><Username username={record.username} /></td>
             <td style={cellStyle}>{record.turn_count}</td>
             <td style={cellStyle}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <ImageCarousel imageIds={record.image_ids} maxImages={3} mini={true} />
-                </div>
+                {record.image_ids.length > 0 ?
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <ImageCarousel imageIds={record.image_ids} maxImages={3} mini={true} />
+                    </div> :
+                    <div>None</div>
+                }
             </td>
             <td style={cellStyle}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
@@ -119,9 +123,10 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
         const record = records[index];
 
         const buildsStr = record.team_data?.builds ?
-            record.team_data.builds.reduce((acc, build) => {
-                if (build.type === "teamCode") return acc + "Code: " + build.code + "\n";
-                if (build.type === "buildId") return acc + "Build: {build:" + build.id + "}\n";
+            record.team_data.builds.reduce((acc, build, i) => {
+                if (build.type === "code") return acc + `Team ${i + 1}: {teamcode:${build.teamCode}}\n`;
+                if (build.type === "build") return acc + `Team ${i + 1}: {build:${build.buildId}}\n`;
+                if (build.type === "text") return acc + `Team ${i + 1}: ${build.text}\n`;
                 return acc;
             }, "")
             : null;
@@ -142,7 +147,7 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
                         </>}
                         {record.image_ids && record.image_ids.length > 0 && <>
                             <span style={{ fontSize: "1.2rem", fontWeight: "bold", marginTop: "0.5rem" }}>Images:</span>
-                            <ImageCarousel imageIds={record.image_ids} maxImages={3} />
+                            <ImageCarousel imageIds={record.image_ids} />
                         </>}
                     </div>
                 </td>
@@ -155,11 +160,11 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
             <thead>
                 <tr style={{ height: "1.25rem" }}>
                     {!editable && <th>Position</th>}
-                    <th>User</th>
-                    <th>Turns</th>
-                    <th>Images</th>
-                    <th>Date</th>
-                    <th>Actions</th>
+                    <th style={{ padding: "0.5rem" }}>User</th>
+                    <th style={{ padding: "0.5rem" }}>Turns</th>
+                    <th style={{ padding: "0.5rem" }}>Images</th>
+                    <th style={{ padding: "0.5rem" }}>Date</th>
+                    <th style={{ padding: "0.5rem" }}>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -171,6 +176,7 @@ function RecordsTable({ records, startPosition, editable = false, triggerEdit, t
 
 export default function ClearRecordsTab({ siteId, type }) {
     const { user, profile } = useAuth();
+    const { openSelectBuildModal, closeModal } = useModal();
     const [difficulty, setDifficulty] = useState(type === "reflectrial" ? "normal" : null);
     const [page, setPage] = useState(1);
     const [clearRecords, setClearRecords] = useState([]);
@@ -181,6 +187,7 @@ export default function ClearRecordsTab({ siteId, type }) {
     const [editing, setEditing] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState("");
+    const [draftImages, setDraftImages] = useState({});
 
     useEffect(() => {
         if (!siteId) return;
@@ -219,7 +226,7 @@ export default function ClearRecordsTab({ siteId, type }) {
     }
 
     const handleSubmitStart = () => {
-        if(!user || !profile) return;
+        if (!user || !profile) return;
 
         setRecord({
             turn_count: 0,
@@ -253,17 +260,33 @@ export default function ClearRecordsTab({ siteId, type }) {
                 return;
             }
 
+            const newRecord = { ...record };
+            if (!record.created_at) {
+                newRecord.created_at = Date.now();
+                newRecord.updated_at = newRecord.created_at;
+            } else {
+                newRecord.updated_at = Date.now();
+            }
+
+            let finalizedImageIds;
+            try {
+                finalizedImageIds = await finalizeImageIds(record.image_ids, draftImages);
+            } catch (err) {
+                setMessage("Failed to upload images");
+                return;
+            }
+
             if (record.id) {
                 setSubmitting(true);
-                const result = await updateClearRecord(record.id, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, record.image_ids);
-                setUserRecords(p => p.map(r => r.id === record.id ? record : r));
+                const result = await updateClearRecord(record.id, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, finalizedImageIds);
+                setUserRecords(p => p.map(r => r.id === record.id ? {...record, image_ids: finalizedImageIds} : r));
                 setRecord(null);
                 setEditing(false);
                 setSubmitting(false);
             } else {
                 setSubmitting(true);
-                const result = await createClearRecord(siteId, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, record.image_ids);
-                setUserRecords(p => [{ id: result, ...record }, ...p]);
+                const result = await createClearRecord(siteId, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, finalizedImageIds);
+                setUserRecords(p => [{ id: result, ...record, image_ids: finalizedImageIds }, ...p]);
                 setRecord(null);
                 setEditing(false);
                 setSubmitting(false);
@@ -276,18 +299,41 @@ export default function ClearRecordsTab({ siteId, type }) {
                 <NumberInput min={1} value={record.turn_count} onChange={x => setRecord(p => ({ ...p, turn_count: x }))} style={{ width: "5ch", textAlign: "center" }} />
             </div>
 
-            {/* <span style={{ fontSize: "1.2rem" }} >Teams</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                <span style={{ fontSize: "1.2rem" }} >Teams</span>
                 <span className="sub-text">
                     Include information about the teams you used.
                 </span>
+                <div>
+                    <button onClick={() => setRecord(p => ({
+                        ...p, team_data: {
+                            ...(p.team_data ?? {}), builds:
+                                [...(p.team_data?.builds ?? []), { type: "" }]
+                        }
+                    }))}>
+                        Add Team
+                    </button>
+                </div>
                 {
-                    record.teamData.builds.map((build, i) => <div key={i} style={{display: "flex", gap: "0.5rem"}}>
+                    (record.team_data.builds ?? []).map((build, i) => <div key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <button onClick={() => setRecord(p => ({
+                            ...p, team_data: {
+                                ...p.team_data, builds:
+                                    p.team_data.builds.filter((x, ind) => ind !== i)
+                            }
+                        }))}>
+                            <DeleteSolid />
+                        </button>
 
-                        <select value={build.type} 
-                            onChange={x => setRecord(p => ({...p, teamData: {...p.teamData, builds: 
-                                p.teamData.builds.map((buildInner, j) => i === j ? {...buildInner, type: x} : buildInner)
-                            }}))}
+                        <select value={build.type}
+                            onChange={e => setRecord(p => ({
+                                ...p, team_data: {
+                                    ...p.team_data, builds:
+                                        p.team_data.builds.map((buildInner, j) => i === j ? { ...buildInner, type: e.target.value } : buildInner)
+                                }
+                            }))}
                         >
+                            <option key={""} value={""} disabled hidden>Select a Type</option>
                             <option key={"build"} value={"build"}>Build</option>
                             <option key={"code"} value={"code"}>Team Code</option>
                             <option key={"text"} value={"text"}>Text</option>
@@ -296,11 +342,59 @@ export default function ClearRecordsTab({ siteId, type }) {
                         {
                             build.type === "build" ?
                                 <>
-
-                                </>
+                                    <button onClick={() => openSelectBuildModal({
+                                        onSelectBuild: x => {
+                                            setRecord(p => ({
+                                                ...p, team_data: {
+                                                    ...p.team_data, builds:
+                                                        p.team_data.builds.map((buildInner, j) => i === j ? { ...buildInner, buildId: x.id } : buildInner)
+                                                }
+                                            }));
+                                            closeModal();
+                                        }
+                                    })}>
+                                        Select Build
+                                    </button>
+                                    {
+                                        build.buildId &&
+                                        <MarkdownRenderer content={`{build:${build.buildId}}`} />
+                                    }
+                                </> :
+                                build.type === "code" ?
+                                    <>
+                                        <input
+                                            value={build.teamCode ?? ""}
+                                            onChange={e => setRecord(p => ({
+                                                ...p, team_data: {
+                                                    ...p.team_data, builds:
+                                                        p.team_data.builds.map((buildInner, j) => i === j ? { ...buildInner, teamCode: e.target.value } : buildInner)
+                                                }
+                                            }))}
+                                            placeholder="Input your team code..."
+                                        />
+                                        {
+                                            build.teamCode &&
+                                            <MarkdownRenderer content={`{tc:${build.teamCode}}`} />
+                                        }
+                                    </> :
+                                    build.type === "text" ?
+                                        <>
+                                            <input
+                                                value={build.text ?? ""}
+                                                onChange={e => setRecord(p => ({
+                                                    ...p, team_data: {
+                                                        ...p.team_data, builds:
+                                                            p.team_data.builds.map((buildInner, j) => i === j ? { ...buildInner, text: e.target.value } : buildInner)
+                                                    }
+                                                }))}
+                                                placeholder="Describe your team..."
+                                            />
+                                        </> :
+                                        null
                         }
                     </div>)
-                } */}
+                }
+            </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
                 <span style={{ fontSize: "1.2rem" }} >Notes</span>
@@ -314,8 +408,13 @@ export default function ClearRecordsTab({ siteId, type }) {
                 <span className="sub-text">
                     Attach clear screens or other related screenshots.
                 </span>
-                <ImageUploader onImageUploaded={imageId => setRecord(p => ({ ...p, image_ids: [...p.image_ids, imageId] }))} />
-                <ImageCarousel imageIds={record.image_ids} onRemoveImage={id => setRecord(p => ({ ...p, image_ids: p.image_ids.filter(x => x !== id) }))} editable={true} markdownCopyable={false} />
+                <ImageCarousel
+                    imageIds={record.image_ids}
+                    onAddImages={ids => setRecord(p => ({ ...p, image_ids: [...p.image_ids, ...ids] }))}
+                    onRemoveImage={id => setRecord(p => ({ ...p, image_ids: p.image_ids.filter(x => x !== id) }))}
+                    draftImages={draftImages} setDraftImages={setDraftImages}
+                    editable={true} markdownCopyable={false}
+                />
             </div>
 
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
@@ -329,11 +428,11 @@ export default function ClearRecordsTab({ siteId, type }) {
                 {message.length > 0 && <span>{message}</span>}
             </div>
         </div>
-    }, [siteId, difficulty, record, editing, submitting, message]);
+    }, [siteId, difficulty, record, editing, submitting, message, openSelectBuildModal, closeModal, draftImages, setDraftImages]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <span className="sub-text">
-            Clear records are not pre-vetted. Submissions that are obviously fake may be deleted without warning. This feature is still a work-in-progress, so there may be some issues.
+            Clear records are not pre-vetted. Submissions that are obviously fake may be deleted without warning.
         </span>
         {
             type === "reflectrial" ? <div style={{ display: "flex", gap: "1rem" }}>

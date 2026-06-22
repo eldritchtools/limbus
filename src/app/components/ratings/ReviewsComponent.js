@@ -15,8 +15,8 @@ export default function ReviewsComponent({ type, id, sortType, userReview }) {
         const loadReviews = async () => {
             setLoading(true);
             const fetchedReviews = await getItemReviews({ itemType: type, itemId: id, page: page, sortType: sortType });
-            const ids = fetchedReviews.map(({id}) => id);
-            if(user) await fetchReviewInteractions(ids);
+            const ids = fetchedReviews.map(({ id }) => id);
+            if (user) await fetchReviewInteractions(ids);
 
             setReviews(fetchedReviews);
             setLoading(false);
@@ -31,11 +31,16 @@ export default function ReviewsComponent({ type, id, sortType, userReview }) {
         </span>;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "min(480px, 100%)", flex: 1 }}>
-        {userReview?.review_text &&
+        {userReview?.review_text && <>
+            <span style={{ fontWeight: "bold" }}>My Review</span>
             <Review type={type} reviewData={userReview} backReview={userReview} usernameOverride={profile?.username} userAvatarIdOverride={profile?.avatar_id} />
+            <span style={{ fontWeight: "bold" }}>Reviews</span>
+        </>
         }
         {
-            reviews.map(review => <Review key={review.id} type={type} reviewData={review} backReview={review} />)
+            reviews
+                .filter(review => review.user?.username !== profile.username)
+                .map(review => <Review key={review.id} type={type} reviewData={review} backReview={review} />)
         }
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
             <button className="page-button" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>

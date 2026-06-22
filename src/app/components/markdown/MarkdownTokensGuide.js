@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 
 import MarkdownRenderer from "./MarkdownRenderer";
 import { tokensDescs } from "./tokens";
+import { useSkillData } from "../dataHooks/skills";
 import DropdownButton from "../objects/DropdownButton";
 import { AdditionalIconDropdownSelector } from "../selectors/AdditionalIconSelectors";
+import DropdownSelectorWithExclusion from "../selectors/DropdownSelectorWithExclusion";
 import { EgoDropdownSelector } from "../selectors/EgoSelectors";
 import { EncounterDropdownSelector } from "../selectors/EncounterSelectors";
 import { GiftDropdownSelector } from "../selectors/GiftSelectors";
@@ -14,11 +16,16 @@ import { KeywordDropdownSelector } from "../selectors/KeywordSelectors";
 import { SinnerDropdownSelector } from "../selectors/SinnerSelectors";
 import { StatusDropdownSelector } from "../selectors/StatusSelectors";
 import { ThemePackDropdownSelector } from "../selectors/ThemePackSelectors";
+import { getSkillTooltipProps } from "../tooltips/SkillTooltip";
+
+import { checkFilterMatch } from "@/app/lib/filter";
+import { selectStyle } from "@/app/styles/selectStyle";
 
 const options = {
     "none": "Select a type",
     "identity": "identity",
     "ego": "ego",
+    "skill": "skill",
     "status": "status",
     "statusicon": "statusicon",
     "keyword": "keyword",
@@ -30,6 +37,7 @@ const options = {
     "build": "build",
     "mdplan": "mdplan",
     "collection": "collection",
+    "teamcode": "teamcode",
     "user": "user",
     "sinner": "sinner",
     "sinnericon": "sinnericon",
@@ -193,12 +201,67 @@ function InputGuide({ type, editorRef, onChange, guideValue, setGuideValue }) {
     return null;
 }
 
+function SkillGuide({ editorRef, onChange, guideValue, setGuideValue }) {
+    const [type, setType] = useState("identity");
+    const [item, setItem] = useState(null);
+    const skillData = useSkillData(type, item, 5);
+
+    const optionsMapped = useMemo(() => skillData ?
+        (
+            (type === "identity" ?
+                Object.entries(skillData.skills) :
+                [...skillData.awakeningSkills, ...(skillData.corrosionSkills ?? [])].map(x => [x.data.id, x])
+            ).reduce((acc, [id, skill]) => {
+                acc[id] = {
+                    value: `${id.slice(0, -2)}|${id.slice(-2)}`,
+                    label: <div style={{ fontWeight: "bold" }} {...getSkillTooltipProps(id.slice(0, -2), id.slice(-2))}>
+                        {skill.data.name}
+                    </div>,
+                    searchStrings: [skill.data.name]
+                };
+                return acc;
+            }, {})
+        ) :
+        {},
+        [type, skillData]
+    );
+
+    return <GuideBase type={"skill"} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: 'center' }}>
+            <select value={type} onChange={e => { setType(e.target.value); setItem(null); }}>
+                <option value="identity">Identity</option>
+                <option value="ego">E.G.O</option>
+            </select>
+
+            {type === "identity" ?
+                <IdentityDropdownSelector selected={item} setSelected={setItem} /> :
+                <EgoDropdownSelector selected={item} setSelected={setItem} />
+            }
+
+            {item &&
+                <DropdownSelectorWithExclusion
+                    optionsMapped={optionsMapped}
+                    selected={guideValue}
+                    setSelected={setGuideValue}
+                    placeholder={"Search Skills..."}
+                    filterFunction={(candidate, input) => checkFilterMatch(input, candidate.data.searchStrings)}
+                    isMulti={false}
+                    styles={selectStyle}
+                />
+            }
+        </div>
+    </GuideBase>
+}
+
 function GuideAssembler({ guideTab, editorRef, onChange, guideValue, setGuideValue }) {
     if (["identity", "ego", "status", "statusicon", "keyword", "giftname", "gifticons", "themepack", "encounter", "icon", "sinner", "sinnericon"].includes(guideTab))
         return <SelectorGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
-    if (["build", "mdplan", "collection", "user", "emote", "sticker"].includes(guideTab))
+    if (["build", "mdplan", "collection", "teamcode", "user", "emote", "sticker"].includes(guideTab))
         return <InputGuide type={guideTab} editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
+
+    if (guideTab === "skill")
+        return <SkillGuide editorRef={editorRef} onChange={onChange} guideValue={guideValue} setGuideValue={setGuideValue} />
 
     return null;
 }
