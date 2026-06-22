@@ -424,6 +424,11 @@ async function tokenCompletionSource(context) {
             dataProvider.load("status");
         }
 
+        if(type === "skill") {
+            dataProvider.load("identity");
+            dataProvider.load("ego");
+        }
+
         return {
             from: context.pos,
             to: context.pos,
