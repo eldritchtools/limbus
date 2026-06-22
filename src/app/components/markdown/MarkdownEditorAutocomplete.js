@@ -476,6 +476,10 @@ async function tokenCompletionSource(context) {
                             from,
                             to,
                             insert: getApplyString(token)
+                        },
+                        selection: {
+                            anchor: from + token.length + 1,
+                            head: from + token.length + 1
                         }
                     });
 
