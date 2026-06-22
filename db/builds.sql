@@ -264,7 +264,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION create_build_v5(
+CREATE OR REPLACE FUNCTION create_build_v6(
   p_user_id uuid,
   p_title TEXT,
   p_body TEXT,
@@ -348,6 +348,11 @@ BEGIN
     ON CONFLICT DO NOTHING;
   END LOOP;
 
+  INSERT INTO public.images (id, created_at)
+  SELECT x.id, NOW()
+  FROM unnest(p_image_ids) AS x(id)
+  ON CONFLICT (id) DO NOTHING;
+
   INSERT INTO image_attachments (
     image_id,
     target_type,
@@ -364,7 +369,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION update_build_v5(
+CREATE OR REPLACE FUNCTION update_build_v6(
   p_build_id UUID,
   p_user_id UUID,
   p_title TEXT,
@@ -463,6 +468,11 @@ BEGIN
   INSERT INTO public.build_tags (build_id, tag_id)
   SELECT p_build_id, unnest(_tag_ids)
   ON CONFLICT DO NOTHING;
+
+  INSERT INTO public.images (id, created_at)
+  SELECT x.id, NOW()
+  FROM unnest(p_image_ids) AS x(id)
+  ON CONFLICT (id) DO NOTHING;
 
   DELETE FROM image_attachments
   WHERE target_type = 'build'::target_type_enum

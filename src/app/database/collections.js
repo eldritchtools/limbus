@@ -35,11 +35,11 @@ export async function getCollection(id) {
 }
 
 export async function insertCollection(params) {
-    return callRPC("create_collection_v2", convertParams(params, createParams));
+    return callRPC("create_collection_v3", convertParams(params, createParams));
 }
 
 export async function updateCollection(params) {
-    await callRPC("update_collection_v2", convertParams(params, createParams));
+    await callRPC("update_collection_v3", convertParams(params, createParams));
     return params.collectionId;
 }
 

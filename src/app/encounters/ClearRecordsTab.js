@@ -8,7 +8,7 @@ import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
-import ImageCarousel from "../components/objects/ImageCarousel";
+import ImageCarousel, { finalizeImageIds } from "../components/objects/ImageCarousel";
 import { ImageUploader } from "../components/objects/ImageUploader";
 import NumberInput from "../components/objects/NumberInput";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -187,6 +187,7 @@ export default function ClearRecordsTab({ siteId, type }) {
     const [editing, setEditing] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState("");
+    const [draftImages, setDraftImages] = useState({});
 
     useEffect(() => {
         if (!siteId) return;
@@ -267,17 +268,25 @@ export default function ClearRecordsTab({ siteId, type }) {
                 newRecord.updated_at = Date.now();
             }
 
+            let finalizedImageIds;
+            try {
+                finalizedImageIds = await finalizeImageIds(record.image_ids, draftImages);
+            } catch (err) {
+                setMessage("Failed to upload images");
+                return;
+            }
+
             if (record.id) {
                 setSubmitting(true);
-                const result = await updateClearRecord(record.id, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, record.image_ids);
-                setUserRecords(p => p.map(r => r.id === record.id ? record : r));
+                const result = await updateClearRecord(record.id, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, finalizedImageIds);
+                setUserRecords(p => p.map(r => r.id === record.id ? {...record, image_ids: finalizedImageIds} : r));
                 setRecord(null);
                 setEditing(false);
                 setSubmitting(false);
             } else {
                 setSubmitting(true);
-                const result = await createClearRecord(siteId, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, record.image_ids);
-                setUserRecords(p => [{ id: result, ...record }, ...p]);
+                const result = await createClearRecord(siteId, difficulty, record.turn_count, record.team_data, record.video_url.trim(), record.notes, finalizedImageIds);
+                setUserRecords(p => [{ id: result, ...record, image_ids: finalizedImageIds }, ...p]);
                 setRecord(null);
                 setEditing(false);
                 setSubmitting(false);
@@ -399,8 +408,13 @@ export default function ClearRecordsTab({ siteId, type }) {
                 <span className="sub-text">
                     Attach clear screens or other related screenshots.
                 </span>
-                <ImageUploader onImageUploaded={imageId => setRecord(p => ({ ...p, image_ids: [...p.image_ids, imageId] }))} />
-                <ImageCarousel imageIds={record.image_ids} onRemoveImage={id => setRecord(p => ({ ...p, image_ids: p.image_ids.filter(x => x !== id) }))} editable={true} markdownCopyable={false} />
+                <ImageCarousel
+                    imageIds={record.image_ids}
+                    onAddImages={ids => setRecord(p => ({ ...p, image_ids: [...p.image_ids, ...ids] }))}
+                    onRemoveImage={id => setRecord(p => ({ ...p, image_ids: p.image_ids.filter(x => x !== id) }))}
+                    draftImages={draftImages} setDraftImages={setDraftImages}
+                    editable={true} markdownCopyable={false}
+                />
             </div>
 
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
@@ -414,7 +428,7 @@ export default function ClearRecordsTab({ siteId, type }) {
                 {message.length > 0 && <span>{message}</span>}
             </div>
         </div>
-    }, [siteId, difficulty, record, editing, submitting, message, openSelectBuildModal, closeModal]);
+    }, [siteId, difficulty, record, editing, submitting, message, openSelectBuildModal, closeModal, draftImages, setDraftImages]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <span className="sub-text">

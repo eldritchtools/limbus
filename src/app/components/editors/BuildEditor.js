@@ -9,8 +9,7 @@ import { useData } from "../DataProvider";
 import KeywordIcon from "../icons/KeywordIcon";
 import StatusIcon from "../icons/StatusIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
-import ImageCarousel from "../objects/ImageCarousel";
-import { ImageUploader } from "../objects/ImageUploader";
+import ImageCarousel, { finalizeImageIds } from "../objects/ImageCarousel";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import { StatusDropdownSelector } from "../selectors/StatusSelectors";
 import TagSelector, { tagToTagSelectorOption, validateTag } from "../selectors/TagSelector";
@@ -44,6 +43,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
     const [imageIds, setImageIds] = useState([]);
+    const [draftImages, setDraftImages] = useState({});
     const [identityUpties, setIdentityUpties] = useState(Array.from({ length: 12 }, () => ""));
     const [identityLevels, setIdentityLevels] = useState(Array.from({ length: 12 }, () => ""));
     const [egoThreadspins, setEgoThreadspins] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => "")));
@@ -209,10 +209,19 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             setMessage("Invalid YouTube video id.");
             return;
         }
+        
+        setSaving(true);
+        let finalizedImageIds;
+        try {
+            finalizedImageIds = await finalizeImageIds(imageIds, draftImages);
+        } catch(err) {
+            setMessage("Failed to upload images");
+            setSaving(false);
+            return;
+        }
 
         const extraOpts = encodeBuildExtraOpts({ identityUpties, identityLevels, egoThreadspins, sinnerNotes, addedIcons, iconSwaps });
 
-        setSaving(true);
         if (user) {
             const buildData = {
                 userId: user.id,
@@ -222,7 +231,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 teamCode: "",
                 youtubeVideoId,
                 tags: tagsConverted,
-                imageIds: imageIds,
+                imageIds: finalizedImageIds,
                 extraOpts, blockDiscovery,
                 published: isPublished,
             }
@@ -250,7 +259,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 like_count: 0,
                 comment_count: 0,
                 tags: tagsConverted,
-                image_ids: imageIds,
+                image_ids: finalizedImageIds,
                 block_discovery: blockDiscovery,
                 is_published: false,
                 created_at: createdAt ?? Date.now(),
@@ -299,9 +308,15 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
 
         {user && <React.Fragment>
             <span style={{ fontSize: "1.2rem" }}>Images</span>
-            <span className="sub-text">{uiStrings.postImages}</span>
-            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1} />
-            <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
+            <span className="sub-text" style={{whiteSpace: "pre-wrap"}}>{uiStrings.postImages}</span>
+            <ImageCarousel 
+                imageIds={imageIds} 
+                onAddImages={ids => setImageIds(p => [...p, ...ids].slice(0, 4))} 
+                onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} 
+                draftImages={draftImages}
+                setDraftImages={setDraftImages}
+                editable={true}
+            />
         </React.Fragment>}
 
         <span style={{ fontSize: "1.2rem" }}>Keywords and Icons</span>

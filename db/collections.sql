@@ -359,7 +359,7 @@ begin
 end;
 $$;
 
-create or replace function public.create_collection_v2(
+create or replace function public.create_collection_v3(
   p_title text,
   p_body text,
   p_short_desc text,
@@ -450,6 +450,11 @@ begin
     ON CONFLICT DO NOTHING;
   END LOOP;
 
+  INSERT INTO public.images (id, created_at)
+  SELECT x.id, NOW()
+  FROM unnest(p_image_ids) AS x(id)
+  ON CONFLICT (id) DO NOTHING;
+
   INSERT INTO image_attachments (
     image_id,
     target_type,
@@ -467,7 +472,7 @@ begin
 end;
 $$;
 
-create or replace function public.update_collection_v2(
+create or replace function public.update_collection_v3(
   p_collection_id uuid,
   p_title text,
   p_body text,
@@ -566,6 +571,11 @@ begin
   INSERT INTO public.collection_tags (collection_id, tag_id)
   SELECT p_collection_id, unnest(_tag_ids)
   ON CONFLICT DO NOTHING;
+  
+  INSERT INTO public.images (id, created_at)
+  SELECT x.id, NOW()
+  FROM unnest(p_image_ids) AS x(id)
+  ON CONFLICT (id) DO NOTHING;
 
   DELETE FROM image_attachments
   WHERE target_type = 'collection'::target_type_enum

@@ -119,8 +119,8 @@ export function ModalProvider({ children }) {
         openModal("selectDeployment", { initialActive, identityIds, activeSinners, onSave });
     }
 
-    const openImageCarouselModal = ({ imageIds, startingPosition }) => {
-        openModal("imageCarousel", { imageIds, startingPosition });
+    const openImageCarouselModal = ({ imageIds, draftImages, startingPosition }) => {
+        openModal("imageCarousel", { imageIds, draftImages, startingPosition });
     }
 
     const openImageModal = ({ type, data, mod }) => {

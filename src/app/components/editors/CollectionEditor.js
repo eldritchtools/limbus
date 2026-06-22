@@ -7,7 +7,7 @@ import MdPlan from "../contentCards/MdPlan";
 import TeamBuild from "../contentCards/TeamBuild";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import { useModal } from "../modals/ModalProvider";
-import ImageCarousel from "../objects/ImageCarousel";
+import ImageCarousel, { finalizeImageIds } from "../objects/ImageCarousel";
 import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
@@ -111,6 +111,7 @@ export default function CollectionEditor({ mode, collectionId }) {
     const [contributions, setContributions] = useState('closed');
     const [tags, setTags] = useState([]);
     const [imageIds, setImageIds] = useState([]);
+    const [draftImages, setDraftImages] = useState({});
     const [items, setItems] = useState([]);
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
@@ -169,8 +170,17 @@ export default function CollectionEditor({ mode, collectionId }) {
         }
 
         const tagsConverted = tags.map(t => t.value);
-
+                
         setSaving(true);
+        let finalizedImageIds;
+        try {
+            finalizedImageIds = await finalizeImageIds(imageIds, draftImages);
+        } catch(err) {
+            setSaving(false);
+            setMessage("Failed to upload images");
+            return;
+        }
+
         if (user) {
             const trimmedItems = items.map(({ type, data, note, submitted_by }) => {
                 const result = { target_type: type, target_id: data.id, note };
@@ -183,7 +193,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 items: trimmedItems,
                 submissionMode: contributions,
                 tags: tagsConverted,
-                imageIds: imageIds,
+                imageIds: finalizedImageIds,
                 published: isPublished,
                 blockDiscovery
             }
@@ -204,7 +214,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                 short_desc: shortDesc,
                 items: items,
                 tags: tagsConverted,
-                image_ids: imageIds,
+                image_ids: finalizedImageIds,
                 block_discovery: blockDiscovery,
                 like_count: 0,
                 comment_count: 0,
@@ -246,9 +256,15 @@ export default function CollectionEditor({ mode, collectionId }) {
 
         {user && <React.Fragment>
             <span style={{ fontSize: "1.2rem" }}>Images</span>
-            <span className="sub-text">{uiStrings.postImages}</span>
-            <ImageUploader onImageUploaded={imageId => setImageIds(p => [...p, imageId])} disabled={imageIds.length >= 1} />
-            <ImageCarousel imageIds={imageIds} onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} editable={true} />
+            <span className="sub-text" style={{whiteSpace: "pre-wrap"}}>{uiStrings.postImages}</span>
+            <ImageCarousel 
+                imageIds={imageIds} 
+                onAddImages={ids => setImageIds(p => [...p, ...ids].slice(0, 4))} 
+                onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} 
+                draftImages={draftImages}
+                setDraftImages={setDraftImages}
+                editable={true}
+            />
         </React.Fragment>}
 
         {!isLocalId(collectionId) || (mode === "create" && user) ? <>

@@ -16,12 +16,8 @@
   transition:
     filter 0.2s ease,
     transform 0.2s ease;
-
+    
   cursor: pointer;
-}
-
-.imageItem:hover .image {
-  filter: brightness(0.8);
 }
 
 .removeButton {

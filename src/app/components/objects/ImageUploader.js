@@ -12,10 +12,12 @@ export function ImageUploader({ onImageUploaded, disabled }) {
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch("/api/image", {
-            method: "POST",
-            body: formData,
-        });
+        console.log(file);
+
+        // const res = await fetch("/api/image", {
+        //     method: "POST",
+        //     body: formData,
+        // });
 
         const data = await res.json();
         if (data?.id) onImageUploaded(data.id);
