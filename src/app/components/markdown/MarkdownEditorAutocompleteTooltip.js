@@ -5,7 +5,9 @@ import { getAdditionalIconSrc } from "../icons/AdditionalIcon";
 import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
 import { getIdentityImgSrc } from "../icons/IdentityIcon";
+import { getKeywordImgSrc } from "../icons/KeywordIcon";
 import { getSinnerIconSrc } from "../icons/SinnerIcon";
+import { getSkillIconSrc } from "../icons/SkillIcon";
 import { getStatusImgSrc } from "../icons/StatusIcon";
 import { getThemePackImgSrc, getThemePackOverlayImgSrc } from "../icons/ThemePackIcon";
 
@@ -110,6 +112,54 @@ function constructEgoAutocompleteTooltip(entry) {
     return wrapper;
 }
 
+function constructSkillAutocompleteTooltip(entry) {
+    const wrapper = constructWrapper(240);
+
+    wrapper.appendChild(constructTitleElement(entry.name));
+
+    const body = document.createElement("div");
+    body.style.display = "flex";
+    body.style.flexDirection = "row";
+    body.style.alignItems = "center";
+    body.style.justifyContent = "center";
+    body.style.gap = "0.2rem";
+
+    body.appendChild(constructImageElement(getSkillIconSrc(entry), 92));
+
+    const details = document.createElement("div");
+    details.style.display = "flex";
+    details.style.flexDirection = "column";
+    details.style.gap = "0.2rem";
+
+    details.appendChild(constructTextElement(
+        `Power: ${entry.baseValue} ${entry.coinValue < 0 ? entry.coinValue : `+${entry.coinValue}`}`
+    ));
+
+    details.appendChild(constructTextElement(
+        `Coins: ${entry.coins.length}`
+    ));
+
+    const keywords = document.createElement("div");
+    keywords.style.display = "flex";
+
+    keywords.appendChild(constructImageElement(getKeywordImgSrc(entry.affinity), 32));
+    if(entry.defType === "attack") {
+        keywords.appendChild(constructImageElement(getKeywordImgSrc(entry.atkType), 32));
+    } else if(entry.defType === "counter") {
+        keywords.appendChild(constructImageElement(getKeywordImgSrc(entry.defType), 32));
+        keywords.appendChild(constructImageElement(getKeywordImgSrc(entry.atkType), 32));
+    } else {
+        keywords.appendChild(constructImageElement(getKeywordImgSrc(entry.defType), 32));
+    }
+
+    details.appendChild(keywords);
+    body.appendChild(details);
+
+    wrapper.appendChild(body);
+
+    return wrapper;
+}
+
 function constructStatusAutocompleteTooltip(entry) {
     const wrapper = constructWrapper(320);
 
@@ -187,6 +237,12 @@ function constructSinnerIconAutocompleteTooltip(entry) {
 export default function constructMarkdownEditorAutocompleteTooltip(entry, type, otherData = null) {
     if (type === "identity") return constructIdentityAutocompleteTooltip(entry);
     if (type === "ego") return constructEgoAutocompleteTooltip(entry);
+    if (type === "skillOwner") {
+        if(entry.id[0] === '1') return constructIdentityAutocompleteTooltip(entry);
+        else if(entry.id[0] === '2') return constructEgoAutocompleteTooltip(entry);
+        return null;
+    }
+    if (type === "skill") return constructSkillAutocompleteTooltip(entry);
     if (type === "status" || type === "statusicon") return constructStatusAutocompleteTooltip(entry);
     if (type === "giftname" || type === "gifticons") return constructGiftAutocompleteTooltip(entry, otherData);
     if (type === "themepack") return constructThemePackAutocompleteTooltip(entry);

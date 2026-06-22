@@ -6,6 +6,7 @@ import IdentityTooltip from "./IdentityTooltip";
 import { MarkdownTooltip } from "./MarkdownTooltip";
 import RatingHelpTooltip from "./RatingHelpTooltip";
 import RatingTooltip from "./RatingTooltip";
+import SkillTooltip from "./SkillTooltip";
 import StatusTooltip from "./StatusTooltip";
 import TeamCodeTooltip from "./TeamCodeTooltip";
 import { ThemePackTooltip } from "./ThemePackTooltip";
@@ -25,5 +26,6 @@ export default function AllTooltips() {
         <RatingTooltip />
         <RatingHelpTooltip />
         <TeamCodeTooltip />
+        <SkillTooltip />
     </>;
 }

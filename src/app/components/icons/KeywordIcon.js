@@ -32,6 +32,10 @@ export function isValidKeywordId(id) {
     return Object.entries(caseMapping).some(([k, v]) => id === k || id === v);
 }
 
+export function getKeywordImgSrc(id) {
+    return `${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`;
+}
+
 export default function KeywordIcon({ id, size = 32, style = {} }) {
     // return <Image
     //     src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
@@ -40,7 +44,7 @@ export default function KeywordIcon({ id, size = 32, style = {} }) {
     //     style={{ width: `${size}px`, height: `${size}px`, ...style }}
     // />;
     return <img
-        src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
+        src={getKeywordImgSrc(id)}
         alt={id} title={id} 
         style={{ width: `${size}px`, height: `${size}px`, ...style }}
         loading="lazy"
