@@ -1,6 +1,8 @@
 export const keywords = ["Burn", "Bleed", "Tremor", "Rupture", "Sinking", "Poise", "Charge", "Slash", "Pierce", "Blunt", "Keywordless"];
 export const affinities = ["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"];
 
+export const giftTiers = ["1", "2", "3", "4", "5", "EX"];
+
 export const keywordStatusMapping = {
     "Burn": "Combustion",
     "Bleed": "Laceration",
