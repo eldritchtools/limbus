@@ -25,6 +25,7 @@ import UptieSelector from "@/app/components/selectors/UptieSelector";
 import PassiveCard from "@/app/components/skill/PassiveCard";
 import SkillCard from "@/app/components/skill/SkillCard";
 import DiffedText from "@/app/components/texts/DiffedText";
+import ProcessedText from "@/app/components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "@/app/components/tooltips/GeneralTooltip";
 import TooltipTemplate from "@/app/components/tooltips/TooltipTemplate";
 import { useAuth } from "@/app/database/authProvider";
@@ -397,7 +398,7 @@ export default function IdentityPage({ params }) {
                         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", marginTop: "0.2rem" }}>
                             {(identityData.tags || []).map(x => <span key={x}
                                 style={{ padding: "0.1rem 0.2rem", margin: "0.1rem 0.25rem", background: "var(--bg-hover)", borderRadius: "0.5rem" }}>
-                                {x}
+                                <ProcessedText text={x} />
                             </span>
                             )}
                         </div>

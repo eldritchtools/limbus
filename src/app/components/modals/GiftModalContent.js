@@ -8,14 +8,18 @@ import { GiftTagLabels } from "../gifts/GiftTags";
 import ChoiceEventIcon from "../icons/ChoiceEventIcon";
 import FusionRecipe from "../objects/FusionRecipe";
 import ThemePackWithFloors from "../objects/ThemePackWithFloors";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 import ProcessedText from "../texts/ProcessedText";
 
 import { affinityColorMapping } from "@/app/lib/colors";
 
-export default function GiftModalContent({ gift, enhanceRank }) {
+export default function GiftModalContent({ gift, enhanceRank, forceTriggersEffects }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const [enhanceLevel, setEnhanceLevel] = useState(enhanceRank);
     let level = Math.min(enhanceLevel, gift.descs.length - 1);
     const {isMobile} = useBreakpoint();
+    
+    const triggersEffects = forceTriggersEffects === undefined ? getCustomizationValue("giftTriggersEffectsDisplay") : forceTriggersEffects;
 
     return <div style={{ display: "grid", gridTemplateRows: "auto 1fr", width: "100%", gap: "0.5rem", maxHeight: "80vh", overflow: "hidden" }}>
         <div style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start", color: affinityColorMapping[gift.affinity] }}>
@@ -74,6 +78,14 @@ export default function GiftModalContent({ gift, enhanceRank }) {
                                 </div> : null
                         }
                     </div>
+
+                    {
+                        triggersEffects && 
+                        <div className="sub-text" style={{display: "flex", flexDirection: "column"}}>
+                            <span>Triggers: {gift.triggers?.length > 0 ? gift.triggers.join(", ") : "None"}</span>
+                            <span>Effects: {gift.effects?.length > 0 ? gift.effects.join(", ") : "None"}</span>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

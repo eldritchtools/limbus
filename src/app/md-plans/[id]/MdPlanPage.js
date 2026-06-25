@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useData } from "@/app/components/DataProvider";
 import Gift from "@/app/components/gifts/Gift";
@@ -20,11 +20,12 @@ import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import ImageCarousel from "@/app/components/objects/ImageCarousel";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import SkillReplace from "@/app/components/skill/SkillReplace";
+import { getGeneralTooltipProps } from "@/app/components/tooltips/GeneralTooltip";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { getLocalStore, isLocalId } from "@/app/database/localDB";
 import { getMdPlan } from "@/app/database/mdPlans";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
-import { keywords } from "@/app/lib/constants";
+import { giftTiers, keywords } from "@/app/lib/constants";
 import { contentConfig } from "@/app/lib/contentConfig";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import useLocalState from "@/app/lib/useLocalState";
@@ -41,6 +42,7 @@ export default function MdPlanPage({ id }) {
     const [trackingLoading, setTrackingLoading] = useState(true);
     const [sortMarked, setSortMarked] = useLocalState("mdPlanTrackingSortMarked", false);
     const [giftsSort, setGiftsSort] = useLocalState("mdPlansGiftSort", "default");
+    const [giftsSeparate, setGiftsSeparate] = useLocalState("mdPlansGiftSpearate", "none");
     const saveTimeout = useRef(null);
 
     const { isMobile } = useBreakpoint();
@@ -201,6 +203,47 @@ export default function MdPlanPage({ id }) {
         else setGiftsSort("default");
     }
 
+    const handleGiftsSeparateButtonClick = () => {
+        if (giftsSeparate === "none") setGiftsSeparate("tier");
+        else if (giftsSeparate === "tier") setGiftsSeparate("keyword");
+        else setGiftsSeparate("none");
+    }
+
+    const targetGiftsComponent = useMemo(() => {
+        if (giftsLoading || !plan) return null;
+        if (giftsSeparate === "none") {
+            return createGiftListComponent(plan.target_gift_ids, isMobile ? 0.6 : 1, false);
+        } else if (giftsSeparate === "tier") {
+            const mapping = Object.fromEntries(giftTiers.map(tier => ([tier, []])));
+            plan.target_gift_ids.forEach(id => mapping[giftsData[id].tier].push(id));
+
+            return <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
+                {Object.entries(mapping).map(([tier, gifts]) => gifts.length > 0 ?
+                    <React.Fragment key={tier}>
+                        <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Tier {tier}</span>
+                        {createGiftListComponent(gifts, isMobile ? 0.6 : 1, false)}
+                    </React.Fragment> :
+                    null
+                )}
+            </div>
+        } else if (giftsSeparate === "keyword") {
+            const mapping = Object.fromEntries(keywords.map(kw => ([kw, []])));
+            plan.target_gift_ids.forEach(id => mapping[giftsData[id].keyword].push(id));
+
+            return <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
+                {Object.entries(mapping).map(([kw, gifts]) => gifts.length > 0 ?
+                    <React.Fragment key={kw}>
+                        <span style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center" }}>
+                            {kw !== "Keywordless" && <KeywordIcon id={kw} size={32} />} {kw}
+                        </span>
+                        {createGiftListComponent(gifts, isMobile ? 0.6 : 1, false)}
+                    </React.Fragment> :
+                    null
+                )}
+            </div>
+        }
+    }, [createGiftListComponent, plan, isMobile, giftsSeparate, giftsData, giftsLoading]);
+
     if (loading) return <LoadingContentPageTemplate />
 
     return <ContentPageTemplate
@@ -252,7 +295,7 @@ export default function MdPlanPage({ id }) {
             {plan?.image_ids?.length > 0 && <>
                 <span style={{ fontSize: "1.2rem" }}>Images</span>
                 <ImageCarousel imageIds={plan.image_ids} />
-                </>
+            </>
             }
 
             <HorizontalDivider />
@@ -266,9 +309,14 @@ export default function MdPlanPage({ id }) {
                 {
                     tracking ? <>
                         <button onClick={() => resetTracking()}>Reset Tracking</button>
-                        <button className={`toggle-button ${sortMarked ? 'active' : ''}`} onClick={() => setSortMarked(p => !p)}>Sort Marked Items to End</button>
+                        <button className={`toggle-button ${sortMarked ? 'active' : ''}`} onClick={() => setSortMarked(p => !p)}>
+                            Sort Marked Items to End
+                        </button>
                         <button onClick={handleGiftsSortButtonClick}>
                             Sort Gifts: {giftsSort === "default" ? "Default" : (giftsSort === "tier" ? "By Tier" : "By Keyword")}
+                        </button>
+                        <button onClick={handleGiftsSeparateButtonClick} {...getGeneralTooltipProps("This will separate gifts in the Targeted Gifts section into separate sections.")}>
+                            Separate Gifts: {giftsSeparate === "none" ? "Disabled" : (giftsSeparate === "tier" ? "By Tier" : "By Keyword")}
                         </button>
                     </> :
                         null
@@ -343,7 +391,7 @@ export default function MdPlanPage({ id }) {
                 <>
                     <span style={{ fontSize: "1.2rem" }}>Targeted Gifts</span>
                     <span className="sub-text">Gifts that should be targeted during the run</span>
-                    {createGiftListComponent(plan.target_gift_ids, isMobile ? 0.6 : 1, false)}
+                    {targetGiftsComponent}
                 </> :
                 null
             }

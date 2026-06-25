@@ -251,7 +251,8 @@ export const guideData = [
                 details: [
                     "View all the E.G.O gifts with multiple search and filter options. Clicking on a gift will show its full details including optional enhance levels.",
                     "A tracking mode is available in case you want to use the page to track your E.G.O Gift Compendium progress.",
-                    "All gifts are tagged with 'Gift Tags' depending on their properties like Enhanceable, Event Reward, Fusion Only, and so on."
+                    "All gifts are tagged with 'Gift Tags' depending on their properties like Enhanceable, Event Reward, Fusion Only, and so on.",
+                    "All gifts are assigned 'Triggers' and 'Effects' pertaining to their conditions and outcomes and can be filtered based on them."
                 ]
             },
             {

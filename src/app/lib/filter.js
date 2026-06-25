@@ -70,7 +70,9 @@ const giftFilterMatchFunctions = {
             if (item.blessedPair) return true;
         }
         return false;
-    }
+    },
+    "trigger": (filter, item) => (item.triggers ?? []).includes(filter),
+    "effect": (filter, item) => (item.effects ?? []).includes(filter)
 };
 
 export function filterByFilters(type, items, filters, additionalFilter, strictFiltering = false) {
@@ -125,7 +127,7 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
             } else if (type === "gift") {
                 if (!(filterType in giftFilterMatchFunctions)) continue;
 
-                if (strictFiltering && filterType === "tag") {
+                if (strictFiltering && (filterType === "tag" || filterType === "trigger" || filterType === "effect")) {
                     if (!f[filterType].every(x => giftFilterMatchFunctions[filterType](x, item))) return false;
                 } else {
                     if (!f[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;

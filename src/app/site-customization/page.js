@@ -5,10 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import ColorPicker from "./ColorPicker";
 import { useData } from "../components/DataProvider";
+import Gift from "../components/gifts/Gift";
 import EgoIcon from "../components/icons/EgoIcon";
-import GiftIcon from "../components/icons/GiftIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";
-import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { useModal } from "../components/modals/ModalProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
@@ -337,8 +336,8 @@ export default function SiteCustomizationPage() {
         </SettingContainer>
 
         <SettingContainer
-            name={"Show Gift Tag Strips"}
-            desc={"When set, E.G.O gifts will have colored strips on their side, showing their tags at a quick glance. Examples of tags include Enhanceable, Fusion Only, Hard Only, and so on."}
+            name={"Show Gift Additional Data"}
+            desc={""}
         >
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <input type="checkbox"
@@ -347,8 +346,23 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Toggle Gift Tag Strips</span>
             </label>
+            <span className="sub-text">When set, E.G.O gifts will have colored strips on their side, showing their tags at a quick glance. Examples of tags include Enhanceable, Fusion Only, Hard Only, and so on.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.giftTriggersEffectsDisplay ?? customizationDefaults.giftTriggersEffectsDisplay}
+                    onChange={e => setData(p => ({ ...p, giftTriggersEffectsDisplay: e.target.checked }))}
+                />
+                <span>Toggle Gift Triggers & Effects Displayed</span>
+            </label>
+            <span className="sub-text">When set, E.G.O gifts will have their triggers and effects displayed on their modals when expanded.</span>
+
             <div style={{ alignSelf: "center" }}>
-                <GiftIcon id={"9003"} forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} />
+                <Gift 
+                    id={9003} 
+                    forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} 
+                    forceTriggersEffects={data.giftTriggersEffectsDisplay ?? customizationDefaults.giftTriggersEffectsDisplay}
+                />
             </div>
         </SettingContainer>
 
