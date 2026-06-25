@@ -5,11 +5,10 @@ import { getGiftTooltipProps } from "../tooltips/GiftTooltip";
 
 function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeTooltip = true, expandable = true, forceTagStrips, forceTriggersEffects }) {
     const { openGiftModal } = useModal();
-    // const canHover = useMemo(() => window.matchMedia("(hover: hover)").matches, []);
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+    const canHover = useMemo(() => window.matchMedia("(hover: hover)").matches, []);
 
     let props = {};
-    if (includeTooltip && (!expandable || !isTouchDevice)) {
+    if (includeTooltip && (!expandable || canHover)) {
         props = { ...props, ...getGiftTooltipProps(id ?? gift?.id, enhanceRank, expandable) };
     }
 
