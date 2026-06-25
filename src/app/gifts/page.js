@@ -9,6 +9,8 @@ import Gift from "../components/gifts/Gift";
 import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import { GiftEffectsSelector, GiftTriggersSelector } from "../components/selectors/GiftSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -134,6 +136,10 @@ export default function GiftsPage() {
     const [strictFiltering, setStrictFiltering] = useLocalState("giftsStrictFiltering", false);
     const [tagFilters, setTagFilters] = useState([]);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
+    const [triggerFilters, setTriggerFilters] = useState([]);
+    const [triggerFilterExcluding, setTriggerFilterExcluding] = useState(false);
+    const [effectFilters, setEffectFilters] = useState([]);
+    const [effectFilterExcluding, setEffectFilterExcluding] = useState(false);
     const [selectedThemePacks, setSelectedThemePacks] = useState([]);
     const { isDesktop } = useBreakpoint();
 
@@ -146,7 +152,7 @@ export default function GiftsPage() {
     const [firstSave, setFirstSave] = useState(true);
 
     const themePackList = useMemo(() => {
-        if(giftsLoading) return [];
+        if (giftsLoading) return [];
         const packs = new Set();
         Object.values(giftsData).forEach(gift => {
             if ("exclusiveTo" in gift) packs.add(...gift.exclusiveTo);
@@ -156,7 +162,12 @@ export default function GiftsPage() {
 
     const filteredGifts = useMemo(() => {
         if (giftsLoading) return [];
-        const combinedFilters = [...filters, ...tagFilters.map(tag => ["tag", tag])];
+        const combinedFilters = [
+            ...filters,
+            ...tagFilters.map(tag => ["tag", tag]),
+            ...triggerFilters.map(trigger => ["trigger", trigger]),
+            ...effectFilters.map(effect => ["effect", effect])
+        ];
         const packSet = new Set(selectedThemePacks);
 
         return filterByFilters(
@@ -170,14 +181,14 @@ export default function GiftsPage() {
                     if (!checkFilterMatch(searchString, filterStrings)) return false;
                 }
                 if (selectedThemePacks.length !== 0) {
-                    if(!("exclusiveTo" in gift)) return false;
+                    if (!("exclusiveTo" in gift)) return false;
                     if (!gift.exclusiveTo.some(x => packSet.has(x))) return false;
                 }
                 return true;
             },
             strictFiltering
         ).map(x => [x.id, x]);
-    }, [filters, tagFilters, giftsData, giftsLoading, searchString, includeDescription, strictFiltering, selectedThemePacks]);
+    }, [filters, tagFilters, triggerFilters, effectFilters, giftsData, giftsLoading, searchString, includeDescription, strictFiltering, selectedThemePacks]);
 
     useEffect(() => {
         if (loading) {
@@ -247,6 +258,8 @@ export default function GiftsPage() {
         }
     } : {};
 
+    if (giftsLoading) return <LoadingContentPageTemplate />
+
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.O Gifts</h1>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
@@ -275,13 +288,45 @@ export default function GiftsPage() {
                 <div style={{ textAlign: "start" }}>
                     <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
                 </div>
-                <div />
-                <div>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
-                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                        Strict Tag Filtering
-                        <span className="sub-text">(Require all selected tags)</span>
-                    </label>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
+                        {...getGeneralTooltipProps("Triggers are conditions that enable or modify the gift's effects. Some may only be necessary in certain situations.")}
+                    >
+                        Trigger Filter
+                    </span>
+                    <div
+                        className={`toggle-text ${triggerFilterExcluding ? "red" : "green"}`}
+                        onClick={() => setTriggerFilterExcluding(p => !p)}
+                    >
+                        {triggerFilterExcluding ? "Exclude" : "Include"}
+                    </div>
+                </div>
+                <div style={{ textAlign: "start" }}>
+                    <GiftTriggersSelector
+                        selected={triggerFilters} setSelected={setTriggerFilters}
+                        isMulti={true} giftOptions={Object.values(giftsData)}
+                        excludeMode={triggerFilterExcluding}
+                    />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
+                    {...getGeneralTooltipProps("Effects are outcomes when the gift's triggers are fulfilled. Some effects may only happen with certain combinations of triggers.")}
+                    >
+                        Effect Filter
+                    </span>
+                    <div
+                        className={`toggle-text ${effectFilterExcluding ? "red" : "green"}`}
+                        onClick={() => setEffectFilterExcluding(p => !p)}
+                    >
+                        {effectFilterExcluding ? "Exclude" : "Include"}
+                    </div>
+                </div>
+                <div style={{ textAlign: "start" }}>
+                    <GiftEffectsSelector
+                        selected={effectFilters} setSelected={setEffectFilters}
+                        isMulti={true} giftOptions={Object.values(giftsData)}
+                        excludeMode={effectFilterExcluding}
+                    />
                 </div>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
                 <ThemePackDropdownSelector
@@ -291,6 +336,14 @@ export default function GiftsPage() {
                     options={themePackList}
                     prefixCategory={true}
                 />
+                <div />
+                <div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                        Strict Filtering
+                        <span className="sub-text">(Require all selected filters)</span>
+                    </label>
+                </div>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Display Type</span>
                 <div style={{ display: "flex", gap: "0.2rem", alignItems: "start" }}>
                     <label>
@@ -328,7 +381,9 @@ export default function GiftsPage() {
             }
         </div>
         <HorizontalDivider />
-        {filters.length === 0 && tagFilters.length === 0 && searchString.length === 0 && selectedThemePacks.length === 0 ?
+        {filters.length === 0 && tagFilters.length === 0 &&
+            triggerFilters.length === 0 && effectFilters.length === 0 &&
+            searchString.length === 0 && selectedThemePacks.length === 0 ?
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", width: "100%" }}>
                 {newGifts.length > 0 ? <React.Fragment>
                     <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>New</span>

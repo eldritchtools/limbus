@@ -5,7 +5,9 @@ import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
 import { GiftTagFilterSelector } from "../gifts/GiftTags";
 import { HorizontalDivider } from "../objects/Dividers";
+import { GiftEffectsSelector, GiftTriggersSelector } from "../selectors/GiftSelectors";
 import IconsSelector from "../selectors/IconsSelector";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 import useLocalState from "@/app/lib/useLocalState";
@@ -17,6 +19,10 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
     const [strictFiltering, setStrictFiltering] = useLocalState("giftsStrictFiltering", false);
     const [tagFilters, setTagFilters] = useState([]);
     const [tagFilterExcluding, setTagFilterExcluding] = useState(false);
+    const [triggerFilters, setTriggerFilters] = useState([]);
+    const [triggerFilterExcluding, setTriggerFilterExcluding] = useState(false);
+    const [effectFilters, setEffectFilters] = useState([]);
+    const [effectFilterExcluding, setEffectFilterExcluding] = useState(false);
     const [, updateCount] = useState(0);
     const { isMobile } = useBreakpoint();
 
@@ -30,7 +36,12 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
         }, 0);
     }
 
-    const combinedFilters = [...filters, ...tagFilters.map(tag => ["tag", tag])];
+    const combinedFilters = [
+        ...filters,
+        ...tagFilters.map(tag => ["tag", tag]),
+        ...triggerFilters.map(trigger => ["trigger", trigger]),
+        ...effectFilters.map(effect => ["effect", effect])
+    ];
 
     const searchGiftList = giftsLoading ? [] : filterByFilters(
         "gift",
@@ -88,12 +99,52 @@ export default function SelectGiftModalContent({ title, getChoiceList, showSearc
                         <div style={{ textAlign: "start" }}>
                             <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
                         </div>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                            <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
+                                {...getGeneralTooltipProps("Triggers are conditions that enable or modify the gift's effects. Some may only be necessary in certain situations.")}
+                            >
+                                Trigger Filter
+                            </span>
+                            <div
+                                className={`toggle-text ${triggerFilterExcluding ? "red" : "green"}`}
+                                onClick={() => setTriggerFilterExcluding(p => !p)}
+                            >
+                                {triggerFilterExcluding ? "Exclude" : "Include"}
+                            </div>
+                        </div>
+                        <div style={{ textAlign: "start" }}>
+                            <GiftTriggersSelector
+                                selected={triggerFilters} setSelected={setTriggerFilters}
+                                isMulti={true} giftOptions={Object.values(giftsData)}
+                                excludeMode={triggerFilterExcluding}
+                            />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                            <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
+                                {...getGeneralTooltipProps("Effects are outcomes when the gift's triggers are fulfilled. Some effects may only happen with certain combinations of triggers.")}
+                            >
+                                Effect Filter
+                            </span>
+                            <div
+                                className={`toggle-text ${effectFilterExcluding ? "red" : "green"}`}
+                                onClick={() => setEffectFilterExcluding(p => !p)}
+                            >
+                                {effectFilterExcluding ? "Exclude" : "Include"}
+                            </div>
+                        </div>
+                        <div style={{ textAlign: "start" }}>
+                            <GiftEffectsSelector
+                                selected={effectFilters} setSelected={setEffectFilters}
+                                isMulti={true} giftOptions={Object.values(giftsData)}
+                                excludeMode={effectFilterExcluding}
+                            />
+                        </div>
                         <div />
                         <div>
                             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
                                 <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                                Strict Tag Filtering
-                                <span className="sub-text">(Require all selected tags)</span>
+                                Strict Filtering
+                                <span className="sub-text">(Require all selected filters)</span>
                             </label>
                         </div>
                     </div>

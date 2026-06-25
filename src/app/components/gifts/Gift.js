@@ -3,23 +3,27 @@ import GiftIcon from "../icons/GiftIcon";
 import { useModal } from "../modals/ModalProvider";
 import { getGiftTooltipProps } from "../tooltips/GiftTooltip";
 
-function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeTooltip = true, expandable = true }) {
+function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeTooltip = true, expandable = true, forceTagStrips, forceTriggersEffects }) {
     const { openGiftModal } = useModal();
-    const canHover = useMemo(() => window.matchMedia("(hover: hover)").matches, []);
+    // const canHover = useMemo(() => window.matchMedia("(hover: hover)").matches, []);
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
     let props = {};
-    if (includeTooltip && (!expandable || canHover)) {
+    if (includeTooltip && (!expandable || !isTouchDevice)) {
         props = { ...props, ...getGiftTooltipProps(id ?? gift?.id, enhanceRank, expandable) };
     }
 
     if (expandable) {
-        props.onClick = () => openGiftModal({ gift, enhanceRank });
+        props.onClick = () => openGiftModal({ gift, enhanceRank, forceTriggersEffects });
     }
+
+    let iconProps = {};
+    if(forceTagStrips !== undefined) iconProps.forceTagStrips = forceTagStrips;
 
     if (text) {
         return <span {...props}>{gift.names[enhanceRank]}</span>;
     } else {
-        return <span {...props}><GiftIcon gift={gift} enhanceRank={enhanceRank} scale={scale} /></span>;
+        return <span {...props}><GiftIcon gift={gift} enhanceRank={enhanceRank} scale={scale} {...iconProps} /></span>;
     }
 }
 
