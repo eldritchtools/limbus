@@ -210,7 +210,7 @@ export default function MdPlanPage({ id }) {
     }
 
     const targetGiftsComponent = useMemo(() => {
-        if (giftsLoading) return null;
+        if (giftsLoading || !plan) return null;
         if (giftsSeparate === "none") {
             return createGiftListComponent(plan.target_gift_ids, isMobile ? 0.6 : 1, false);
         } else if (giftsSeparate === "tier") {
