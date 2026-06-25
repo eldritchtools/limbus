@@ -42,12 +42,12 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>E.G.O Gifts can now be filtered by Triggers and Effects newly assigned to them. Triggers are conditions that enable or modify their effects, while Effects are the outcomes when those Triggers are fulfilled. These are manually assigned to gifts so there may be some mistakes or missing assignments. Some of them may be changed or improved on in the future.</li>
                     <li>The {wrapLink("Encounters", "/encounters")} page now supports submitting clear records which will show up on a leaderboard sorted by turn count. This is only supported for Reflectrials and Refraction Railway encounters.</li>
                     <li>The bumps system for Reviews have been reworked into a more standard Upvotes and Funny Votes system similar to Steam Reviews. Existing reviews with bump scores have been given a boost equivalent to their bumps.</li>
                     <li>The individual Identity and E.G.O pages have been redesigned. Check them out if you&apos;re interested! This also affects everywhere skills are displayed.</li>
                     <li>Community Rankings have been recomputed to ignore ratings that are all 0s. If you want to submit a joke review without affecting ratings, you can now submit one with all 0s.</li>
                     <li>An {wrapLink("Archive", "/archive")} page has been added for pages on older stuff. The results to the previous survey have been posted there.</li>
-                    <li>The {wrapLink("Extraction Simulator", "/extraction-simulator")} page has been added. Allowing users to simulate pulls for current, future, or custom banners. It also contains a probability calculator to compute the probability of getting banner items depending on how many pulls you use.</li>
                 </> : null}
             </ul>
         </div>
