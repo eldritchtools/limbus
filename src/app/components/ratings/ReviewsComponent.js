@@ -39,7 +39,7 @@ export default function ReviewsComponent({ type, id, sortType, userReview }) {
         }
         {
             reviews
-                .filter(review => review.user?.username !== profile.username)
+                .filter(review => review.user?.username !== profile?.username)
                 .map(review => <Review key={review.id} type={type} reviewData={review} backReview={review} />)
         }
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
