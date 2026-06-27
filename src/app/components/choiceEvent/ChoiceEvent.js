@@ -119,6 +119,8 @@ function SingleResult({ result }) {
         return <span>Lose {result.value} Cost.</span>
     if (result.type === "special")
         return <span>{result.text}</span>
+    if (result.type === "desc")
+        return <span>{result.value}</span>
 
     return null;
 }

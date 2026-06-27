@@ -7,14 +7,14 @@ import KeywordIcon from "./KeywordIcon";
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getSkillIconSrc(skillData) {
-    if(skillData.type === "ego-a") return getEgoImgSrc({ id: skillData.egoId }, "awaken")
-    if(skillData.type === "ego-c") return getEgoImgSrc({ id: skillData.egoId }, "erosion")
+    if (skillData.type === "ego-a") return getEgoImgSrc({ id: skillData.egoId }, "awaken")
+    if (skillData.type === "ego-c") return getEgoImgSrc({ id: skillData.egoId }, "erosion")
     return `${ASSETS_ROOT}/skills/${skillData.iconId}.png`
 }
 
 export default function SkillIcon({ skillData, scale = 1 }) {
     const affinity = skillData.affinity?.toLowerCase();
-    const frame = affinity === "none" ? "def" : `${affinity}-${(skillData.type ?? "").includes("ego") ? 3 : Math.min((skillData.rank ?? 1), 3) }`;
+    const frame = affinity === "none" ? "def" : `${affinity}-${(skillData.type ?? "").includes("ego") ? 3 : Math.min((skillData.rank ?? 1), 3)}`;
 
     const baseSize = 112 * scale;
     const iconSize = 74 * scale;
@@ -32,7 +32,10 @@ export default function SkillIcon({ skillData, scale = 1 }) {
                 marginLeft: `${iconMarginLeft}px`, marginTop: `${iconMarginTop}px`, width: `${iconSize}px`, height: `${iconSize}px`,
                 clipPath: "polygon(73% 2%, 98% 36%,90% 80%,50% 100%,10% 80%,2% 36%,27% 2%)"
             }}>
-                <KeywordIcon id={affinity} size={iconSize} />
+                {affinity !== "none" ?
+                    <KeywordIcon id={affinity} size={iconSize} /> :
+                    <KeywordIcon id={skillData.defType} size={iconSize} />
+                }
             </div>
         </div>
 
