@@ -9,6 +9,7 @@ import TeamBuild from "./components/contentCards/TeamBuild";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "./components/dataHooks/upcoming";
 import { useData } from "./components/DataProvider";
 import HoverBlocker from "./components/HoverBlocker";
+import BannerIcon from "./components/icons/BannerIcon";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
 import ImageHandler from "./components/icons/ImageHandler";
@@ -68,12 +69,23 @@ function LinksMenu({ isMobile }) {
     </div>
 }
 
-function APR() {
-    return <NoPrefetchLink href="/apr-2026" className="text-link">
-        <div className="panel-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
-            <ImageHandler path={"apr_2026/logo.webp"} style={{ width: "96px" }} />
+// function APR() {
+//     return <NoPrefetchLink href="/apr-2026" className="text-link">
+//         <div className="panel-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
+//             <ImageHandler path={"apr_2026/logo.webp"} style={{ width: "96px" }} />
+//             <span>
+//                 Absolute Pride Resonance is an annual charity event organized by creators from the Project Moon community during the month of June. If you have the time, consider checking out the schedule of events by clicking here.
+//             </span>
+//         </div>
+//     </NoPrefetchLink>
+// }
+
+function PopularityPoll() {
+    return <NoPrefetchLink href="/popularity-poll" className="text-link">
+        <div className="panel-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
+            <BannerIcon path={"season_7"} style={{width: "80%"}}/>
             <span>
-                Absolute Pride Resonance is an annual charity event organized by creators from the Project Moon community during the month of June. If you have the time, consider checking out the schedule of events by clicking here.
+                Since season 7 is coming to an end, I&apos;m running an end-of-season popularity poll. Vote for your favorite identities, E.G.O, NPCs, themes, events, and others from this season! Click here to submit your response or view the current results.
             </span>
         </div>
     </NoPrefetchLink>
@@ -138,7 +150,7 @@ export default function HomePage() {
                 <br /> <br />
                 Curious or confused on what you can do on the site? Check out the <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink> for details on each of the pages and features.
             </p>
-            <APR />
+            <PopularityPoll />
             <LinksMenu isMobile={isMobile} />
             <HomepageTimers />
             <CommunityPoll poll={poll} setPoll={setPoll} />

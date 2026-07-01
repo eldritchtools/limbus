@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+import styles from "./CommentSection.module.css";
 import FollowThreadButton from "../contentActions/FollowThreadButton";
 import Avatar from "../icons/Avatar";
+import { markdownSlice } from "../markdown/MarkdownUtil";
 import { useModal } from "../modals/ModalProvider";
 import Username from "../user/Username";
 import UsernameWithTime from "../user/UsernameWithTime";
@@ -52,6 +54,7 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
     const [pinLoading, setPinLoading] = useState(false);
     const { user } = useAuth();
     const { openDeleteCommentModal } = useModal();
+    const [parentExpanded, setParentExpanded] = useState(false);
 
     async function handleDelete() {
         onDelete(comment.id);
@@ -95,12 +98,20 @@ function Comment({ comment, targetType, targetId, buildOwnerId, pinned, onPost, 
                         </div> :
                         <div style={{ display: "flex", flexDirection: "column", textAlign: "start", gap: "0.25rem" }}>
                             <span style={{ display: "flex", fontSize: "0.8rem", alignItems: "center", gap: "0.2rem" }}>
-                                Replying to 
-                                <Avatar avatarId={comment.parent_avatar_id} size={24} style={{display: "inline"}} />
+                                Replying to
+                                <Avatar avatarId={comment.parent_avatar_id} size={24} style={{ display: "inline" }} />
                                 <Username username={comment.parent_author} flair={comment.parent_flair} />
                             </span>
-                            <div style={{ border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem", padding: "0.25rem", paddingLeft: "0.5rem" }}>
-                                <MarkdownRenderer content={comment.parent_body} />
+                            <div style={{ border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem", padding: "0.25rem", paddingLeft: "0.5rem", display: "flex", flexDirection: "column" }}>
+                                {comment.parent_body.length > 200 && !parentExpanded ?
+                                    <>
+                                        <MarkdownRenderer content={markdownSlice(comment.parent_body, 200) + " ..."} />
+                                        <div>
+                                            <button className={styles.seeMoreButton} onClick={() => setParentExpanded(p => !p)}>See More</button>
+                                        </div>
+                                    </> :
+                                    <MarkdownRenderer content={comment.parent_body} />
+                                }
                             </div>
                         </div>}
                 </div>
@@ -175,7 +186,7 @@ export default function CommentSection({ targetType, targetId, ownerId, commentC
         <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>
             Comments
             {commentCount ? ` (${commentCount}) ` : null}
-            {<FollowThreadButton targetType={targetType} targetId={targetId} style={{verticalAlign: "-0.1rem"}} />}
+            {<FollowThreadButton targetType={targetType} targetId={targetId} style={{ verticalAlign: "-0.1rem" }} />}
         </h3>
 
         {pinned ? <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", paddingBottom: "1rem" }}>

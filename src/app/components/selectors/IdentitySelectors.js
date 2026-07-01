@@ -19,11 +19,12 @@ import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
 
-export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, excludeMode }) {
+export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode }) {
     const [identities, loading] = useData("identities_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
     const optionsMapped = useMemo(() => loading ? {} : Object.entries(identities).reduce((acc, [id, identity]) => {
+        if(options && !options.includes(id)) return acc;
         acc[id] = {
             value: identity.id,
             label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -33,7 +34,7 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
             searchStrings: buildSearchStrings(identity, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [identities, altNames, loading, altNamesLoading]);
+    }, {}), [identities, altNames, options, loading, altNamesLoading]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}

@@ -1,6 +1,6 @@
 .mdPlan {
     position: relative;
-    border: 2px #7c6a55 solid;
+    border: 2px var(--primary-border-color) solid;
     border-radius: 12px;
     box-sizing: border-box;
     display: flex;
@@ -67,7 +67,7 @@
 .mdPlanButtonsContainer {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border-top: 2px #7c6a55 dashed;
+    border-top: 2px var(--primary-border-color) dashed;
     background: var(--bg-primary);
     z-index: 4;
     height: 2.25rem;

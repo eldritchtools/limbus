@@ -26,8 +26,8 @@
 }
 
 .cardButton.middle {
-    border-left: 2px #7c6a55 dashed;
-    border-right: 2px #7c6a55 dashed;
+    border-left: 2px var(--primary-border-color) dashed;
+    border-right: 2px var(--primary-border-color) dashed;
 }
 
 .cardButton:visited {
