@@ -222,7 +222,7 @@ export const questions = [
     {
         "type": "compare",
         "question": "How do you rank Canto IX against the other Cantos?",
-        "short": "Compared to other Cantos",
+        "short": "Canto Comparison",
         "items": [
             {"long": "Canto I: The Outcast", "short": "Canto I"},
             {"long": "Canto II: The Unloving", "short": "Canto II"},
@@ -237,7 +237,7 @@ export const questions = [
     {
         "type": "rating",
         "question": "From 0-10, how do you rate Season 7 as a whole?",
-        "short": "Rating"
+        "short": "Overall Season Rating"
     },
     {
         "type": "other",

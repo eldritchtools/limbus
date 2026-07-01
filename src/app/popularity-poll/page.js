@@ -96,22 +96,22 @@ function Question({ question, response, setResponse }) {
                         <span style={{ fontWeight: "bold" }}>{item.long}</span>
                         <div style={{ display: "flex", flexWrap: "wrap", columnGap: "1rem", rowGap: 0 }}>
                             <label>
-                                <input type="radio" value={1} checked={response[i] === 1}
+                                <input type="radio" value={-1} checked={response[i] === -1}
                                     onChange={e => setResponse(response.map((p, ind) => ind === i ? Number(e.target.value) : p))}
                                 />
-                                Better than {item.short}
+                                Prefer Canto IX
                             </label>
                             <label>
                                 <input type="radio" value={0} checked={response[i] === 0}
                                     onChange={e => setResponse(response.map((p, ind) => ind === i ? Number(e.target.value) : p))}
                                 />
-                                Same as {item.short}
+                                About the Same
                             </label>
                             <label>
-                                <input type="radio" value={-1} checked={response[i] === -1}
+                                <input type="radio" value={1} checked={response[i] === 1}
                                     onChange={e => setResponse(response.map((p, ind) => ind === i ? Number(e.target.value) : p))}
                                 />
-                                Worse than {item.short}
+                                Prefer {item.short}
                             </label>
                         </div>
                     </React.Fragment>)
@@ -246,15 +246,15 @@ function SeasonComparisonChart({ points, labels }) {
             )}
 
             <text x={MARGIN} y={height - 8} fontSize="1.2rem" fill="var(--primary-text-color)">
-                Worse
+                Prefer Canto IX
             </text>
 
             <text x={width / 2} y={height - 8} textAnchor="middle" fontSize="1.2rem" fill="var(--primary-text-color)">
-                Same
+                No Preference
             </text>
 
             <text x={width - MARGIN} y={height - 8} textAnchor="end" fontSize="1.2rem" fill="var(--primary-text-color)">
-                Better
+                Prefer Previous Canto
             </text>
         </svg>
         {(hovered && hovered.shortLabel !== "IX") ?
@@ -366,7 +366,7 @@ function ResultsTab({ results, responseCount }) {
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", maxWidth: "1200px", alignSelf: "center" }}>
             <span className="title-text" style={{ textAlign: "center" }}>{title}</span>
             <span className="sub-text" style={{ textAlign: "center" }}>
-                -1 means everyone said it&apos;s worse. 1 means everyone said it&apos;s better.
+                -1 means everyone said they prefer Canto IX better. 1 means everyone said they prefer the previous Canto better.
             </span>
             <SeasonComparisonChart points={result} labels={items} />
         </div>
@@ -574,7 +574,7 @@ export default function PopularityPollPage() {
 
         const duplicate = questions.some((q, i) => {
             if (!["idselect", "egoselect", "select", "themeselect"].includes(q.type)) return false;
-            return new Set(userResponse[i]).size !== userResponse[i].length;
+            return new Set(resp[i]).size !== resp[i].length;
         })
 
         if (duplicate) {
