@@ -21,9 +21,9 @@ import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 
 
 function getSizes(size, isMobile) {
-    if (isMobile || size === "S") return { width: "300px", iconSize: 24, buttonIconSize: 16, scale: 0.175, maxRailIcons: 4 };
-    if (size === "M") return { width: "460px", iconSize: 28, buttonIconSize: 20, scale: 0.275, maxRailIcons: 7 };
-    if (size === "L") return { width: "640px", iconSize: 28, buttonIconSize: 20, scale: 0.375, maxRailIcons: 10 }
+    if (isMobile || size === "S") return { width: "300px", iconSize: 24, buttonIconSize: 16, scale: 0.175, maxRailIcons: 5 };
+    if (size === "M") return { width: "460px", iconSize: 28, buttonIconSize: 20, scale: 0.275, maxRailIcons: 8 };
+    if (size === "L") return { width: "640px", iconSize: 28, buttonIconSize: 20, scale: 0.375, maxRailIcons: 11 }
     return null;
 }
 
@@ -45,7 +45,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
     if (!sizes) return null;
 
-    const icons = [...build.keyword_ids.map(x => ["kw", x]), ...addedIcons.map(x => ["st", x])];
+    const icons = [...build.keyword_ids.map(x => ["kw", x]), ...addedIcons.map(x => ["st", x])].filter(([, x]) => x != "");
 
     const hiddenIcons = icons.length - sizes.maxRailIcons;
 
@@ -56,27 +56,27 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
         {icons.length > 0 ?
             <div className={styles.teamBuildIconRail}>
-                {icons.slice(0, sizes.maxRailIcons).map(
+                {(hiddenIcons > 0 ? icons.slice(0, sizes.maxRailIcons - 1) : icons).map(
                     ([type, id]) => type === "kw" ?
-                    <KeywordIcon key={id} id={keywordIdMapping[id]} size={sizes.iconSize} /> :
-                    <StatusIcon key={id} id={id} style={{width: `${sizes.iconSize}px`}} />
+                        <KeywordIcon key={id} id={keywordIdMapping[id]} size={sizes.iconSize} /> :
+                        <StatusIcon key={id} id={id} style={{ width: `${sizes.iconSize}px` }} />
                 )}
                 {hiddenIcons > 0 ? <span style={{
                     width: sizes.iconSize, height: sizes.iconSize, display: "flex",
                     alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "#7c6a55"
-                }}>+{hiddenIcons}</span> : null}
+                }}>+{hiddenIcons + 1}</span> : null}
             </div> :
             null
         }
 
         {build.user_avatar_id &&
             <div className={styles.teamBuildAvatar}>
-                <Avatar avatarId={build.user_avatar_id} size={32}/>
+                <Avatar avatarId={build.user_avatar_id} size={32} />
             </div>
         }
 
         <div className={styles.teamBuildContent}>
-            <div className={styles.teamBuildTitleContainer} style={{maxWidth: build.user_avatar_id ? "calc(100% - 32px)" : "100%"}}>
+            <div className={styles.teamBuildTitleContainer} style={{ maxWidth: build.user_avatar_id ? "calc(100% - 32px)" : "100%" }}>
                 <div className={styles.teamBuildTitle}>{build.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>

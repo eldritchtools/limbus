@@ -11,6 +11,7 @@ import GiftModalContent from "./GiftModalContent";
 import ImageCarouselModalContent from "./ImageCarouselModalContent";
 import ImageModalContent from "./ImageModalContent";
 import ModalContainer from "./ModalContainer";
+import PollResultModalContent from "./PollResultModalContent";
 import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
 import SelectDeploymentModalContent from "./SelectDeploymentModalContent";
@@ -37,7 +38,8 @@ const MODAL_COMPONENTS = {
     "selectDeployment": SelectDeploymentModalContent,
     "imageCarousel": ImageCarouselModalContent,
     "image": ImageModalContent,
-    "communityAsset": CommunityAssetModalContent
+    "communityAsset": CommunityAssetModalContent,
+    "pollResult": PollResultModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -131,6 +133,10 @@ export function ModalProvider({ children }) {
         openModal("communityAsset", { imageId });
     }
 
+    const openPollResultModal = ({ title, result, iconFn, transform }) => {
+        openModal("pollResult", { title, result, iconFn, transform });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -172,6 +178,7 @@ export function ModalProvider({ children }) {
         openImageCarouselModal,
         openImageModal,
         openCommunityAssetModal,
+        openPollResultModal,
         setModalBeforeClose,
         canNavigateAway,
         closeModal,

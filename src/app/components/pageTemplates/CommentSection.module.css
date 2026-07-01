@@ -1,0 +1,14 @@
+.seeMoreButton {
+    font-weight: bold; 
+    border: transparent;
+    background: transparent;
+    color: var(--secondary-text-color);
+    padding: 0;
+    margin: 0;
+    transition: ease 0.2s all;
+}
+
+.seeMoreButton:hover {
+    color: var(--primary-text-color);
+    background: transparent;
+}
