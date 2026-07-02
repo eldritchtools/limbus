@@ -131,6 +131,7 @@ function Question({ question, response, setResponse }) {
                 <textarea
                     value={response[0]} onChange={e => setResponse([e.target.value])}
                     style={{ width: "100%", height: "10ch" }}
+                    placeholder="Leave blank for no comment."
                 />
             </div>
         }

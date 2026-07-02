@@ -144,3 +144,16 @@ $$;
 
 grant execute on function submit_survey_response(int, jsonb)
 to authenticated;
+
+create or replace function get_survey_response_count(
+    p_survey_id int
+)
+returns int
+language sql
+security definer
+set search_path = public
+as $$
+    select count(*)::int
+    from survey_responses
+    where survey_id = p_survey_id;
+$$;
