@@ -9,6 +9,11 @@ const pages = [
         date: "2026-05-26",
         label: "Direction of Limbus Company Tools Survey",
         href: "survey-2026-05-26"
+    },
+    {
+        date: "2026-07-01",
+        label: "Absolute Pride Resonance 2026",
+        href: "apr-2026"
     }
 ]
 
