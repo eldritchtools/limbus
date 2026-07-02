@@ -31,15 +31,5 @@ export async function submitSurveyResponse(surveyId, answers) {
 }
 
 export async function fetchSurveyResponseCount(surveyId) {
-    return await withRetry(async () => {
-        const { count } = await getSupabase()
-            .from("survey_responses")
-            .select("*", {
-                count: "exact",
-                head: true
-            })
-            .eq("survey_id", surveyId);
-
-        return count;
-    })
+    return callRPC("get_survey_response_count", { p_survey_id: surveyId });
 }
