@@ -2,11 +2,11 @@
 
 import React, { useMemo } from "react";
 
-import { useData } from "../components/DataProvider";
-import ImageHandler from "../components/icons/ImageHandler";
-import NoPrefetchLink from "../components/NoPrefetchLink";
-import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
-import { TimeString } from "../timers/TimersTable";
+import { useData } from "../../components/DataProvider";
+import ImageHandler from "../../components/icons/ImageHandler";
+import NoPrefetchLink from "../../components/NoPrefetchLink";
+import { LoadingContentPageTemplate } from "../../components/pageTemplates/ContentPageTemplate";
+import { TimeString } from "../../timers/TimersTable";
 
 function formatDateString(isoString) {
     if (!isoString) return null;
@@ -24,7 +24,7 @@ function formatDateString(isoString) {
 }
 
 export default function APR2026Page() {
-    const [events, eventsLoading] = useData("apr_2026");
+    const [events, eventsLoading] = useData("archive/apr_2026");
 
     const components = useMemo(() => {
         if (eventsLoading) return [];
@@ -81,8 +81,6 @@ export default function APR2026Page() {
         <div style={{ height: "1rem" }} />
 
         <span>▾ Check out the schedule of events below ▾</span>
-
-        <ImageHandler path={"apr_2026/week_4.jpg"} style={{ width: "50%", minWidth: "300px", maxWidth: "900px" }} />
 
         <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center" }}>Times are automatically adjusted to your local timezone. Some events may have inaccurate schedules if unexpected changes happen. Check the organizers&apos; channels for the most up to date information. More details and events will be added as they become available.</span>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>

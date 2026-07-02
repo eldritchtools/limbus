@@ -421,8 +421,16 @@ function ResultsTab({ results, responseCount }) {
 
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", maxWidth: "1200px", alignSelf: "center" }}>
             <span className="title-text" style={{ textAlign: "center" }}>{title}</span>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", width: "100%", gap: "1rem" }}>
-                {messages.map((x, i) => <div key={i} className="panel-container">{x}</div>)}
+            <div style={{ display: "flex", flexDirection: "column", width: "100%"}}>
+                {messages.map((x, i) => 
+                    <div key={i} 
+                        style={{
+                            borderTop: "1px solid var(--secondary-border-color)", borderBottom: "1px solid var(--secondary-border-color)",
+                            borderRadius: "1rem", whiteSpace: "pre-wrap", padding: "0.5rem", boxSizing: "border-box"
+                        }}>
+                            {x}
+                    </div>
+                )}
             </div>
 
             {result.length > 10 && 
@@ -491,7 +499,7 @@ export default function PopularityPollPage() {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user || userResponse) return;
 
         const fetchData = async () => {
             const fetched = await fetchSurveyResponse(SURVEY_ID);
@@ -516,9 +524,11 @@ export default function PopularityPollPage() {
         }
 
         fetchData();
-    }, [user]);
+    }, [user, userResponse]);
 
     useEffect(() => {
+        if(results) return;
+
         const fetchData = async () => {
             const fetched = await fetchSurveyAggregates(SURVEY_ID);
             const count = await fetchSurveyResponseCount(SURVEY_ID);
@@ -560,7 +570,7 @@ export default function PopularityPollPage() {
         }
 
         fetchData();
-    }, []);
+    }, [results]);
 
     const submitResponse = async () => {
         const resp = userResponse.map((list, i) => {

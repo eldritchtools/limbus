@@ -1,4 +1,4 @@
-import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
+import JsonLd, { getWebPageSchema } from "../../lib/jsonLd";
 
 export const metadata = {
     title: "Absolute Pride Resonance 2026",
