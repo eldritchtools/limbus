@@ -281,11 +281,12 @@ function ResultsTab({ results, responseCount }) {
 
     const stripFavorite = text => text.replace("Favorite ", "");
 
-    const constructIconResult = (title, result, iconFn, nameFn) => {
+    const constructIconResult = (title, limit, result, iconFn, nameFn) => {
         const list = result.sort((a, b) => a.count === b.count ? a.answer.localeCompare(b.answer) : b.count - a.count);
 
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", maxWidth: "350px" }}>
             <span className="title-text" style={{ textAlign: "center" }}>{stripFavorite(title)}</span>
+            <span className="sub-text" style={{textAlign: "center"}}>{limit} vote{limit === 1 ? "" : "s"} per response</span>
             <div style={{ display: "flex", gap: "0.2rem", alignItems: "end", alignSelf: "center" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     {iconFn(list[1].answer, 112)}
@@ -331,11 +332,12 @@ function ResultsTab({ results, responseCount }) {
         </div>
     }
 
-    const constructTextResult = (title, result, transform) => {
+    const constructTextResult = (title, limit, result, transform) => {
         const list = result.sort((a, b) => a.count === b.count ? a.answer.localeCompare(b.answer) : b.count - a.count);
 
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", maxWidth: "400px" }}>
             <span className="title-text" style={{ textAlign: "center" }}>{stripFavorite(title)}</span>
+            <span className="sub-text" style={{textAlign: "center"}}>{limit} vote{limit === 1 ? "" : "s"} per response</span>
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "0.5rem", alignItems: "center" }}>
                 <span>Place</span>
                 <span>Name</span>
@@ -454,33 +456,36 @@ function ResultsTab({ results, responseCount }) {
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", width: "100%", justifyContent: isMobile ? null : "center" }}>
             {constructIconResult(
                 questions[0].question,
+                questions[0].limit,
                 results[0],
                 (id, size, name = true) => <IdentityIcon id={id} width={size} displayName={name} />,
                 id => identities[id].name
             )}
             {constructIconResult(
                 questions[1].question,
+                questions[1].limit,
                 results[1],
                 (id, size, name = true) => <IdentityIcon id={id} width={size} displayName={name} />,
                 id => identities[id].name
             )}
             {constructIconResult(
                 questions[2].question,
+                questions[2].limit,
                 results[2],
                 (id, size, name = true) => <EgoIcon id={id} type={"awaken"} width={size} displayName={name} />,
                 id => egos[id].name
             )}
         </div>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", width: "100%", justifyContent: isMobile ? null : "center" }}>
-            {constructTextResult(questions[3].question, results[3])}
-            {constructTextResult(questions[4].question, results[4])}
-            {constructTextResult(questions[5].question, results[5])}
+            {constructTextResult(questions[3].question, questions[3].limit, results[3])}
+            {constructTextResult(questions[4].question, questions[4].limit, results[4])}
+            {constructTextResult(questions[5].question, questions[5].limit, results[5])}
         </div>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.5rem", width: "100%", justifyContent: isMobile ? null : "center" }}>
-            {constructTextResult(questions[6].question, results[6])}
-            {constructTextResult(questions[7].question, results[7], x => constructThemeLink(x, questions[7].options))}
-            {constructTextResult(questions[8].question, results[8], x => constructThemeLink(x, questions[8].options))}
-            {constructTextResult(questions[9].question, results[9])}
+            {constructTextResult(questions[6].question, questions[6].limit, results[6])}
+            {constructTextResult(questions[7].question, questions[7].limit, results[7], x => constructThemeLink(x, questions[7].options))}
+            {constructTextResult(questions[8].question, questions[8].limit, results[8], x => constructThemeLink(x, questions[8].options))}
+            {constructTextResult(questions[9].question, questions[9].limit, results[9])}
         </div>
         {constructComparisonResult(questions[10].short, questions[10].items.map(x => x.long), results[10])}
         {constructRatingResult(questions[11].short, results[11])}

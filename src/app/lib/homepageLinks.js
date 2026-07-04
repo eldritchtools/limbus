@@ -41,7 +41,8 @@ export const homepageLinks = [
             { href: "/team-solver", title: "Team Solver", icon: "ThreeMirrorpartYiSang" },
             { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
             { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" },
-            { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass"}
+            { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass"},
+            { href: "/team-draft", title: "Team Draft", icon: "HanafudaThree"}
         ]
     },
     {

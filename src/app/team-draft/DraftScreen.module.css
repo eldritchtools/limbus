@@ -1,0 +1,126 @@
+.option {
+    width: 275px;
+    cursor: pointer;
+    transition: all ease 0.2s;
+    border: 1px solid var(--primary-border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.option:hover {
+    filter: brightness(1.3);
+}
+
+.countdown {
+    display: grid;
+    place-items: center;
+    height: 300px;
+}
+
+.countdown span {
+    font-size: 4rem;
+    font-weight: bold;
+
+    animation: countdown-pop 900ms ease;
+}
+
+@keyframes countdown-pop {
+    0% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+
+    30% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    80% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(.9);
+        opacity: .7;
+    }
+}
+
+.timer {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin-bottom: 2rem;
+}
+
+.timer.critical {
+    animation: pulse .7s infinite;
+}
+
+.timerHeader {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    gap: 0.2rem;
+}
+
+.timerSeconds {
+    font-size: 1.5rem;
+    animation: tick .25s ease;
+}
+
+.timerSeconds.warning {
+    color: #fbbf24
+}
+
+.timerSeconds.critical {
+    color: #ef4444
+}
+
+.timerTrack {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #333;
+}
+
+.timerFill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #4f46e5, #3b82f6);
+    transition: background-color .2s;
+}
+
+.timerFill.warning {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.timerFill.critical {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+@keyframes tick {
+    0% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
