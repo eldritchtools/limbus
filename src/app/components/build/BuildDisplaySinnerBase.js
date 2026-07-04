@@ -13,15 +13,15 @@ import { deploymentColors } from "@/app/lib/colors";
 import { egoRanks } from "@/app/lib/constants";
 import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
 
-function Identity({ identity, displayType, sinnerId, uptie, level, swapIcon }) {
+function Identity({ identity, displayType, sinnerId, uptie, level, swapIcon, disableLinks }) {
     if (!identity)
         return <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <SinnerIcon num={sinnerId} style={{ width: "75%", height: "75%" }} />
         </div>
 
-    const props = { 
-        displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp", 
-        displayRarity: true, style: {borderRadius: ".5rem"}, swapIcon: swapIcon
+    const props = {
+        displayName: displayType === "names" || displayType === "ids" || displayType === "ego-comp",
+        displayRarity: true, style: { borderRadius: ".5rem" }, swapIcon: swapIcon
     };
     if (uptie) {
         props.uptie = uptie;
@@ -37,16 +37,20 @@ function Identity({ identity, displayType, sinnerId, uptie, level, swapIcon }) {
                 <div style={{ position: "relative", width: "100%" }}>
                     <IdentityIcon identity={identity} {...props} />
                 </div> :
-                <LinkWithTooltip href={`/identities/${identity.id}`} tooltipProps={getIdentityTooltipProps(identity.id)}>
-                    <div style={{ position: "relative", width: "100%" }}>
+                disableLinks ?
+                    <div style={{ position: "relative", width: "100%" }} {...getIdentityTooltipProps(identity.id)}>
                         <IdentityIcon identity={identity} {...props} />
-                    </div>
-                </LinkWithTooltip>
+                    </div> :
+                    <LinkWithTooltip href={`/identities/${identity.id}`} tooltipProps={getIdentityTooltipProps(identity.id)}>
+                        <div style={{ position: "relative", width: "100%" }}>
+                            <IdentityIcon identity={identity} {...props} />
+                        </div>
+                    </LinkWithTooltip>
         ) :
         <div style={{ width: "100%", aspectRatio: "1/1", boxSizing: "border-box" }} />
 }
 
-function Ego({ ego, displayType, rank, threadspin }) {
+function Ego({ ego, displayType, rank, threadspin, disableLinks }) {
     let aspectRatio = displayType === "ego-comp" ? "1/1" : "4/1";
 
     if (!ego)
@@ -54,7 +58,7 @@ function Ego({ ego, displayType, rank, threadspin }) {
             <RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: displayType === "ego-comp" ? "65%" : "18%", height: "auto" }} />
         </div>
 
-    const props = { banner: displayType !== "ego-comp", type: "awaken", displayName: displayType === "names", displayRarity: false, style: {borderRadius: ".5rem"} };
+    const props = { banner: displayType !== "ego-comp", type: "awaken", displayName: displayType === "names", displayRarity: false, style: { borderRadius: ".5rem" } };
     let tooltipId = ego.id;
     if (threadspin && displayType !== "ego-comp") {
         props.threadspin = threadspin;
@@ -67,19 +71,23 @@ function Ego({ ego, displayType, rank, threadspin }) {
                 <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
                     <EgoIcon ego={ego} {...props} />
                 </div> :
-                <LinkWithTooltip href={`/egos/${ego.id}`} tooltipProps={getEgoTooltipProps(tooltipId)}>
-                    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
+                disableLinks ?
+                    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }} {...getEgoTooltipProps(tooltipId)}>
                         <EgoIcon ego={ego} {...props} />
-                    </div>
-                </LinkWithTooltip>
+                    </div> :
+                    <LinkWithTooltip href={`/egos/${ego.id}`} tooltipProps={getEgoTooltipProps(tooltipId)}>
+                        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
+                            <EgoIcon ego={ego} {...props} />
+                        </div>
+                    </LinkWithTooltip>
         ) :
         <div style={{ width: "100%", aspectRatio: "4/1", boxSizing: "border-box" }} />
 }
 
-export default function BuildDisplaySinnerBase({ 
-    displayType, sinnerId, identity, egos, 
+export default function BuildDisplaySinnerBase({
+    displayType, sinnerId, identity, egos,
     uptie, level, threadspins, swapIcon,
-    deploymentOrder, activeSinners
+    deploymentOrder, activeSinners, disableLinks
 }) {
     const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
 
@@ -92,6 +100,7 @@ export default function BuildDisplaySinnerBase({
                 uptie={uptie}
                 level={level}
                 swapIcon={swapIcon}
+                disableLinks={disableLinks}
             />
             <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
         </div>
@@ -107,6 +116,7 @@ export default function BuildDisplaySinnerBase({
                 uptie={uptie}
                 level={level}
                 swapIcon={swapIcon}
+                disableLinks={disableLinks}
             />
             <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
         </div>
@@ -118,6 +128,7 @@ export default function BuildDisplaySinnerBase({
                     displayType={displayType}
                     rank={rank}
                     threadspin={threadspins?.[rank]}
+                    disableLinks={disableLinks}
                 />)}
         </div>
     </div>

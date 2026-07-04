@@ -9,7 +9,7 @@ import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upc
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 import SkillReplace from "../skill/SkillReplace";
 
-export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, sinnerNotes, iconSwaps, deploymentOrder, skillReplaces, activeSinners, displayType }) {
+export default function BuildDisplay({ identityIds, egoIds, identityUpties, identityLevels, egoThreadspins, sinnerNotes, iconSwaps, deploymentOrder, skillReplaces, activeSinners, displayType, disableLinks }) {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
 
@@ -51,6 +51,7 @@ export default function BuildDisplay({ identityIds, egoIds, identityUpties, iden
                         activeSinners={activeSinners}
                         swapIcon={iconSwaps?.includes(index + 1)}
                         otherOpts={otherOpts}
+                        disableLinks={disableLinks}
                     />
                     {skillReplaces?.[index + 1] ?
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", alignSelf: "center" }}>
