@@ -26,6 +26,8 @@ export default function SetupScreen({ settings, setSettings, wbState, wbOpen, se
             <br /> <br />
             After all rounds, your team will be complete. A team code will be provided to import it into the game. Use the team in your Mirror Dungeons, Reflectrials, Railways, or other runs.
             <br /> <br />
+            To limit the options only to identities and E.G.O you own, you can use the Black/Whitelist and click Apply Company Data. This requires your <NoPrefetchLink className="text-link" href="/company">Company data</NoPrefetchLink> to be set.
+            <br /> <br />
             This is still a work in progress so apologies if there are any bugs. You can send feedback through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page.
         </span>
 
