@@ -20,7 +20,7 @@ export function useWbState() {
 
     const setState = useCallback((key, vOrFn) => {
         const fn = typeof vOrFn === 'function' ? vOrFn : () => vOrFn;
-        switch(key) {
+        switch (key) {
             case "mode": setMode(p => fn(p)); return;
             case "list": setList(p => fn(p)); return;
             case "listDisplay": setListDisplay(p => fn(p)); return;
@@ -29,28 +29,32 @@ export function useWbState() {
     }, []);
 
     const updateState = useCallback(newState => {
-        if(newState.mode) setMode(newState.mode)
-        if(newState.list) setList(newState.list)
-        if(newState.listDisplay) setListDisplay(newState.listDisplay)
-        if(newState.companyLoading) setCompanyLoading(newState.companyLoading)
+        if (newState.mode) setMode(newState.mode);
+        if (newState.list) setList(newState.list);
+        if (newState.listDisplay) setListDisplay(newState.listDisplay);
+        if ("companyLoading" in newState) setCompanyLoading(newState.companyLoading);
     }, []);
 
-    const getSavedState = useCallback(() => ({mode, list, listDisplay}), [mode, list, listDisplay]);
+    const getSavedState = useCallback(() => ({ mode, list, listDisplay }), [mode, list, listDisplay]);
 
     return { mode, list, listDisplay, companyLoading, setState, updateState, getSavedState };
 }
 
 export default function WbList({ wbState }) {
-    const {user} = useAuth();
+    const { user } = useAuth();
     const [identities, identitiesLoading] = useData("identities_mini");
-    const [egos, egosLoading] = useData("identities_mini");
+    const [egos, egosLoading] = useData("egos_mini");
 
     const applyCompanyData = useCallback(() => {
         if (identitiesLoading || egosLoading) return;
         wbState.setState("companyLoading", true);
 
         const handleCompany = company => {
-            if (!company) return;
+            if (!company) {
+                wbState.setState("companyLoading", false);
+                return;
+            }
+
             const newValues = [];
             const idMasks = company.identities.map(mask => bitsetFunctions.fromString(mask));
             Object.entries(identities).forEach(([id, identity]) => {
@@ -63,7 +67,7 @@ export default function WbList({ wbState }) {
                 newValues.push(id);
             });
 
-            wbState.updateState({mode: "b", list: newValues, companyLoading: false});
+            wbState.updateState({ mode: "b", list: newValues, companyLoading: false });
         }
 
         if (user) {
