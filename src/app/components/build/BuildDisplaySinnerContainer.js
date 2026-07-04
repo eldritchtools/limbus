@@ -134,7 +134,7 @@ function EgoStatsOverlay({ egos, displayType }) {
 export default function BuildDisplaySinnerContainer({ 
     displayType, sinnerId, identity, egos, 
     identityLevel, egoThreadspins, identityUptie, deploymentOrder, swapIcon,
-    activeSinners, otherOpts 
+    activeSinners, otherOpts, disableLinks
 }) {
     const baseComponent = <BuildDisplaySinnerBase
         displayType={displayType}
@@ -147,6 +147,7 @@ export default function BuildDisplaySinnerContainer({
         swapIcon={swapIcon}
         deploymentOrder={deploymentOrder}
         activeSinners={activeSinners}
+        disableLinks={disableLinks}
     />
 
     if (["names", "icons", "ids", "ego-comp"].includes(displayType)) return baseComponent;

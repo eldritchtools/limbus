@@ -73,6 +73,7 @@ export default function DraftScreen({ draft, settings }) {
             identityIds={draft.identities}
             egoIds={draft.egos}
             displayType={"ego-comp"}
+            disableLinks={true}
         />
 
         {draft.phase !== "finished" &&
