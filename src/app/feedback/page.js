@@ -4,7 +4,7 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import Concerns from "./Concerns";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import { sendFeedback } from "../database/feedback";
 
 export default function FeedbackPage() {
@@ -119,8 +119,7 @@ export default function FeedbackPage() {
             }
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-            <span>Before submitting a suggestion, consider checking if your concern has been answered below.</span>
-            <Concerns />
+            <span>Before submitting a suggestion, consider checking the <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink> to see if it has already been implemented.</span>
         </div>
     </div>;
 }

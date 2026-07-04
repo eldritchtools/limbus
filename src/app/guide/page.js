@@ -36,7 +36,7 @@ export default function GuidePage() {
         const items = [];
         guideData.forEach(section => {
             section.items.forEach(item => {
-                const score = fuzzyScore(searchString, item.title + "|" + item.description + "|" + item.details.join("|"));
+                const score = paragraphScore(searchString, item.title + "|" + item.description + "|" + item.details.join("|"));
                 items.push([score, item, section.id]);
             })
         })
