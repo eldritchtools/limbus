@@ -98,7 +98,7 @@ export default function DraftScreen({ draft, settings }) {
                     {draft.choices.map((choice, i) =>
                         <div key={i}
                             className={`${styles.option}`}
-                            onClick={() => draft.choose(i)}
+                            onClick={draft.phase === "choosing" ? () => draft.choose(i) : null}
                             style={{
                                 border: draft.chosen === i ? `2px solid ${uiColors.green}` : "1px solid var(--primary-border-color)",
                                 background: draft.chosen === i ? "var(--bg-hover)" : null
