@@ -221,9 +221,9 @@ function SeasonComparisonChart({ points, labels }) {
                 const x = MARGIN + ((value + 1) / 2) * (width - MARGIN * 2);
                 return <g key={value}>
                     <line x1={x} x2={x} y1={AXIS_Y - 5} y2={AXIS_Y + 5} stroke="var(--primary-border-color)" />
-                    <text x={x} y={AXIS_Y + 20} textAnchor="middle" fontSize="0.8rem" fill="var(--primary-text-color)">
+                    {/* <text x={x} y={AXIS_Y + 20} textAnchor="middle" fontSize="0.8rem" fill="var(--primary-text-color)">
                         {value}
-                    </text>
+                    </text> */}
                 </g>;
             })}
 
@@ -369,7 +369,7 @@ function ResultsTab({ results, responseCount }) {
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", maxWidth: "1200px", alignSelf: "center" }}>
             <span className="title-text" style={{ textAlign: "center" }}>{title}</span>
             <span className="sub-text" style={{ textAlign: "center" }}>
-                -1 means everyone said they prefer Canto IX better. 1 means everyone said they prefer the previous Canto better.
+                Cantos further left are less preferred, while Cantos further right are more preferred than Canto IX.
             </span>
             <SeasonComparisonChart points={result} labels={items} />
         </div>
@@ -605,7 +605,7 @@ export default function PopularityPollPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        <BannerIcon path={"season_7"} style={{width: "auto"}}/>
+        <BannerIcon path={"season_7"} style={{width: "auto", maxWidth: "100%"}}/>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Season 7 Popularity Poll</h1>
         <span style={{ maxWidth: "1000px", textAlign: "start" }}>
             Vote for your favorites this season! Submit or update your responses at any time while the poll is open. Current results are shown below. Refresh to see the latest results.
