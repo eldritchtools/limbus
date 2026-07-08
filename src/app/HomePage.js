@@ -8,11 +8,9 @@ import MdPlan from "./components/contentCards/MdPlan";
 import TeamBuild from "./components/contentCards/TeamBuild";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "./components/dataHooks/upcoming";
 import { useData } from "./components/DataProvider";
-import HoverBlocker from "./components/HoverBlocker";
 import BannerIcon from "./components/icons/BannerIcon";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
-import ImageHandler from "./components/icons/ImageHandler";
 import { useModal } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import DragContainer from "./components/objects/DragContainer";
@@ -142,13 +140,13 @@ export default function HomePage() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.25rem", maxWidth: isDesktop ? "min(90%, 1200px)" : "100%" }}>
             <h1 style={{ marginTop: "0.25rem", marginBottom: "0.25rem" }}>Limbus Company Tools</h1>
             <p>
-                Welcome, Manager!
+                Welcome, Manager to your complete Limbus Company hub.
                 <br /> <br />
-                Limbus Company Tools is a hub for sharing team builds and Mirror Dungeon plans. View an Identities and E.G.Os database complete with community ratings and reviews. Use calculators, planners, team randomizers, and other reference tools for the game.
+                Share team builds and Mirror Dungeon plans, rate and review Identities and E.G.Os, and showcase your collection. Browse databases for identities, E.G.O, boss encounters, and MD content with advanced search features, keep an eye on event timers, and use gameplay tools like calculators, planners, solvers, and randomizers to optimize or spice up your runs.
                 <br /> <br />
-                Use the links below to get started or check out the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to customize your profile or site experience.
+                Use the links below to get started or visit the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to personalize your profile or site experience.
                 <br /> <br />
-                Curious or confused on what you can do on the site? Check out the <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink> for details on each of the pages and features.
+                Curious about everything you can do here? The <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink> goes through every page and feature in more detail.
             </p>
             <PopularityPoll />
             <LinksMenu isMobile={isMobile} />

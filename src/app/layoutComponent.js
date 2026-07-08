@@ -79,7 +79,9 @@ const paths = [
         ]
     },
     {
-        title: "Site / Contact", subpaths: [
+        title: "Other / Site / Contact", subpaths: [
+            { path: "/artwork-guesser", title: "Artwork Guesser"},
+            { path: "/voiceline-guesser", title: "Voiceline Guesser"},
             { path: "/about", title: "About" },
             { path: "/supporters", title: "Supporters" },
             { path: "/feedback", title: "Feedback / Contact" },

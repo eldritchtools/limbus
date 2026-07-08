@@ -19,22 +19,22 @@ import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
 
-export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode }) {
+export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, hideIcons = false }) {
     const [identities, loading] = useData("identities_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
     const optionsMapped = useMemo(() => loading ? {} : Object.entries(identities).reduce((acc, [id, identity]) => {
-        if(options && !options.includes(id)) return acc;
+        if (options && !options.includes(id)) return acc;
         acc[id] = {
             value: identity.id,
             label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <IdentityIcon id={identity.id} uptie={4} displayName={false} scale={0.125} />
+                {!hideIcons && <IdentityIcon id={identity.id} uptie={4} displayName={false} scale={0.125} />}
                 <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[identity.sinnerId]}] {identity.name}</span>
             </div>,
             searchStrings: buildSearchStrings(identity, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [identities, altNames, options, loading, altNamesLoading]);
+    }, {}), [identities, altNames, options, loading, altNamesLoading, hideIcons]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}
@@ -48,7 +48,7 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
     />;
 }
 
-export function IdentityMenuSelector({ value, setValue, options, num, menuStyleOverride, uptie=4, swapIcon }) {
+export function IdentityMenuSelector({ value, setValue, options, num, menuStyleOverride, uptie = 4, swapIcon }) {
     const { getCustomizationValue } = useSiteCustomization();
     const [altNames, altNamesLoading] = useData("alt_names");
     const [filter, setFilter] = useState("");
