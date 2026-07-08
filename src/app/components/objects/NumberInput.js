@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function NumberInput({ min = null, max = null, value, onChange, allowEmpty = false, style = {} }) {
+export default function NumberInput({ min = null, max = null, value, onChange, allowEmpty = false, style = {}, disabled }) {
     const [local, setLocal] = useState(value.toString());
 
     useEffect(() => {
@@ -43,6 +43,8 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
         onChange(num);
     };
 
+    const newStyle = {...(disabled ? {filter: "brightness(0.5)"} : {}), ...style};
+
     return (
         <input
             type="number"
@@ -56,7 +58,8 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
                     e.target.blur();
                 }
             }}
-            style={style}
+            style={newStyle}
+            disabled={disabled}
         />
     );
 }

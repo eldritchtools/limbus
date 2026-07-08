@@ -1,8 +1,15 @@
-function capitalizeFirstLetter(str) {
+export function capitalizeFirstLetter(str) {
     if (typeof str !== 'string' || str.length === 0) {
         return str; // Handle empty strings or non-string inputs
     }
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function randomizeCase(str) {
+    return str
+        .split('')
+        .map((char) => (Math.random() > 0.5 ? char.toUpperCase() : char.toLowerCase()))
+        .join('');
 }
 
 export const uiStrings = {

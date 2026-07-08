@@ -12,7 +12,8 @@ export const metadata = {
         default: "Limbus Company Tools",
         template: "%s | Limbus Company Tools",
     },
-    description: "Limbus Company tools for team builds, Mirror Dungeon planning, Identity and E.G.O database with user ratings, achievement tracking, calculators, and planners."
+    // description: "Limbus Company tools for team builds, Mirror Dungeon planning, Identity and E.G.O database with user ratings, achievement tracking, calculators, and planners.",
+    description: "Comprehensive Limbus Company fan hub with team build sharing, Mirror Dungeon planners, Identity & E.G.O reviews, ownership displays, advanced searchable databases, event timers, and powerful tools like calculators, solvers, and planners."
 };
 
 const schema = {

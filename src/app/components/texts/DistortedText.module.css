@@ -1,0 +1,164 @@
+.crtGlitch {
+    position: relative;
+    display: inline-block;
+    white-space: pre;
+    isolation: isolate;
+    animation: crtFlicker 3s infinite;
+}
+
+.crtLayer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.crtRed {
+    color: #ff3355;
+    opacity: .65;
+    animation: rgbRed 2.8s infinite steps(1);
+}
+
+.crtCyan {
+    color: #00ffff;
+    opacity: .65;
+    animation: rgbCyan 3.1s infinite steps(1);
+}
+
+.crtMain {
+    position: relative;
+    display: inline-block;
+}
+
+.crtChar {
+    display: inline-block;
+    animation: charDrift 1.8s infinite ease-in-out;
+}
+
+.crtChar:nth-child(odd) {
+    animation-duration: 2.4s;
+}
+
+.crtChar:nth-child(3n) {
+    animation-duration: 1.5s;
+}
+
+.crtTear {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    animation: tear 5s infinite steps(1);
+}
+
+.crtScanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(to bottom,
+            rgba(255, 255, 255, .03) 0px,
+            rgba(255, 255, 255, .03) 1px,
+            transparent 2px,
+            transparent 4px);
+    mix-blend-mode: overlay;
+    opacity: .25;
+}
+
+@keyframes crtFlicker {
+    0%,
+    96%,
+    100% {
+        filter: brightness(1);
+    }
+
+    97% {
+        filter: brightness(1.6);
+    }
+
+    98% {
+        filter: brightness(.75);
+    }
+
+    99% {
+        filter: brightness(1.35);
+    }
+}
+
+@keyframes rgbRed {
+    0%,
+    92%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    93% {
+        transform: translate(-4px, 2px);
+    }
+
+    95% {
+        transform: translate(2px, -2px);
+    }
+
+    97% {
+        transform: translate(-2px, 0);
+    }
+}
+
+@keyframes rgbCyan {
+    0%,
+    92%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    94% {
+        transform: translate(4px, 0);
+    }
+
+    96% {
+        transform: translate(-2px, 2px);
+    }
+
+    98% {
+        transform: translate(2px, -2px);
+    }
+}
+
+@keyframes charDrift {
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    30% {
+        transform: translate(0.6px, -0.5px) rotate(-2deg);
+    }
+
+    60% {
+        transform: translate(-.75px, 0.3px) rotate(2deg);
+    }
+}
+
+@keyframes tear {
+    0%,
+    90%,
+    100% {
+        clip-path: inset(100% 0 0 0);
+        transform: translateX(0);
+    }
+
+    91% {
+        clip-path: inset(38% 0 42% 0);
+        transform: translateX(-8px);
+    }
+
+    92% {
+        clip-path: inset(42% 0 34% 0);
+        transform: translateX(12px);
+    }
+
+    93% {
+        clip-path: inset(65% 0 18% 0);
+        transform: translateX(-5px);
+    }
+}
