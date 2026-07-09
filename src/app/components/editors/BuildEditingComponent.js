@@ -246,7 +246,7 @@ export default function BuildEditingComponent({
                     null
                 }
                 {!minimalEditor ?
-                    <Distribution identityIds={identityIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
+                    <Distribution identityIds={identityIds} egoIds={egoIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
                     null
                 }
                 {includeEventRolls ?

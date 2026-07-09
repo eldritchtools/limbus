@@ -30,7 +30,7 @@ import { keywords } from "../lib/constants";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import { constructTeamCode } from "../lib/teamCodeEncoding";
 
-function ResultComponent({ identities, result, keywordTargets, statusTargets, router, isMobile }) {
+function ResultComponent({ identities, result, keywordTargets, statusTargets, router, isMobile, keywordModifiers }) {
     const [copied, setCopied] = useState(null);
 
     const [counts, stCounts, identityIds, styles] = useMemo(() => {
@@ -51,12 +51,15 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
                 identityIds.push(item);
                 styles.push({});
                 (identities[item].skillKeywordList ?? []).forEach(kw => counts[kw]++);
+                if(item in keywordModifiers) {
+                    keywordModifiers[item].forEach(x => counts[x.keyword]++);
+                }
                 (identities[item].statuses ?? []).forEach(st => { if (st in stCounts) stCounts[st]++ });
             }
         });
 
         return [counts, stCounts, identityIds, styles];
-    }, [identities, result, statusTargets])
+    }, [identities, result, statusTargets, keywordModifiers])
 
     const copyToBuild = () => {
         const params = new URLSearchParams({ identityIds: result.map(x => typeof x === "object" ? null : x).join(",") });
@@ -108,6 +111,7 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
 export default function TeamSolverPage() {
     const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
+    const [keywordModData, keywordModDataLoading] = useData("identity_keyword_modifiers");
     const [fixedIdentityIds, setFixedIdentityIds] = useState(Array.from({ length: 12 }, () => null));
     const [enabledSinners, setEnabledSinners] = useState(Array.from({ length: 12 }, () => true));
     const [deployedSinners, setDeployedSinners] = useState(7);
@@ -115,6 +119,7 @@ export default function TeamSolverPage() {
     const [statusTargets, setStatusTargets] = useState([]);
     const [tagTargets, setTagTargets] = useState([]);
     const [solvers, setSolvers] = useState(5);
+    const [keywordModifiers, setKeywordModifiers] = useState(false);
 
     const [placeholders, setPlaceholders] = useState([]);
 
@@ -145,6 +150,7 @@ export default function TeamSolverPage() {
             if (data.statusTargets) setStatusTargets(data.statusTargets);
             if (data.tagTargets) setTagTargets(data.tagTargets);
             if (data.solvers) setSolvers(data.solvers);
+            if (data.keywordModifiers) setKeywordModifiers(data.keywordModifiers);
             if (data.placeholders) setPlaceholders(data.placeholders);
             if (data.wbMode) setWbMode(data.wbMode);
             if (data.wbList) setWbList(data.wbList);
@@ -166,7 +172,7 @@ export default function TeamSolverPage() {
                 id: "main",
                 fixedIdentityIds, enabledSinners, deployedSinners,
                 keywordTargets, statusTargets, tagTargets, placeholders,
-                solvers, wbMode, wbList, wbListDisplay, wbListOpen
+                solvers, keywordModifiers, wbMode, wbList, wbListDisplay, wbListOpen
             }
 
             await getLocalStore("teamSolver").save(data);
@@ -185,7 +191,7 @@ export default function TeamSolverPage() {
         return () => clearTimeout(saveTimeout.current);
     }, [initializing, fixedIdentityIds, enabledSinners, deployedSinners,
         keywordTargets, statusTargets, tagTargets, placeholders, solvers,
-        wbMode, wbList, wbListDisplay, wbListOpen]);
+        keywordModifiers, wbMode, wbList, wbListDisplay, wbListOpen]);
 
     const handleSetFixedIdentityId = (index, id) => {
         setFixedIdentityIds(p => p.map((v, i) => i === index ? id : v));
@@ -293,7 +299,8 @@ export default function TeamSolverPage() {
                         acc[tag] = num;
                         return acc;
                     }, {}),
-                solvers: solvers
+                solvers: solvers,
+                keywordModifiers: keywordModifiers ? keywordModData : {}
             };
 
             worker.postMessage({
@@ -349,7 +356,7 @@ export default function TeamSolverPage() {
         return [identityOptions, [...statusOptions], [...tagOptions]];
     }, [identities, identitiesLoading]);
 
-    if (identitiesLoading || initializing) return <LoadingContentPageTemplate />;
+    if (identitiesLoading || keywordModDataLoading || initializing) return <LoadingContentPageTemplate />;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Solver</h1>
@@ -428,6 +435,12 @@ export default function TeamSolverPage() {
                     <span>Max Sinners:</span>
                     <NumberInput value={deployedSinners} onChange={setDeployedSinners} min={1} max={12} style={{ textAlign: "center", width: "3ch" }} />
                 </div>
+                <label style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                    <input type="checkbox" checked={keywordModifiers} onChange={e => setKeywordModifiers(e.target.checked)} />
+                    <span className="hover-text" {...getGeneralTooltipProps("Check to consider modifiers that change the keywords of identities like equipping certain E.G.O. This will consider the affected identities as having those keywords, but will not be carried over when using Copy Team Code or Create Build. You will have to set them manually.")}>
+                        Keyword Modifiers
+                    </span>
+                </label>
                 <button onClick={() => setWbListOpen(p => !p)}>
                     {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
                 </button>
@@ -533,7 +546,7 @@ export default function TeamSolverPage() {
                 <ResultComponent key={i}
                     identities={identities} placeholders={placeholders}
                     result={result} keywordTargets={keywordTargets} statusTargets={statusTargets}
-                    router={router} isMobile={isMobile}
+                    router={router} isMobile={isMobile} keywordModifiers={keywordModifiers ? keywordModData : {}}
                 />
             )}
         </div>

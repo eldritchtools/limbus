@@ -93,6 +93,7 @@ export default function BuildPage({ id }) {
                 <Distribution
                     identityIds={build.identity_ids}
                     identityUpties={identityUpties}
+                    egoIds={build.ego_ids}
                     deploymentOrder={build.deployment_order}
                     activeSinners={build.active_sinners}
                 />

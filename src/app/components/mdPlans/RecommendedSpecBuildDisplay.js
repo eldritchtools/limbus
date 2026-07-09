@@ -128,6 +128,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             <Distribution
                 identityIds={identitiesConverted}
                 identityUpties={extraOpts.identityUpties}
+                egoIds={egosConverted}
                 deploymentOrder={extraOpts.deploymentOrder}
                 activeSinners={extraOpts.activeSinners}
             />
