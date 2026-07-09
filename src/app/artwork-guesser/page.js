@@ -88,7 +88,7 @@ function Guesser({ mode, setMode }) {
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        if (!initialized) {
+        if (!initialized && mode !== "daily") {
             const initialize = async () => {
                 const saved = await getLocalStore("guessers").get(GUESSER_ID);
                 if (saved) setSettings(saved);
