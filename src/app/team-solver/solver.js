@@ -41,7 +41,10 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
         const list = [...(identity.skillKeywordList ?? [])];
 
         if(identity.id in keywordModifiers) {
-            keywordModifiers[identity.id].forEach(x => list.push(x.keyword));
+            keywordModifiers[identity.id].forEach(x => {
+                if("allowInSolver" in x && !x.allowInSolver) return;
+                list.push(x.keyword);
+            });
         }
 
         return list;

@@ -7,6 +7,7 @@ import KeywordIcon from "../icons/KeywordIcon";
 import DropdownButton from "../objects/DropdownButton";
 
 import { affinities, keywords } from "@/app/lib/constants";
+import { validateModifier } from "@/app/lib/keywordModifiers";
 import useLocalState from "@/app/lib/useLocalState";
 
 export default function Distribution({ identityIds, identityUpties, egoIds, deploymentOrder, activeSinners }) {
@@ -41,9 +42,8 @@ export default function Distribution({ identityIds, identityUpties, egoIds, depl
                 });
                 if (id in keywordModifiers) {
                     keywordModifiers[id].forEach(mod => {
-                        if(mod.cond.type === "ego") {
-                            if(egoIds[i].includes(mod.cond.id)) 
-                                result[mod.keyword] += 1
+                        if(validateModifier(mod, {egoIds: egoIds[i]})) {
+                            result[mod.keyword] += 1
                         }
                     });
                 }
