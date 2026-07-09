@@ -5,7 +5,7 @@ import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
 import { generateVoicelineQuiz } from "@/app/voiceline-guesser/generator";
 import { dailySettings as voicelineDailySettings } from "@/app/voiceline-guesser/settings";
 
-const DATA_ROOT = "https://pub-caa4ae10616949bb9dfc2a70efc46e82.r2.dev";
+const DATA_ROOT = "https://pub-caa4ae10616949bb9dfc2a70efc46e82.r2.dev/data";
 
 function getToday() {
     const base = new Date();
