@@ -9,7 +9,7 @@ export const questions = [
             "11214", "10115", "10414", "10514", "11215", 
             "10215", "10614", "10515", "10915", "10715", 
             "10415", "11115", "10615", "10815", "10716", 
-            "10916"
+            "10916", "10216", "11216"
         ]
     },
     {
@@ -22,14 +22,14 @@ export const questions = [
             "11214", "10115", "10414", "10514", "11215", 
             "10215", "10614", "10515", "10915", "10715", 
             "10415", "11115", "10615", "10815", "10716", 
-            "10916"
+            "10916", "10216", "11216"
         ]
     },
     {
         "type": "egoselect",
         "limit": 1,
         "question": "Favorite E.G.O",
-        "options": ["20709", "21109", "20108", "20409", "21009", "20210", "20909", "20509"]
+        "options": ["20709", "21109", "20108", "20409", "21009", "20210", "20909", "20509", "20109"]
     },
     {
         "type": "select",
@@ -53,7 +53,9 @@ export const questions = [
             "Burn-Bleed",
             "Tremor-Sinking",
             "Bleed-Poise",
-            "Rupture-Charge"
+            "Rupture-Charge",
+            "Dawn Office",
+            "Burn-Tremor / Scorch"
         ]
     },
     {
@@ -135,7 +137,8 @@ export const questions = [
             "Twining Threads",
             "Nocturnal Sweeping BokGak",
             "Refraction Railway 6 - Maru no Uchi no Sanzu no Kawa",
-            "Mnestic Experience"
+            "Mnestic Experience",
+            "The 9th Walpurgis Night - The Fixer at Dawnbreak"
         ]
     },
     {
