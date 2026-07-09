@@ -8,6 +8,7 @@
     "20106": "Bygone Days",
     "20107": "Fell Bullet",
     "20108": "Great Trichiliocosm [三千大世界]",
+    "20109": "Solemn Lament",
     "20201": "Representation Emitter",
     "20202": "Fluid Sac",
     "20203": "Hex Nail",
@@ -400,6 +401,7 @@
     "10213": "Shi Assoc. East Section 3",
     "10214": "The Index Proselyte: 【Paper Slip】",
     "10215": "The House of Spiders: The Ring Apprentice",
+    "10216": "Dawn Office Fixer",
     "10301": "LCB Sinner",
     "10302": "W Corp. L3 Cleanup Agent",
     "10303": "Shi Assoc. South Section 5 Director",
@@ -550,6 +552,7 @@
     "11212": "Heishou Pack - Si Branch",
     "11213": "Night Awls Capitano",
     "11214": "Lobotomy E.G.O::Lamp",
-    "11215": "LCE E.G.O:: AEDD"
+    "11215": "LCE E.G.O:: AEDD",
+    "11216": "Dawn Office Rep"
   }
 }

@@ -7,6 +7,7 @@ import styles from "./Banner.module.css";
 import ResultsChart from "./ResultsChart";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../components/dataHooks/upcoming";
 import { useData } from "../components/DataProvider";
+import AnnouncerIcon from "../components/icons/AnnouncerIcon";
 import BannerIcon from "../components/icons/BannerIcon";
 import EgoIcon from "../components/icons/EgoIcon";
 import IdentityIcon from "../components/icons/IdentityIcon";
@@ -75,7 +76,7 @@ function Banner({ banner, identities, egos, isMobile, selected, setSelected }) {
                 Object.entries(egos).forEach(([id, obj]) => insertItem(false, id, obj));
                 break;
             case "announcers":
-                items["announcer"].push(v);
+                v.forEach(x => items["announcer"].push(x));
                 break;
             case "walpurgis":
                 if (v) isWalpurgis = true;
@@ -114,6 +115,7 @@ export default function ExtractionSimulatorPage() {
     const [timers, timersLoading] = useData("timers");
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming(true);
     const [egos, egosLoading] = useEgosWithUpcoming(true);
+    const [announcers, announcersLoading] = useData("announcers");
     const [firstSimulation, setFirstSimulation] = useState(true);
 
     const [selected, setSelected] = useState(null);
@@ -143,9 +145,17 @@ export default function ExtractionSimulatorPage() {
     const [ids3, ids2, ids1] = useMemo(() => {
         if (identitiesLoading) return [[], [], []];
         const ids3 = [], ids2 = [], ids1 = [];
+        let latestSeason = 0;
+        Object.values(identities).forEach(x => {
+            if(x.season >= 9000) return;
+            if(x.season > latestSeason) latestSeason = x.season;
+        });
+
         Object.entries(identities).forEach(([id, obj]) => {
             if (obj.upcoming) return;
             if (!(isWalpurgis || selected?.isWalpurgis) && obj.season >= 9100) return;
+            if (obj.event && obj.season !== latestSeason) return;
+            if (obj.eventReward) return;
             if (obj.rank === 3) ids3.push(id);
             else if (obj.rank === 2) ids2.push(id);
             else if (obj.rank === 1) ids1.push(id);
@@ -166,6 +176,17 @@ export default function ExtractionSimulatorPage() {
         });
         return result;
     }, [egos, egosLoading, isWalpurgis, extractedEgos, selected])
+
+    const extractableAnnouncers = useMemo(() => {
+        if(announcersLoading) return [];
+        if(!(isWalpurgis || selected?.isWalpurgis)) return [];
+
+        const result = [];
+        Object.entries(announcers).forEach(([id, obj]) => {
+            if(obj.walpurgis) result.push(id);
+        })
+        return result;
+    }, [announcers, announcersLoading, isWalpurgis, selected]);
 
     const extractableEgoComponents = useMemo(() => {
         if (egosLoading) return [];
@@ -209,11 +230,11 @@ export default function ExtractionSimulatorPage() {
     const pulledComponents = useMemo(() => {
         if (pulled.length === 0) return [];
 
-        const constructPulledComponent = (i, id) => {
+        const constructPulledComponent = (i, obj) => {
             let comp;
-            if (id[0] === '1') comp = <IdentityIcon id={id} uptie={4} displayRarity={true} displayName={true} />
-            else if (id[0] === '2') comp = <EgoIcon id={id} type={"awaken"} displayRarity={true} displayName={true} />
-            else comp = `Announcer: ${id}`
+            if (obj[0] === "id") comp = <IdentityIcon id={obj[1]} uptie={4} displayRarity={true} displayName={true} />
+            else if (obj[0] === "ego") comp = <EgoIcon id={obj[1]} type={"awaken"} displayRarity={true} displayName={true} />
+            else comp = <AnnouncerIcon id={obj[1]} />
 
             return <div key={`${pullCount}-${i}`} style={iconStyle(isMobile)}>
                 {comp}
@@ -275,8 +296,11 @@ export default function ExtractionSimulatorPage() {
 
         const executeSinglePull = (noBase) => {
             let rnd = Math.random() * 100;
-            if (items.announcer.length > 0) {
-                if (rnd < 1.3) return pickRandom(items.announcer);
+            if (items.announcer.length > 0 || extractableAnnouncers.length > 0) {
+                if (rnd < 1.3) {
+                    if(items.announcer.length > 0 && Math.random() < 0.5) return ["announcer", pickRandom(items.announcer)];
+                    else return ["announcer", pickRandom(extractableAnnouncers)];
+                }
                 rnd -= 1.3;
             }
             let prob3 = 2.9, prob2 = 12.8;
@@ -285,11 +309,11 @@ export default function ExtractionSimulatorPage() {
                     if (items.ego.length > 0 && items.ego.some(x => extractableEgosTemp.has(x)) && Math.random() < 0.5) {
                         const ego = pickRandom(items.ego.filter(x => extractableEgosTemp.has(x)))
                         extractableEgosTemp.delete(ego);
-                        return ego;
+                        return ["ego", ego];
                     } else {
                         const ego = pickRandom([...extractableEgosTemp].filter(x => !items.ego.includes(x)))
                         extractableEgosTemp.delete(ego);
-                        return ego;
+                        return ["ego", ego];
                     }
                 }
                 rnd -= 1.3;
@@ -299,25 +323,25 @@ export default function ExtractionSimulatorPage() {
 
             if (rnd < prob3) {
                 if (items[3].length > 0 && Math.random() < 0.5) {
-                    return pickRandom(items[3]);
+                    return ["id", pickRandom(items[3])];
                 } else {
-                    return pickRandom(ids3.filter(x => !items[3].includes(x)));
+                    return ["id", pickRandom(ids3.filter(x => !items[3].includes(x)))];
                 }
             }
             rnd -= prob3;
 
             if (noBase || rnd < prob2) {
                 if (items[2].length > 0 && Math.random() < 0.5) {
-                    return pickRandom(items[2]);
+                    return ["id", pickRandom(items[2])];
                 } else {
-                    return pickRandom(ids2.filter(x => !items[2].includes(x)));
+                    return ["id", pickRandom(ids2.filter(x => !items[2].includes(x)))];
                 }
             }
 
             if (items[1].length > 0 && Math.random() < 0.5) {
-                return pickRandom(items[1]);
+                return ["id", pickRandom(items[1])];
             } else {
-                return pickRandom(ids1.filter(x => !items[1].includes(x)));
+                return ["id", pickRandom(ids1.filter(x => !items[1].includes(x)))];
             }
         }
 
@@ -459,7 +483,7 @@ export default function ExtractionSimulatorPage() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", justifyContent: "center" }}>
                     <label>
-                        <input type="checkbox" checked={isWalpurgis || selected?.isWalpurgis} onChange={e => setIsWalpurgis(e.target.checked)} disabled={selected?.isWalpurgis} />
+                        <input type="checkbox" checked={isWalpurgis || (selected?.isWalpurgis ?? false)} onChange={e => setIsWalpurgis(e.target.checked)} disabled={selected?.isWalpurgis} />
                         <span>Include Walpurgis</span>
                     </label>
                     <button onClick={() => executePull(1)}>Pull 1</button>

@@ -11,31 +11,52 @@ import EgoIcon from "../components/icons/EgoIcon";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { useQuiz } from "../components/quiz/useQuiz";
 import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
+import { getLocalStore } from "../database/localDB";
 import { uiColors } from "../lib/colors";
 import { sinnerIdMapping } from "../lib/constants";
 import { selectStyleWide } from "../styles/selectStyle";
+
+const GUESSER_ID = "voiceline";
 
 function Guesser({ mode, setMode }) {
     const [egos, egosLoading] = useData("egos_mini");
     const [settings, setSettings] = useState(mode === "standard" ? defaultSettings : dailySettings);
     const generator = useVoicelineQuizGenerator(settings);
-    const quiz = useQuiz("voiceline", generator);
+    const quiz = useQuiz(GUESSER_ID, generator);
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
+        if (!initialized) {
+            const initialize = async () => {
+                const saved = await getLocalStore("guessers").get(GUESSER_ID);
+                if (saved) setSettings(saved);
+                setInitialized(true);
+            }
+
+            initialize();
+            return;
+        }
+
         if (mode === "daily" && quiz.phase === "setup") quiz.start(settings);
-    }, [mode, quiz, settings]);
+    }, [initialized, mode, quiz, settings]);
 
     if (!generator || egosLoading) return <LoadingContentPageTemplate />;
 
     if (quiz.phase === "setup") {
-        if (mode === "standard")
+        if (mode === "standard") {
+            const handleSetSettings = async (valueOrFn) => {
+                const newSettings = typeof valueOrFn === "function" ? valueOrFn(settings) : valueOrFn;
+                await getLocalStore("guessers").save({ id: GUESSER_ID, ...newSettings });
+                setSettings(newSettings);
+            }
+
             return <SetupScreen
                 settings={settings}
-                setSettings={setSettings}
+                setSettings={handleSetSettings}
                 onStart={() => quiz.start(settings)}
-                onReset={() => setSettings(defaultSettings)}
+                onReset={() => handleSetSettings(defaultSettings)}
             />
-        else
+        } else
             return <LoadingContentPageTemplate />
     }
 
@@ -65,7 +86,7 @@ function Guesser({ mode, setMode }) {
                 </span>
             )}
 
-            <EgoDropdownSelector selected={null} setSelected={x => quiz.submitGuess(x)} styles={selectStyleWide} />
+            <EgoDropdownSelector selected={null} setSelected={x => { if (x) quiz.submitGuess(x) }} styles={selectStyleWide} excludeOptions={quiz.answers ?? []} />
 
             {mode === "standard" &&
                 <span className="text-link" onClick={quiz.skip}
