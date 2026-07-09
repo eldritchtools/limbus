@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import { generateArtworkQuiz } from "@/app/artwork-guesser/generator";
 import { dailySettings as artworkDailySettings } from "@/app/artwork-guesser/settings";
 import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
@@ -21,12 +23,14 @@ function getToday() {
 }
 
 async function fetchDataFile(path) {
-    const res = await fetch(`${DATA_ROOT}/${path}.json`);
-    return res.json();
+    // const res = await fetch(`${DATA_ROOT}/${path}.json`);
+    // return res.json();
+    const { data } = await axios.get(`${DATA_ROOT}/${path}.json`);
+    return data;
 }
 
 export async function GET(request, { params }) {
-    const { id } = await params;
+    const { id } = params;
     const today = getToday();
 
     let quiz = await getDailyQuiz(id, today);
@@ -59,5 +63,5 @@ export async function GET(request, { params }) {
         }
     }
 
-    return Response.json({...quiz, date: today});
+    return Response.json({ ...quiz, date: today });
 }
