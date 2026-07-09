@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { generateArtworkQuiz } from "@/app/artwork-guesser/generator";
 import { dailySettings as artworkDailySettings } from "@/app/artwork-guesser/settings";
 import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
@@ -25,8 +23,20 @@ function getToday() {
 async function fetchDataFile(path) {
     // const res = await fetch(`${DATA_ROOT}/${path}.json`);
     // return res.json();
-    const { data } = await axios.get(`${DATA_ROOT}/${path}.json`);
-    return data;
+
+    const url = `${DATA_ROOT}/${path}.json`;
+
+    const res = await fetch(url);
+
+    const text = await res.text();
+
+    return {
+        url,
+        status: res.status,
+        ok: res.ok,
+        headers: Object.fromEntries(res.headers.entries()),
+        text,
+    };
 }
 
 export async function GET(request, { params }) {
@@ -38,6 +48,8 @@ export async function GET(request, { params }) {
     if (!quiz) {
         if (id === "artwork") {
             const data = await fetchDataFile("identities_mini");
+            return Response.json(data);
+            
             quiz = generateArtworkQuiz(data, artworkDailySettings);
         } else if (id === "voiceline") {
             const data = await fetchDataFile("ego_voicelines");
@@ -63,5 +75,5 @@ export async function GET(request, { params }) {
         }
     }
 
-    return Response.json({ ...quiz, date: today });
+    return Response.json({...quiz, date: today});
 }
