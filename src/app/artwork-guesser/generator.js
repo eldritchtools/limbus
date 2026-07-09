@@ -121,9 +121,7 @@ export function useArtworkQuizGenerator(settings) {
     if (settings.mode === "daily") {
         return async () => {
             const response = await fetch("/api/dailies/artwork");
-            const data = await response.json();
-            console.log(data);
-            return data;
+            return await response.json();
         }
     }
 

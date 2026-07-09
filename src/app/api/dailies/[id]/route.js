@@ -1,11 +1,9 @@
 import { generateArtworkQuiz } from "@/app/artwork-guesser/generator";
 import { dailySettings as artworkDailySettings } from "@/app/artwork-guesser/settings";
 import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
-// import { DATA_ROOT } from "@/app/paths";
+import { DATA_ROOT } from "@/app/paths";
 import { generateVoicelineQuiz } from "@/app/voiceline-guesser/generator";
 import { dailySettings as voicelineDailySettings } from "@/app/voiceline-guesser/settings";
-
-const DATA_ROOT = "https://pub-caa4ae10616949bb9dfc2a70efc46e82.r2.dev/data";
 
 function getToday() {
     const base = new Date();
@@ -23,22 +21,8 @@ function getToday() {
 }
 
 async function fetchDataFile(path) {
-    // const res = await fetch(`${DATA_ROOT}/${path}.json`);
-    // return res.json();
-
-    const url = `${DATA_ROOT}/${path}.json`;
-
-    const res = await fetch(url);
-
-    const text = await res.text();
-
-    return {
-        url,
-        status: res.status,
-        ok: res.ok,
-        headers: Object.fromEntries(res.headers.entries()),
-        text,
-    };
+    const res = await fetch(`${DATA_ROOT}/${path}.json`);
+    return res.json();
 }
 
 export async function GET(request, { params }) {
@@ -50,8 +34,6 @@ export async function GET(request, { params }) {
     if (!quiz) {
         if (id === "artwork") {
             const data = await fetchDataFile("identities_mini");
-            return Response.json(data);
-
             quiz = generateArtworkQuiz(data, artworkDailySettings);
         } else if (id === "voiceline") {
             const data = await fetchDataFile("ego_voicelines");
