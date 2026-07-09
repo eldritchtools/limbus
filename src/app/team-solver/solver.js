@@ -20,7 +20,7 @@ function permute(array) {
     return array;
 }
 
-function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholders, deployedSinners, keywordTargets, statusTargets, tagTargets, solvers }) {
+function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholders, deployedSinners, keywordTargets, statusTargets, tagTargets, solvers, keywordModifiers }) {
     const solutionsPerSolver = Math.ceil(MAX_SOLUTIONS / solvers);
     const kwToIndex = Object.fromEntries(Object.entries(keywordTargets).filter(([, cnt]) => cnt > 0).map(([kw], i) => ([kw, i])));
     let condCount = Object.keys(kwToIndex).length;
@@ -36,12 +36,26 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
                 .map(x => [x, Array.from({ length: condCount }, () => 0)])
         );
     const identitiesPerSinner = Object.fromEntries(enabledSinnerIds.filter(x => !(x in fixedIdentityIds)).map(x => [x, []]));
+
+    const getIdentityKeywords = identity => {
+        const list = [...(identity.skillKeywordList ?? [])];
+
+        if(identity.id in keywordModifiers) {
+            keywordModifiers[identity.id].forEach(x => {
+                if("allowInSolver" in x && !x.allowInSolver) return;
+                list.push(x.keyword);
+            });
+        }
+
+        return list;
+    }
+
     identityOptions.forEach(identity => {
         if (!(identity.sinnerId in identitiesPerSinner)) return;
 
         const conds = Array.from({ length: condCount }, () => false);
         let matches = 0;
-        (identity.skillKeywordList ?? []).forEach(kw => {
+        getIdentityKeywords(identity).forEach(kw => {
             if (kw in kwToIndex) {
                 conds[kwToIndex[kw]] = true;
                 matches++;
@@ -104,7 +118,7 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
     Object.entries(tagTargets).forEach(([tag, cnt]) => initRequirement[tagToIndex[tag]] = cnt);
     Object.values(fixedIdentityIds).forEach(id => {
         const identity = identityOptions.find(x => x.id === id);
-        (identity.skillKeywordList ?? []).forEach(kw => { if (kw in kwToIndex) initRequirement[kwToIndex[kw]]-- });
+        getIdentityKeywords(identity).forEach(kw => { if (kw in kwToIndex) initRequirement[kwToIndex[kw]]-- });
         (identity.statuses ?? []).forEach(st => { if (st in stToIndex) initRequirement[stToIndex[st]]-- });
         (identity.tags ?? []).forEach(tag => { if (tag in tagToIndex) initRequirement[tagToIndex[tag]]-- });
     })

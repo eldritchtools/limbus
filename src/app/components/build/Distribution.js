@@ -7,17 +7,20 @@ import KeywordIcon from "../icons/KeywordIcon";
 import DropdownButton from "../objects/DropdownButton";
 
 import { affinities, keywords } from "@/app/lib/constants";
+import { validateModifier } from "@/app/lib/keywordModifiers";
 import useLocalState from "@/app/lib/useLocalState";
 
-export default function Distribution({ identityIds, deploymentOrder, activeSinners }) {
+export default function Distribution({ identityIds, identityUpties, egoIds, deploymentOrder, activeSinners }) {
     const [mode, setMode] = useLocalState("buildDistributionType", "kw-act");
     const [identities, identitiesLoading] = useData("identities");
+    const [keywordModifiers, keywordModifiersLoading] = useData("identity_keyword_modifiers");
     const { isMobile } = useBreakpoint();
 
     const [modeItem, modeType, modeSkill] = useMemo(() => (mode ?? "all-a").split("-"), [mode]);
 
     const values = useMemo(() => {
         if (identitiesLoading) return {};
+        if (modeItem === "kw" && keywordModifiersLoading) return {};
 
         const result = modeItem === "kw" ?
             Object.fromEntries(keywords.slice(0, 7).map(x => [x, 0])) :
@@ -37,6 +40,13 @@ export default function Distribution({ identityIds, deploymentOrder, activeSinne
                 identity.skillKeywordList?.forEach(keyword => {
                     result[keyword] += 1;
                 });
+                if (id in keywordModifiers) {
+                    keywordModifiers[id].forEach(mod => {
+                        if(validateModifier(mod, {egoIds: egoIds[i]})) {
+                            result[mod.keyword] += 1
+                        }
+                    });
+                }
             } else if (modeItem === "sin") {
                 if (modeSkill === "a") {
                     identity.skillTypes.forEach(skill => {
@@ -50,7 +60,11 @@ export default function Distribution({ identityIds, deploymentOrder, activeSinne
         })
 
         return result;
-    }, [modeItem, modeType, modeSkill, identities, identitiesLoading, identityIds, deploymentOrder, activeSinners]);
+    }, [
+        modeItem, modeType, modeSkill, identities, identitiesLoading,
+        keywordModifiers, keywordModifiersLoading, 
+        identityIds, egoIds, deploymentOrder, activeSinners
+    ]);
 
     if (identitiesLoading) return null;
 

@@ -18,12 +18,12 @@ import { egoRanks, keywordStatusMappingReversed, sinnerIdMapping } from "@/app/l
 import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
-export function EgoDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode }) {
+export function EgoDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, excludeOptions = [] }) {
     const [egos, loading] = useData("egos_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
     const optionsMapped = useMemo(() => loading ? [] : Object.entries(egos).reduce((acc, [id, ego]) => {
-        if(options && !options.includes(id)) return acc;
+        if(options && !options.includes(id) || excludeOptions.includes(id)) return acc;
         acc[id] = {
             value: ego.id,
             label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", maxWidth: "65vw" }}>
@@ -33,7 +33,7 @@ export function EgoDropdownSelector({ selected, setSelected, isMulti = false, st
             searchStrings: buildSearchStrings(ego, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [egos, altNames, options, loading, altNamesLoading]);
+    }, {}), [egos, altNames, options, loading, altNamesLoading, excludeOptions]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}
