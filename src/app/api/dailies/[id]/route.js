@@ -30,7 +30,7 @@ async function fetchDataFile(path) {
 }
 
 export async function GET(request, { params }) {
-    const { id } = params;
+    const { id } = await params;
     const today = getToday();
 
     let quiz = await getDailyQuiz(id, today);
