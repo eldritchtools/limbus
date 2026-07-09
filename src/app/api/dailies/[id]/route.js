@@ -1,9 +1,11 @@
 import { generateArtworkQuiz } from "@/app/artwork-guesser/generator";
 import { dailySettings as artworkDailySettings } from "@/app/artwork-guesser/settings";
 import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
-import { DATA_ROOT } from "@/app/paths";
+// import { DATA_ROOT } from "@/app/paths";
 import { generateVoicelineQuiz } from "@/app/voiceline-guesser/generator";
 import { dailySettings as voicelineDailySettings } from "@/app/voiceline-guesser/settings";
+
+const DATA_ROOT = "https://pub-caa4ae10616949bb9dfc2a70efc46e82.r2.dev";
 
 function getToday() {
     const base = new Date();
@@ -49,7 +51,7 @@ export async function GET(request, { params }) {
         if (id === "artwork") {
             const data = await fetchDataFile("identities_mini");
             return Response.json(data);
-            
+
             quiz = generateArtworkQuiz(data, artworkDailySettings);
         } else if (id === "voiceline") {
             const data = await fetchDataFile("ego_voicelines");
