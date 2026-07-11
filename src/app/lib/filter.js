@@ -16,7 +16,7 @@ export function checkFilterMatch(str, searchStrings = []) {
 }
 
 export function buildSearchStrings(item, altNames) {
-    if(altNames)
+    if (altNames)
         return [item.name, sinnerIdMapping[item.sinnerId], ...(altNames[item.id] ?? [])];
     else
         return [item.name, sinnerIdMapping[item.sinnerId]];
@@ -25,7 +25,16 @@ export function buildSearchStrings(item, altNames) {
 const identityFilterMatchFunctions = {
     "identityTier": (filter, item) => filter.length === item.rank,
     "affinity": (filter, item) => item.skillTypes.some(s => s.type.affinity === filter) || item.defenseSkillTypes.some(s => s.type.affinity === filter),
-    "skillType": (filter, item) => item.skillTypes.some(s => s.type.type === filter.toLowerCase()) || item.defenseSkillTypes.some(s => s.type.type === filter.toLowerCase()),
+    "skillType": (filter, item) => {
+        if (filter === "Clashable Guard") {
+            return item.defenseSkillTypes.some(s => s.type.type === "guard" && s.type.clashable);
+        } else if (filter === "Clashable Counter") {
+            return item.defenseSkillTypes.some(s => s.type.type === "counter" && s.type.clashable);
+        } else {
+            return item.skillTypes.some(s => s.type.type === filter.toLowerCase()) ||
+                item.defenseSkillTypes.some(s => s.type.type === filter.toLowerCase())
+        }
+    },
     "status": (filter, item) => (item.skillKeywordList || []).includes(filter),
     "sinner": (filter, item) => filter === item.sinnerId,
     "statusFull": (filter, item) => (item.statuses || []).includes(filter),

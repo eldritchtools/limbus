@@ -51,7 +51,7 @@ export const homepageLinks = [
             { href: "/artwork-guesser", title: "Artwork Guesser", icon: "TakePicture"},
             { href: "/voiceline-guesser", title: "Voiceline Guesser", icon: "Resonate"},
             { href: "/about", title: "About", icon: "KnowledgeExplored" },
-            { href: "/supporters", title: "Supporters", icon: "MagicalGirlAppear" },
+            { href: "/support", title: "Support", icon: "MagicalGirlAppear" },
             { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }
         ]
     }

@@ -485,6 +485,19 @@ export default function SiteCustomizationPage() {
             </div>
         </SettingContainer>
 
+        <SettingContainer
+            name={"Show Ads"}
+            desc={"This toggles ads on the site. Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, this doesn't do anything at the moment, but you can set it in advance if you don't want to see ads if I eventually decide to include them."}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.showAds ?? customizationDefaults.showAds}
+                    onChange={e => setData(p => ({ ...p, showAds: e.target.checked }))}
+                />
+                <span>Show Ads</span>
+            </label>
+        </SettingContainer>
+
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
             <div style={{ display: "flex", alignSelf: "center", justifyContent: "center" }}>
                 <button onClick={applyCustomization} disabled={applying} style={{ fontSize: "1.2rem" }}>Apply Changes</button>

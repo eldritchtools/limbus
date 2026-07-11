@@ -11,5 +11,6 @@ export const customizationDefaults = {
     ratingsOnTooltips: false,
     idEgoSelectionMenuStyle: "icon",
     showIdsOnTooltips: false,
-    giftTriggersEffectsDisplay: false
+    giftTriggersEffectsDisplay: false,
+    showAds: true
 }

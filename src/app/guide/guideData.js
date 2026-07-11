@@ -354,13 +354,41 @@ export const guideData = [
                     "A list of extractable E.G.Os is also available for you to see what you can extract from the banner. These E.G.Os can be ticked off if you already own them by manually clicking them or using your Company data.",
                     "There is also a probabilities calculator at the bottom of the page that shows you your likelihood of getting the banner drops.  You can select between calculating the probability of getting everything or only one type of thing. It assumes that E.G.Os are still pullable so 000 rates should be slightly higher if you already have all E.G.Os."
                 ]
+            },
+            {
+                title: "Team Draft",
+                description: "Generate a team through a randomized drafting system.",
+                details: [
+                    "In Team Draft, you'll be given up to 12 rounds of choices with each choice being a set of one identity and one or more E.G.Os. Each round adds to more parts to your team until it's completed, then you can use it in the game however you want.",
+                    "Before starting, you can change a number of settings for how drafting works. Each setting has more details on hover that you can check in the settings menu.",
+                    "You can use the white/black list to limit the identities and E.G.O that can appear. The blacklist can be easily populated if you have your Company set."
+                ]
             }
         ],
     },
     {
         id: "site-contact",
-        title: "Site / Contact",
+        title: "Others / Site / Contact",
         items: [
+            {
+                title: "Artwork Guesser",
+                description: "Guess identities from small snippets of their artwork.",
+                details: [
+                    "The Artwork Guesser is a minigame that shows you cropped sections of identities' full art then asks you to guess which identity it is.",
+                    "There's a standard and a daily mode for the guesser. Standard mode lets you play the game normally, allowing you to choose settings like number of rounds and difficulty, while daily mode gives a single problem for everyone and resets every day.",
+                    "Higher difficulties make the cropped section smaller and prioritizes sections further from the center of the art. The highest difficulty applies transformations on the image. Try it out to see for yourself.",
+                    "The settings also allow you to choose whether preuptie and/or uptie arts are included in the selection."
+                ]
+            },
+            {
+                title: "Voiceline Guesser",
+                description: "Guess E.G.O from small snippets of their voicelines.",
+                details: [
+                    "The Voiceline Guesser is a minigame that shows you clipped sections of E.G.O voicelines then asks you to guess which E.G.O it is.",
+                    "There's a standard and a daily mode for the guesser. Standard mode lets you play the game normally, allowing you to choose settings like number of rounds and difficulty, while daily mode gives a single problem for everyone and resets every day.",
+                    "Higher difficulties make the clipped section shorter and makes them start at random points in the clip. The highest difficulty applies transformations on the clip. Try it out to see for yourself."
+                ]
+            },
             {
                 title: "About",
                 description: "Standard about page",

@@ -15,7 +15,7 @@ const categoryItems = {
     "sinner": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     "status": ["Burn", "Bleed", "Tremor", "Rupture", "Sinking", "Poise", "Charge"],
     "affinity": ["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"],
-    "skillType": ["Slash", "Pierce", "Blunt", "Guard", "Evade", "Counter"],
+    "skillType": ["Slash", "Pierce", "Blunt", "Guard", "Evade", "Counter", "Clashable Guard", "Clashable Counter"],
     "giftTier": ["1", "2", "3", "4", "5", "EX"],
     "keywordless": ["Keywordless"]
 }
@@ -23,7 +23,7 @@ const categoryItems = {
 const additionalCategories = {
     "atkType": ["Slash", "Pierce", "Blunt"],
     "atkTypeKwless": ["Slash", "Pierce", "Blunt", "Keywordless"],
-    "defType": ["Guard", "Evade", "Counter"],
+    "defType": ["Guard", "Evade", "Counter", "Clashable Guard", "Clashable Counter"],
 }
 
 export const filterCategories = Object.entries(categoryItems).reduce((acc, [type, list]) => {
