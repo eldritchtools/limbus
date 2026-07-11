@@ -75,15 +75,14 @@ const paths = [
             { path: "/team-randomizer", title: "Team Randomizer" },
             { path: "/floor-planner", title: "Floor Planner" },
             { path: "/extraction-simulator", title: "Extraction Simulator" },
-            { path: "/team-draft", title: "Team Draft"}
+            { path: "/team-draft", title: "Team Draft" }
         ]
     },
     {
         title: "Other / Site / Contact", subpaths: [
-            { path: "/artwork-guesser", title: "Artwork Guesser"},
-            { path: "/voiceline-guesser", title: "Voiceline Guesser"},
+            { path: "/artwork-guesser", title: "Artwork Guesser" },
+            { path: "/voiceline-guesser", title: "Voiceline Guesser" },
             { path: "/about", title: "About" },
-            { path: "/supporters", title: "Supporters" },
             { path: "/feedback", title: "Feedback / Contact" },
             { path: "/guide", title: "Manager's Guide" },
             { path: "/archive", title: "Archive" },
@@ -91,7 +90,8 @@ const paths = [
             { path: "/privacy", title: "Privacy Policy" },
             { path: "/terms", title: "Terms of Service" }
         ]
-    }
+    },
+    { path: "/support", title: "Support the Site" }
 ]
 
 const description = <span>
@@ -104,7 +104,7 @@ function Announcement() {
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        if(pathname === "/popularity-poll") setHidden(true);
+        if (pathname === "/popularity-poll") setHidden(true);
     }, [pathname]);
 
     if (hidden) return null;
@@ -115,7 +115,7 @@ function Announcement() {
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
                         Hi! An end-of-season popularity poll is currently ongoing on the site. If you&apos;d like to leave a response or see the current results you can find it <NoPrefetchLink className="text-link" href="/popularity-poll">here</NoPrefetchLink>.
-                        <br/> <br/>
+                        <br /> <br />
                         Content from the 9th Walpurgis Night have been added to the poll. You can update your repsonses if you want to change your votes.
                     </span>
                 </div>

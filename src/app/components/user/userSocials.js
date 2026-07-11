@@ -103,7 +103,7 @@ export const socialsData = {
         href: value => `https://github.com/${value}`,
     },
     "ko-fi": {
-        label: "Ko-fi",
+        label: "Ko-Fi",
         validator: /^[A-Za-z0-9_-]+$/i,
         icon: SiKofi,
         iconColor: "#29abe0",
