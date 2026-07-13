@@ -2,7 +2,7 @@ import { isTouchDevice } from "@eldritchtools/shared-components";
 
 import NoPrefetchLink from "./NoPrefetchLink";
 
-export default function LinkWithTooltip({ href, tooltipProps, className, style, children }) {
+export default function LinkWithTooltip({ href, tooltipProps, className, style, guarded, children }) {
     const props = {};
     if (className) props.className = className;
     if (style) props.style = style;
@@ -12,6 +12,7 @@ export default function LinkWithTooltip({ href, tooltipProps, className, style, 
         href={href}
         {...tooltipProps}
         {...props}
+        guarded={guarded}
     >
         {children}
     </NoPrefetchLink>

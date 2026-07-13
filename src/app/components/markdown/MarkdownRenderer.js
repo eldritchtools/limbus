@@ -83,13 +83,19 @@ function sanitizeUrl(url) {
     }
 }
 
-function IdentityItem({ id }) {
+function IdentityItem({ id, guardedLinks }) {
     const [identities, identitiesLoading] = useData("identities_mini");
     if (identitiesLoading) {
         return <span>{"{Loading...}"}</span>
     } else {
         if (id in identities)
-            return <LinkWithTooltip href={`/identities/${id}`} tooltipProps={getIdentityTooltipProps(id)} className="text-link" style={{ textDecoration: "underline" }}>
+            return <LinkWithTooltip
+                href={`/identities/${id}`}
+                tooltipProps={getIdentityTooltipProps(id)}
+                className="text-link"
+                style={{ textDecoration: "underline" }}
+                guarded={guardedLinks}
+            >
                 [{sinnerIdMapping[identities[id].sinnerId]}] {identities[id].name}
             </LinkWithTooltip>;
         else
@@ -97,13 +103,19 @@ function IdentityItem({ id }) {
     }
 }
 
-function EgoItem({ id }) {
+function EgoItem({ id, guardedLinks }) {
     const [egos, egosLoading] = useData("egos_mini");
     if (egosLoading) {
         return <span>{"{Loading...}"}</span>
     } else {
         if (id in egos)
-            return <LinkWithTooltip href={`/egos/${id}`} tooltipProps={getEgoTooltipProps(id)} className="text-link" style={{ textDecoration: "underline" }}>
+            return <LinkWithTooltip
+                href={`/egos/${id}`}
+                tooltipProps={getEgoTooltipProps(id)}
+                className="text-link"
+                style={{ textDecoration: "underline" }}
+                guarded={guardedLinks}
+            >
                 [{sinnerIdMapping[egos[id].sinnerId]}] {egos[id].name}
             </LinkWithTooltip>;
         else
@@ -120,7 +132,7 @@ function SkillItem({ val }) {
 
     const skill = skillData ?
         (
-            type === "identity" ? 
+            type === "identity" ?
                 skillData.skills[id] :
                 ([...skillData.awakeningSkills, ...(skillData.corrosionSkills ?? [])]).find(x => x.data.id === id)
         ) :
@@ -221,7 +233,7 @@ function ThemePackItem({ id }) {
     }
 }
 
-function EncounterItem({ str }) {
+function EncounterItem({ str, guardedLinks }) {
     const [cat, enc] = str.split("|");
     const [encounters, encountersLoading] = useData("encounters");
     if (encountersLoading) {
@@ -234,6 +246,7 @@ function EncounterItem({ str }) {
             tooltipProps={getEncounterTooltipProps(cat, enc)}
             className="text-link"
             style={{ textDecoration: "underline" }}
+            guarded={guardedLinks}
         >
             {encounterCategoryLabels[cat]}: {encounters[cat][enc]}
         </LinkWithTooltip>;
@@ -252,7 +265,7 @@ function IconItem({ id }) {
     }
 }
 
-function BuildItem({ id }) {
+function BuildItem({ id, guardedLinks }) {
     const [build, setBuild] = useState(null);
     const [loading, setLoading] = useState(true);
     const [invalid, setInvalid] = useState(false);
@@ -272,13 +285,19 @@ function BuildItem({ id }) {
         invalid ?
             <span>{`{build:${id}}`}</span> :
             <span>
-                <LinkWithTooltip href={`/builds/${id}`} tooltipProps={getMarkdownTooltipProps("build", build)} className="text-link" style={{ textDecoration: "underline" }}>
+                <LinkWithTooltip
+                    href={`/builds/${id}`}
+                    tooltipProps={getMarkdownTooltipProps("build", build)}
+                    className="text-link"
+                    style={{ textDecoration: "underline" }}
+                    guarded={guardedLinks}
+                >
                     {build.title}
                 </LinkWithTooltip>
             </span>
 }
 
-function CollectionItem({ id }) {
+function CollectionItem({ id, guardedLinks }) {
     const [collection, setCollection] = useState(null);
     const [loading, setLoading] = useState(true);
     const [invalid, setInvalid] = useState(false);
@@ -298,13 +317,19 @@ function CollectionItem({ id }) {
         invalid ?
             <span>{`{collection:${id}}`}</span> :
             <span>
-                <LinkWithTooltip href={`/collections/${id}`} tooltipProps={getMarkdownTooltipProps("collection", collection)} className="text-link" style={{ textDecoration: "underline" }}>
+                <LinkWithTooltip
+                    href={`/collections/${id}`}
+                    tooltipProps={getMarkdownTooltipProps("collection", collection)}
+                    className="text-link"
+                    style={{ textDecoration: "underline" }}
+                    guarded={guardedLinks}
+                >
                     {collection.title}
                 </LinkWithTooltip>
             </span>
 }
 
-function MdPlanItem({ id }) {
+function MdPlanItem({ id, guardedLinks }) {
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [invalid, setInvalid] = useState(false);
@@ -324,7 +349,13 @@ function MdPlanItem({ id }) {
         invalid ?
             <span>{`{mdplan:${id}}`}</span> :
             <span>
-                <LinkWithTooltip href={`/md-plans/${id}`} tooltipProps={getMarkdownTooltipProps("md_plan", plan)} className="text-link" style={{ textDecoration: "underline" }}>
+                <LinkWithTooltip
+                    href={`/md-plans/${id}`}
+                    tooltipProps={getMarkdownTooltipProps("md_plan", plan)}
+                    className="text-link"
+                    style={{ textDecoration: "underline" }}
+                    guarded={guardedLinks}
+                >
                     {plan.title}
                 </LinkWithTooltip>
             </span>
@@ -356,7 +387,7 @@ function TeamCodeItem({ code }) {
     </HintText>
 }
 
-export default function MarkdownRenderer({ content }) {
+export default function MarkdownRenderer({ content, guardedLinks }) {
     const renderedMarkdown = useMemo(() => {
         return <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks, remarkMath, tokenExtractionPlugin]}
@@ -368,9 +399,9 @@ export default function MarkdownRenderer({ content }) {
 
                     switch (convertTokenAlias(tokenType)) {
                         case "identity":
-                            return <IdentityItem id={tokenValues[0]} />;
+                            return <IdentityItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
                         case "ego":
-                            return <EgoItem id={tokenValues[0]} />;
+                            return <EgoItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
                         case "skill":
                             return <SkillItem val={tokenValues[0]} />;
                         case "status":
@@ -389,19 +420,19 @@ export default function MarkdownRenderer({ content }) {
                         case "themepack":
                             return <ThemePackItem id={tokenValues[0]} />
                         case "encounter":
-                            return <EncounterItem str={tokenValues[0]} />
+                            return <EncounterItem str={tokenValues[0]} guardedLinks={guardedLinks} />
                         case "icon":
                             return <IconItem id={tokenValues[0]} />
                         case "build":
-                            return <BuildItem id={tokenValues[0]} />;
+                            return <BuildItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
                         case "collection":
-                            return <CollectionItem id={tokenValues[0]} />;
+                            return <CollectionItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
                         case "mdplan":
-                            return <MdPlanItem id={tokenValues[0]} />;
+                            return <MdPlanItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
                         case "teamcode":
                             return <TeamCodeItem code={tokenValues[0]} />;
                         case "user":
-                            return <NoPrefetchLink href={`/profiles/${tokenValues[0]}`} className="text-link" style={{ textDecoration: "underline" }}>
+                            return <NoPrefetchLink href={`/profiles/${tokenValues[0]}`} className="text-link" style={{ textDecoration: "underline" }} guarded={guardedLinks}>
                                 {tokenValues[0]}
                             </NoPrefetchLink>;
                         case "sinner":
@@ -458,7 +489,7 @@ export default function MarkdownRenderer({ content }) {
         >
             {content}
         </ReactMarkdown>
-    }, [content]);
+    }, [content, guardedLinks]);
 
     return <div style={{ lineHeight: "1.4", textAlign: "justify", wordWrap: "break-word", overflowWrap: "break-word", wordBreak: "break-word" }}>
         {renderedMarkdown}

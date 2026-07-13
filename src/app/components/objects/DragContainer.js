@@ -1,10 +1,11 @@
 "use client";
 
+import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./DragContainer.module.css";
 
-export default function DragContainer({ children, className, style, hintDistance=10 }) {
+export default function DragContainer({ children, className, style, hintDistance = 10 }) {
     const ref = useRef(null);
 
     const isDragging = useRef(false);
@@ -13,6 +14,7 @@ export default function DragContainer({ children, className, style, hintDistance
     const moved = useRef(false);
 
     const [isScrollable, setIsScrollable] = useState(false);
+    const { isMobile } = useBreakpoint();
 
     const onPointerDown = (e) => {
         if (!ref.current) return;
@@ -32,7 +34,7 @@ export default function DragContainer({ children, className, style, hintDistance
 
         if (Math.abs(walk) > 5 && !moved.current) {
             moved.current = true;
-            
+
             ref.current.setPointerCapture(e.pointerId);
             document.body.style.userSelect = "none";
         }
@@ -81,7 +83,7 @@ export default function DragContainer({ children, className, style, hintDistance
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
     >
-        <div className={styles.container} style={{"--hint-distance": `-${hintDistance}px`, paddingLeft: isScrollable ? "10px" : 0}}>
+        <div className={styles.container} style={{ "--hint-distance": `-${isMobile ? 0 : hintDistance}px`, paddingLeft: isScrollable ? "10px" : 0 }}>
             {children}
         </div>
     </div>

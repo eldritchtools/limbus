@@ -1,7 +1,10 @@
+"use client";
+
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useMemo, useState } from "react";
 
 import { getNextDay, getNextDayOfWeek, kstToLocalTime } from "./timerFunc";
+import styles from "./Timers.module.css";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
@@ -58,7 +61,7 @@ export function isDaysAway(date, days) {
     return Math.floor(diff / DAY) >= days;
 }
 
-function TimeComponent({ date, dateString, label = "Date"}) {
+function TimeComponent({ date, dateString, label = "Date" }) {
     if (dateString && dateString.includes("?"))
         return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center" }}>
             <span>{label}: {dateString}</span>
@@ -87,20 +90,15 @@ function TimeComponent({ date, dateString, label = "Date"}) {
 }
 
 export function TimerRow({ title, src, date, startDate, endDate, column = false, tooltip, catenc }) {
-    const { isMobile } = useBreakpoint();
-    const style = isMobile ?
-        { width: "170px", height: "75px" } :
-        { width: "280px", height: "120px" };
-
     const tooltipProps = tooltip ? getTimerTooltipProps(tooltip) : {};
 
     const timeComponent = useMemo(() => {
-        if(startDate && endDate) {
+        if (startDate && endDate) {
             const [y, m, d] = startDate.split("-").map(Number);
             const start = new Date(Date.UTC(y, m - 1, d, 1, 0, 0));
             const diff = start.getTime() - Date.now();
 
-            if(diff <= 0) return <TimeComponent dateString={endDate} label={"End Date"} />;
+            if (diff <= 0) return <TimeComponent dateString={endDate} label={"End Date"} />;
             else return <TimeComponent dateString={startDate} label={"Start Date"} />;
         } else if (startDate) {
             return <TimeComponent dateString={startDate} label={"Start Date"} />;
@@ -112,14 +110,14 @@ export function TimerRow({ title, src, date, startDate, endDate, column = false,
     }, [date, startDate, endDate]);
 
     const leaderboardLink = useMemo(() => {
-        if(!catenc) return null;
+        if (!catenc) return null;
         const [cat, enc] = catenc.split("|");
         const params = new URLSearchParams();
         params.set("category", cat);
         params.set("encounter", enc);
         params.set("tab", "clears");
-        
-        return <NoPrefetchLink href={`/encounters?${params.toString()}`} className="text-link" style={{pointerEvents: "all"}}>
+
+        return <NoPrefetchLink href={`/encounters?${params.toString()}`} className="text-link" style={{ pointerEvents: "all" }}>
             Clears Leaderboard
         </NoPrefetchLink>
     }, [catenc]);
@@ -131,10 +129,12 @@ export function TimerRow({ title, src, date, startDate, endDate, column = false,
         }}
         {...tooltipProps}
     >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem", width: style.width, pointerEvents: "none" }}>
+        <div className={styles.timerLabelContainer}>
             <span style={{ textAlign: "center", whiteSpace: "pre-wrap" }}>{title}</span>
             {leaderboardLink}
-            {src ? <BannerIcon path={src} style={style} /> : null}
+            {src ? <div className={styles.timerBannerContainer}>
+                <BannerIcon path={src} />
+            </div> : null}
         </div>
         {timeComponent}
     </div>
@@ -172,7 +172,6 @@ export function HomepageTimers() {
     const [timers, timersLoading] = useData("timers");
     const { isMobile } = useBreakpoint();
 
-    if (timersLoading) return null;
     const timeLocal = kstToLocalTime("6AM");
 
     return <div style={{ display: "flex", flexWrap: "wrap", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
@@ -180,13 +179,13 @@ export function HomepageTimers() {
             <TimerRow title={`Daily Reset\n6AM KST • ${timeLocal} local`} date={getNextDay()} column={true} />
             <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={true} />
         </div>
-        {timers?.events ?
+        {!timersLoading && timers?.events ?
             <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={true} tooltip={"events"} /> :
-            null
+            <div className={styles.timerBannerContainer}/>
         }
-        {timers?.banners ?
+        {!timersLoading && timers?.banners ?
             <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} startDate={timers.banners.main.startDate} endDate={timers.banners.main.endDate} column={true} tooltip={"banners"} /> :
-            null
+            <div className={styles.timerBannerContainer}/>
         }
     </div>
 }

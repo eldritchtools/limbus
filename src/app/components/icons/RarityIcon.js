@@ -1,5 +1,3 @@
-"use client";
-
 import { ASSETS_ROOT } from "@/app/paths";
 
 const mapping = { 

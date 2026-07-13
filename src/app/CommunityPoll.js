@@ -1,23 +1,31 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import styles from "./CommunityPoll.module.css";
 import { getGeneralTooltipProps } from "./components/tooltips/GeneralTooltip";
 import { useAuth } from "./database/authProvider";
-import { submitPollVote } from "./database/polls";
+import { getUserAnswer, submitPollVote } from "./database/polls";
 import { triggerPollAnsweredEvent } from "./lib/gaEvents";
 
-export default function CommunityPoll({ poll, setPoll }) {
+export default function CommunityPoll({ initPoll }) {
     const { user } = useAuth();
+    const [poll, setPoll] = useState(initPoll);
     const [answer, setAnswer] = useState(0);
     const [mode, setMode] = useState(null);
     const [viewIndex, setViewIndex] = useState(0);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (!poll) return;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setAnswer(poll?.current?.user_answer);
-        if (!poll?.current?.user_answer && user) setMode("vote");
+        if(!poll || !user) return;
+        const fetchAnswer = async () => {
+            const answer = await getUserAnswer(user.id, poll.current.id);
+            console.log(poll, answer);
+            if(answer) setAnswer(answer);
+            else setMode("vote");
+        }
+        
+        fetchAnswer();
     }, [poll, user]);
 
     const current = viewIndex === 0 ? poll?.current : poll?.recent[viewIndex - 1];

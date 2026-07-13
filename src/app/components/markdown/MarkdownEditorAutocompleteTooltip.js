@@ -2,9 +2,9 @@
 
 import { tokensDescs } from "./tokens";
 import { getAdditionalIconSrc } from "../icons/AdditionalIcon";
-import { getEgoImgSrc } from "../icons/EgoIcon";
 import { getGiftImgSrc } from "../icons/GiftIcon";
 import { getIdentityImgSrc } from "../icons/IdentityIcon";
+import { getEgoImgSrc } from "../icons/imgSrc";
 import { getKeywordImgSrc } from "../icons/KeywordIcon";
 import { getSinnerIconSrc } from "../icons/SinnerIcon";
 import { getSkillIconSrc } from "../icons/SkillIcon";

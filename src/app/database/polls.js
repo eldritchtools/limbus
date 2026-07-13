@@ -22,3 +22,17 @@ export async function getPolls(page = 1, pageSize = 50) {
         return data;
     });
 }
+
+export async function getUserAnswer(userId, pollId) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("poll_answers")
+            .select("answer")
+            .eq("user_id", userId)
+            .eq("poll_id", pollId)
+            .maybeSingle()
+
+        if (error) throw error;
+        return data;
+    });
+}

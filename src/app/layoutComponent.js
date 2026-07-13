@@ -14,7 +14,7 @@ import en from "javascript-time-ago/locale/en"
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { DataProvider, getMeta } from "./components/DataProvider";
+import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import { SiteCustomizationProvider } from "./components/SiteCustomizationProvider";
@@ -131,12 +131,7 @@ function Announcement() {
     </div>;
 }
 
-export default function LayoutComponent({ children }) {
-    const [lastUpdated, setLastUpdated] = useState(process.env.NEXT_PUBLIC_LAST_UPDATED);
-    useEffect(() => {
-        getMeta().then(meta => setLastUpdated(p => p > meta.datetime ? p : meta.datetime));
-    }, []);
-
+export default function LayoutComponent({ lastUpdated, children }) {
     return <AuthProvider>
         <RequestsCacheProvider>
             <SiteCustomizationProvider>

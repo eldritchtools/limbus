@@ -17,7 +17,7 @@ import Username from "../user/Username";
 import { getReviewScores } from "@/app/database/reviews";
 import { sinnerIdMapping } from "@/app/lib/constants";
 
-export default function Review({ type, reviewData, backReview, frontReview, usernameOverride, userAvatarIdOverride, expanded }) {
+export default function Review({ type, reviewData, backReview, frontReview, usernameOverride, userAvatarIdOverride, expanded, guardedLinks }) {
     const [identities, identitiesLoading] = useData("identities", reviewData.item_type === "identity");
     const [egos, egosLoading] = useData("egos", reviewData.item_type === "ego");
     const { isMobile } = useBreakpoint();
@@ -91,7 +91,7 @@ export default function Review({ type, reviewData, backReview, frontReview, user
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.2rem", textWrap: "wrap" }}>
                     <span>by </span>
                     <Avatar avatarId={avatarId} size={24} style={{ display: "inline" }} />
-                    <Username username={username} data={reviewData} />
+                    <Username username={username} data={reviewData} guardedLinks={guardedLinks} />
                     <span> • </span>
                     <ReactTimeAgo date={reviewData.updated_at} locale="en-US" timeStyle="mini" />
                     <button
@@ -104,7 +104,7 @@ export default function Review({ type, reviewData, backReview, frontReview, user
                     </button>
                 </div>
                 {reviewData.review_text && reviewData.review_text.length > 0 ?
-                    <MarkdownRenderer content={reviewData.review_text} /> :
+                    <MarkdownRenderer content={reviewData.review_text} guardedLinks={guardedLinks} /> :
                     <div className="sub-text">
                         No review provided.
                     </div>

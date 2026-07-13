@@ -1,5 +1,4 @@
-import { useBreakpoint } from "@eldritchtools/shared-components";
-
+import styles from "./homepageLinks.module.css";
 import StatusIcon from "../components/icons/StatusIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 
@@ -11,7 +10,7 @@ export const homepageLinks = [
             { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new", icon: "IndexPrescriptDon_0" },
             { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
             { href: "/rankings", title: "Community Rankings", icon: "EgoAwakenDongrangRadiantDesire" },
-            { href: "/community-assets", title: "Community Assets", icon: "GotACompliment"}
+            { href: "/community-assets", title: "Community Assets", icon: "GotACompliment" }
         ]
     },
     {
@@ -41,15 +40,15 @@ export const homepageLinks = [
             { href: "/team-solver", title: "Team Solver", icon: "ThreeMirrorpartYiSang" },
             { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
             { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" },
-            { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass"},
-            { href: "/team-draft", title: "Team Draft", icon: "HanafudaThree"}
+            { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass" },
+            { href: "/team-draft", title: "Team Draft", icon: "HanafudaThree" }
         ]
     },
     {
         category: "Others",
         links: [
-            { href: "/artwork-guesser", title: "Artwork Guesser", icon: "TakePicture"},
-            { href: "/voiceline-guesser", title: "Voiceline Guesser", icon: "Resonate"},
+            { href: "/artwork-guesser", title: "Artwork Guesser", icon: "TakePicture" },
+            { href: "/voiceline-guesser", title: "Voiceline Guesser", icon: "Resonate" },
             { href: "/about", title: "About", icon: "KnowledgeExplored" },
             { href: "/support", title: "Support", icon: "MagicalGirlAppear" },
             { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }
@@ -63,17 +62,18 @@ homepageLinks.forEach(({ links }) => {
 })
 
 function LinkComponent({ href, title, icon, clickable }) {
-    const { isMobile } = useBreakpoint();
-    const iconStyle = isMobile ? { width: "24px", height: "24px" } : { width: "32px", height: "32px" };
-
     if (clickable)
         return <NoPrefetchLink className="text-link" href={href} style={{ textDecoration: "none", display: "flex", alignItems: "center", maxWidth: "100%" }}>
-            {icon ? <StatusIcon id={icon} style={iconStyle} /> : null}
+            {icon ? <div className={styles.homepageLinkIcon}>
+                <StatusIcon id={icon} />
+            </div> : null}
             <span style={{ flex: 1, textWrap: "wrap", textAlign: "start" }}>{title}</span>
         </NoPrefetchLink>
     else
         return <div className="text-link" style={{ display: "flex", alignItems: "center", maxWidth: "100%" }}>
-            {icon ? <StatusIcon id={icon} style={iconStyle} /> : null}
+            {icon ? <div className={styles.homepageLinkIcon}>
+                <StatusIcon id={icon} />
+            </div> : null}
             <span style={{ maxWidth: "calc(100%-32px)", textWrap: "wrap", textAlign: "start" }}>{title}</span>
         </div>
 }
@@ -87,7 +87,7 @@ export function HomepageLink({ href, link, includeNew = false, clickable = false
     </div>
 }
 
-export function HomepageLinkList({ links, includeNew = false, clickable = false, style={} }) {
+export function HomepageLinkList({ links, includeNew = false, clickable = false, style = {} }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem", maxWidth: "100%", ...style }}>
         {links
             .map(link => typeof link === "string" ? homepageLinksMapping[link] : link)

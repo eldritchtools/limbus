@@ -51,7 +51,7 @@ SELECT cron.schedule(
   $$SELECT public.add_homepage_showcase_build();$$
 );
 
-CREATE OR REPLACE FUNCTION public.get_homepage_posts_v5(
+CREATE OR REPLACE FUNCTION public.get_homepage_posts_v6(
   popular_limit INTEGER DEFAULT 3,
   newest_limit INTEGER DEFAULT 3,
   showcase_limit INTEGER DEFAULT 3,
@@ -152,14 +152,9 @@ BEGIN
             'options', cp.options,
             'votes', cp.votes,
             'total_votes', cp.total_votes,
-            'start_ts', cp.start_ts,
-            'user_answer', pa.answer
+            'start_ts', cp.start_ts
           )
           from current_poll cp
-          left join poll_answers pa
-            on pa.user_id = auth.uid()
-          and pa.poll_id = cp.id
-          limit 1
         ),
 
         'recent', (

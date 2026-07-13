@@ -8,7 +8,7 @@ import Avatar from "../icons/Avatar";
 
 import { isLocalId } from "@/app/database/localDB";
 
-export default function UsernameWithTime({ data, scale = 1, clickable = true, includeUpdatedAt = true, avatarId, withFollowButton }) {
+export default function UsernameWithTime({ data, scale = 1, clickable = true, includeUpdatedAt = true, avatarId, withFollowButton, guardedLinks }) {
     return <div style={{ display: "inline", fontSize: `${scale}rem`, verticalAlign: "middle" }}>
         {!isLocalId(data.id) &&
             <>
@@ -16,7 +16,7 @@ export default function UsernameWithTime({ data, scale = 1, clickable = true, in
                 {avatarId && <>
                     <Avatar avatarId={avatarId} size={24} style={{ display: "inline", verticalAlign: "-0.5rem" }} />&nbsp;
                 </>}
-                <Username username={data.username} flair={data.user_flair} clickable={clickable} />
+                <Username username={data.username} flair={data.user_flair} clickable={clickable} guardedLinks={guardedLinks} />
                 {withFollowButton && <FollowButton targetId={data.user_id} style={{verticalAlign: "-0.2rem"}} />}
                 &nbsp;•&nbsp;
             </>

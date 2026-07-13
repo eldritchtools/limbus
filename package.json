@@ -20,7 +20,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@eldritchtools/shared-components": "github:eldritchtools/shared-components#v1.5.39",
+    "@eldritchtools/shared-components": "file:../shared-components/eldritchtools-shared-components-1.0.0.tgz",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^16.2.5",
     "@radix-ui/react-select": "^2.2.6",
