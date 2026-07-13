@@ -69,7 +69,7 @@ export default function ModalContainer({ isOpen, onClose, beforeClose, index = 0
             : "translateY(10px) scale(0.96)",
         opacity: visible ? 1 : 0,
         transition: "all 150ms cubic-bezier(0.22, 1, 0.36, 1)",
-        maxHeight: "95vh",
+        maxHeight: "85vh",
         overflowX: "auto"
     };
 
