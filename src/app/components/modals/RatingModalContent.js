@@ -11,6 +11,7 @@ import { useModal } from "./ModalProvider";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
+import NoPrefetchLink from "../NoPrefetchLink";
 import RatingComponent from "../ratings/RatingComponent";
 import ReviewsComponent from "../ratings/ReviewsComponent";
 import PassiveCard from "../skill/PassiveCard";
@@ -26,7 +27,6 @@ import useLocalState from "@/app/lib/useLocalState";
 function IdentityDetails({ id }) {
     const [identities, identitiesLoading] = useData("identities");
     const { skills: skills, combatPassives: combatPassives, supportPassives: supportPassives } = useSkillData("identity", id, 4);
-    const router = useRouter();
 
     const componentList = useMemo(() => {
         if (identitiesLoading || !skills || !combatPassives || !supportPassives) return [];
@@ -61,7 +61,9 @@ function IdentityDetails({ id }) {
                 <KeywordIcon id={"Blunt"} />
                 <ColoredResistance resist={data.resists.blunt} />
             </div>
-            <button onClick={() => { router.push(`/identities/${id}`); }}>Go to page</button>
+            <NoPrefetchLink href={`/identities/${id}`} className="text-link" guarded={true}>
+                Go to page
+            </NoPrefetchLink>
         </div>);
 
         [1, 2, 3, 4].forEach(tier => {
@@ -95,7 +97,7 @@ function IdentityDetails({ id }) {
         });
 
         return list;
-    }, [identities, identitiesLoading, id, skills, combatPassives, supportPassives, router]);
+    }, [identities, identitiesLoading, id, skills, combatPassives, supportPassives]);
 
     if (identitiesLoading) return <div>Loading...</div>;
 
@@ -108,7 +110,6 @@ function EgoDetails({ id }) {
     const [egos, egosLoading] = useData("egos");
     const { awakeningSkills: awakeningSkills, corrosionSkills: corrosionSkills, passives: passives } =
         useSkillData("ego", id, egosLoading ? 4 : (egos[id].maxThreadspin ?? 4));
-    const router = useRouter();
 
     const componentList = useMemo(() => {
         if (egosLoading || !awakeningSkills || !corrosionSkills || !passives) return [];
@@ -127,7 +128,9 @@ function EgoDetails({ id }) {
                     {<ColoredResistance resist={data.resists[affinity]} />}
                 </div>
             </div>)}
-            <button onClick={() => { router.push(`/egos/${id}`); }}>Go to page</button>
+            <NoPrefetchLink href={`/identities/${id}`} className="text-link" guarded={true}>
+                Go to page
+            </NoPrefetchLink>
         </div>);
 
         awakeningSkills.forEach(skill => {
@@ -143,7 +146,7 @@ function EgoDetails({ id }) {
         });
 
         return list;
-    }, [egos, egosLoading, id, awakeningSkills, corrosionSkills, passives, router]);
+    }, [egos, egosLoading, id, awakeningSkills, corrosionSkills, passives]);
 
     if (egosLoading) return <div>Loading...</div>;
 
@@ -156,7 +159,7 @@ function BuildsTab({ builds }) {
     if (!builds) return <div style={{ color: "var(--disbled-text-color)", textAlign: "center" }}>Loading builds...</div>;
     if (builds.length === 0) return <div style={{ color: "var(--disbled-text-color)", textAlign: "center" }}>No builds found.</div>;
     return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center", marginLeft: "7px" }}>
-        {builds.map(build => <TeamBuild key={build.id} build={build} size={"S"} complete={false} />)}
+        {builds.map(build => <TeamBuild key={build.id} build={build} size={"S"} complete={false} guardedLinks={true} />)}
     </div>
 }
 
@@ -224,6 +227,7 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
                         value={reviewText}
                         onChange={v => setReviewText(v)}
                         placeholder={`Leave a review for this ${type === "identity" ? "identity" : "E.G.O"} (optional)...`}
+                        guardedLinks={true}
                     />
                 </div>
             </>
@@ -245,7 +249,7 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
                     (type === "identity" ? <IdentityDetails id={id} /> : <EgoDetails id={id} />) :
                     (tab === "builds" ?
                         <BuildsTab builds={builds} /> :
-                        (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} userReview={!isReviewing ? review : null} />)
+                        (tabInitialized && <ReviewsComponent type={type} id={id} sortType={tab} userReview={!isReviewing ? review : null} guardedLinks={true} />)
                     )
                 }
             </div>

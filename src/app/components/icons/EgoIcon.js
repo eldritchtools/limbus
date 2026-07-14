@@ -4,29 +4,23 @@
 // import Image from "next/image";
 
 import { useData } from "../DataProvider";
+import { getEgoImgSrc } from "./imgSrc";
 import RarityIcon from "./RarityIcon";
 import TierIcon from "./TierIcon";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 
 import { affinityColorMapping } from "@/app/lib/colors";
-import { ASSETS_ROOT } from "@/app/paths";
-
-
-export function getEgoImgSrc(ego, type) {
-    if (ego.upcoming) return `${ASSETS_ROOT}/${ego.src}.png`;
-    return `${ASSETS_ROOT}/egos/${ego.id}_${type}_profile.png`;
-}
 
 const rarityStyle = { position: "absolute", top: "4px", left: "4px", height: "1.5rem", objectFit: "contain", pointerEvents: "none" };
 const threadspinStyle = { position: "absolute", textAlign: "right", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000" };
 const nameStyle = { position: "absolute", overflow: "hidden", textWrap: "balance", fontWeight: "bold", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 8px #000, -2px -2px 8px #000" }
 
-function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, includeTooltip = false, threadspin = null, forceRatingsOnTooltip }) {
+function EgoIconMain({ ego, style, type, banner = false, displayName = false, displayRarity = false, includeTooltip = false, threadspin = null, forceRatingsOnTooltip, lazyLoad = true }) {
     const src = getEgoImgSrc(ego, type);
     const { width, height } = style;
 
     // const img = <Image src={src} alt={ego.name} title={ego.name} fill sizes="auto" style={{ ...remStyle, objectFit: "cover" }} />
-    const img = <img src={src} alt={ego.name} title={ego.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover"}} loading="lazy" />
+    const img = <img src={src} alt={ego.name} title={ego.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover" }} loading={lazyLoad ? "lazy" : "eager"} />
 
     return <div
         style={{

@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
 import { UPLOADS_ROOT } from "@/app/paths";
 

@@ -10,7 +10,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 const miniTooltip = "For smaller text boxes, the tokens guide is stripped to preserve the layout and save screen space, but they are still available. Type '{type:' to open the autocomplete window for tokens.\n\nQuick reference for types of important tokens:\nIdentities - identity or id\nE.G.Os - ego\nStatuses - status or st, statusicon or sti for icons only\nKeywords - keyword or kw\nGifts - giftname or gn, gifticons or gi for icons\nOther Icons - icon";
 
-export default function MarkdownEditorWrapper({ value, onChange, placeholder, initialState = "detailed", short = false, mini = false }) {
+export default function MarkdownEditorWrapper({ value, onChange, placeholder, initialState = "detailed", short = false, mini = false, guardedLinks }) {
     const [mode, setMode] = useState(initialState);
     const editorRef = useRef(null);
     const [guideTab, setGuideTab] = useState("none");
@@ -47,7 +47,7 @@ export default function MarkdownEditorWrapper({ value, onChange, placeholder, in
         }
         {mode === "preview" ?
             <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.5rem" }}>
-                <MarkdownRenderer content={value} />
+                <MarkdownRenderer content={value} guardedLinks={guardedLinks} />
             </div> : null}
         {guideOpen ?
             <div style={{ border: "1px var(--secondary-border-color) solid", padding: "0.5rem" }}>

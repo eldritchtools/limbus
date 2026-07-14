@@ -1,27 +1,14 @@
-"use client";
-
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-import { useModal } from "./modals/ModalProvider";
+import GuardedLink from "./GuardedLink";
 
-export default function NoPrefetchLink({ href, onClick, children, ...props }) {
-    const router = useRouter();
-    const { canNavigateAway } = useModal();
+export default function NoPrefetchLink({ href, guarded, onClick, children, ...props }) {
+    if (guarded)
+        return <GuardedLink href={href} onClick={onClick} {...props}>
+            {children}
+        </GuardedLink>
 
-    const handleClick = async (e) => {
-        e.preventDefault();
-
-        if (!(await canNavigateAway())) {
-            return;
-        }
-
-        router.push(href);
-
-        onClick?.(e);
-    };
-
-    return <Link href={href} prefetch={false} onClick={handleClick} {...props}>
+    return <Link href={href} onClick={onClick} prefetch={false} {...props}>
         {children}
     </Link>;
 }

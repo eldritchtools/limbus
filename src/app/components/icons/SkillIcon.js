@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
-import { getEgoImgSrc } from "./EgoIcon";
+import { getEgoImgSrc } from "./imgSrc";
 import KeywordIcon from "./KeywordIcon";
 
 import { ASSETS_ROOT } from "@/app/paths";

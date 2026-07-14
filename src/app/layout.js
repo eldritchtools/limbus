@@ -2,6 +2,7 @@ import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
+import { fetchMeta } from "./components/DataFetcher";
 import LayoutComponent from "./layoutComponent";
 import { gaId } from "./lib/gaEvents";
 import JsonLd, { getOrganizationSchema, getWebsiteSchema } from "./lib/jsonLd";
@@ -12,7 +13,6 @@ export const metadata = {
         default: "Limbus Company Tools",
         template: "%s | Limbus Company Tools",
     },
-    // description: "Limbus Company tools for team builds, Mirror Dungeon planning, Identity and E.G.O database with user ratings, achievement tracking, calculators, and planners.",
     description: "Comprehensive Limbus Company fan hub with team build sharing, Mirror Dungeon planners, Identity & E.G.O reviews, ownership displays, advanced searchable databases, event timers, and powerful tools like calculators, solvers, and planners."
 };
 
@@ -24,7 +24,9 @@ const schema = {
     ]
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+    const lastUpdated = (await fetchMeta()).datetime ?? process.env.NEXT_PUBLIC_LAST_UPDATED;
+
     return (
         <html lang="en">
             <head>
@@ -45,7 +47,7 @@ export default function RootLayout({ children }) {
             <body style={{ display: "flex", flexDirection: "column" }}>
                 {gaId && <GoogleAnalytics gaId={gaId} />}
                 <ChunkErrorHandler />
-                <LayoutComponent>{children}</LayoutComponent>
+                <LayoutComponent lastUpdated={lastUpdated}>{children}</LayoutComponent>
             </body>
         </html>
     );

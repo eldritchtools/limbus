@@ -4,7 +4,7 @@
 
   --base-text-size: clamp(12px, 1.5vw, 16px);
   --surface-contrast: 0.08;
-  --text-scale: 0;
+  --text-scale: 1;
 }
 
 :root,

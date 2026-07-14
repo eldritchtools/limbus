@@ -13,21 +13,21 @@ import { ASSETS_ROOT } from "@/app/paths";
 export function getIdentityImgSrc(identity, uptie = 4, swapIcon) {
     if (identity.upcoming) return `${ASSETS_ROOT}/${identity.src}.png`;
 
-    if(identity.tags.includes("Base Identity"))
+    if (identity.tags.includes("Base Identity"))
         return `${ASSETS_ROOT}/identities/${identity.id}_gacksung_profile.png`;
-    
+
     let type = uptie > 2 ? "gacksung" : "normal";
-    if(swapIcon) {
-        if(type === "gacksung") type = "normal";
-        else if(type === "normal") type = "gacksung";
+    if (swapIcon) {
+        if (type === "gacksung") type = "normal";
+        else if (type === "normal") type = "gacksung";
     }
-    
+
     return `${ASSETS_ROOT}/identities/${identity.id}_${type}_profile.png`;
 }
 
-function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null, swapIcon, forceRatingsOnTooltip }) {
+function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null, swapIcon, forceRatingsOnTooltip, lazyLoad = true }) {
     // const img = <Image src={getIdentityImgSrc(identity, uptie)} alt={identity.name} title={identity.name} width={192} height={192} style={{ ...style, objectFit: "cover" }} />
-    const img = <img src={getIdentityImgSrc(identity, uptie, swapIcon)} alt={identity.name} title={identity.name} style={{ ...style,  width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+    const img = <img src={getIdentityImgSrc(identity, uptie, swapIcon)} alt={identity.name} title={identity.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover" }} loading={lazyLoad ? "lazy" : "eager"} />
 
     return <div
         style={{ position: "relative", width: style.width, aspectRatio: "1/1", containerType: "size" }}

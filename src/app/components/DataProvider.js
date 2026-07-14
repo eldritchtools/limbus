@@ -2,20 +2,9 @@
 
 /* eslint-disable */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { DATA_ROOT, PUBLIC_ROOT } from "../paths";
+import { clientFetchData } from "./DataFetcher";
 
 const DataContext = createContext();
-
-function preprocess_data(path, data) {
-    if (["egos_mini", "egos", "identities_mini", "identities", "gifts", "statuses", "md_choice_events"].includes(path)) {
-        return Object.entries(data).reduce((acc, [k, v]) => {
-            acc[k] = { id: k, ...v }
-            return acc;
-        }, {});
-    } else {
-        return data;
-    }
-}
 
 export function DataProvider({ children }) {
     const [dataStore, setDataStore] = useState({});
@@ -26,9 +15,7 @@ export function DataProvider({ children }) {
         if (inFlight.current[path]) return inFlight.current[path];
 
         const promise = (async () => {
-            const res = await fetch(`${DATA_ROOT}/${path}.json`);
-            const json = await res.json();
-            const data = json.error ? {} : preprocess_data(path, json);
+            const data = await clientFetchData(path);
 
             setDataStore(prev => ({ ...prev, [path]: data }));
             delete inFlight.current[path];
@@ -132,11 +119,4 @@ export function useDataMultiple(paths = [], enabled = true) {
     const loading = enabled && [...stableSet].some(p => dataMap[p] == null);
 
     return [dataMap, loading];
-}
-
-export async function getMeta() {
-    if (process.env.ENABLE_LOCAL_DATA)
-        return { datetime: new Date().toISOString() };
-    else
-        return (await fetch(`${PUBLIC_ROOT}/meta.json`)).json();
 }

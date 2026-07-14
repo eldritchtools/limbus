@@ -27,7 +27,7 @@ function getSizes(size, isMobile) {
     return null;
 }
 
-export default function TeamBuild({ build, size, complete = true, clickable = true, styleOverride = {} }) {
+export default function TeamBuild({ build, size, complete = true, clickable = true, styleOverride = {}, guardedLinks }) {
     const [blockHover, setBlockHover] = useState(false);
 
     const addedIcons = [];
@@ -52,7 +52,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
     return <div className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null}`} style={{ width: sizes.width, ...styleOverride }}>
-        {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} /> : null}
+        {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} guarded={guardedLinks} /> : null}
 
         {icons.length > 0 ?
             <div className={styles.teamBuildIconRail}>
@@ -80,7 +80,7 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
                 <div className={styles.teamBuildTitle}>{build.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>
-                <UsernameWithTime data={build} scale={.8} includeUpdatedAt={false} />
+                <UsernameWithTime data={build} scale={.8} includeUpdatedAt={false} guardedLinks={guardedLinks} />
             </HoverBlocker>
             <div style={{ alignSelf: "center" }}>
                 <BuildIdentitiesGrid
