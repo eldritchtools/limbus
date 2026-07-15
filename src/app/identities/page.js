@@ -20,13 +20,15 @@ export default async function Page() {
 
     const initIdentities =
         <div className={styles.identitiesIconGrid}>
-            {Object.entries(identities).map(([id, identity]) => <div key={id}>
-                <NoPrefetchLink href={`/identities/${id}`}>
-                    <div className={styles.clickableId}>
-                        <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
-                    </div>
-                </NoPrefetchLink>
-            </div>)}
+            {Object.entries(identities)
+                .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
+                .map(([id, identity]) => <div key={id}>
+                    <NoPrefetchLink href={`/identities/${id}`}>
+                        <div className={styles.clickableId}>
+                            <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
+                        </div>
+                    </NoPrefetchLink>
+                </div>)}
         </div>
 
     return <>
