@@ -1,0 +1,150 @@
+.skillCard {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.skillCard.new {
+    background-color: rgba(46, 160, 67, 0.35);
+}
+
+.skillCard.mini {
+    font-size: 0.8rem;
+}
+
+.icon {
+    width: 32px;
+    height: 32px;
+}
+
+.iconMini {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width:768px) {
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.coin {
+    width: 24px;
+    height: 24px;
+}
+
+.coinMini {
+    width: 18px;
+    height: 18px;
+}
+
+@media (max-width:768px) {
+    .coin {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.labelContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+    font-size: 22px;
+    font-weight: bold
+}
+
+.labelContainerMini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold
+}
+
+@media (max-width:768px) {
+    .labelContainer {
+        font-size: 16px;
+    }
+}
+
+.pill {
+    display: flex;
+    height: 32px;
+    gap: 0.25rem;
+    align-items: center;
+    border: 1px var(--secondary-border-color) solid;
+    border-radius: 0.5rem;
+    padding: 0 0.2rem;
+}
+
+@media (max-width:768px) {
+    .pill {
+        height: 24px;
+    }
+}
+
+.skillIconWrapper {
+    width: calc(112px * 0.8);
+    height: calc(112px * 0.8);
+}
+
+.skillIconWrapperMini {
+    width: calc(112px * 0.6);
+    height: calc(112px * 0.6);
+}
+
+.skillIconWrapper>* {
+    transform: scale(0.8);
+    transform-origin: top left;
+}
+
+.skillIconWrapperMini>* {
+    transform: scale(0.6);
+    transform-origin: top left;
+}
+
+@media (max-width:768px) {
+    .skillIconWrapper {
+        width: calc(112px * 0.6);
+        height: calc(112px * 0.6);
+    }
+
+    .skillIconWrapper>* {
+        transform: scale(0.6);
+        transform-origin: top left;
+    }
+}
+
+.descContainer {
+    white-space: pre-wrap;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.coinsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.coinContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.coinDescContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    white-space: pre-wrap;
+    gap: 0.1rem;
+}

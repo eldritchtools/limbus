@@ -7,7 +7,7 @@ import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 const iconStyle = { display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" };
 const descStyle = { display: "inline-block", fontSize: "1rem", lineHeight: "1.5", maxWidth: "75rem", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" };
-const TOOLTIP_ID = "status-tooltip";
+export const STATUS_TOOLTIP_ID = "status-tooltip";
 
 function StatusTooltipContent({ status }) {
     const { getCustomizationValue } = useSiteCustomization();
@@ -31,12 +31,12 @@ function TooltipLoader({ statusId }) {
 }
 
 export default function StatusTooltip() {
-    return <TooltipTemplate id={TOOLTIP_ID} contentFunc={id => <TooltipLoader statusId={id} />} />
+    return <TooltipTemplate id={STATUS_TOOLTIP_ID} contentFunc={id => <TooltipLoader statusId={id} />} />
 }
 
 export function getStatusTooltipProps(id) {
     return {
-        "data-tooltip-id": TOOLTIP_ID,
+        "data-tooltip-id": STATUS_TOOLTIP_ID,
         "data-tooltip-content": id
     }
 }

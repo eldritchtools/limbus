@@ -18,27 +18,32 @@ const removedStyle = {
 }
 
 function normalizeForDiff(s) {
-  return s
-    // bracketed tokens: [foo] → BRACKET_foo_TEKCARB
-    .replace(/\[([^\]]+)\]/g, "BRACKET_$1_TEKCARB")
-    // bind numeric plus: 5+ → 5PLUSPLUS
-    .replace(/(\d)\+/g, "$1PLUSPLUS")
+    return s
+        // bracketed tokens: [foo] → BRACKET_foo_TEKCARB
+        .replace(/\[([^\]]+)\]/g, "BRACKET_$1_TEKCARB")
+        // bind numeric plus: 5+ → 5PLUSPLUS
+        .replace(/(\d)\+/g, "$1PLUSPLUS")
 }
 
 function denormaliteForDiff(s) {
     return s
-    .replace(/BRACKET_(.*?)_TEKCARB/g, "[$1]")
-    .replace(/PLUSPLUS/g, "+")
+        .replace(/BRACKET_(.*?)_TEKCARB/g, "[$1]")
+        .replace(/PLUSPLUS/g, "+")
 }
 
-function DiffedTextString({ before, after, iconStyleOverride, nameStyleOverride }) {
+function DiffedTextString({ before, after, iconStyleOverride, nameStyleOverride, serverText }) {
     const parts = diffWords(normalizeForDiff(before), normalizeForDiff(after));
 
     return <span>
         {parts.map((part, i) => {
             const style = part.added ? addedStyle : (part.removed ? removedStyle : null)
             return <span key={i} style={style}>
-                <ProcessedText text={denormaliteForDiff(part.value)} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
+                <ProcessedText
+                    text={denormaliteForDiff(part.value)}
+                    iconStyleOverride={iconStyleOverride}
+                    nameStyleOverride={nameStyleOverride}
+                    serverText={serverText}
+                />
             </span>
         })}
     </span>
@@ -57,7 +62,7 @@ function similarity(a, b) {
 
 const SIMILARITY_THRESHOLD = 0.4;
 
-function DiffedTextArray({ before, after, iconStyleOverride, nameStyleOverride }) {
+function DiffedTextArray({ before, after, iconStyleOverride, nameStyleOverride, serverText }) {
     const snippets = diffArrays(before, after);
     const finalSnippets = [];
 
@@ -90,7 +95,12 @@ function DiffedTextArray({ before, after, iconStyleOverride, nameStyleOverride }
                 } else {
                     if (snippets[i].value[j].trim().length === 0) continue;
                     finalSnippets.push(<span key={finalSnippets.length} style={removedStyle}>
-                        <ProcessedText text={snippets[i].value[j]} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
+                        <ProcessedText
+                            text={snippets[i].value[j]}
+                            iconStyleOverride={iconStyleOverride}
+                            nameStyleOverride={nameStyleOverride}
+                            serverText={serverText}
+                        />
                     </span>);
                 }
             }
@@ -103,12 +113,18 @@ function DiffedTextArray({ before, after, iconStyleOverride, nameStyleOverride }
                             after={snippets[i + 1].value[j]}
                             iconStyleOverride={iconStyleOverride}
                             nameStyleOverride={nameStyleOverride}
+                            serverText={serverText}
                         />
                     );
                 } else {
                     if (snippets[i + 1].value[j].trim().length === 0) continue;
                     finalSnippets.push(<span key={finalSnippets.length} style={addedStyle}>
-                        <ProcessedText text={snippets[i + 1].value[j]} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
+                        <ProcessedText
+                            text={snippets[i + 1].value[j]}
+                            iconStyleOverride={iconStyleOverride}
+                            nameStyleOverride={nameStyleOverride}
+                            serverText={serverText}
+                        />
                     </span>);
                 }
             }
@@ -121,7 +137,12 @@ function DiffedTextArray({ before, after, iconStyleOverride, nameStyleOverride }
         for (let j = 0; j < snippets[i].count; j++) {
             if (snippets[i].value[j].trim().length === 0) continue;
             finalSnippets.push(<span key={finalSnippets.length} style={style}>
-                <ProcessedText text={snippets[i].value[j]} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
+                <ProcessedText
+                    text={snippets[i].value[j]}
+                    iconStyleOverride={iconStyleOverride}
+                    nameStyleOverride={nameStyleOverride}
+                    serverText={serverText}
+                />
             </span>);
         }
     }
@@ -131,8 +152,17 @@ function DiffedTextArray({ before, after, iconStyleOverride, nameStyleOverride }
     </div>
 }
 
-export default function DiffedText({ before, after, iconStyleOverride, nameStyleOverride }) {
+export default function DiffedText({ before, after, iconStyleOverride, nameStyleOverride, serverText }) {
     if (Array.isArray(before))
-        return <DiffedTextArray before={before} after={after} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
-    return <DiffedTextString before={before} after={after} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
+        return <DiffedTextArray
+            before={before} after={after}
+            iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride}
+            serverText={serverText}
+        />
+        
+    return <DiffedTextString
+        before={before} after={after}
+        iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride}
+        serverText={serverText}
+    />
 }

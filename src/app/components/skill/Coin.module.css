@@ -1,0 +1,33 @@
+.coinContainer {
+    position: relative;
+    height: 1.5rem;
+    width: 1.5rem;
+    vertical-align: center;
+}
+
+.coinContainer.mini {
+    height: 1.2rem;
+    width: 1.2rem;
+}
+
+.coin {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.coinMini {
+    height: 1.2rem;
+    width: 1.2rem;
+}
+
+.coinNumber {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+}
+
+.coinNumber.mini {
+    font-size: 0.8rem;
+}

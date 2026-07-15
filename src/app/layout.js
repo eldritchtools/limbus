@@ -2,7 +2,7 @@ import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
-import { fetchMeta } from "./components/DataFetcher";
+import { fetchMeta } from "./components/DataFetcherServer";
 import LayoutComponent from "./layoutComponent";
 import { gaId } from "./lib/gaEvents";
 import JsonLd, { getOrganizationSchema, getWebsiteSchema } from "./lib/jsonLd";
@@ -25,7 +25,9 @@ const schema = {
 };
 
 export default async function RootLayout({ children }) {
-    const lastUpdated = (await fetchMeta()).datetime ?? process.env.NEXT_PUBLIC_LAST_UPDATED;
+    const metaDatetime = (await fetchMeta()).datetime;
+    const compileDatetime =  process.env.NEXT_PUBLIC_LAST_UPDATED;
+    const lastUpdated = metaDatetime > compileDatetime ? metaDatetime : compileDatetime;
 
     return (
         <html lang="en">

@@ -13,12 +13,12 @@ import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentP
 import { GiftEffectsSelector, GiftTriggersSelector } from "../components/selectors/GiftSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
+import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getLocalStore } from "../database/localDB";
 import { affinityColorMapping } from "../lib/colors";
 import { checkFilterMatch, filterByFilters } from "../lib/filter";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
-import { TextWithStatuses } from "../lib/statusReplacement";
 import useLocalState from "../lib/useLocalState";
 
 function GiftDesc({ gift, clickable }) {
@@ -36,7 +36,7 @@ function GiftDesc({ gift, clickable }) {
                 <Gift gift={gift} includeTooltip={false} />
             </div>
             <div style={{ display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
-                <TextWithStatuses templateText={gift.descs[0]} />
+                <ProcessedText text={gift.descs[0]} />
             </div>
         </div>
     </div>
@@ -61,7 +61,7 @@ function GiftCard({ gift, isSmall, clickable }) {
                 display: "inline-block", fontSize: "1rem", lineHeight: "1.5", inlineSize: "50ch", textWrap: "wrap",
                 whiteSpace: "pre-wrap", textAlign: "start", height: isSmall ? "150px" : "200px", overflowY: "auto"
             }}>
-                <TextWithStatuses templateText={gift.descs[0]} />
+                <ProcessedText text={gift.descs[0]} />
             </div>
         </div>
     </div>

@@ -1,7 +1,11 @@
 import IdentityPage from "./IdentityPage";
+import { NotesTab, SkillsTab } from "./IdentityPageComponents";
 
+import { fetchData } from "@/app/components/DataFetcherServer";
+import { LEVEL_CAP } from "@/app/lib/constants";
 import JsonLd from "@/app/lib/jsonLd";
 import { getIdentityMetadata } from "@/app/lib/metadataHelper";
+import { compileSkillData } from "@/app/lib/skill";
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
@@ -37,10 +41,29 @@ const schema = async id => {
 
 export default async function Page({ params }) {
     const { id } = await params;
-    const schemaData = await schema(id);
+    const [schemaData, identities, individualData] = await Promise.all([
+        schema(id),
+        fetchData("identities"),
+        fetchData(`identities/${id}`)
+    ]);
+
+    if (!(id in identities))
+        return <>
+            <JsonLd data={schemaData} />
+            <span className="title-text">Identity not found</span>
+        </>;
+
+    const skillData = compileSkillData("identity", identities[id], individualData);
+    const notesTab = skillData ? <NotesTab notes={skillData.notes} /> : null;
+    const initSkillsTab = <SkillsTab
+        identityData={identities[id]} level={LEVEL_CAP}
+        skills={skillData.skills} 
+        combatPassives={skillData.combatPassives} supportPassives={skillData.supportPassives}
+        compareMode={false} serverText={true}
+    />
 
     return <>
         <JsonLd data={schemaData} />
-        <IdentityPage params={params} />
+        <IdentityPage params={params} identityData={identities[id]} initSkillData={skillData} notesTab={notesTab} initSkillsTab={initSkillsTab}/>
     </>;
 }
