@@ -168,7 +168,7 @@ export default function IdentityPage({ params, identityData, initSkillData, note
         if (v === "compare mode") {
             if (!(preuptie in skillData)) {
                 const data = await getData(`identities/${id}`);
-                setSkillData(p => ({ ...p, [preuptie]: compileSkillData("identity", identityData, data, v) }));
+                setSkillData(p => ({ ...p, [preuptie]: compileSkillData("identity", identityData, data, preuptie) }));
             }
             setCompareMode(true);
         }
