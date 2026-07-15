@@ -17,7 +17,7 @@ import { AtkWeight } from "../skill/AtkWeight";
 import { useAuth } from "@/app/database/authProvider";
 import { getAggregatesByType, getUserReviews } from "@/app/database/reviews";
 
-const TOOLTIP_ID = "ego-tooltip";
+export const EGO_TOOLTIP_ID = "ego-tooltip";
 
 function EgoTooltipContent({ id, ego, uptie = 4, forceRatings }) {
     const { awakeningSkills, corrosionSkills } = useSkillData("ego", id, uptie);
@@ -123,7 +123,7 @@ function TooltipLoader({ id, uptie, forceRatings }) {
 }
 
 export default function EgoTooltip() {
-    return <TooltipTemplate id={TOOLTIP_ID} contentFunc={content => {
+    return <TooltipTemplate id={EGO_TOOLTIP_ID} contentFunc={content => {
         if (!content) return null;
         const parts = content.split("|");
         const props = { id: parts[0] };
@@ -139,7 +139,7 @@ export default function EgoTooltip() {
 
 export function getEgoTooltipProps(id, forceRatings) {
     return {
-        "data-tooltip-id": TOOLTIP_ID,
+        "data-tooltip-id": EGO_TOOLTIP_ID,
         "data-tooltip-content": forceRatings ? `${id}|${forceRatings}` : id,
     }
 }

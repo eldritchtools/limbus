@@ -1,13 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
 // import Image from "next/image";
 
-import { useData } from "../DataProvider";
 import { getEgoImgSrc } from "./imgSrc";
 import RarityIcon from "./RarityIcon";
 import TierIcon from "./TierIcon";
-import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
+import DataLoader from "../DataLoader";
+import { getEgoTooltipProps } from "../tooltips/TooltipProps";
 
 import { affinityColorMapping } from "@/app/lib/colors";
 
@@ -67,31 +66,6 @@ function EgoIconMain({ ego, style, type, banner = false, displayName = false, di
     </div>
 }
 
-function EgoUpcomingFetch({ id, ...props }) {
-    const [upcoming, upcomingLoading] = useData("upcoming");
-
-    if (upcomingLoading) {
-        return null;
-    } else if (!(id in upcoming?.egos)) {
-        return null;
-    } else {
-        return <EgoIconMain ego={upcoming.egos[id]} {...props} />
-    }
-}
-
-function EgoIconFetch({ id, ...props }) {
-    const [egos, egosLoading] = useData("egos_mini");
-    if (egosLoading) {
-        return null;
-    } else if (!(id in egos)) {
-        console.warn(`Ego ${id} not found.`);
-        return <EgoUpcomingFetch id={id} {...props} />;
-    } else {
-        return <EgoIconMain ego={egos[id]} {...props} />
-    }
-
-}
-
 export default function EgoIcon({ id, ego = null, scale, size, width, style = {}, ...props }) {
     const newStyle = width ?
         { width: width, height: "auto", ...style } :
@@ -104,6 +78,8 @@ export default function EgoIcon({ id, ego = null, scale, size, width, style = {}
     if (ego) {
         return <EgoIconMain ego={ego} style={newStyle} {...props} />
     } else {
-        return <EgoIconFetch id={id} style={newStyle} {...props} />
+        return <DataLoader file="egos_mini" type="Ego" id={id} upcomingFallback="egos">
+            {ego => <EgoIconMain id={id} ego={ego} style={newStyle} {...props} />}
+        </DataLoader>
     }
 }

@@ -205,7 +205,7 @@ function GiftNameItem({ val, context }) {
 }
 
 function GiftIconsItem({ vals, context }) {
-    const [gifts, giftsLoading] = useData("gifts", !context.gift);
+    const [gifts, giftsLoading] = useData("gifts", !context?.gift);
 
     if (giftsLoading && !context?.gift) {
         return <span>{"{Loading...}"}</span>
