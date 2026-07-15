@@ -4,18 +4,16 @@ import { useMemo } from "react";
 
 import { useData } from "../DataProvider";
 
+import { mergeUpcoming } from "@/app/lib/upcoming";
+
 function useIdentitiesWithUpcoming(mini=false) {
     const [identities, identitiesLoading] = useData(mini ? "identities_mini" : "identities");
     const [upcoming, upcomingLoading] = useData("upcoming");
 
     const identitiesCombined = useMemo(() => {
         if (identitiesLoading || upcomingLoading) return {};
-        const result = {...identities};
-        if(upcoming.identities)
-            Object.entries(upcoming.identities).forEach(([id, x]) => {
-                result[id] = {...x, upcoming: true, date: upcoming.date};
-            });
-        return result;
+        if(upcoming.identities) return mergeUpcoming(identities, upcoming.identities, upcoming.date);
+        else return identities;
     }, [identities, identitiesLoading, upcoming, upcomingLoading]);
 
     return [identitiesCombined, identitiesLoading || upcomingLoading];
@@ -27,12 +25,8 @@ function useEgosWithUpcoming(mini=false) {
 
     const egosCombined = useMemo(() => {
         if (egosLoading || upcomingLoading) return {};
-        const result = {...egos};
-        if(upcoming.egos)
-            Object.entries(upcoming.egos).forEach(([id, x]) => {
-                result[id] = {...x, upcoming: true, date: upcoming.date};
-            });
-        return result;
+        if(upcoming.egos) return mergeUpcoming(egos, upcoming.egos, upcoming.date);
+        else return egos;
     }, [egos, egosLoading, upcoming, upcomingLoading]);
 
     return [egosCombined, egosLoading || upcomingLoading];

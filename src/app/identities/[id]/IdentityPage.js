@@ -5,25 +5,22 @@ import { ArrowPathIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid"
 import React, { useEffect, useState } from "react";
 
 import styles from "./IdentityPage.module.css";
+import { SkillsTab } from "./IdentityPageComponents";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
-import { useSkillData } from "@/app/components/dataHooks/skills";
-import { useData } from "@/app/components/DataProvider";
+import { useData, useDataProvider } from "@/app/components/DataProvider";
 import Icon from "@/app/components/icons/Icon";
 import IdentityImage from "@/app/components/icons/IdentityImage";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import RarityIcon from "@/app/components/icons/RarityIcon";
 import SinnerIcon from "@/app/components/icons/SinnerIcon";
 import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
-import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import { useModal } from "@/app/components/modals/ModalProvider";
 import DragContainer from "@/app/components/objects/DragContainer";
 import NumberInputWithButtons from "@/app/components/objects/NumberInputWithButtons";
 import RatingComponent from "@/app/components/ratings/RatingComponent";
 import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
 import UptieSelector from "@/app/components/selectors/UptieSelector";
-import PassiveCard from "@/app/components/skill/PassiveCard";
-import SkillCard from "@/app/components/skill/SkillCard";
 import DiffedText from "@/app/components/texts/DiffedText";
 import ProcessedText from "@/app/components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "@/app/components/tooltips/GeneralTooltip";
@@ -34,7 +31,7 @@ import { getItemAggregates, getUserReview } from "@/app/database/reviews";
 import { ColoredResistance } from "@/app/lib/colors";
 import { getSeasonString, LEVEL_CAP, sinnerIdMapping } from "@/app/lib/constants";
 import { constructDefenseLevel, constructHp, constructSpeed } from "@/app/lib/identity";
-import { constructSkillLabel } from "@/app/lib/skill";
+import { compileSkillData } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
 function HeaderComponent({ identityData }) {
@@ -136,32 +133,6 @@ function RatingTab({ id, isMobile }) {
     </div>
 }
 
-function NotesTab({ notes }) {
-    return <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-        {(!notes || !notes.usage) &&
-            <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Not yet available...</div>
-        }
-        {notes && notes.usage && <>
-            {notes.other && <div className="sub-text">Usage Tips</div>}
-            {notes.usage.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-                • <MarkdownRenderer content={str} />
-            </div>)}
-        </>
-        }
-        {notes && notes.other && <>
-            <div style={{ height: "0.5rem" }} />
-            <div className="sub-text">Other Details</div>
-            {notes.other.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-                • <MarkdownRenderer content={str} />
-            </div>)}
-        </>}
-        {/* <HorizontalDivider />
-        <span style={{ textAlign: "center" }}>Check out the Community Rating or Community Reviews tabs to view the community&apos;s thoughts or leave your own!</span> */}
-    </div>
-}
-
-
-
 function BuildsTab({ builds }) {
     if (!builds) return <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Loading builds...</div>;
     if (builds.length === 0) return <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>No builds found.</div>;
@@ -172,98 +143,9 @@ function BuildsTab({ builds }) {
     </DragContainer>
 }
 
-function SkillsTab({ identityData, level, skills, preSkills, combatPassives, supportPassives, passivesPreMapping, compareMode }) {
-    return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.5rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.25rem" }}>
-            <div className="title-text">Skills</div>
-            {[1, 2, 3, 4].map(tier => {
-                const list = identityData.skillTypes.filter(skill => skill.type.tier === tier);
-                if (list.length === 0) return null;
-                return <div key={tier} style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingBottom: "0.25rem", gap: "0.2rem", borderBottom: "1px var(--primary-border-color) solid" }}>
-                    {list.map((skill, index) => skills[skill.id] ? <div key={skill.id} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
-                        <SkillCard
-                            skill={skills[skill.id].data}
-                            count={skill.num} level={level}
-                            label={constructSkillLabel("attack", tier, index)}
-                            pre={compareMode ? (preSkills[skill.id]?.data ?? {}) : null}
-                            noBorder={true}
-                        />
-                    </div> : null)}
-                </div>
-            })}
-            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.2rem", paddingBottom: "0.25rem", borderBottom: "1px var(--primary-border-color) solid" }}>
-                {identityData.defenseSkillTypes.map(skill => skills[skill.id] ? <div key={skill.id} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
-                    <SkillCard
-                        skill={skills[skill.id].data}
-                        level={level}
-                        label={constructSkillLabel("defense")}
-                        pre={compareMode ? (preSkills[skill.id]?.data ?? {}) : null}
-                        noBorder={true}
-                    />
-                </div> : null)}
-            </div>
-            {combatPassives.length > 0 ?
-                <div style={{ display: "flex", flexDirection: "column", borderBottom: "1px var(--primary-border-color) solid" }}>
-                    <div className="title-text">Combat Passives</div>
-                    {combatPassives.map((passive, i) => <div key={i} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
-                        {compareMode ? (
-                            passivesPreMapping[passive.name] ?
-                                <PassiveCard
-                                    passive={passive}
-                                    pre={passivesPreMapping[passive.name]}
-                                    noBorder={true}
-                                /> :
-                                <PassiveCard
-                                    passive={passive}
-                                    background={"rgba(46, 160, 67, 0.35)"}
-                                    noBorder={true}
-                                />
-                        ) :
-                            <PassiveCard
-                                passive={passive}
-                                noBorder={true}
-                            />
-                        }
-                    </div>)}
-                </div> :
-                null
-            }
-            {supportPassives.length > 0 ?
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div className="title-text">Support Passives</div>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", minWidth: "min(500px, 100%)" }}>
-                        {supportPassives.map((passive, i) => <div key={i} style={{ flex: 1 }}>
-                            {compareMode ? (
-                                passivesPreMapping[passive.name] ?
-                                    <PassiveCard
-                                        passive={passive}
-                                        pre={passivesPreMapping[passive.name]}
-                                        noBorder={true}
-                                    /> :
-                                    <PassiveCard
-                                        passive={passive}
-                                        background={"rgba(46, 160, 67, 0.35)"}
-                                        noBorder={true}
-                                    />
-                            ) :
-                                <PassiveCard
-                                    passive={passive}
-                                    noBorder={true}
-                                />
-                            }
-                        </div>)}
-                    </div>
-                </div> :
-                null
-            }
-        </div>
-
-    </div>
-}
-
-export default function IdentityPage({ params }) {
+export default function IdentityPage({ params, identityData, initSkillData, notesTab, initSkillsTab }) {
+    const { getData } = useDataProvider();
     const { id } = React.use(params);
-    const [identities, identitiesLoading] = useData("identities");
     const [level, setLevel] = useState(LEVEL_CAP);
     const [uptie, setUptie] = useState(4);
     const [preuptie, setPreuptie] = useState(1);
@@ -271,36 +153,51 @@ export default function IdentityPage({ params }) {
     const [panelOpen, setPanelOpen] = useLocalState("identityPanelOpen", true);
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
+    const [skillData, setSkillData] = useState({ 4: initSkillData });
 
-    const identityData = identitiesLoading ? null : identities[id];
-    const { skills: preSkills, combatPassives: preCombatPassives, supportPassives: preSupportPassives } = useSkillData("identity", id, preuptie);
-    const { skills, combatPassives, supportPassives, notes } = useSkillData("identity", id, uptie);
+    const { skills, combatPassives, supportPassives } = skillData[uptie];
+
+    const { skills: preSkills, combatPassives: preCombatPassives, supportPassives: preSupportPassives } =
+        compareMode ? skillData[preuptie] : { skills: null, combatPassives: null, supportPassives: null }
 
     const { isMobile } = useBreakpoint();
 
-    useEffect(() => {
-        const fetchBuilds = async () => {
-            setBuilds(await searchBuilds({ "identities": [id], published: true, sortBy: "popular" }, 1, 6) || []);
-        }
-
-        if (activeTab === "builds" && !builds) fetchBuilds();
-    }, [activeTab, builds, id])
-
-    if (identitiesLoading) return null;
-
     if (!identityData) return <span className="title-text">Identity not found</span>
 
-    const handleSetUptie = (v) => {
-        if (v === "compare mode") setCompareMode(true);
+    const handleSetUptie = async (v) => {
+        if (v === "compare mode") {
+            if (!(preuptie in skillData)) {
+                const data = await getData(`identities/${id}`);
+                setSkillData(p => ({ ...p, [preuptie]: compileSkillData(data) }));
+            }
+            setCompareMode(true);
+        }
         else {
+            if (!(v in skillData)) {
+                const data = await getData(`identities/${id}`);
+                setSkillData(p => ({ ...p, [v]: compileSkillData(data) }));
+            }
+
             setUptie(v);
             if (v < preuptie) setPreuptie(v);
         }
     }
 
-    const handleSetPreuptie = (v) => {
+    const handleSetPreuptie = async v => {
+        if (!(v in skillData)) {
+            const data = await getData(`identities/${id}`);
+            setSkillData(p => ({ ...p, [v]: compileSkillData(data) }));
+        }
+
         setPreuptie(v);
         if (v > uptie) setUptie(v);
+    }
+
+    const handleSetActiveTab = async tab => {
+        setActiveTab(tab);
+        if (tab === "builds" && !builds) {
+            setBuilds(await searchBuilds({ "identities": [id], published: true, sortBy: "popular" }, 1, 6) || []);
+        }
     }
 
     const passivesPreMapping = {}
@@ -412,19 +309,19 @@ export default function IdentityPage({ params }) {
                         <div
                             {...getGeneralTooltipProps("Community voted rating of the identity")}
                             className={`tab-header ${activeTab === "rating" ? "active" : ""}`}
-                            style={{ fontSize: "1rem" }} onClick={() => setActiveTab("rating")}>
+                            style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("rating")}>
                             Community Rating
                         </div>
                         <div
                             data-tooltip-id="identity-notes"
                             className={`tab-header ${activeTab === "notes" ? "active" : ""}`}
-                            style={{ fontSize: "1rem" }} onClick={() => setActiveTab("notes")}>
+                            style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("notes")}>
                             Tips/Summary
                         </div>
                         <div
                             {...getGeneralTooltipProps("Loads the most popular builds that use this identity.")}
                             className={`tab-header ${activeTab === "builds" ? "active" : ""}`}
-                            style={{ fontSize: "1rem" }} onClick={() => setActiveTab("builds")}>
+                            style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("builds")}>
                             Popular Builds
                         </div>
                     </div>
@@ -446,7 +343,7 @@ export default function IdentityPage({ params }) {
                 {
                     panelOpen && (
                         activeTab === "notes" ?
-                            <NotesTab notes={notes} /> :
+                            notesTab :
                             activeTab === "rating" ?
                                 <RatingTab id={id} isMobile={isMobile} /> :
                                 <BuildsTab builds={builds} />
@@ -458,12 +355,14 @@ export default function IdentityPage({ params }) {
                 </span>
             </div>
 
-            <SkillsTab
-                identityData={identityData} level={level}
-                skills={skills} preSkills={preSkills}
-                combatPassives={combatPassives} supportPassives={supportPassives}
-                passivesPreMapping={passivesPreMapping} compareMode={compareMode}
-            />
+            {!compareMode && uptie === 4 ? initSkillsTab :
+                <SkillsTab
+                    identityData={identityData} level={level}
+                    skills={skills} preSkills={preSkills}
+                    combatPassives={combatPassives} supportPassives={supportPassives}
+                    passivesPreMapping={passivesPreMapping} compareMode={compareMode}
+                />
+            }
         </div>
     </>
 }

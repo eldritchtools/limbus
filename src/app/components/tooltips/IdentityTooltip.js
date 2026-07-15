@@ -14,7 +14,7 @@ import { useSiteCustomization } from "../SiteCustomizationProvider";
 import { useAuth } from "@/app/database/authProvider";
 import { getAggregatesByType, getUserReviews } from "@/app/database/reviews";
 
-const TOOLTIP_ID = "identity-tooltip";
+export const IDENTITY_TOOLTIP_ID = "identity-tooltip";
 
 function IdentityTooltipContent({ identity, forceRatings }) {
     const { getCustomizationValue } = useSiteCustomization();
@@ -84,7 +84,7 @@ function TooltipLoader({ id, forceRatings }) {
 }
 
 export default function IdentityTooltip() {
-    return <TooltipTemplate id={TOOLTIP_ID}
+    return <TooltipTemplate id={IDENTITY_TOOLTIP_ID}
         contentFunc={content => {
             if (!content) return null;
             const [id, forceRatings] = content.split("|");
@@ -98,7 +98,7 @@ export default function IdentityTooltip() {
 
 export function getIdentityTooltipProps(id, forceRatings) {
     return {
-        "data-tooltip-id": TOOLTIP_ID,
+        "data-tooltip-id": IDENTITY_TOOLTIP_ID,
         "data-tooltip-content": forceRatings ? `${id}|${forceRatings}` : id,
     }
 }

@@ -1,10 +1,6 @@
-import { useData } from "../components/DataProvider";
 import Status from "../components/objects/Status";
 
-function TextWithStatuses({ templateText, includeTooltips = true, iconStyleOverride = {}, nameStyleOverride = {} }) {
-    const [statuses, statusesLoading] = useData("statuses");
-    const [skillTags, skillTagsLoading] = useData("skill_tags");
-
+function TextWithStatuses({ statuses, skillTags, templateText, includeTooltips = true, iconStyleOverride = {}, nameStyleOverride = {} }) {
     if (!templateText) return null;
 
     let text = templateText.replaceAll("[[", "[").replaceAll("]]", "]");
@@ -23,9 +19,16 @@ function TextWithStatuses({ templateText, includeTooltips = true, iconStyleOverr
         text = text.slice(match.index + match[0].length);
 
         let varName = match[0].slice(1, -1);
-        if (!statusesLoading && varName in statuses) {
-            textPieces.push(<Status key={index++} id={varName} includeTooltip={includeTooltips} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />)
-        } else if (!skillTagsLoading && varName in skillTags) {
+        if (varName in statuses) {
+            const {name, srcPath, buffType} = statuses[varName];
+
+            textPieces.push(<Status
+                key={index++} id={varName} status={{name, srcPath, buffType}}
+                includeTooltip={includeTooltips}
+                iconStyleOverride={iconStyleOverride}
+                nameStyleOverride={nameStyleOverride}
+            />)
+        } else if (varName in skillTags) {
             if ("color" in skillTags[varName]) {
                 textPieces.push(<span key={index++} style={{ color: skillTags[varName].color }}>{skillTags[varName].text}</span>)
             } else {

@@ -36,6 +36,10 @@ export function DataProvider({ children }) {
     );
 }
 
+export function useDataProvider() {
+    return useContext(DataContext);
+}
+
 export function useData(path, enabled = true) {
     const { dataStore, getData } = useContext(DataContext);
     const [data, setData] = useState(path in dataStore ? dataStore[path] : null);

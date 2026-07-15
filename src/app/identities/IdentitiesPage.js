@@ -207,12 +207,12 @@ function IdentityList({ identities, searchString, filters, displayType, separate
     }
 }
 
-export default function IdentitiesPage() {
+export default function IdentitiesPage({ initIdentities }) {
     const [identities, identitiesLoading] = useData("identities");
 
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useLocalState("idEgoFilters", []);
-    const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "full");
+    const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "icon");
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);
     const [compareMode, setCompareMode] = useState("off");
@@ -243,6 +243,16 @@ export default function IdentitiesPage() {
             [...seasonList]
         ]
     }, [identities, identitiesLoading]);
+
+    const initState =
+        searchString.length === 0 &&
+        filters.length === 0 &&
+        displayType === "icon" &&
+        !separateSinners &&
+        compareMode === "off" &&
+        selectedStatuses.length === 0 &&
+        selectedFactionTags.length === 0 &&
+        selectedSeasons.length === 0;
 
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
@@ -339,19 +349,20 @@ export default function IdentitiesPage() {
                 <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
             </div>
             <HorizontalDivider />
-            {identitiesLoading ? null :
-                <IdentityList
-                    identities={identities}
-                    searchString={searchString}
-                    filters={filters}
-                    displayType={displayType}
-                    separateSinners={separateSinners}
-                    strictFiltering={strictFiltering}
-                    selectedStatuses={selectedStatuses}
-                    selectedFactionTags={selectedFactionTags}
-                    selectedSeasons={selectedSeasons}
-                    compareMode={compareMode}
-                />
+            {initState ? initIdentities :
+                identitiesLoading ? null :
+                    <IdentityList
+                        identities={identities}
+                        searchString={searchString}
+                        filters={filters}
+                        displayType={displayType}
+                        separateSinners={separateSinners}
+                        strictFiltering={strictFiltering}
+                        selectedStatuses={selectedStatuses}
+                        selectedFactionTags={selectedFactionTags}
+                        selectedSeasons={selectedSeasons}
+                        compareMode={compareMode}
+                    />
             }
         </div>
     </>;

@@ -17,7 +17,7 @@ export function PassiveCost({ condition, iconSize, vertical = false }) {
     </div>
 }
 
-export default function PassiveCard({ passive, mini = false, label, pre, background, noBorder = false }) {
+export default function PassiveCard({ passive, mini = false, label, pre, background, noBorder = false, serverText }) {
     let iconSize = mini ? "24px" : "32px";
     let iconStyleOverride = mini ? { width: "24px", height: "24px" } : {};
     let nameStyleOverride = mini ? { fontSize: "0.8rem" } : {};
@@ -31,7 +31,7 @@ export default function PassiveCard({ passive, mini = false, label, pre, backgro
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "row", gap: mini ? "0.1rem" : "0.25rem", flexWrap: "wrap" }}>
                 <NamePill name={passive.name} />
-                {"condition" in passive ? <div style={{zIndex: 1}}><PassiveCost condition={passive.condition} iconSize={iconSize} /></div> : null}
+                {"condition" in passive ? <div style={{ zIndex: 1 }}><PassiveCost condition={passive.condition} iconSize={iconSize} /></div> : null}
             </div>
             {label ?
                 <div style={{ flex: "0 0 auto", color: "var(--secondary-text-color)", fontWeight: "bold", fontSize: mini ? "1rem" : "1.25rem", marginLeft: "0.5rem" }}>
@@ -41,8 +41,8 @@ export default function PassiveCard({ passive, mini = false, label, pre, backgro
         </div>
         <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.2" }}>
             {pre ?
-                <DiffedText before={pre.desc} after={passive.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} /> :
-                <ProcessedText text={passive.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} />
+                <DiffedText before={pre.desc} after={passive.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} serverText={serverText} /> :
+                <ProcessedText text={passive.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} serverText={serverText} />
             }
         </div>
     </div>;

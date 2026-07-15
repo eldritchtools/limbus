@@ -3,7 +3,7 @@ import React from "react";
 import CommunityPoll from "./CommunityPoll";
 import MdPlan from "./components/contentCards/MdPlan";
 import TeamBuild from "./components/contentCards/TeamBuild";
-import { fetchData } from "./components/DataFetcher";
+import { fetchData } from "./components/DataFetcherServer";
 import BannerIcon from "./components/icons/BannerIcon";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
@@ -35,8 +35,8 @@ export default async function HomePage() {
     const upcoming = await fetchData("upcoming");
     const { popular, newest, showcase, mdplans, poll } = await getHomepagePosts();
 
-    const identities = mergeUpcoming(identitiesBase, upcoming.identities ?? {});
-    const egos = mergeUpcoming(egosBase, upcoming.egos ?? {});
+    const identities = mergeUpcoming(identitiesBase, upcoming.identities ?? {}, upcoming.date);
+    const egos = mergeUpcoming(egosBase, upcoming.egos ?? {}, upcoming.date);
 
     const dates = {};
 

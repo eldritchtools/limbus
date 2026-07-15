@@ -2,6 +2,8 @@
 
 // import Image from "next/image";
 
+import styles from "./Icon.module.css";
+
 import { ASSETS_ROOT } from "@/app/paths";
 
 const caseMapping = {
@@ -35,17 +37,21 @@ export function getKeywordImgSrc(id) {
     return `${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`;
 }
 
-export default function KeywordIcon({ id, size = 32, style = {} }) {
+export default function KeywordIcon({ id, className, size, style = {} }) {
     // return <Image
     //     src={`${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`}
     //     alt={id} title={id} 
     //     width={size} height={size} 
     //     style={{ width: `${size}px`, height: `${size}px`, ...style }}
     // />;
+    
+    const finalStyle = size ? { width: `${size}px`, height: `${size}px`, ...style } : style
+
     return <img
+        className={className ?? styles.iconSize32}
         src={getKeywordImgSrc(id)}
-        alt={id} title={id} 
-        style={{ width: `${size}px`, height: `${size}px`, ...style }}
+        alt={id} title={id}
+        style={finalStyle}
         loading="lazy"
     />;
 }

@@ -20,7 +20,6 @@ export default function CommunityPoll({ initPoll }) {
         if(!poll || !user) return;
         const fetchAnswer = async () => {
             const answer = await getUserAnswer(user.id, poll.current.id);
-            console.log(poll, answer);
             if(answer) setAnswer(answer);
             else setMode("vote");
         }

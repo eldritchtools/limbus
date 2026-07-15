@@ -1,0 +1,12 @@
+.generalTooltip {
+    padding: 0.5rem;
+    display: block;
+    max-width: 70ch;
+    white-space: pre-wrap;
+}
+
+@media (max-width:768px) {
+    .generalTooltip {
+        max-width: 40ch;
+    }
+}

@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
 // import Image from "next/image";
 
-import { useData } from "../DataProvider";
+import DataLoader from "../DataLoader";
+import styles from "./Icon.module.css";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -12,31 +12,20 @@ export function getStatusImgSrc(status) {
     return null;
 }
 
-function StatusIconMain({ status, style }) {
+function StatusIconMain({ status, className, style }) {
     const src = getStatusImgSrc(status);
     if (!src) return null;
     if (src.includes("?")) return null;
     // return <Image src={src} alt={status.name} width={32} height={32} style={style} />
-    return <img src={src} alt={status.name} style={{ width: "100%", ...style }} loading="lazy" />
+    return <img src={src} alt={status.name} className={className ?? styles.iconFullWidth} style={style} loading="lazy" />
 }
 
-function StatusIconFetch({ id, style }) {
-    const [statuses, statusesLoading] = useData("statuses");
-
-    if (statusesLoading) {
-        return <div style={{ width: "100%", ...style }} />;
-    } else if (!(id in statuses)) {
-        console.warn(`Status ${id} not found.`);
-        return null;
-    } else {
-        return <StatusIconMain id={id} status={statuses[id]} style={style} />
-    }
-}
-
-export default function StatusIcon({ id, status = null, style = {} }) {
+export default function StatusIcon({ id, status = null, className, style = {} }) {
     if (status) {
-        return <StatusIconMain id={id ?? status?.id} status={status} style={style} />
+        return <StatusIconMain id={id ?? status?.id} status={status} className={className} style={style} />
     } else {
-        return <StatusIconFetch id={id} style={style} />
+        return <DataLoader file="statuses" type="status" id={id}>
+            {status => <StatusIconMain id={id} status={status} className={className} style={style} />}
+        </DataLoader>
     }
 }

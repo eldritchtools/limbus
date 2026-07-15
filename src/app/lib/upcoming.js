@@ -1,7 +1,7 @@
-export function mergeUpcoming(data, upcomingData) {
+export function mergeUpcoming(data, upcomingData, upcomingDate) {
     const result = {...data};
     Object.entries(upcomingData).forEach(([id, x]) => {
-        result[id] = {...x, upcoming: true, date: upcoming.date};
+        result[id] = {...x, upcoming: true, date: upcomingDate};
     });
     return result;
 }

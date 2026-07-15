@@ -4,7 +4,8 @@ import { useMemo } from "react";
 
 import { useData } from "../DataProvider";
 import DropdownSelectorWithExclusion from "./DropdownSelectorWithExclusion";
-import ProcessedText, { processText } from "../texts/ProcessedText";
+import ProcessedText from "../texts/ProcessedText";
+import { processText } from "../texts/ProcessedTextMain";
 
 import { checkFilterMatch, normalizeString } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";

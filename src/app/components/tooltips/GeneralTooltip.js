@@ -1,8 +1,8 @@
 "use client";
 
-import { useBreakpoint } from "@eldritchtools/shared-components";
-
+import styles from "./Tooltip.module.css";
 import TooltipTemplate from "./TooltipTemplate";
+
 
 const tooltipContent = {
     "teamcode": "Limbus Company allows quickly copying teams using team codes. This feature can be found beside the team name in the sinner selection menu. When editing a team build, you can paste a team code here to edit your build.",
@@ -14,22 +14,21 @@ const tooltipContent = {
     "allIdEgoMenu": "Show a menu containing all identities or E.G.Os for faster selection."
 }
 
-const TOOLTIP_ID = "general-tooltip";
+export const GENERAL_TOOLTIP_ID = "general-tooltip";
 
 function GeneralTooltipContent({ content }) {
-    const { isMobile } = useBreakpoint();
-    return <div style={{ padding: "0.5rem", display: "block", maxWidth: isMobile ? "40ch" : "70ch", whiteSpace: "pre-wrap" }}>
+    return <div className={styles.generalTooltip}>
         {tooltipContent[content] ?? content}
     </div>
 }
 
 export default function GeneralTooltip() {
-    return <TooltipTemplate id={TOOLTIP_ID} contentFunc={content => <GeneralTooltipContent content={content} />} />
+    return <TooltipTemplate id={GENERAL_TOOLTIP_ID} contentFunc={content => <GeneralTooltipContent content={content} />} />
 }
 
 export function getGeneralTooltipProps(content) {
     return {
-        "data-tooltip-id": TOOLTIP_ID,
+        "data-tooltip-id": GENERAL_TOOLTIP_ID,
         "data-tooltip-content": content
     }
 }

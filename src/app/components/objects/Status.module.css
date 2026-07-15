@@ -1,0 +1,19 @@
+.statusContainer {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    transform: translateY(-0.15rem)
+}
+
+.statusIcon {
+    display: inline;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: -1px;
+    margin-right: 2px;
+}
+
+.statusName {
+    display: inline; 
+    font-size: 1rem;
+}

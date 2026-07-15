@@ -12,8 +12,8 @@ import remarkMath from "remark-math";
 import { visit } from "unist-util-visit";
 
 import { convertTokenAlias } from "./tokens";
-import { useSkillData } from "../dataHooks/skills";
-import { useData } from "../DataProvider";
+import { useData, useDataProvider } from "../DataProvider";
+import { tokenizeMarkdown } from "./MarkdownUtil";
 import Gift from "../gifts/Gift";
 import AdditionalIcon from "../icons/AdditionalIcon";
 import CommunityAsset from "../icons/CommunityAsset";
@@ -36,36 +36,34 @@ import { searchCollections } from "@/app/database/collections";
 import { searchMdPlans } from "@/app/database/mdPlans";
 import { sinnerIdMapping } from "@/app/lib/constants";
 import { encounterCategoryLabels } from "@/app/lib/encounters";
+import { getSkillName } from "@/app/lib/skill";
 
 
 function tokenExtractionPlugin() {
-    return (tree) => {
+    return tree => {
         visit(tree, "text", (node, index, parent) => {
-            const regex = /(?<!\\)\{([^:{}\n]+):([^{}\n]+)\}(?!\\)/g;
-            const parts = [];
-            let lastIndex = 0;
-            let match;
+            const parts = tokenizeMarkdown(node.value);
 
-            const value = node.value;
-            while ((match = regex.exec(value)) !== null) {
-                const before = value.slice(lastIndex, match.index);
-                if (before) parts.push({ type: "text", value: before });
+            if (!parts.some(x => x.type === "token"))
+                return;
 
-                parts.push({
-                    type: "tokenNode",
-                    data: { hName: "tokenNode", hProperties: { tokenType: match[1], tokenValues: match[2].split(":") } },
-                });
+            parent.children.splice(
+                index,
+                1,
+                ...parts.map(part =>
+                    part.type === "text"
+                        ? { type: "text", value: part.value }
+                        : {
+                            type: "tokenNode",
+                            data: {
+                                hName: "tokenNode",
+                                hProperties: { tokenType: part.tokenType, tokenValues: part.tokenValues, },
+                            },
+                        }
+                )
+            );
 
-                lastIndex = match.index + match[0].length;
-            }
-
-            const tail = value.slice(lastIndex).replace(/\\([{}])/g, "$1");
-            if (tail) parts.push({ type: "text", value: tail });
-
-            if (parts.length > 0 && parent && Array.isArray(parent.children)) {
-                parent.children.splice(index, 1, ...parts);
-                return index + parts.length;
-            }
+            return index + parts.length;
         });
     };
 }
@@ -83,12 +81,13 @@ function sanitizeUrl(url) {
     }
 }
 
-function IdentityItem({ id, guardedLinks }) {
-    const [identities, identitiesLoading] = useData("identities_mini");
-    if (identitiesLoading) {
+function IdentityItem({ id, context, guardedLinks }) {
+    const [identities, identitiesLoading] = useData("identities_mini", !context?.identity);
+    if (identitiesLoading && !context?.identity) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (id in identities)
+        const data = context ? context.identity[id] : identities[id];
+        if (data)
             return <LinkWithTooltip
                 href={`/identities/${id}`}
                 tooltipProps={getIdentityTooltipProps(id)}
@@ -96,19 +95,20 @@ function IdentityItem({ id, guardedLinks }) {
                 style={{ textDecoration: "underline" }}
                 guarded={guardedLinks}
             >
-                [{sinnerIdMapping[identities[id].sinnerId]}] {identities[id].name}
+                [{sinnerIdMapping[data.sinnerId]}] {data.name}
             </LinkWithTooltip>;
         else
             return <span>{`{identity:${id}}`}</span>;
     }
 }
 
-function EgoItem({ id, guardedLinks }) {
-    const [egos, egosLoading] = useData("egos_mini");
-    if (egosLoading) {
+function EgoItem({ id, context, guardedLinks }) {
+    const [egos, egosLoading] = useData("egos_mini", !context?.ego);
+    if (egosLoading && !context?.ego) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (id in egos)
+        const data = context ? context.ego[id] : egos[id];
+        if (data)
             return <LinkWithTooltip
                 href={`/egos/${id}`}
                 tooltipProps={getEgoTooltipProps(id)}
@@ -116,82 +116,87 @@ function EgoItem({ id, guardedLinks }) {
                 style={{ textDecoration: "underline" }}
                 guarded={guardedLinks}
             >
-                [{sinnerIdMapping[egos[id].sinnerId]}] {egos[id].name}
+                [{sinnerIdMapping[data.sinnerId]}] {data.name}
             </LinkWithTooltip>;
         else
             return <span>{`{ego:${id}}`}</span>;
     }
 }
 
-function SkillItem({ val }) {
+function SkillItem({ val, context }) {
+    const { getData } = useDataProvider();
     const [ownerId, skillId] = val.split("|");
+    const fullId = `${ownerId}${skillId}`;
     const type = ownerId[0] === "1" ? "identity" : "ego";
-    const skillData = useSkillData(type, ownerId, 5);
+    const [skillName, setSkillName] = useState(context?.skill?.[fullId]);
 
-    const id = ownerId + skillId;
+    useEffect(() => {
+        if (skillName) return;
+        const fetch = async () => {
+            const data = await getData(type === "identity" ? `identities/${ownerId}` : `egos/${ownerId}`);
+            setSkillName(getSkillName(type, data, fullId, 5));
+        }
 
-    const skill = skillData ?
-        (
-            type === "identity" ?
-                skillData.skills[id] :
-                ([...skillData.awakeningSkills, ...(skillData.corrosionSkills ?? [])]).find(x => x.data.id === id)
-        ) :
-        null;
+        fetch();
+    }, [skillName, getData, ownerId, fullId, type]);
 
-    if (skill)
+    if (skillName)
         return <span
             {...getSkillTooltipProps(ownerId, skillId)}
             style={{ display: "inline", fontWeight: "bold" }}>
-            <span>{skill.data.name}</span>
+            <span>{skillName}</span>
         </span>
     else {
         return <span>{`{skill:${ownerId}|${skillId}}`}</span>
     }
 }
 
-function StatusItem({ id }) {
-    const [statuses, statusesLoading] = useData("statuses");
-    if (statusesLoading) {
+function StatusItem({ id, context }) {
+    const [statuses, statusesLoading] = useData("statuses", !context?.status);
+    if (statusesLoading && !context?.status) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (id in statuses)
-            return <Status id={id} status={statuses[id]} includeTooltip={true} />;
+        const data = context ? context.status[id] : statuses[id];
+        if (data)
+            return <Status id={id} status={data} includeTooltip={true} />;
         else
             return <span>{`{status:${id}}`}</span>;
     }
 }
 
-function StatusIconItem({ id }) {
-    const [statuses, statusesLoading] = useData("statuses");
-    if (statusesLoading) {
+function StatusIconItem({ id, context }) {
+    const [statuses, statusesLoading] = useData("statuses", !context?.status);
+    if (statusesLoading && !context?.status) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (id in statuses)
-            return <Status id={id} status={statuses[id]} includeName={false} includeTooltip={true} />;
+        const data = context ? context.status[id] : statuses[id];
+        if (data)
+            return <Status id={id} status={data} includeName={false} includeTooltip={true} />;
         else
             return <span>{`{statusicon:${id}}`}</span>;
     }
 }
 
-function GiftNameItem({ val }) {
-    const [gifts, giftsLoading] = useData("gifts");
+function GiftNameItem({ val, context }) {
+    const [gifts, giftsLoading] = useData("gifts", !context?.gift);
     const split = val.split("|");
     const id = split[0];
     const enhanceRank = split.length > 1 ? split[1] : 0;
 
-    const checkValidity = () => {
-        if (!(id in gifts)) return false;
+    const checkValidity = (data) => {
+        if (!data) return false;
         const rank = Number(enhanceRank);
-        if (isNaN(rank) || !Number.isInteger(rank) || rank >= gifts[id].names.length || rank < 0) return false;
+        if (isNaN(rank) || !Number.isInteger(rank) || rank >= data.names.length || rank < 0) return false;
         return true;
     }
 
-    if (giftsLoading) {
+    if (giftsLoading && !context?.gift) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (checkValidity())
+        const data = context ? context.gift[id] : gifts[id];
+        if (checkValidity(data))
             return <span style={{ display: "inline", textDecoration: "underline" }}>
-                <Gift gift={gifts[id]} enhanceRank={Number(enhanceRank)} text={true} />
+                <Gift gift={data} enhanceRank={Number(enhanceRank)} text={true} />
             </span>
         else {
             return <span>{`{giftname:${val}}`}</span>
@@ -199,10 +204,10 @@ function GiftNameItem({ val }) {
     }
 }
 
-function GiftIconsItem({ vals }) {
-    const [gifts, giftsLoading] = useData("gifts");
+function GiftIconsItem({ vals, context }) {
+    const [gifts, giftsLoading] = useData("gifts", !context.gift);
 
-    if (giftsLoading) {
+    if (giftsLoading && !context?.gift) {
         return <span>{"{Loading...}"}</span>
     } else {
         return <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
@@ -210,9 +215,10 @@ function GiftIconsItem({ vals }) {
                 const split = val.split("|");
                 const id = split[0];
                 const enhanceRank = split.length > 1 ? Number(split[1]) : 0;
+                const data = context ? context.gift[id] : gifts[id];
 
-                if (id in gifts && !isNaN(enhanceRank) && Number.isInteger(enhanceRank) && enhanceRank >= 0 && enhanceRank < gifts[id].names.length) {
-                    return <Gift key={i} gift={gifts[id]} enhanceRank={enhanceRank} />
+                if (data && !isNaN(enhanceRank) && Number.isInteger(enhanceRank) && enhanceRank >= 0 && enhanceRank < data.names.length) {
+                    return <Gift key={i} gift={data} enhanceRank={enhanceRank} />
                 } else {
                     return <Gift key={i} gift={null} />
                 }
@@ -221,26 +227,28 @@ function GiftIconsItem({ vals }) {
     }
 }
 
-function ThemePackItem({ id }) {
-    const [themePacks, themePacksLoading] = useData("md_theme_packs");
-    if (themePacksLoading) {
+function ThemePackItem({ id, context }) {
+    const [themePacks, themePacksLoading] = useData("md_theme_packs", !context?.themepack);
+    if (themePacksLoading && !context?.themepack) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (id in themePacks)
-            return <ThemePackNameWithTooltip id={id} />;
+        const data = context ? context.themepack[id] : themePacks[id];
+        if (data)
+            return <ThemePackNameWithTooltip id={id} themePack={data} />;
         else
             return <span>{`{themepack:${id}}`}</span>;
     }
 }
 
-function EncounterItem({ str, guardedLinks }) {
+function EncounterItem({ str, context, guardedLinks }) {
     const [cat, enc] = str.split("|");
-    const [encounters, encountersLoading] = useData("encounters");
-    if (encountersLoading) {
+    const [encounters, encountersLoading] = useData("encounters", !context?.encounter);
+    if (encountersLoading && !context?.encounter) {
         return <span>{"{Loading...}"}</span>
     } else if (!(cat in encounters) || !(enc in encounters[cat])) {
         return <span>{`{encounter:${str}}`}</span>;
     } else {
+        const data = context ? context.encounter[cat][enc] : encounters[cat][enc];
         return <LinkWithTooltip
             href={`/encounters?category=${cat}&encounter=${enc}`}
             tooltipProps={getEncounterTooltipProps(cat, enc)}
@@ -248,17 +256,18 @@ function EncounterItem({ str, guardedLinks }) {
             style={{ textDecoration: "underline" }}
             guarded={guardedLinks}
         >
-            {encounterCategoryLabels[cat]}: {encounters[cat][enc]}
+            {encounterCategoryLabels[cat]}: {data}
         </LinkWithTooltip>;
     }
 }
 
-function IconItem({ id }) {
-    const [icons, iconsLoading] = useData("additional_icons");
-    if (iconsLoading) {
+function IconItem({ id, context }) {
+    const [icons, iconsLoading] = useData("additional_icons", !context?.icon);
+    if (iconsLoading && !context?.icon) {
         return <span>{"{Loading...}"}</span>
     } else {
-        if (id in icons)
+        const data = context ? context.icon[id] : icons[id];
+        if (data)
             return <AdditionalIcon id={id} style={{ height: "2rem", verticalAlign: "middle" }} />
         else
             return <span>{`{icon:${id}}`}</span>;
@@ -387,7 +396,7 @@ function TeamCodeItem({ code }) {
     </HintText>
 }
 
-export default function MarkdownRenderer({ content, guardedLinks }) {
+export default function MarkdownRenderer({ content, context, guardedLinks }) {
     const renderedMarkdown = useMemo(() => {
         return <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks, remarkMath, tokenExtractionPlugin]}
@@ -399,30 +408,30 @@ export default function MarkdownRenderer({ content, guardedLinks }) {
 
                     switch (convertTokenAlias(tokenType)) {
                         case "identity":
-                            return <IdentityItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
+                            return <IdentityItem id={tokenValues[0]} context={context} guardedLinks={guardedLinks} />;
                         case "ego":
-                            return <EgoItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
+                            return <EgoItem id={tokenValues[0]} context={context} guardedLinks={guardedLinks} />;
                         case "skill":
-                            return <SkillItem val={tokenValues[0]} />;
+                            return <SkillItem val={tokenValues[0]} context={context} />;
                         case "status":
-                            return <StatusItem id={tokenValues[0]} />;
+                            return <StatusItem id={tokenValues[0]} context={context} />;
                         case "statusicon":
-                            return <StatusIconItem id={tokenValues[0]} />;
+                            return <StatusIconItem id={tokenValues[0]} context={context} />;
                         case "keyword":
                             if (isValidKeywordId(tokenValues[0]))
                                 return <KeywordIcon id={tokenValues[0]} style={{ display: "inline-block", width: "2rem", height: "2rem", verticalAlign: "middle" }} />;
                             else
                                 return <span>{`{${tokenType}:${tokenValues[0]}}`}</span>;
                         case "giftname":
-                            return <GiftNameItem val={tokenValues[0]} />
+                            return <GiftNameItem val={tokenValues[0]} context={context} />
                         case "gifticons":
-                            return <GiftIconsItem vals={tokenValues} />
+                            return <GiftIconsItem vals={tokenValues} context={context} />
                         case "themepack":
-                            return <ThemePackItem id={tokenValues[0]} />
+                            return <ThemePackItem id={tokenValues[0]} context={context} />
                         case "encounter":
-                            return <EncounterItem str={tokenValues[0]} guardedLinks={guardedLinks} />
+                            return <EncounterItem str={tokenValues[0]} context={context} guardedLinks={guardedLinks} />
                         case "icon":
-                            return <IconItem id={tokenValues[0]} />
+                            return <IconItem id={tokenValues[0]} context={context} />
                         case "build":
                             return <BuildItem id={tokenValues[0]} guardedLinks={guardedLinks} />;
                         case "collection":
@@ -489,7 +498,7 @@ export default function MarkdownRenderer({ content, guardedLinks }) {
         >
             {content}
         </ReactMarkdown>
-    }, [content, guardedLinks]);
+    }, [content, context, guardedLinks]);
 
     return <div style={{ lineHeight: "1.4", textAlign: "justify", wordWrap: "break-word", overflowWrap: "break-word", wordBreak: "break-word" }}>
         {renderedMarkdown}
