@@ -209,13 +209,13 @@ function EgoList({ egos, searchString, filters, displayType, separateSinners, st
     }
 }
 
-export default function EgosPage() {
+export default function EgosPage({ initEgos }) {
     const [egos, egosLoading] = useData("egos");
     const [statuses, statusesLoading] = useData("statuses");
 
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useLocalState("idEgoFilters", []);
-    const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "full");
+    const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "icon");
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);
     const [compareMode, setCompareMode] = useState("off");
@@ -248,6 +248,15 @@ export default function EgosPage() {
             [...seasonList]
         ]
     }, [egos, egosLoading, statuses, statusesLoading]);
+
+    const initState =
+        searchString.length === 0 &&
+        filters.length === 0 &&
+        displayType === "icon" &&
+        !separateSinners &&
+        compareMode === "off" &&
+        selectedStatuses.length === 0 &&
+        selectedSeasons.length === 0;
 
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
@@ -331,18 +340,19 @@ export default function EgosPage() {
                 <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
             </div>
             <HorizontalDivider />
-            {egosLoading ? null :
-                <EgoList
-                    egos={egos}
-                    searchString={searchString}
-                    filters={filters}
-                    displayType={displayType}
-                    separateSinners={separateSinners}
-                    strictFiltering={strictFiltering}
-                    selectedStatuses={selectedStatuses}
-                    selectedSeasons={selectedSeasons}
-                    compareMode={compareMode}
-                />}
+            {initState ? initEgos :
+                egosLoading ? null :
+                    <EgoList
+                        egos={egos}
+                        searchString={searchString}
+                        filters={filters}
+                        displayType={displayType}
+                        separateSinners={separateSinners}
+                        strictFiltering={strictFiltering}
+                        selectedStatuses={selectedStatuses}
+                        selectedSeasons={selectedSeasons}
+                        compareMode={compareMode}
+                    />}
         </div>
     </>;
 }

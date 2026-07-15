@@ -1,6 +1,14 @@
+import { EGO_TOOLTIP_ID } from "./EgoTooltip";
 import { GENERAL_TOOLTIP_ID } from "./GeneralTooltip";
 import { IDENTITY_TOOLTIP_ID } from "./IdentityTooltip";
 import { STATUS_TOOLTIP_ID } from "./StatusTooltip";
+
+export function getEgoTooltipProps(id, forceRatings) {
+    return {
+        "data-tooltip-id": EGO_TOOLTIP_ID,
+        "data-tooltip-content": forceRatings ? `${id}|${forceRatings}` : id,
+    }
+}
 
 export function getGeneralTooltipProps(content) {
     return {
