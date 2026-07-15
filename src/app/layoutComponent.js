@@ -116,7 +116,7 @@ function Announcement() {
                     <span style={{ lineHeight: "1.3" }}>
                         Hi! An end-of-season popularity poll is currently ongoing on the site. If you&apos;d like to leave a response or see the current results you can find it <NoPrefetchLink className="text-link" href="/popularity-poll">here</NoPrefetchLink>.
                         <br /> <br />
-                        Content from the 9th Walpurgis Night have been added to the poll. You can update your repsonses if you want to change your votes.
+                        &quot;Window BGM and Jukebox&quot; option has been added to the Game Update section in the poll. You can update your responses if you want to change your votes.
                     </span>
                 </div>
 

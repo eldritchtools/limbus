@@ -219,7 +219,8 @@ export const questions = [
             "Consecutive Luxcavations",
             "Increased Announcer Limit and Presets",
             "Cursed & Blessed E.G.O Gifts",
-            "Automatic Reselection of Revived Identities in MD"
+            "Automatic Reselection of Revived Identities in MD",
+            "Window BGM and Jukebox"
         ]
     },
     {
