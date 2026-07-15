@@ -7,6 +7,67 @@
     width: 100%;
 }
 
+.identityIconContainer {
+    position: relative;
+    aspect-ratio: 1/1;
+    container-type: size;
+}
+
+.upcomingLabel {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: block;
+    text-align: left;
+    color: #ddd;
+    font-weight: bold;
+    text-shadow: 0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000;
+    font-size: 0.9rem;
+    overflow: hidden;
+}
+
+.identityRarityIcon {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: 2rem;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.identityIconName {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    max-width: 100%;
+    max-height: 70%;
+    overflow: hidden;
+    display: block;
+    text-align: right;
+    color: #ddd;
+    font-weight: 600;
+    line-height: 1.1;
+    text-wrap: balance;
+    text-shadow: 0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000;
+}
+
+.identityUptieIcon {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    text-shadow: 0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000;
+}
+
+.identityIconOpts {
+    color: #ddd; 
+    font-weight: 600;
+    line-height: 1.1; 
+    font-size: 1rem;
+}
+
 .skillIconContainer {
     position: relative;
     width: 112px;
@@ -14,7 +75,7 @@
 }
 
 .skillIconFrameContainer {
-    position: relative; 
+    position: relative;
     top: 0;
     left: 0;
     width: 112px;
@@ -23,7 +84,7 @@
 }
 
 .skillIconIconContainer {
-    position: absolute; 
+    position: absolute;
     top: 13.3px;
     left: 13.3px;
     z-index: 2;
@@ -31,13 +92,17 @@
     margin-top: 12.8px;
     width: 74px;
     height: 74px;
-    clip-path: polygon(73% 2%, 98% 36%,90% 80%,50% 100%,10% 80%,2% 36%,27% 2%);
+    clip-path: polygon(73% 2%, 98% 36%, 90% 80%, 50% 100%, 10% 80%, 2% 36%, 27% 2%);
 }
 
 .skillIconFrameBgContainer {
     position: absolute;
-    top: 0; 
+    top: 0;
     left: 0;
     width: 112px;
     z-index: 1;
+}
+
+.rarityIcon {
+    height: 2rem;
 }

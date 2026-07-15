@@ -1,4 +1,8 @@
+import styles from "./identities.module.css";
 import IdentitiesPage from "./IdentitiesPage";
+import { fetchData } from "../components/DataFetcherServer";
+import IdentityIcon from "../components/icons/IdentityIcon";
+import NoPrefetchLink from "../components/NoPrefetchLink";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
@@ -11,7 +15,20 @@ export function generateMetadata() {
     };
 }
 
-export default function Page() {
+export default async function Page() {
+    const identities = await fetchData("identities_mini");
+
+    const initIdentities =
+        <div className={styles.identitiesIconGrid}>
+            {Object.entries(identities).map(([id, identity]) => <div key={id}>
+                <NoPrefetchLink href={`/identities/${id}`}>
+                    <div className={styles.clickableId}>
+                        <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
+                    </div>
+                </NoPrefetchLink>
+            </div>)}
+        </div>
+
     return <>
         <JsonLd data={{
             "@context": "https://schema.org",
@@ -22,6 +39,6 @@ export default function Page() {
                 "@id": "https://limbus.eldritchtools.com/#website"
             }
         }} />
-        <IdentitiesPage />
+        <IdentitiesPage initIdentities={initIdentities} />
     </>;
 }
