@@ -17,6 +17,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
+import { deleteCached } from "@/app/database/dbCache";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { handleCreateTag } from "@/app/database/tags";
@@ -239,6 +240,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             if (mode === "edit") {
                 buildData.buildId = buildId;
                 const data = await updateBuild(buildData);
+                await deleteCached(`build:${buildId}`)
                 router.push(`/builds/${data}`);
             } else {
                 const data = await insertBuild(buildData);

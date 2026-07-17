@@ -2,7 +2,7 @@ import { fetchData } from "../DataFetcherServer";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { extractMarkdownDependencies } from "./MarkdownUtil";
 
-import { compileSkillDataSingle, getSkillName } from "@/app/lib/skill";
+import { getSkillName } from "@/app/lib/skill";
 
 export default async function MarkdownRendererServer({ content, guardedLinks }) {
     const deps = extractMarkdownDependencies(content);
@@ -44,7 +44,7 @@ export default async function MarkdownRendererServer({ content, guardedLinks }) 
     }
 
     if (deps.themepack.size > 0) {
-        fetchList.push(["themepack", "themepacks"]);
+        fetchList.push(["themepack", "md_theme_packs"]);
     }
 
     if (deps.encounter.size > 0) {
@@ -96,7 +96,7 @@ export default async function MarkdownRendererServer({ content, guardedLinks }) 
                         .filter(([id]) => deps[fetchList[i][0]].has(id))
                         .map(([id, data]) => {
                             const { names } = data;
-                            return [id, { names }]
+                            return [id, { id, names }]
                         })
                     )
                 break;

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { useData } from "../DataProvider";
 import GiftIcon from "../icons/GiftIcon";
 import { useModal } from "../modals/ModalProvider";
@@ -5,7 +7,12 @@ import { getGiftTooltipProps } from "../tooltips/GiftTooltip";
 
 function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeTooltip = true, expandable = true, forceTagStrips, forceTriggersEffects }) {
     const { openGiftModal } = useModal();
-    const canHover = useMemo(() => window.matchMedia("(hover: hover)").matches, []);
+    const [canHover, setCanHover] = useState(false);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCanHover(window.matchMedia("(hover: hover)").matches);
+    }, []);
 
     let props = {};
     if (includeTooltip && (!expandable || canHover)) {
@@ -17,7 +24,7 @@ function GiftMain({ id, gift, enhanceRank = 0, scale = 1, text = false, includeT
     }
 
     let iconProps = {};
-    if(forceTagStrips !== undefined) iconProps.forceTagStrips = forceTagStrips;
+    if (forceTagStrips !== undefined) iconProps.forceTagStrips = forceTagStrips;
 
     if (text) {
         return <span {...props}>{gift.names[enhanceRank]}</span>;
