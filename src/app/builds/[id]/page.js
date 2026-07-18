@@ -6,6 +6,8 @@ import { isUuid } from "@/app/database/uuidCheck";
 import JsonLd, { getArticleSchema } from "@/app/lib/jsonLd";
 import { cleanMetadataDescription } from "@/app/lib/metadataHelper";
 
+const MIN_INDEXABLE_DESCRIPTION = 150;
+
 export async function generateMetadata({ params }) {
     const { id } = await params;
 
@@ -34,6 +36,10 @@ export async function generateMetadata({ params }) {
         description: cleanMetadataDescription(data.body),
         alternates: {
             canonical: `/builds/${id}`
+        },
+        robots: {
+            index: description.length >= MIN_INDEXABLE_DESCRIPTION,
+            follow: true,
         }
     };
 }

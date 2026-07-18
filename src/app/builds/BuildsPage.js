@@ -11,7 +11,7 @@ import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
 import BuildsSearchComponent, { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
-import { getPopularBuilds, searchBuilds } from "../database/builds";
+import { searchBuilds } from "../database/builds";
 import { getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
@@ -63,7 +63,7 @@ function EncountersSelection({ category, encounter }) {
         const params = new URLSearchParams({ tag: tag });
         return `/builds/new?${params.toString()}`
     }, [tag]);
-    
+
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
         <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
@@ -99,7 +99,7 @@ function EncountersSelection({ category, encounter }) {
     </div>
 }
 
-export default function BuildsPage() {
+export default function BuildsPage({ popularBuilds }) {
     const [builds, setBuilds] = useState([]);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("buildsActiveTab", "popular");
@@ -121,7 +121,7 @@ export default function BuildsPage() {
     }, [searchParams, setActiveTab]);
 
     useEffect(() => {
-        if (!activeTab || !activeTabInitialized) return;
+        if (!activeTab || !activeTabInitialized || activeTab === "popular") return;
 
         let canceled = false;
 
@@ -129,9 +129,7 @@ export default function BuildsPage() {
             try {
                 setLoading(true);
                 let data;
-                if (activeTab === "popular")
-                    data = await getPopularBuilds();
-                else if (activeTab === "new")
+                if (activeTab === "new")
                     data = await searchBuilds({ published: true, sortBy: "new" }, 1);
                 else if (activeTab === "random")
                     data = await searchBuilds({ published: true, sortBy: "random" }, 1);
@@ -194,18 +192,18 @@ export default function BuildsPage() {
             <div className="title-text">
                 {"Loading builds..."}
             </div> :
-            builds.length === 0 ?
-                <div style={{ marginTop: "1rem", color: "var(--disabled-text-color)" }} >
-                    No builds found...
-                </div> :
+            activeTab === "popular" ?
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    {activeTab === "popular" ?
-                        <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
-                            Most popular builds are recomputed every few hours.
-                        </p> :
-                        null
-                    }
+                    <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
+                        Most popular builds are recomputed every few hours.
+                    </p>
+                    <BuildsSearchDisplay builds={popularBuilds} />
+                </div> :
+                builds.length === 0 ?
+                    <div style={{ marginTop: "1rem", color: "var(--disabled-text-color)" }} >
+                        No builds found...
+                    </div> :
                     <BuildsSearchDisplay builds={builds} />
-                </div>}
+        }
     </div>;
 }

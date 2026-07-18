@@ -1,0 +1,13 @@
+.position {
+    position: absolute;
+    text-shadow: 2px 2px 6px #000, -2px 2px 6px #000, 2px -2px 6px #000, -2px -2px 6px #000, 0px 0px 12px rgba(0, 0, 0, 0.75), 0px 0px 18px rgba(0, 0, 0, 0.5);    
+    font-weight: bold;
+}
+
+.position.active {
+    color: #fefe3d;
+}
+
+.position.backup {
+    color: #29fee9;
+}

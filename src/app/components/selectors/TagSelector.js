@@ -1,13 +1,12 @@
 "use client";
 
 import debounce from "lodash.debounce";
-import dynamic from "next/dynamic";
 import { useState } from "react";
+import AsyncSelect from "react-select/async";
+import AsyncCreatableSelect from "react-select/async-creatable";
 
 import { fetchTags, handleCreateTag } from "@/app/database/tags";
 import { selectStyle } from "@/app/styles/selectStyle";
-const AsyncSelect = dynamic(() => import("react-select/async"), { ssr: false });
-const AsyncCreatableSelect = dynamic(() => import("react-select/async-creatable"), { ssr: false });
 
 export function tagToTagSelectorOption(tag) {
     return { value: tag, label: tag };

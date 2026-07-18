@@ -15,6 +15,7 @@ export function GiftTagStrips({ id, scale }) {
 
     if(giftsLoading) return null;
     const gift = gifts[id];
+    if(!gift) return null;
     
     const scaledSize = { width: `${12 * scale}px`, height: `${4 * scale}px` };
     return <div style={{ display: "flex", flexDirection: "column", gap: "2px", position: "absolute", bottom: "50%", left: "0" }}>

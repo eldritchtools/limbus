@@ -1,5 +1,4 @@
-"use client";
-
+import styles from "./BuildIdentitiesGrid.module.css";
 import DeploymentPositionOverlay from "./DeploymentPositionOverlay";
 import IdentityIcon from "../icons/IdentityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
@@ -11,7 +10,7 @@ export default function BuildIdentitiesGrid({ identityIds, scale, deploymentOrde
         width: `${size * 6 + 10}px`, alignItems: "center", justifyItems: "center", gap: "2px"
     }}>
         {identityIds.map((id, i) =>
-            <div key={i} style={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div key={i} className={styles.gridItem}>
                 {id ?
                     <IdentityIcon
                         key={i} id={id} scale={scale} uptie={identityUpties?.[i] ?? undefined} swapIcon={iconSwaps?.includes(i + 1)}

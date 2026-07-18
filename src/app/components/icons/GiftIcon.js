@@ -43,7 +43,7 @@ function GiftIconMain({ id, gift, enhanceRank = 0, scale = 1, forceTagStrips }) 
         <TierIcon className={styles.giftIconTier} tier={gift.tier} scaleY={1.4} />
         {enhanceRank > 0 ? <TierIcon className={styles.giftIconEnhance} tier={"+".repeat(enhanceRank)} scale={1.2} /> : null}
         {gift.keyword !== "Keywordless" ? <KeywordIcon id={gift.keyword} className={styles.giftIconKeyword} /> : null}
-        <GiftIconClient id={id} forceTagStrips={forceTagStrips} />
+        <GiftIconClient id={id ?? gift?.id} forceTagStrips={forceTagStrips} scale={scale} />
     </GiftIconContainer>
 }
 
