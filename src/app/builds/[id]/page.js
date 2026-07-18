@@ -38,7 +38,7 @@ export async function generateMetadata({ params }) {
             canonical: `/builds/${id}`
         },
         robots: {
-            index: description.length >= MIN_INDEXABLE_DESCRIPTION,
+            index: data.body.length >= MIN_INDEXABLE_DESCRIPTION,
             follow: true,
         }
     };
