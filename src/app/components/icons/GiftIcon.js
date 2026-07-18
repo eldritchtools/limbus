@@ -28,12 +28,14 @@ function GiftImg({ gift }) {
 }
 
 function GiftIconContainer({ scale = 1, children }) {
-    const scaler = scale === 1 ? {} : { transform: `scale(${scale})`, transformOrigin: "top left", width: scaleSize(scale), height: scaleSize(scale) };
+    const scaler = scale === 1 ? {} : { transform: `scale(${scale})`, transformOrigin: "top left" };
 
-    return <div className={styles.giftIconContainer} style={scaler}>
-        {/* <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" width={64} height={64} style={scaleStyle(giftBackgroundStyle, scale)} /> */}
-        <img src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" className={styles.giftIconBackground} />
-        {children}
+    return <div style={{ width: scaleSize(scale), height: scaleSize(scale) }}>
+        <div className={styles.giftIconContainer} style={scaler}>
+            {/* <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" width={64} height={64} style={scaleStyle(giftBackgroundStyle, scale)} /> */}
+            <img src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" className={styles.giftIconBackground} />
+            {children}
+        </div>
     </div>
 }
 
