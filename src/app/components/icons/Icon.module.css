@@ -118,6 +118,9 @@
     position: absolute;
     width: 96px;
     height: 96px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .giftIcon {
