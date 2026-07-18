@@ -62,8 +62,6 @@ export function GiftTriggersSelector({ selected, setSelected, isMulti = false, s
         [optionsMapped]
     );
 
-    console.log(giftOptions, optionsMapped, optionsSorted)
-
     return <DropdownSelectorWithExclusion
         options={optionsSorted}
         optionsMapped={optionsMapped}

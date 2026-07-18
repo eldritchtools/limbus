@@ -1,13 +1,21 @@
+"use client";
+
 import React from "react";
 
 import Gift from "./Gift";
+import { useData } from "../DataProvider";
 import DropdownSelectorWithExclusion from "../selectors/DropdownSelectorWithExclusion";
 
 import { giftTagColors } from "@/app/lib/colors";
 import { checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
-export function GiftTagStrips({ gift, scale }) {
+export function GiftTagStrips({ id, scale }) {
+    const [gifts, giftsLoading] = useData("gifts");
+
+    if(giftsLoading) return null;
+    const gift = gifts[id];
+    
     const scaledSize = { width: `${12 * scale}px`, height: `${4 * scale}px` };
     return <div style={{ display: "flex", flexDirection: "column", gap: "2px", position: "absolute", bottom: "50%", left: "0" }}>
         {gift.enhanceable ? <div style={{ ...scaledSize, background: giftTagColors.enhanceable }} /> : null}
