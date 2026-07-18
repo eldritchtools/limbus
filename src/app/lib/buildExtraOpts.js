@@ -129,3 +129,15 @@ export function decodeBuildExtraOpts(string, parts = null) {
         }
     }, {});
 }
+
+export function isolateBuildExtraOpts(string, parts) {
+    if (!string || string.length === 0) return "";
+
+    return string
+        .split("|")
+        .filter(pt => {
+            const [type] = pt.split(":");
+            return parts.includes(type);
+        })
+        .join("|")
+}

@@ -3,6 +3,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useState } from "react";
 
+import { useData } from "../DataProvider";
 import Gift from "../gifts/Gift";
 import { GiftTagLabels } from "../gifts/GiftTags";
 import ChoiceEventIcon from "../icons/ChoiceEventIcon";
@@ -13,11 +14,16 @@ import ProcessedText from "../texts/ProcessedText";
 
 import { affinityColorMapping } from "@/app/lib/colors";
 
-export default function GiftModalContent({ gift, enhanceRank, forceTriggersEffects }) {
+export default function GiftModalContent({ id, enhanceRank, forceTriggersEffects }) {
     const { getCustomizationValue } = useSiteCustomization();
     const [enhanceLevel, setEnhanceLevel] = useState(enhanceRank);
-    let level = Math.min(enhanceLevel, gift.descs.length - 1);
+    const [gifts, giftsLoading] = useData("gifts");
     const {isMobile} = useBreakpoint();
+
+    if(giftsLoading) return null;
+    
+    const gift = gifts[id];
+    let level = Math.min(enhanceLevel, gift.descs.length - 1);
     
     const triggersEffects = forceTriggersEffects === undefined ? getCustomizationValue("giftTriggersEffectsDisplay") : forceTriggersEffects;
 

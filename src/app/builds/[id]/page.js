@@ -1,51 +1,60 @@
 import BuildPage from "./BuildPage";
+import { BuildPageLocalWrapper } from "./BuildPageComponents";
 
+import { getBuild } from "@/app/database/serverSafeDb";
+import { isUuid } from "@/app/database/uuidCheck";
 import JsonLd, { getArticleSchema } from "@/app/lib/jsonLd";
-import { cleanMetadataDescription, getBuildForMetadata } from "@/app/lib/metadataHelper";
+import { cleanMetadataDescription } from "@/app/lib/metadataHelper";
+
+const MIN_INDEXABLE_DESCRIPTION = 150;
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
-    const { status, data } = await getBuildForMetadata(id);
 
-    if (status === "not_found") {
+    let data;
+    try {
+        data = await getBuild(id);
+    } catch (e) {
         return {
             title: "Not found",
             robots: { index: false },
         };
     }
 
-    if (status === "error") {
-        return {
-            title: "Team Build",
-            description: "Temporary issue loading title.",
-            alternates: {
-                canonical: `/builds/${id}`
-            }
-        };
-    }
+    // if (status === "error") {
+    //     return {
+    //         title: "Team Build",
+    //         description: "Temporary issue loading title.",
+    //         alternates: {
+    //             canonical: `/builds/${id}`
+    //         }
+    //     };
+    // }
 
     return {
         title: data.title ?? "Team Build",
         description: cleanMetadataDescription(data.body),
         alternates: {
             canonical: `/builds/${id}`
+        },
+        robots: {
+            index: data.body.length >= MIN_INDEXABLE_DESCRIPTION,
+            follow: true,
         }
     };
 }
 
-const schema = async id => {
-    const { status, data } = await getBuildForMetadata(id);
-
+const schema = (id, data) => {
     let schemaData = {
         targetType: "builds",
         targetId: id
     };
 
-    if (status === "not_found") {
+    if (!data) {
         schemaData.title = "Not found";
-    } else if (status === "error") {
-        schemaData.title = "Team Build";
-        schemaData.description = "Temporary issue loading content.";
+        // } else if (status === "error") {
+        //     schemaData.title = "Team Build";
+        //     schemaData.description = "Temporary issue loading content.";
     } else {
         schemaData.title = data.title ?? "Team Build";
         if (data.username) schemaData.username = data.username;
@@ -64,10 +73,21 @@ const schema = async id => {
 
 export default async function Page({ params }) {
     const { id } = await params;
-    const schemaData = await schema(id);
+
+    if (isUuid(id)) return <BuildPageLocalWrapper id={id} />
+
+    let build;
+
+    try {
+        build = await getBuild(id);
+    } catch(e) {
+        build = null;
+    }
+
+    const schemaData = schema(id, build);
 
     return <>
         <JsonLd data={schemaData} />
-        <BuildPage id={id} />
+        <BuildPage id={id} build={build} />
     </>;
 }

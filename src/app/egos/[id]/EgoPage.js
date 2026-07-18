@@ -2,26 +2,23 @@
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import styles from "./EgoPage.module.css";
+import { SkillsTab } from "./EgoPageComponents";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
-import { useSkillData } from "@/app/components/dataHooks/skills";
-import { useData } from "@/app/components/DataProvider";
+import { useData, useDataProvider } from "@/app/components/DataProvider";
 import EgoImage from "@/app/components/icons/EgoImage";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import RarityIcon from "@/app/components/icons/RarityIcon";
 import SinnerIcon from "@/app/components/icons/SinnerIcon";
 import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
-import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import { useModal } from "@/app/components/modals/ModalProvider";
 import DragContainer from "@/app/components/objects/DragContainer";
 import RatingComponent from "@/app/components/ratings/RatingComponent";
 import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
 import UptieSelector from "@/app/components/selectors/UptieSelector";
-import PassiveCard from "@/app/components/skill/PassiveCard";
-import SkillCard from "@/app/components/skill/SkillCard";
 import { getGeneralTooltipProps } from "@/app/components/tooltips/GeneralTooltip";
 import TooltipTemplate from "@/app/components/tooltips/TooltipTemplate";
 import { useAuth } from "@/app/database/authProvider";
@@ -29,7 +26,7 @@ import { searchBuilds } from "@/app/database/builds";
 import { getItemAggregates, getUserReview } from "@/app/database/reviews";
 import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, getSeasonString, sinnerIdMapping } from "@/app/lib/constants";
-import { constructSkillLabel } from "@/app/lib/skill";
+import { compileSkillData } from "@/app/lib/skill";
 import useLocalState from "@/app/lib/useLocalState";
 
 function HeaderComponent({ egoData }) {
@@ -126,30 +123,6 @@ function RatingTab({ id, isMobile }) {
     </div>
 }
 
-function NotesTab({ notes }) {
-    return <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-        {(!notes || !notes.main) &&
-            <div style={{ color: "var(--disabled-text-color)", textAlign: "center" }}>Not yet available...</div>
-        }
-        {notes && notes.main && <>
-            {notes.other && <div className="sub-text">Main</div>}
-            {notes.main.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-                • <MarkdownRenderer content={str} />
-            </div>)}
-        </>
-        }
-        {notes && notes.other && <>
-            <div style={{ height: "0.5rem" }} />
-            <div className="sub-text">Other</div>
-            {notes.other.map((str, i) => <div key={i} style={{ display: "flex", flexDirection: "row", gap: "0.25rem", lineHeight: "1.4" }}>
-                • <MarkdownRenderer content={str} />
-            </div>)}
-        </>}
-        {/* <HorizontalDivider />
-        <span style={{ textAlign: "center" }}>Check out the Community Rating or Community Reviews tabs to view the community&apos;s thoughts or leave your own!</span> */}
-    </div>
-}
-
 function BuildsTab({ builds }) {
     if (!builds) return <div style={{ color: "var(--disbled-text-color)", textAlign: "center" }}>Loading builds...</div>;
     if (builds.length === 0) return <div style={{ color: "var(--disbled-text-color)", textAlign: "center" }}>No builds found.</div>;
@@ -160,96 +133,59 @@ function BuildsTab({ builds }) {
     </DragContainer>
 }
 
-function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCorrosionSkills, passives, prePassives, compareMode, preuptie }) {
-    return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.25rem" }}>
-        <div className="title-text">Skills</div>
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-            {awakeningSkills.map((skill, i) => <div key={i} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
-                <SkillCard
-                    skill={skill.data}
-                    label={constructSkillLabel("awakening")}
-                    pre={compareMode ? preAwakeningSkills[i].data : null}
-                    noBorder={true}
-                />
-            </div>)}
-        </div>
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", borderBottom: "1px var(--primary-border-color) solid" }}>
-            {corrosionSkills.map((skill, i) => <div key={i} style={{ flex: 1, minWidth: "min(500px, 100%)" }}>
-                <SkillCard
-                    skill={skill.data}
-                    label={constructSkillLabel("corrosion")}
-                    pre={compareMode ? preCorrosionSkills[i].data : null}
-                    noBorder={true}
-                />
-            </div>)}
-        </div>
-        {passives.length > 0 ?
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <div className="title-text">Passives</div>
-                {passives.map((passive, i) => {
-                    if (compareMode && preuptie < 2)
-                        return <PassiveCard key={i}
-                            passive={passive}
-                            background={"rgba(46, 160, 67, 0.35)"}
-                            noBorder={true}
-                        />
-                    return <PassiveCard key={i}
-                        passive={passive}
-                        pre={compareMode ? prePassives[i] : null}
-                        noBorder={true}
-                    />
-                })}
-            </div> :
-            null
-        }
-    </div>
-}
-
-export default function EgoPage({ params }) {
+export default function IdentityPage({ params, egoData, initSkillData, notesTab, initSkillsTab }) {
+    const { getData } = useDataProvider();
     const { id } = React.use(params);
-    const [egos, egosLoading] = useData("egos");
-    const [uptie, setUptie] = useState(4);
+    const [uptie, setUptie] = useState(egoData?.maxThreadspin ?? 4);
     const [preuptie, setPreuptie] = useState(1);
     const [activeTab, setActiveTab] = useLocalState("egoActiveTab", "notes");
     const [panelOpen, setPanelOpen] = useLocalState("egoPanelOpen", true);
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
+    const [skillData, setSkillData] = useState({ [uptie]: initSkillData });
 
-    const egoData = useMemo(() => egosLoading ? null : egos[id], [id, egos, egosLoading]);
-    const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } = useSkillData("ego", id, preuptie);
-    const { awakeningSkills, corrosionSkills, passives, notes } = useSkillData("ego", id, uptie);
+    const { awakeningSkills, corrosionSkills, passives } = skillData[uptie];
+    const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } =
+        compareMode ? skillData[preuptie] : { awakeningSkills: null, corrosionSkills: null, passives: null }
 
     const { isMobile } = useBreakpoint();
 
-    useEffect(() => {
-        const fetchBuilds = async () => {
-            setBuilds(await searchBuilds({ "egos": [id], published: true, sortBy: "popular" }, 1, 6) || []);
-        }
-
-        if (activeTab === "builds" && !builds) fetchBuilds();
-    }, [activeTab, builds, id])
-
-    useEffect(() => {
-        if (!egoData) return;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        if (egoData.maxThreadspin) setUptie(egoData.maxThreadspin);
-    }, [egoData]);
-
-    if (egosLoading) return null;
-
     if (!egoData) return <span className="title-text">E.G.O not found</span>
 
-    const handleSetUptie = (v) => {
-        if (v === "compare mode") setCompareMode(true);
+    const handleSetUptie = async (v) => {
+        if (v === "compare mode") {
+            if (!(preuptie in skillData)) {
+                const data = await getData(`egos/${id}`);
+                setSkillData(p => ({ ...p, [preuptie]: compileSkillData("ego", egoData, data, preuptie) }));
+            }
+            setCompareMode(true);
+        }
         else {
+            if (!(v in skillData)) {
+                const data = await getData(`egos/${id}`);
+                setSkillData(p => ({ ...p, [v]: compileSkillData("ego", egoData, data, v) }));
+            }
+
             setUptie(v);
             if (v < preuptie) setPreuptie(v);
         }
     }
 
-    const handleSetPreuptie = (v) => {
+    const handleSetPreuptie = async v => {
+        if (!(v in skillData)) {
+            const data = await getData(`egos/${id}`);
+            setSkillData(p => ({ ...p, [v]: compileSkillData("ego", egoData, data, v) }));
+        }
+
         setPreuptie(v);
         if (v > uptie) setUptie(v);
+    }
+
+    const handleSetActiveTab = async tab => {
+        setActiveTab(tab);
+        if (tab === "builds" && !builds) {
+            setBuilds(await searchBuilds({ "egos": [id], published: true, sortBy: "popular" }, 1, 6) || []);
+        }
     }
 
     return <>
@@ -311,14 +247,19 @@ export default function EgoPage({ params }) {
                         <div
                             {...getGeneralTooltipProps("Community voted rating of the E.G.O")}
                             className={`tab-header ${activeTab === "rating" ? "active" : ""}`}
-                            style={{ fontSize: "1rem" }} onClick={() => setActiveTab("rating")}>
+                            style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("rating")}>
                             Community Rating
                         </div>
-                        <div data-tooltip-id="ego-notes" className={`tab-header ${activeTab === "notes" ? "active" : ""}`} style={{ fontSize: "1rem" }} onClick={() => setActiveTab("notes")}>Notes/Explanation</div>
+                        <div
+                            data-tooltip-id="ego-notes"
+                            className={`tab-header ${activeTab === "notes" ? "active" : ""}`}
+                            style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("notes")}>
+                            Notes/Explanation
+                        </div>
                         <div
                             {...getGeneralTooltipProps("Loads the most popular builds that use this E.G.O.")}
                             className={`tab-header ${activeTab === "builds" ? "active" : ""}`}
-                            style={{ fontSize: "1rem" }} onClick={() => setActiveTab("builds")}>
+                            style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("builds")}>
                             Popular Builds
                         </div>
                     </div>
@@ -340,7 +281,7 @@ export default function EgoPage({ params }) {
                 {
                     panelOpen && (
                         activeTab === "notes" ?
-                            <NotesTab notes={notes} /> :
+                            notesTab :
                             activeTab === "rating" ?
                                 <RatingTab id={id} isMobile={isMobile} /> :
                                 <BuildsTab builds={builds} />
@@ -352,12 +293,14 @@ export default function EgoPage({ params }) {
                 </span>
             </div>
 
-            <SkillsTab
-                awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
-                corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
-                passives={passives} prePassives={prePassives}
-                compareMode={compareMode} preuptie={preuptie}
-            />
+            {!compareMode && uptie === (egoData?.maxThreadspin ?? 4) ? initSkillsTab :
+                <SkillsTab
+                    awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
+                    corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
+                    passives={passives} prePassives={prePassives}
+                    compareMode={compareMode} preuptie={preuptie}
+                />
+            }
         </div>
     </>
 }

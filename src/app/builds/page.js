@@ -1,4 +1,6 @@
 import BuildsPage from "./BuildsPage";
+import { getPopularBuilds } from "../database/serverSafeDb";
+import { isolateBuildExtraOpts } from "../lib/buildExtraOpts";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
@@ -22,9 +24,17 @@ const schema = {
 };
 
 
-export default function Page() {
+export default async function Page() {
+    const builds = await getPopularBuilds();
+
+    const buildsMinified = builds.map(build => {
+        const extraOpts = isolateBuildExtraOpts(build.extra_opts, ["iu", "ai", "is"]);
+        const { ego_ids, ...rest } = build;
+        return { ...rest, extra_opts: extraOpts };
+    });
+
     return <>
         <JsonLd data={schema} />
-        <BuildsPage />
+        <BuildsPage popularBuilds={buildsMinified} />
     </>;
 }

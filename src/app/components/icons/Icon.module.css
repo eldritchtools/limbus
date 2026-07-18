@@ -62,9 +62,9 @@
 }
 
 .identityIconOpts {
-    color: #ddd; 
+    color: #ddd;
     font-weight: 600;
-    line-height: 1.1; 
+    line-height: 1.1;
     font-size: 1rem;
 }
 
@@ -105,4 +105,54 @@
 
 .rarityIcon {
     height: 2rem;
+}
+
+.giftIconContainer {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+}
+
+.giftIconBackground {
+    position: absolute;
+    width: 96px;
+    height: 96px;
+}
+
+.giftIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px;
+    height: 72px;
+}
+
+.giftIconTier {
+    position: absolute;
+    top: 8%;
+    left: 8%;
+}
+
+.giftIconKeyword {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    bottom: 5%;
+    right: 5%;
+}
+
+.giftIconEnhance {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+}
+
+.tierIcon {
+    display: inline-block;
+    font-family: 'Archivo Narrow', sans-serif;
+    font-weight: bold;
+    color: #ffd84d;
+    font-size: 24px;
 }

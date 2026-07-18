@@ -54,7 +54,7 @@ function compileSupportPassives(skillData, uptie) {
 
 function compileEgoPassives(skillData, threadspin) {
     if (threadspin < 2) return [];
-    if (threadspin < 5) return [skillData.passiveList[0]];
+    if (threadspin < 5 || skillData.passiveList.length < 2) return [skillData.passiveList[0]];
     return [skillData.passiveList[1]];
 }
 
@@ -85,10 +85,10 @@ export function compileSkillData(type, ownerData, skillData, tier = 5) {
     } else if (type === "ego") {
         return {
             awakeningSkills: skillData.awakeningSkills.map(
-                x => ({ ...x, data: { ...compileSkill(x.data, tier), type: "ego-a", egoId: id } })
+                x => ({ ...x, data: { ...compileSkill(x.data, tier), type: "ego-a", egoId: ownerData.id } })
             ),
             corrosionSkills: skillData.corrosionSkills?.map(
-                x => ({ ...x, data: { ...compileSkill(x.data, tier), type: "ego-c", egoId: id } })
+                x => ({ ...x, data: { ...compileSkill(x.data, tier), type: "ego-c", egoId: ownerData.id } })
             ) ?? [],
             passives: compileEgoPassives(skillData, tier),
             notes: skillData?.notes ?? {}

@@ -73,8 +73,8 @@ export function ModalProvider({ children }) {
         setStack(prev => [...prev, { modalId: stack.length, type, props, beforeClose: null }]);
     }
 
-    const openGiftModal = ({ gift, enhanceRank, forceTriggersEffects }) => {
-        openModal("gift", { gift, enhanceRank, forceTriggersEffects });
+    const openGiftModal = ({ id, enhanceRank, forceTriggersEffects }) => {
+        openModal("gift", { id, enhanceRank, forceTriggersEffects });
     }
 
     const openSelectBuildModal = ({ onSelectBuild, allowDrafts = false }) => {
