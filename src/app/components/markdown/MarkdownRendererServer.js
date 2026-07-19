@@ -111,7 +111,7 @@ export default async function MarkdownRendererServer({ content, guardedLinks }) 
                     )
                 break;
             case "icon":
-                context.themepack =
+                context.icon =
                     Object.fromEntries(Object.entries(data)
                         .filter(([id]) => deps[fetchList[i][0]].has(id))
                     )

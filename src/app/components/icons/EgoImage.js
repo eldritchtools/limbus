@@ -6,7 +6,7 @@ import { useData } from "../DataProvider";
 import { ASSETS_ROOT } from "@/app/paths";
 
 function getSrc(ego) {
-    return `${ASSETS_ROOT}/egos/${ego.id}_cg.png`;
+    return `${ASSETS_ROOT}/egos/${ego.id}_cg.webp`;
 }
 
 function EgoImageMain({ ego, className, style }) {

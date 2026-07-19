@@ -14,7 +14,7 @@ export function getIdentityImgSrc(identity, uptie = 4, swapIcon) {
     if (identity.upcoming) return `${ASSETS_ROOT}/${identity.src}.png`;
 
     if (identity.tags.includes("Base Identity"))
-        return `${ASSETS_ROOT}/identities/${identity.id}_gacksung_profile.png`;
+        return `${ASSETS_ROOT}/identities/${identity.id}_gacksung_profile.webp`;
 
     let type = uptie > 2 ? "gacksung" : "normal";
     if (swapIcon) {
@@ -22,7 +22,7 @@ export function getIdentityImgSrc(identity, uptie = 4, swapIcon) {
         else if (type === "normal") type = "gacksung";
     }
 
-    return `${ASSETS_ROOT}/identities/${identity.id}_${type}_profile.png`;
+    return `${ASSETS_ROOT}/identities/${identity.id}_${type}_profile.webp`;
 }
 
 function IdentityIconMain({ identity, style, uptie, displayName = false, displayRarity = false, displayUptie = false, includeTooltip = false, level = null, swapIcon, forceRatingsOnTooltip, lazyLoad = true }) {

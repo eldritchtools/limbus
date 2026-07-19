@@ -95,7 +95,7 @@ export function compileSkillData(type, ownerData, skillData, tier = 5) {
         }
     }
 }
-
+    
 export function getSkillName(type, skillData, id, tier = 5) {
     const extractName = data => {
         return data.reduce((acc, dataTier) => dataTier.uptie <= tier && dataTier.name ? dataTier.name : acc, "");
@@ -105,11 +105,11 @@ export function getSkillName(type, skillData, id, tier = 5) {
         const skill = Object.entries(skillData.skills).find(([skillId]) => id === skillId)[1];
         return extractName(skill.data);
     } else if (type === "ego") {
-        let skill = skillData.awakeningSkills.find(x => x.id === id);
+        let skill = skillData.awakeningSkills.find(x => x?.data[0]?.id === id);
         if (skill) {
             return extractName(skill.data)
         } else {
-            skill = skillData.corrosionSkills.find(x => x.id === id);
+            skill = skillData.corrosionSkills.find(x => x?.data[0]?.id === id);
             return extractName(skill.data)
         }
     }

@@ -9,14 +9,14 @@ export function getIdentityArtSrc(identityId, uptie) {
     if (String(identityId).slice(-2) === "01")
         return `${ASSETS_ROOT}/identities/${identityId}_normal.png`;
 
-    return `${ASSETS_ROOT}/identities/${identityId}_${uptie ? "gacksung" : "normal"}.png`;
+    return `${ASSETS_ROOT}/identities/${identityId}_${uptie ? "gacksung" : "normal"}.webp`;
 }
 
 function getSrc(identity, uptie) {
     if (identity.tags.includes("Base Identity"))
         return `${ASSETS_ROOT}/identities/${identity.id}_normal.png`;
 
-    return `${ASSETS_ROOT}/identities/${identity.id}_${uptie ? "gacksung" : "normal"}.png`;
+    return `${ASSETS_ROOT}/identities/${identity.id}_${uptie ? "gacksung" : "normal"}.webp`;
 }
 
 function IdentityImageMain({ identity, className, style, uptie }) {
