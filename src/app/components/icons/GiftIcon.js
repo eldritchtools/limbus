@@ -15,7 +15,7 @@ function scaleSize(scale) {
 }
 
 export function getGiftImgSrc(gift) {
-    if ("srcPath" in gift) return `${ASSETS_ROOT}/gifts/${gift.srcPath}.png`;
+    if ("srcPath" in gift) return `${ASSETS_ROOT}/gifts/${gift.srcPath}.webp`;
     return null;
 }
 
@@ -33,7 +33,7 @@ function GiftIconContainer({ scale = 1, children }) {
     return <div style={{ width: scaleSize(scale), height: scaleSize(scale) }}>
         <div className={styles.giftIconContainer} style={scaler}>
             {/* <Image src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" width={64} height={64} style={scaleStyle(giftBackgroundStyle, scale)} /> */}
-            <img src={`${ASSETS_ROOT}/ego_gift_background.png`} alt="" className={styles.giftIconBackground} />
+            <img src={`${ASSETS_ROOT}/ego_gift_background.webp`} alt="" className={styles.giftIconBackground} />
             {children}
         </div>
     </div>

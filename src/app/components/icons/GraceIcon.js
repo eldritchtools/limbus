@@ -15,7 +15,7 @@ export default function GraceIcon({ graceId, level, scale = 1 }) {
             src={`${ASSETS_ROOT}/icons/${graceId}.png`} alt={graceId} title={graceId} 
             width={75} height={75} style={{ width: "75px", height: "75px" }} 
         /> */}
-        <img src={`${ASSETS_ROOT}/icons/${graceId}.png`} alt={graceId} title={graceId} style={{ width: size, height: size }} />
+        <img src={`${ASSETS_ROOT}/icons/${graceId}.webp`} alt={graceId} title={graceId} style={{ width: size, height: size }} />
         {level === 2 ? <div style={style}><TierIcon tier={"+"} /></div> : null}
         {level === 3 ? <div style={style}><TierIcon tier={"++"} /></div> : null}
     </div>

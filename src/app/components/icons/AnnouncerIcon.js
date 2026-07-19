@@ -8,7 +8,7 @@ import { useData } from "../DataProvider";
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getAnnouncerImgSrc(announcer) {
-    return `${ASSETS_ROOT}/announcers/${announcer.imgStr}.png`;
+    return `${ASSETS_ROOT}/announcers/${announcer.imgStr}.webp`;
 }
 
 function AnnouncerIconMain({ announcer, style }) {

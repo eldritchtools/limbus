@@ -4,6 +4,7 @@
 // import Image from "next/image";
 
 import { useData } from "../DataProvider";
+import styles from "./Icon.module.css";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -16,11 +17,11 @@ function rescaleOverlay(scale) {
 }
 
 export function getThemePackImgSrc(themePack) {
-    return `${ASSETS_ROOT}/theme_packs/${themePack.image}.png`;
+    return `${ASSETS_ROOT}/theme_packs/${themePack.image}.webp`;
 }
 
 export function getThemePackOverlayImgSrc(themePack) {
-    if(themePack.overlayImage) return `${ASSETS_ROOT}/theme_packs/${themePack.overlayImage}.png`;
+    if(themePack.overlayImage) return `${ASSETS_ROOT}/theme_packs/${themePack.overlayImage}.webp`;
     return null;
 }
 
@@ -55,11 +56,7 @@ function ThemePackIconMain({ id, themePack = null, displayName = false, scale = 
             null
         }
         {displayName ?
-            <div style={{
-                position: "absolute", bottom: "4px", left: "50%", transform: "translateX(-50%)", width: "95%", maxHeight: "70%", overflow: "hidden",
-                display: "block", textAlign: "center", color: "#ddd", fontWeight: "600", lineHeight: "1.1", textWrap: "balance",
-                textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000", fontSize: "1rem"
-            }}>
+            <div className={styles.nameOverlay}>
                 {themePack.name}
             </div> :
             null

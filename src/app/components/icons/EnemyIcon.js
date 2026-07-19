@@ -8,6 +8,6 @@ export default function EnemyIcon({ id, style = {} }) {
     const { width, height } = style;
     return <div style={{ width, height, position: "relative" }}>
         {/* <Image src={`${ASSETS_ROOT}/banners/${path}.png`} alt={path} title={path} fill sizes="32px" style={{ ...remStyle, objectFit: "cover" }} /> */}
-        <img src={`${ASSETS_ROOT}/encounters/${id}_portrait.png`} alt={id} title={id} style={{ ...style, objectFit: "cover" }} loading="lazy" />
+        <img src={`${ASSETS_ROOT}/encounters/${id}_portrait.webp`} alt={id} title={id} style={{ ...style, objectFit: "cover" }} loading="lazy" />
     </div>
 }

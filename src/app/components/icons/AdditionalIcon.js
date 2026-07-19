@@ -5,7 +5,7 @@
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getAdditionalIconSrc(id) {
-    return `${ASSETS_ROOT}/additional_icons/${id}.png`;
+    return `${ASSETS_ROOT}/additional_icons/${id}.webp`;
 }
 
 export default function AdditionalIcon({ id, style = {} }) {
