@@ -78,7 +78,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
             <button onClick={() => onReset()}>Reset to Default</button>
             <div style={{ display: "flex" }}>
                 <button onClick={() => onStart()} style={{ background: "#1e7e34" }}>
-                    Begin Draft!
+                    Begin!
                 </button>
             </div>
         </div>
