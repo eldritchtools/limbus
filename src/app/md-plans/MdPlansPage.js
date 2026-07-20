@@ -9,9 +9,9 @@ import PlansSearchComponent from "../components/search/PlansSearchComponent";
 import { searchMdPlans } from "../database/mdPlans";
 import useLocalState from "../lib/useLocalState";
 
-export default function MdPlansPage() {
+export default function MdPlansPage({ popularMdPlans }) {
     const [plans, setPlans] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("mdPlanActiveTab", "popular");
     const [refreshCounter, setRefreshCounter] = useState(0);
     const searchParams = useSearchParams();
@@ -24,18 +24,16 @@ export default function MdPlansPage() {
     }, [searchParams, setActiveTab]);
 
     useEffect(() => {
-        if (!activeTab || !activeTabInitialized) return;
+        if (!activeTab || !activeTabInitialized || activeTab === "popular") return;
 
         let canceled = false;
 
         const fetchPlans = async () => {
             try {
                 setLoading(true);
-                const data = activeTab === "popular" ?
-                    await searchMdPlans({ published: true, sortBy: "popular" }, 1) :
-                    activeTab === "new" ?
-                        await searchMdPlans({ published: true, sortBy: "new" }, 1) :
-                        await searchMdPlans({ published: true, sortBy: "random" }, 1)
+                const data = activeTab === "new" ?
+                    await searchMdPlans({ published: true, sortBy: "new" }, 1) :
+                    await searchMdPlans({ published: true, sortBy: "random" }, 1)
                 if (!canceled) {
                     setPlans(data || []);
                 }
@@ -74,7 +72,9 @@ export default function MdPlansPage() {
             <div className="title-text">
                 {"Loading MD plans..."}
             </div> :
-            <MdPlansSearchDisplay plans={plans} />
+            activeTab === "popular" ?
+                <MdPlansSearchDisplay plans={popularMdPlans} /> :
+                <MdPlansSearchDisplay plans={plans} />
         }
     </div>;
 }

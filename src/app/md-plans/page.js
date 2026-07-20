@@ -1,4 +1,6 @@
 import MdPlansPage from "./MdPlansPage";
+import { getPopularMdPlans } from "../database/serverSafeDb";
+import { isolateBuildExtraOpts } from "../lib/buildExtraOpts";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
@@ -21,9 +23,17 @@ const schema = {
     }
 };
 
-export default function Page() {
+export default async function Page() {
+    const plans = await getPopularMdPlans();
+
+    const plansMinified = plans.map(plan => {
+        const extraOpts = isolateBuildExtraOpts(plan.extra_opts, ["do", "as", "iu"]);
+        const { body, ...rest } = plan;
+        return { ...rest, extra_opts: extraOpts };
+    });
+
     return <>
         <JsonLd data={schema} />
-        <MdPlansPage />
+        <MdPlansPage popularMdPlans={plansMinified} />
     </>;
 }

@@ -22,32 +22,24 @@ import { keywordIdMapping } from "@/app/database/keywordIds";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { mdDiffculties } from "@/app/lib/mirrorDungeon";
 
-function IconGrid({ identityIds, egoIds, scale }) {
-    const size = scale * 256;
+function IconGrid({ identityIds, egoIds }) {
     const display = useMemo(() => {
         const list = [];
 
         identityIds.forEach(id => {
             if (list.length >= 12) return;
-            list.push(<div key={id} style={{ width: "100%", height: "100%" }}>
-                <IdentityIcon id={id} scale={scale} style={{ borderRadius: "4px" }} />
-            </div>)
+            list.push(<IdentityIcon key={id} id={id} scale={0.175} style={{ borderRadius: "4px" }} />)
         });
 
         egoIds.forEach(id => {
             if (list.length >= 12) return;
-            list.push(<div key={id} style={{ width: "100%", height: "100%" }}>
-                <EgoIcon id={id} type={"awaken"} scale={scale} style={{ borderRadius: "4px" }} />
-            </div>)
+            list.push(<EgoIcon key={id} id={id} type={"awaken"} scale={0.175} style={{ borderRadius: "4px" }} />)
         });
 
         return list;
-    }, [identityIds, egoIds, scale]);
+    }, [identityIds, egoIds]);
 
-    return <div style={{
-        display: "grid", gridTemplateColumns: `repeat(6, ${size}px)`, gridTemplateRows: `repeat(2, ${size}px)`,
-        width: `${size * 6 + 10}px`, alignItems: "center", justifyItems: "center", gap: "2px"
-    }}>
+    return <div className={styles.mdPlanIconGrid}>
         {display}
     </div>
 }
@@ -56,13 +48,9 @@ function IconGrid({ identityIds, egoIds, scale }) {
 export default function MdPlan({ plan, complete = true, clickable = true, styleOverride = {} }) {
     const [blockHover, setBlockHover] = useState(false);
 
-    // const { isMobile } = useBreakpoint();
-    const width = "300px";
-    const scale = 0.175;
-
     const displayComponent = useMemo(() => {
         if (plan.recommendation_mode === "list" || plan.recommendation_mode === "build")
-            return <IconGrid identityIds={plan.identity_ids} egoIds={plan.ego_ids} scale={scale} />;
+            return <IconGrid identityIds={plan.identity_ids} egoIds={plan.ego_ids} scale={0.175} />;
         if (plan.recommendation_mode === "specbuild") {
             const extraProps = {};
             const extraOpts = decodeBuildExtraOpts(plan.extra_opts, ["do", "as", "iu"])
@@ -74,23 +62,23 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
                 if (!id) return;
                 identityIds[Math.floor(id / 100) % 100 - 1] = id;
             })
-            return <BuildIdentitiesGrid identityIds={identityIds} scale={scale} {...extraProps} />
+            return <BuildIdentitiesGrid identityIds={identityIds} scale={0.175} {...extraProps} />
         }
 
         return null;
-    }, [plan, scale]);
+    }, [plan]);
 
-    return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={{ width: width, ...styleOverride }}>
+    return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={styleOverride}>
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 
-        <div className={styles.mdPlanContent} style={{ width: width }}>
+        <div className={styles.mdPlanContent}>
             {plan.user_avatar_id &&
                 <div className={styles.mdPlanAvatar}>
-                    <Avatar avatarId={plan.user_avatar_id} size={32}/>
+                    <Avatar avatarId={plan.user_avatar_id} size={32} />
                 </div>
             }
-            
-            <div className={styles.mdPlanTitleContainer} style={{maxWidth: plan.user_avatar_id ? "calc(100% - 32px)" : "100%"}}>
+
+            <div className={styles.mdPlanTitleContainer} style={{ maxWidth: plan.user_avatar_id ? "calc(100% - 32px)" : "100%" }}>
                 <div className={styles.mdPlanTitle}>{plan.title}</div>
             </div>
             <HoverBlocker setBlockHover={setBlockHover}>
@@ -101,8 +89,8 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
             </div>
             <div style={{ display: "flex" }}>
                 <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Keyword</div>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div className={styles.mdPlanCentered}>Keyword</div>
+                    <div className={styles.mdPlanCentered}>
                         {plan.keyword_id ?
                             <KeywordIcon id={keywordIdMapping[plan.keyword_id]} size={24} /> :
                             <div />
@@ -110,16 +98,16 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
                     </div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Min Starlight</div>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div className={styles.mdPlanCentered}>Min Starlight</div>
+                    <div className={styles.mdPlanCentered}>
                         <Icon path={"starlight"} style={{ width: "25px", height: "25px" }} />
                         {plan.cost}
                     </div>
                 </div>
                 {plan.difficulty === "E" && plan.adversities ?
                     <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Adversity</div>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div className={styles.mdPlanCentered}>Adversity</div>
+                        <div className={styles.mdPlanCentered}>
                             <AdversitiesPointTotal adversities={plan.adversities} />
                         </div>
                     </div> :
@@ -128,7 +116,7 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
             </div>
             {displayComponent}
             <div style={{ marginBottom: "0.2rem", alignSelf: "start" }}>
-                {complete ? <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                {complete ? <div className={styles.mdPlanTags}>
                     {plan.tags.map((t, i) => t ?
                         <HoverBlocker key={i} setBlockHover={setBlockHover}>
                             <Tag tag={t} type={"md_plan"} />
@@ -142,7 +130,7 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
             <div className={styles.mdPlanButtonsContainer}>
                 <HoverBlocker setBlockHover={setBlockHover}>
                     <LikeButton targetType={"md_plan"} targetId={plan.id} likeCount={plan.like_count} type={"card-left"} iconSize={20} shortText={true} />
-                    <CommentButton targetPath={"md_plan"} targetId={plan.id} count={plan.comment_count} type={"card-middle"} iconSize={20} shortText={true} />
+                    <CommentButton targetType={"md_plan"} targetId={plan.id} count={plan.comment_count} type={"card-middle"} iconSize={20} shortText={true} />
                     <SaveButton targetType={"md_plan"} targetId={plan.id} type={"card-right"} iconSize={20} shortText={true} />
                 </HoverBlocker>
             </div>

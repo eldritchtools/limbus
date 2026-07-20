@@ -23,3 +23,9 @@
     color: #80cfff;
     text-shadow: 0 0 4px rgba(128, 207, 255, 0.6);
 }
+
+.usernameWithTime {
+    display: inline;
+    font-size: 1rem;
+    vertical-align: middle;
+}
