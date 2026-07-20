@@ -24,14 +24,14 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     const [additionalToggle, setAdditionalToggle] = useState(false);
 
     const identitiesConverted = useMemo(() => {
-        if(identitiesLoading) return null;
+        if (identitiesLoading) return null;
         const newIdentityIds = Array.from({ length: 12 }, () => "");
-        identityIds.forEach(id => {newIdentityIds[identities[id].sinnerId - 1] = id;});
+        identityIds.forEach(id => { newIdentityIds[identities[id].sinnerId - 1] = id; });
         return newIdentityIds;
     }, [identities, identitiesLoading, identityIds]);
 
     const egosConverted = useMemo(() => {
-        if(egosLoading) return null;
+        if (egosLoading) return null;
         const newEgoIds = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
         egoIds.forEach(id => { newEgoIds[egos[id].sinnerId - 1][egoRankMapping[egos[id].rank]] = id; })
         return newEgoIds;
@@ -87,23 +87,25 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
 
     if (!dataConverted || !identitiesConverted || !egosConverted) return null;
 
-    const handleSetIdentityIds = fn => setIdentityIds(fn(identitiesConverted));
-    const handleSetEgoIds = fn => setEgoIds(fn(egosConverted));
-    const handleOptsFunction = (func, key) => setExtraOpts(p => ({ ...p, [key]: func(p[key]) }));
-    const handleOptsValue = (v, key) => setExtraOpts(p => ({ ...p, [key]: v }));
+    if (editable) {
+        const handleSetIdentityIds = fn => setIdentityIds(fn(identitiesConverted));
+        const handleSetEgoIds = fn => setEgoIds(fn(egosConverted));
+        const handleOptsFunction = (func, key) => setExtraOpts(p => ({ ...p, [key]: func(p[key]) }));
+        const handleOptsValue = (v, key) => setExtraOpts(p => ({ ...p, [key]: v }));
 
-    if (editable) return <BuildEditingComponent
-        identityIds={identitiesConverted} setIdentityIds={handleSetIdentityIds}
-        egoIds={egosConverted} setEgoIds={handleSetEgoIds}
-        deploymentOrder={extraOpts.deploymentOrder} setDeploymentOrder={f => handleOptsFunction(f, "deploymentOrder")}
-        activeSinners={extraOpts.activeSinners} setActiveSinners={v => handleOptsValue(v, "activeSinners")}
-        identityLevels={extraOpts.identityLevels} setIdentityLevels={f => handleOptsFunction(f, "identityLevels")}
-        identityUpties={extraOpts.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
-        egoThreadspins={extraOpts.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
-        sinnerNotes={extraOpts.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
-        skillReplaces={extraOpts.skillReplaces} setSkillReplaces={f => handleOptsFunction(f, "skillReplaces")}
-        defaultAdditionalToggle={additionalToggle} includeEventRolls={true}
-    />
+        return <BuildEditingComponent
+            identityIds={identitiesConverted} setIdentityIds={handleSetIdentityIds}
+            egoIds={egosConverted} setEgoIds={handleSetEgoIds}
+            deploymentOrder={extraOpts.deploymentOrder} setDeploymentOrder={f => handleOptsFunction(f, "deploymentOrder")}
+            activeSinners={extraOpts.activeSinners} setActiveSinners={v => handleOptsValue(v, "activeSinners")}
+            identityLevels={extraOpts.identityLevels} setIdentityLevels={f => handleOptsFunction(f, "identityLevels")}
+            identityUpties={extraOpts.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
+            egoThreadspins={extraOpts.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
+            sinnerNotes={extraOpts.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
+            skillReplaces={extraOpts.skillReplaces} setSkillReplaces={f => handleOptsFunction(f, "skillReplaces")}
+            defaultAdditionalToggle={additionalToggle} includeEventRolls={true}
+        />
+    }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <BuildDisplay

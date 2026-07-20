@@ -83,7 +83,7 @@ export default function GracesDisplay({ graceLevels, setGraceLevels, editable = 
                 />
             )}
         </div>
-        <div className="panel-container" style={{ gap: "0.2rem", alignItems: "center", width: "350px" }}>
+        <div className="panel-container" style={{ gap: "0.2rem", alignItems: "center", width: isMobile ? "302px" : "350px" }}>
             {editable ? <>
                 <span>Set All Graces</span>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
