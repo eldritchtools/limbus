@@ -9,7 +9,7 @@ import { ASSETS_ROOT } from "@/app/paths";
 export function getSkillIconSrc(skillData) {
     if (skillData.type === "ego-a") return getEgoImgSrc({ id: skillData.egoId }, "awaken")
     if (skillData.type === "ego-c") return getEgoImgSrc({ id: skillData.egoId }, "erosion")
-    return `${ASSETS_ROOT}/skills/${skillData.iconId}.png`
+    return `${ASSETS_ROOT}/skills/${skillData.iconId}.webp`
 }
 
 export default function SkillIcon({ skillData, scale = 1 }) {

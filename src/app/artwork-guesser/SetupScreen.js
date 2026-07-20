@@ -81,7 +81,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem" }}>
                 <label>
-                    <input type="checkbox" checked={settings.includePreuptie} onChange={e => handleSetSettings("includePreuptie", e.target.value)} />
+                    <input type="checkbox" checked={settings.includePreuptie} onChange={e => handleSetSettings("includePreuptie", e.target.checked)} />
                     <span {...getGeneralTooltipProps("Check this to allow preuptie art to be used. Preuptie art is generally easier since many have the sinner off-centered (the randomizer avoids showing the center of the art) or have elements that are more easily identifiable.")}
                         className="hover-text"
                     >
@@ -89,7 +89,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
                     </span>
                 </label>
                 <label>
-                    <input type="checkbox" checked={settings.includeUptie} onChange={e => handleSetSettings("includeUptie", e.target.value)} />
+                    <input type="checkbox" checked={settings.includeUptie} onChange={e => handleSetSettings("includeUptie", e.target.checked)} />
                     <span {...getGeneralTooltipProps("This is the standard setting. Base identities are still included here.")}
                         className="hover-text"
                     >
@@ -103,7 +103,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
             <button onClick={() => onReset()}>Reset to Default</button>
             <div style={{ display: "flex" }}>
                 <button onClick={() => onStart()} style={{ background: "#1e7e34" }}>
-                    Begin Draft!
+                    Begin!
                 </button>
             </div>
         </div>

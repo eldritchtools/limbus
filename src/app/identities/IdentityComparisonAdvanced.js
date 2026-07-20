@@ -651,6 +651,8 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
         <span style={{ fontSize: "0.9rem", wordWrap: "wrap", textAlign: "center" }}>
             Use more precise filters and sorting options to compare details across all identities and their skills.
             <br />
+            All descriptions and values here assume max uptie. Use Basic Comparison or the identity pages to see values for lower upties.
+            <br />
             Warning: Some combinations of settings may cause the webpage to lag due to the number of things being rendered, especially when using &quot;All Skills&quot;.
             Try using filters if this happens.
         </span>

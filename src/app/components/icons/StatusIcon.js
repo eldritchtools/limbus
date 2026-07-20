@@ -8,7 +8,7 @@ import styles from "./Icon.module.css";
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getStatusImgSrc(status) {
-    if ("srcPath" in status) return `${ASSETS_ROOT}/statuses/${status.srcPath}.png`;
+    if ("srcPath" in status) return `${ASSETS_ROOT}/statuses/${status.srcPath}.webp`;
     return null;
 }
 

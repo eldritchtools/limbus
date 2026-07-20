@@ -6,7 +6,7 @@ import { sinnerIdMapping } from "@/app/lib/constants";
 import { ASSETS_ROOT } from "@/app/paths";
 
 export function getSinnerIconSrc(num) {
-    return `${ASSETS_ROOT}/sinners/${num}.png`;
+    return `${ASSETS_ROOT}/sinners/${num}.webp`;
 }
 
 export default function SinnerIcon({ num, style = {} }) {

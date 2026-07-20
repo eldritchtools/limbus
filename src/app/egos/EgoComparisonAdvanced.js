@@ -578,6 +578,8 @@ export default function EgoComparisonAdvanced({ egos, displayType, separateSinne
         <span style={{ fontSize: "0.9rem", wordWrap: "wrap", textAlign: "center" }}>
             Use more precise filters and sorting options to compare details across all E.G.Os and their skills.
             <br />
+            All descriptions and values here assume max threadspin. Use Basic Comparison or the E.G.O pages to see values for lower threadspins.
+            <br />
             Warning: Some combinations of settings may cause the webpage to lag due to the number of things being rendered, especially when using &quot;All Skills&quot;.
             Try using filters if this happens.
         </span>

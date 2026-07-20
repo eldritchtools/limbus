@@ -4,6 +4,7 @@
 // import Image from "next/image";
 
 import { useData } from "../DataProvider";
+import styles from "./Icon.module.css";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -20,17 +21,13 @@ function ChoiceEventIconMain({ id, choiceEvent = null, displayName = false, scal
             alt={choiceEvent.name} title={choiceEvent.name}
             fill style={{ objectFit: "cover" }}
         /> */}
-        <img src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${illustId}.png`}
+        <img src={`${ASSETS_ROOT}/choice_events/ChoiceEvent_${illustId}.webp`}
             alt={choiceEvent.name} title={choiceEvent.name}
             style={{ ...scaledStyle, objectFit: "cover" }}
             loading="lazy"
         />
         {displayName ?
-            <div style={{
-                position: "absolute", bottom: "4px", left: "50%", transform: "translateX(-50%)", width: "95%", maxHeight: "70%", overflow: "hidden",
-                display: "block", textAlign: "center", color: "#ddd", fontWeight: "600", lineHeight: "1.1", textWrap: "balance",
-                textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000", fontSize: "1rem"
-            }}>
+            <div className={styles.nameOverlay}>
                 {choiceEvent.name.length === 0 ? "[Unnamed Event]" : choiceEvent.name}
             </div> :
             null

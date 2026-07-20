@@ -34,7 +34,7 @@ export function isValidKeywordId(id) {
 }
 
 export function getKeywordImgSrc(id) {
-    return `${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.png`;
+    return `${ASSETS_ROOT}/icons/${caseMapping[id] ?? id}.webp`;
 }
 
 export default function KeywordIcon({ id, className, size, style = {} }) {

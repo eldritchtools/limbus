@@ -54,7 +54,7 @@ export async function POST(req) {
                     fit: "inside",
                     withoutEnlargement: true
                 })
-                .webp({ quality: 80 })
+                .webp({ quality: 90 })
                 .toBuffer();
 
             const key = `images/${imageId}/${variant.name}.webp`;

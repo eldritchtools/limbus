@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 
 import { questions } from "./pollData";
+import { useIdentitiesWithUpcoming } from "../components/dataHooks/upcoming";
 import { useData } from "../components/DataProvider";
 import BannerIcon from "../components/icons/BannerIcon";
 import EgoIcon from "../components/icons/EgoIcon";
@@ -273,7 +274,7 @@ function SeasonComparisonChart({ points, labels }) {
 function ResultsTab({ results, responseCount }) {
     const { isMobile } = useBreakpoint();
     const { openPollResultModal } = useModal();
-    const [identities, identitiesLoading] = useData("identities_mini");
+    const [identities, identitiesLoading] = useIdentitiesWithUpcoming(true);
     const [egos, egosLoading] = useData("egos_mini");
     const [othersIndex, setOthersIndex] = useState(0);
 

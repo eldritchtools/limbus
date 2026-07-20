@@ -18,7 +18,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
     }
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1000px", gap: "2rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Artwork Guesser</h1>
+        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Voiceline Guesser</h1>
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>
             Choose your settings
         </span>
@@ -78,7 +78,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
             <button onClick={() => onReset()}>Reset to Default</button>
             <div style={{ display: "flex" }}>
                 <button onClick={() => onStart()} style={{ background: "#1e7e34" }}>
-                    Begin Draft!
+                    Begin!
                 </button>
             </div>
         </div>
