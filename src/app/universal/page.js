@@ -166,8 +166,6 @@ export default function UniversalGiftsPage() {
         getLocalStore("universalTracking").remove("main");
     }
 
-    if (universalGiftsLoading) return <LoadingContentPageTemplate />;
-
     const props = { searchString, includeDesc, hideUnfiltered, tracking, setTracking };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
@@ -212,15 +210,19 @@ export default function UniversalGiftsPage() {
             }
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", justifyContent: "center" }}>
-            {universalGifts.individual.map(category => <Category key={category.title} category={category} {...props} />)}
-        </div>
+        {!universalGiftsLoading &&
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", justifyContent: "center" }}>
+                {universalGifts.individual.map(category => <Category key={category.title} category={category} {...props} />)}
+            </div>
+        }
         <h2 style={{ margin: 0 }}>Gift Combos</h2>
         <p style={{ maxWidth: "1000px", textAlign: "left", margin: 0 }}>
             All 7 archetypes have combinations of gifts that can provide benefits for all team compositions. Gifts will generally be Enablers (gifts that apply the status) or Exploiters (gifts that provide benefits against enemies with the status), with some being both. You need to have at least 1 Enabler in order to benefit from the Exploiters.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", width: "100%" }}>
-            {universalGifts.combo.map(status => <Category key={status.title} keyword={status.title} category={status} {...props} />)}
-        </div>
+        {!universalGiftsLoading &&
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", width: "100%" }}>
+                {universalGifts.combo.map(status => <Category key={status.title} keyword={status.title} category={status} {...props} />)}
+            </div>
+        }
     </div>;
 }

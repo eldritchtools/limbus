@@ -105,6 +105,12 @@ export default function MDEventsPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Choice Events</h1>
+        <p style={{margin: 0}}>
+            Browse all Mirror Dungeon Choice Events.
+        </p>
+        <p className="sub-text" style={{margin: 0}}>
+            Search by title, gift rewards, or choice text, and view the effects of every available outcome.
+        </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>

@@ -33,7 +33,9 @@ export default function TeamDraftPage() {
 
     const [seed, setSeed] = useState();
 
-    const draft = useDraft(settings, (identities, egos, blocked, addBlocked) => generateChoices(settings, wbState, identitiesData, egosData, identities, egos, blocked, addBlocked));
+    const draft = useDraft(settings, (identities, egos, blocked, addBlocked) =>
+        generateChoices(settings, wbState, identitiesData, egosData, identities, egos, blocked, addBlocked)
+    );
 
     const [initializing, setInitializing] = useState(true);
     const saveTimeout = useRef(null);
@@ -77,7 +79,7 @@ export default function TeamDraftPage() {
         draft.startDraft();
     }
 
-    if (identitiesLoading || egosLoading || initializing) return <LoadingContentPageTemplate />;
+    const loading = identitiesLoading || egosLoading || initializing
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         {draft.phase === "setup" ?
@@ -88,6 +90,7 @@ export default function TeamDraftPage() {
                 wbOpen={wbOpen}
                 setWbOpen={setWbOpen}
                 onStart={beginDraft}
+                loading={loading}
             /> :
             <DraftScreen
                 settings={settings}

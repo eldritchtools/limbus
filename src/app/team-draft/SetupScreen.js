@@ -1,14 +1,13 @@
-import { useBreakpoint } from "@eldritchtools/shared-components";
+"use client";
 
 import { defaultSettings } from "./page";
+import styles from "./SetupScreen.module.css";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import NumberInput from "../components/objects/NumberInput";
 import WbList from "../components/objects/WbList";
-import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { getGeneralTooltipProps } from "../components/tooltips/TooltipProps";
 
-export default function SetupScreen({ settings, setSettings, wbState, wbOpen, setWbOpen, onStart }) {
-    const { isMobile } = useBreakpoint();
-
+export default function SetupScreen({ settings, setSettings, wbState, wbOpen, setWbOpen, onStart, loading }) {
     const handleSetSettings = (key, value) => {
         setSettings(p => ({ ...p, [key]: value }))
     }
@@ -22,16 +21,14 @@ export default function SetupScreen({ settings, setSettings, wbState, wbOpen, se
         <span style={{ maxWidth: "1000px", textAlign: "start" }}>
             Build a full team one sinner at a time.
             <br /> <br />
-            For up to 12 rounds, you will be presented with multiple randomly generated options consisting of 1 identity and a number of E.G.Os each. You have a limited time to choose one before moving to the next round. If you fail to choose, a random option will be selected for you.
+            Over up to 12 rounds, you will be presented with multiple randomly generated options, each consisting of one Identity and a number of E.G.O. You have a limited time to choose one option before moving to the next round. If you fail to choose, one option will be selected at random.
             <br /> <br />
-            After all rounds, your team will be complete. A team code will be provided to import it into the game. Use the team in your Mirror Dungeons, Reflectrials, Railways, or other runs.
+            After all rounds are complete, your team can be exported as a team code for use in Mirror Dungeons, Refraction Railways, Reflectrials, or other content.
             <br /> <br />
-            To limit the options only to identities and E.G.O you own, you can use the Black/Whitelist and click Apply Company Data. This requires your <NoPrefetchLink className="text-link" href="/company">Company data</NoPrefetchLink> to be set.
-            <br /> <br />
-            This is still a work in progress so apologies if there are any bugs. You can send feedback through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page.
+            To limit the available options to Identities and E.G.O you own, use the black/whitelist to apply your Company data. This requires it to be set in the  <NoPrefetchLink className="text-link" href="/company">Company</NoPrefetchLink> page.
         </span>
 
-        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "center", gap: "1rem", width: "100%" }}>
+        <div className={styles.setupLayout}>
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                     <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
@@ -128,14 +125,12 @@ export default function SetupScreen({ settings, setSettings, wbState, wbOpen, se
                     {wbOpen ? "Hide " : "Show "}Black/Whitelist{wbState.list.length > 0 ? ` (${wbState.list.length})` : null}
                 </button>
                 <div style={{ display: "flex" }}>
-                    <button onClick={() => onStart()} style={{ background: "#1e7e34" }}>
-                        Begin Draft!
+                    <button onClick={() => onStart()} style={{ background: "#1e7e34" }} disabled={loading}>
+                        {loading ? "Loading..." : "Begin Draft!"}
                     </button>
                 </div>
             </div>
         </div>
-
-
 
         {wbOpen && <WbList wbState={wbState} />}
     </div>

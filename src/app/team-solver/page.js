@@ -51,7 +51,7 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
                 identityIds.push(item);
                 styles.push({});
                 (identities[item].skillKeywordList ?? []).forEach(kw => counts[kw]++);
-                if(item in keywordModifiers) {
+                if (item in keywordModifiers) {
                     keywordModifiers[item].forEach(x => counts[x.keyword]++);
                 }
                 (identities[item].statuses ?? []).forEach(st => { if (st in stCounts) stCounts[st]++ });
@@ -356,211 +356,217 @@ export default function TeamSolverPage() {
         return [identityOptions, [...statusOptions], [...tagOptions]];
     }, [identities, identitiesLoading]);
 
-    if (identitiesLoading || keywordModDataLoading || initializing) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Solver</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "start" }}>
-            Generate teams that satisfy keyword or status requirements while following specified constraints. You can fix identities, restrict sinners, or use whitelist and blacklist options to guide the solver. If you like a result, you can export it directly into a Team Build.
-        </span>
+        <p style={{ margin: 0 }}>
+            Generate teams that satisfy keyword or status requirements while following specified constraints.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            You can fix identities, restrict sinners, or use whitelist and blacklist options to guide the solver. Generated teams can be exported directly into a Team Build.
+        </p>
 
-        <h3 style={{ margin: 0 }}>Solver Settings</h3>
-        <h4 style={{ margin: 0 }}>Sinner Settings (fix or disable sinners)</h4>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
-            {Array.from({ length: 12 }).map((_, i) => <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={{
-                    filter: enabledSinners[i] ? "brightness(1)" : "brightness(0.5)",
-                    width: isMobile ? "96px" : "128px", height: isMobile ? "96px" : "128px"
-                }}>
-                    <IdentityMenuSelector
-                        value={identities[fixedIdentityIds[i]] || null}
-                        setValue={v => handleSetFixedIdentityId(i, v)}
-                        options={identityOptions[i + 1]}
-                        num={i + 1}
-                    />
+        {identitiesLoading || keywordModDataLoading || initializing ?
+            <LoadingContentPageTemplate /> :
+            <>
+                <h3 style={{ margin: 0 }}>Solver Settings</h3>
+                <h4 style={{ margin: 0 }}>Sinner Settings (fix or disable sinners)</h4>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
+                    {Array.from({ length: 12 }).map((_, i) => <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div style={{
+                            filter: enabledSinners[i] ? "brightness(1)" : "brightness(0.5)",
+                            width: isMobile ? "96px" : "128px", height: isMobile ? "96px" : "128px"
+                        }}>
+                            <IdentityMenuSelector
+                                value={identities[fixedIdentityIds[i]] || null}
+                                setValue={v => handleSetFixedIdentityId(i, v)}
+                                options={identityOptions[i + 1]}
+                                num={i + 1}
+                            />
+                        </div>
+                        <button onClick={() => toggleSinnerEnabled(i)}>
+                            {enabledSinners[i] ? "Disable Sinner" : "Enable Sinner"}
+                        </button>
+                    </div>)}
                 </div>
-                <button onClick={() => toggleSinnerEnabled(i)}>
-                    {enabledSinners[i] ? "Disable Sinner" : "Enable Sinner"}
-                </button>
-            </div>)}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-            <button 
-                {...getGeneralTooltipProps("Add placeholder identities to solve for teams with identities that do not exist yet. Teams that use placeholders will use their base identities for the team code.")}
-                onClick={() => setPlaceholders(p => [...p, { sinnerId: null, keywords: [] }])}
-                >
-                    Add Placeholder Identity
-            </button>
-            {placeholders.map((placeholder, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
-                <button
-                    onClick={() => setPlaceholders(p => p.filter((x, ind) => i !== ind))}
-                    style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
-                >
-                    x
-                </button>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                    <button
+                        {...getGeneralTooltipProps("Add placeholder identities to solve for teams with identities that do not exist yet. Teams that use placeholders will use their base identities for the team code.")}
+                        onClick={() => setPlaceholders(p => [...p, { sinnerId: null, keywords: [] }])}
+                    >
+                        Add Placeholder Identity
+                    </button>
+                    {placeholders.map((placeholder, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
+                        <button
+                            onClick={() => setPlaceholders(p => p.filter((x, ind) => i !== ind))}
+                            style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
+                        >
+                            x
+                        </button>
 
-                <SinnerMenuSelector
-                    value={placeholder.sinnerId}
-                    setValue={id => setPlaceholders(p => p.map((x, ind) => ind === i ? { ...x, sinnerId: id } : x))}
-                />
+                        <SinnerMenuSelector
+                            value={placeholder.sinnerId}
+                            setValue={id => setPlaceholders(p => p.map((x, ind) => ind === i ? { ...x, sinnerId: id } : x))}
+                        />
 
-                <IconsSelector
-                    type={"row"} categories={["status"]}
-                    values={placeholder.keywords}
-                    setValues={kws => setPlaceholders(p => p.map((x, ind) => ind === i ? { ...x, keywords: kws } : x))}
-                    noExclude={true} noClear={true}
-                />
-            </div>)}
-        </div>
+                        <IconsSelector
+                            type={"row"} categories={["status"]}
+                            values={placeholder.keywords}
+                            setValues={kws => setPlaceholders(p => p.map((x, ind) => ind === i ? { ...x, keywords: kws } : x))}
+                            noExclude={true} noClear={true}
+                        />
+                    </div>)}
+                </div>
 
-        <h4 style={{ margin: 0 }}>Solver Settings</h4>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
-                <span>Sinners per status</span>
-                <div style={{ display: "flex", gap: "0.25rem" }}>
-                    {keywords.slice(0, 7).map((kw, i) => <div key={kw} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
-                        <KeywordIcon id={kw} />
+                <h4 style={{ margin: 0 }}>Solver Settings</h4>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                        <span>Sinners per status</span>
+                        <div style={{ display: "flex", gap: "0.25rem" }}>
+                            {keywords.slice(0, 7).map((kw, i) => <div key={kw} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                                <KeywordIcon id={kw} />
+                                <NumberInputWithButtons
+                                    value={keywordTargets[i]}
+                                    setValue={x => setKeywordTargets(p => p.map((v, ind) => ind === i ? x : v))}
+                                    min={0} max={12}
+                                    vertical={true}
+                                    inputStyle={{ width: "2ch" }}
+                                />
+                            </div>)}
+                        </div>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
+                            <span>Max Sinners:</span>
+                            <NumberInput value={deployedSinners} onChange={setDeployedSinners} min={1} max={12} style={{ textAlign: "center", width: "3ch" }} />
+                        </div>
+                        <label style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <input type="checkbox" checked={keywordModifiers} onChange={e => setKeywordModifiers(e.target.checked)} />
+                            <span className="hover-text" {...getGeneralTooltipProps("Check to consider modifiers that change the keywords of identities like equipping certain E.G.O. This will consider the affected identities as having those keywords, but will not be carried over when using Copy Team Code or Create Build. You will have to set them manually.")}>
+                                Keyword Modifiers
+                            </span>
+                        </label>
+                        <button onClick={() => setWbListOpen(p => !p)}>
+                            {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
+                        </button>
+                        <button onClick={() => resetSinners()}>
+                            Reset sinner settings
+                        </button>
+                        <button onClick={() => setSolvers(solvers === 2 ? 5 : solvers === 5 ? 10 : 2)}>
+                            Search Mode: {
+                                solvers === 2 ? "Faster" :
+                                    solvers === 5 ? "Balanced" :
+                                        "Variety"
+                            }
+                        </button>
+                        <button onClick={() => triggerSolver()} style={{ background: solving ? "#dc3545" : "#1e7e34" }}>
+                            {solving ? "Cancel" : "Solve!"}
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                    <button onClick={() => setStatusTargets(p => [...p, { status: null, num: 0 }])}>Add Additional Status</button>
+                    {statusTargets.map(({ status, num }, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
+                        <button
+                            onClick={() => setStatusTargets(p => p.filter((x, ind) => i !== ind))}
+                            style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
+                        >
+                            x
+                        </button>
+                        <div style={{ flex: 1 }}>
+                            <StatusDropdownSelector
+                                selected={status}
+                                setSelected={x => setStatusTargets(p => p.map((y, ind) => i === ind ? { ...y, status: x } : y))}
+                                options={statusOptions}
+                            />
+                        </div>
                         <NumberInputWithButtons
-                            value={keywordTargets[i]}
-                            setValue={x => setKeywordTargets(p => p.map((v, ind) => ind === i ? x : v))}
+                            value={num}
+                            setValue={x => setStatusTargets(p => p.map((y, ind) => i === ind ? { ...y, num: x } : y))}
                             min={0} max={12}
-                            vertical={true}
                             inputStyle={{ width: "2ch" }}
                         />
                     </div>)}
                 </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
-                    <span>Max Sinners:</span>
-                    <NumberInput value={deployedSinners} onChange={setDeployedSinners} min={1} max={12} style={{ textAlign: "center", width: "3ch" }} />
-                </div>
-                <label style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-                    <input type="checkbox" checked={keywordModifiers} onChange={e => setKeywordModifiers(e.target.checked)} />
-                    <span className="hover-text" {...getGeneralTooltipProps("Check to consider modifiers that change the keywords of identities like equipping certain E.G.O. This will consider the affected identities as having those keywords, but will not be carried over when using Copy Team Code or Create Build. You will have to set them manually.")}>
-                        Keyword Modifiers
-                    </span>
-                </label>
-                <button onClick={() => setWbListOpen(p => !p)}>
-                    {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
-                </button>
-                <button onClick={() => resetSinners()}>
-                    Reset sinner settings
-                </button>
-                <button onClick={() => setSolvers(solvers === 2 ? 5 : solvers === 5 ? 10 : 2)}>
-                    Search Mode: {
-                        solvers === 2 ? "Faster" :
-                            solvers === 5 ? "Balanced" :
-                                "Variety"
-                    }
-                </button>
-                <button onClick={() => triggerSolver()} style={{ background: solving ? "#dc3545" : "#1e7e34" }}>
-                    {solving ? "Cancel" : "Solve!"}
-                </button>
-            </div>
-        </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-            <button onClick={() => setStatusTargets(p => [...p, { status: null, num: 0 }])}>Add Additional Status</button>
-            {statusTargets.map(({ status, num }, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
-                <button
-                    onClick={() => setStatusTargets(p => p.filter((x, ind) => i !== ind))}
-                    style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
-                >
-                    x
-                </button>
-                <div style={{ flex: 1 }}>
-                    <StatusDropdownSelector
-                        selected={status}
-                        setSelected={x => setStatusTargets(p => p.map((y, ind) => i === ind ? { ...y, status: x } : y))}
-                        options={statusOptions}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                    <button onClick={() => setTagTargets(p => [...p, { tag: null, num: 0 }])}>Add Additional Faction/Tag</button>
+                    {tagTargets.map(({ tag, num }, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
+                        <button
+                            onClick={() => setTagTargets(p => p.filter((x, ind) => i !== ind))}
+                            style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
+                        >
+                            x
+                        </button>
+                        <div style={{ flex: 1 }}>
+                            <FactionDropdownSelector
+                                selected={tag}
+                                setSelected={x => setTagTargets(p => p.map((y, ind) => i === ind ? { ...y, tag: x } : y))}
+                                options={tagOptions}
+                            />
+                        </div>
+                        <NumberInputWithButtons
+                            value={num}
+                            setValue={x => setTagTargets(p => p.map((y, ind) => i === ind ? { ...y, num: x } : y))}
+                            min={0} max={12}
+                            inputStyle={{ width: "2ch" }}
+                        />
+                    </div>)}
+                </div>
+
+                {wbListOpen ? <>
+                    <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
+                        <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
+                        <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
+                        <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
+                        <button onClick={() => setWbList([])}>Clear All</button>
+                    </div>
+                    <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                            <span>Display:</span>
+                            <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>
+                            <span className={`tab-header ${wbListDisplay === "sinner" ? "active" : null}`} onClick={() => setWbListDisplay("sinner")}>Per Sinner</span>
+                        </div>
+                        {wbListComponent}
+                    </div>
+                    <AllIdEgoSelector
+                        identityIds={wbList}
+                        setIdentityId={x => setWbList(p => [...p, x])}
+                        identityOptions={identities}
                     />
-                </div>
-                <NumberInputWithButtons
-                    value={num}
-                    setValue={x => setStatusTargets(p => p.map((y, ind) => i === ind ? { ...y, num: x } : y))}
-                    min={0} max={12}
-                    inputStyle={{ width: "2ch" }}
-                />
-            </div>)}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-            <button onClick={() => setTagTargets(p => [...p, { tag: null, num: 0 }])}>Add Additional Faction/Tag</button>
-            {tagTargets.map(({ tag, num }, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.2rem", minWidth: "325px", maxWidth: "min(95vw, 600px)" }}>
-                <button
-                    onClick={() => setTagTargets(p => p.filter((x, ind) => i !== ind))}
-                    style={{ flexShrink: 0, fontWeight: "bold", width: "32px", height: "32px", padding: 0, color: uiColors.red, fontSize: "1.2rem" }}
-                >
-                    x
-                </button>
-                <div style={{ flex: 1 }}>
-                    <FactionDropdownSelector
-                        selected={tag}
-                        setSelected={x => setTagTargets(p => p.map((y, ind) => i === ind ? { ...y, tag: x } : y))}
-                        options={tagOptions}
-                    />
-                </div>
-                <NumberInputWithButtons
-                    value={num}
-                    setValue={x => setTagTargets(p => p.map((y, ind) => i === ind ? { ...y, num: x } : y))}
-                    min={0} max={12}
-                    inputStyle={{ width: "2ch" }}
-                />
-            </div>)}
-        </div>
-
-        {wbListOpen ? <>
-            <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
-                <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
-                <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
-                <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
-                <button onClick={() => setWbList([])}>Clear All</button>
-            </div>
-            <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <span>Display:</span>
-                    <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>
-                    <span className={`tab-header ${wbListDisplay === "sinner" ? "active" : null}`} onClick={() => setWbListDisplay("sinner")}>Per Sinner</span>
-                </div>
-                {wbListComponent}
-            </div>
-            <AllIdEgoSelector
-                identityIds={wbList}
-                setIdentityId={x => setWbList(p => [...p, x])}
-                identityOptions={identities}
-            />
-        </> : null
-        }
-
-        <span style={{ maxWidth: "1000px", textAlign: "left" }}>
-            The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. You can switch between Balanced, Faster, and Variety modes depending on whether you prefer speed or more varied results. Only identities that match at least one of your requirements will be considered.
-        </span>
-
-
-
-        <h3 style={{ margin: 0 }}>Results</h3>
-
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem" }}>
-            {results.map((result, i) =>
-                <ResultComponent key={i}
-                    identities={identities} placeholders={placeholders}
-                    result={result} keywordTargets={keywordTargets} statusTargets={statusTargets}
-                    router={router} isMobile={isMobile} keywordModifiers={keywordModifiers ? keywordModData : {}}
-                />
-            )}
-        </div>
-
-        {executed ?
-            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                {solving ?
-                    "Searching for teams..." :
-                    results.length === 0 ?
-                        "No teams found" :
-                        null
+                </> : null
                 }
-            </span> :
-            null
+
+                <span style={{ maxWidth: "1000px", textAlign: "left" }}>
+                    The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. You can switch between Balanced, Faster, and Variety modes depending on whether you prefer speed or more varied results. Only identities that match at least one of your requirements will be considered.
+                </span>
+
+
+
+                <h3 style={{ margin: 0 }}>Results</h3>
+
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem" }}>
+                    {results.map((result, i) =>
+                        <ResultComponent key={i}
+                            identities={identities} placeholders={placeholders}
+                            result={result} keywordTargets={keywordTargets} statusTargets={statusTargets}
+                            router={router} isMobile={isMobile} keywordModifiers={keywordModifiers ? keywordModData : {}}
+                        />
+                    )}
+                </div>
+
+                {executed ?
+                    <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                        {solving ?
+                            "Searching for teams..." :
+                            results.length === 0 ?
+                                "No teams found" :
+                                null
+                        }
+                    </span> :
+                    null
+                }
+            </>
         }
     </div>;
 }

@@ -1,0 +1,13 @@
+.setupLayout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .setupLayout {
+        flex-direction: column;
+    }
+}

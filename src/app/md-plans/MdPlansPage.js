@@ -60,7 +60,8 @@ export default function MdPlansPage({ popularMdPlans }) {
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>MD Plans</h1>
-        <div className="sub-text">Browse community-shared Mirror Dungeon plans.</div>
+        <p style={{ margin: 0 }}>Browse community-created Mirror Dungeon plans. </p>
+        <p className="sub-text" style={{ margin: 0 }}>Discover recommended teams, gifts, theme packs, floor routes, and other strategies. Discover popular plans, explore new submissions, or share your own optimized routes with the community.</p>
         <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>

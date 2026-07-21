@@ -257,11 +257,12 @@ export default function IdentitiesPage({ initIdentities }) {
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
             <h2 style={{ margin: 0 }}>Identities</h2>
-            <div style={{textAlign: "center", maxWidth: "800px"}}>
-                Browse through all available Identities using search or a comprehensive set of filters.
-                <br/><br/>
-                Use compare mode to view details of multiple Identities at once. Basic lets you view the full details of selected Identities, while Advanced lets you view certain parts across all filtered Identities like all Support Passives.
-            </div>
+            <p style={{ margin: 0 }}>
+                Browse through all available Identities using search and a comprehensive set of filters.
+            </p>
+            <p className="sub-text" style={{ margin: 0 }}>
+                Use Compare Mode to view multiple Identities side by side. Basic compares the complete details of selected Identities, while Advanced compares specific sections across all filtered Identities, such as Support Passives.
+            </p>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                     <span style={{ textAlign: 'end' }}>Search:</span>

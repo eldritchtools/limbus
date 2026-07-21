@@ -209,7 +209,7 @@ export default function VoicelineGuesserPage() {
                 <span style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
                     Guess the E.G.O the voiceline belongs to.
                     <br /> <br />
-                    You will be given a clipped segment of one of the voicelines of a random E.G.O. This may be from the awakening or corrosion, and any version for base E.G.Os. Try your best to guess which E.G.O it is.
+                    You will hear a clipped segment of one of the voicelines of a random E.G.O. Clips may come from the awakening or corrosion versions, and from any version for base E.G.Os. Try your best to guess which E.G.O it belongs to.
                     <br /> <br />
                     Choose a mode to begin.
                 </span>
