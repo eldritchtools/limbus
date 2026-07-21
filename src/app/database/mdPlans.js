@@ -1,4 +1,4 @@
-import { callRPC, convertParams, deleteObject, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { callRPC, convertParams, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
 import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {

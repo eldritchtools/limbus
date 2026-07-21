@@ -279,7 +279,7 @@ export default function ArtworkGuesserPage() {
                 <span style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
                     Guess the identity the artwork belongs to.
                     <br /> <br />
-                    You will be given a cropped segment of one of the full artworks of a random identity. Try your best to guess which identity it is.
+                    You will be shown a cropped section of one of the full artworks of a random identity. Try your best to guess which identity it belongs to.
                     <br /> <br />
                     Choose a mode to begin.
                 </span>

@@ -159,48 +159,55 @@ export default function FusionsPage() {
         [searchString, includeDescription, includeIngredients, selectedKeywords, selectedThemePacks, giftsData, giftsLoading, isDesktop]
     );
 
-    if (giftsLoading) return <LoadingContentPageTemplate />
-
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", justifyContent: "center" }}>
         <h1 style={{ fontSize: "1.75rem", alignSelf: "center", margin: 0 }}>Fusion Recipes</h1>
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "0.5rem", alignItems: "center" }}>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
-                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-                    <input value={searchString} onChange={handleSearchChange} />
-                    <label>
-                        <input type="checkbox" checked={includeDescription} onChange={e => setIncludeDescription(e.target.checked)} />
-                        <span {...getGeneralTooltipProps("This will check the description for all enhancement levels of the gift.")}
-                            className="hover-text"
-                        >
-                            Include Description
-                        </span>
-                    </label>
-                    <label>
-                        <input type="checkbox" checked={includeIngredients} onChange={e => setIncludeIngredients(e.target.checked)} />
-                        <span {...getGeneralTooltipProps("This will check for the search text in the ingredients as well. Also affected by 'Include Description'.")}
-                            className="hover-text"
-                        >
-                            Include Ingredients
-                        </span>
-                    </label>
+        <p style={{ margin: 0, alignSelf: "center" }}>
+            Browse all E.G.O Gift fusion recipes.
+        </p>
+        <p className="sub-text" style={{ margin: 0, alignSelf: "center" }}>
+            Search recipes by names or descriptions of relevant gifts or by using filters, and view their requirements.
+        </p>
+
+        {!giftsLoading && <>
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "0.5rem", alignItems: "center" }}>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
+                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                        <input value={searchString} onChange={handleSearchChange} />
+                        <label>
+                            <input type="checkbox" checked={includeDescription} onChange={e => setIncludeDescription(e.target.checked)} />
+                            <span {...getGeneralTooltipProps("This will check the description for all enhancement levels of the gift.")}
+                                className="hover-text"
+                            >
+                                Include Description
+                            </span>
+                        </label>
+                        <label>
+                            <input type="checkbox" checked={includeIngredients} onChange={e => setIncludeIngredients(e.target.checked)} />
+                            <span {...getGeneralTooltipProps("This will check for the search text in the ingredients as well. Also affected by 'Include Description'.")}
+                                className="hover-text"
+                            >
+                                Include Ingredients
+                            </span>
+                        </label>
+                    </div>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Filter Keywords</span>
+                    <IconsSelector type={"row"} categories={["status", "atkType", "keywordless"]} values={selectedKeywords} setValues={setSelectedKeywords} />
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
+                    <ThemePackDropdownSelector
+                        selected={selectedThemePacks}
+                        setSelected={setSelectedThemePacks}
+                        isMulti={true}
+                        options={themePackList}
+                        prefixCategory={true}
+                    />
                 </div>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Filter Keywords</span>
-                <IconsSelector type={"row"} categories={["status", "atkType", "keywordless"]} values={selectedKeywords} setValues={setSelectedKeywords} />
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
-                <ThemePackDropdownSelector
-                    selected={selectedThemePacks}
-                    setSelected={setSelectedThemePacks}
-                    isMulti={true}
-                    options={themePackList}
-                    prefixCategory={true}
-                />
             </div>
-        </div>
-        <div style={{ flex: 1, height: "50%", display: "flex", justifyContent: "center", width: "100%" }}>
-            <div style={{ height: "100%", minWidth: "80%", maxWidth: "100%", overflowY: "auto" }}>
-                {fusionsComponent}
+            <div style={{ flex: 1, height: "50%", display: "flex", justifyContent: "center", width: "100%" }}>
+                <div style={{ height: "100%", minWidth: "80%", maxWidth: "100%", overflowY: "auto" }}>
+                    {fusionsComponent}
+                </div>
             </div>
-        </div>
+        </>}
     </div>;
 }

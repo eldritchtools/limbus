@@ -84,7 +84,7 @@ function Achievement({ achievement, tracking, setAchievementTracking, isSmall })
     const points = Array.isArray(achievement.points) ? achievement.points.reduce((acc, x) => acc + x, 0) : achievement.points;
     const len = Array.isArray(achievement.points) ? achievement.points.length : 1;
 
-    return <details className={styles.details} onToggle={e => setIsOpen(e.target.open)} style={isChecked ? {filter: "brightness(0.5)"} : {}}>
+    return <details className={styles.details} onToggle={e => setIsOpen(e.target.open)} style={isChecked ? { filter: "brightness(0.5)" } : {}}>
         <summary className={styles.summary}>
             <div style={{ display: "flex", gap: "0.1rem", width: "85%", alignItems: "center" }}>
                 <label className={styles.checkboxContainer}>
@@ -354,7 +354,7 @@ export default function AchievementsPage() {
             } else {
                 await localStores["achievements"].save({ ...data, id: "main" });
             }
-            if(firstSave) {
+            if (firstSave) {
                 setFirstSave(false);
                 triggerToolUsedGAEvent("Achievement Tracker");
             }
@@ -400,77 +400,81 @@ export default function AchievementsPage() {
         return null;
     }, [saveStatus, lastSaved]);
 
-    if (achievementsLoading || dataLoading) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Mirror Dungeon Achievements Tracker</h1>
-        <p>
-            Track Mirror Dungeon (MD) achievement progress and view details and tips for each achievement.
+        <p style={{margin: 0}}>
+            Browse all Mirror Dungeon achievements and rewards while tracking your achievement progress.
         </p>
-        <div className="sub-text">
-            Progress saves automatically after a short period of inactivity.
-        </div>
-        <div>Progress is automatically saved after a few seconds of inactivity.</div>
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
-                <div>Level: {Math.floor(xp / 100)}</div>
-                <div style={{ width: "5rem", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "5px", overflow: "hidden", position: "relative" }}>
-                    <div style={{ width: `${xp % 100}%`, height: "100%", backgroundColor: uiColors.green, transition: "width 0.3s ease" }} />
-                    <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: "bold", textShadow: "0 0 8px #000" }}> {xp % 100}/100 </span>
-                </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                Additional XP:
-                <NumberInput
-                    value={additionalPoints ?? 0}
-                    onChange={handleAdditionalPoints}
-                    min={0}
-                    style={{ textAlign: "center", width: "6ch" }}
-                />
-            </div>
-            <div>
-                {saveString}
-            </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
-            <button className={`toggle-button ${sortClearedToBottom ? 'active' : ''}`} onClick={toggleSortClearedToBottom}>Sort Cleared to Bottom</button>
-        </div>
-
-        <div style={{ overflowX: "auto", maxWidth: "100%" }}>
-            <h2 style={{ display: "flex", margin: "0 0 10px", padding: 0, gap: "1rem", alignItems: "center", justifyContent: "center", width: "max-content" }}>
-                {Object.entries(achievements).map(([category]) =>
-                    <div
-                        key={category}
-                        className={`tab-header ${activeTab === category ? "active" : ""}`}
-                        style={{ fontSize: "1rem" }}
-                        onClick={() => setActiveTab(category)}
-                    >
-                        {category}
+        <p className="sub-text" style={{margin: 0}}>
+            Expand an achievement to view details and tips. Track completed achievements to automatically calculate your current achievement level.
+            <br/><br/>
+            Progress is automatically saved after a few seconds of inactivity.
+        </p>
+        {achievementsLoading || dataLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
+                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
+                        <div>Level: {Math.floor(xp / 100)}</div>
+                        <div style={{ width: "5rem", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "5px", overflow: "hidden", position: "relative" }}>
+                            <div style={{ width: `${xp % 100}%`, height: "100%", backgroundColor: uiColors.green, transition: "width 0.3s ease" }} />
+                            <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: "bold", textShadow: "0 0 8px #000" }}> {xp % 100}/100 </span>
+                        </div>
                     </div>
-                )}
-                <div
-                    key={"rewards"}
-                    className={`tab-header ${activeTab === "rewards" ? "active" : ""}`}
-                    style={{ fontSize: "1rem" }}
-                    onClick={() => setActiveTab("rewards")}
-                >
-                    Rewards
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        Additional XP:
+                        <NumberInput
+                            value={additionalPoints ?? 0}
+                            onChange={handleAdditionalPoints}
+                            min={0}
+                            style={{ textAlign: "center", width: "6ch" }}
+                        />
+                    </div>
+                    <div>
+                        {saveString}
+                    </div>
                 </div>
-            </h2>
-        </div>
+                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
+                    <button className={`toggle-button ${sortClearedToBottom ? 'active' : ''}`} onClick={toggleSortClearedToBottom}>Sort Cleared to Bottom</button>
+                </div>
 
-        {
-            activeTab === "rewards" ?
-                <RewardsTab totalPoints={xp} /> :
-                activeTab in achievements ?
-                    <AchievementTab
-                        achievements={achievements[activeTab]}
-                        sortClearedToBottom={sortClearedToBottom}
-                        tracking={tracking}
-                        setAchievementTracking={setAchievementTracking}
-                        isSmall={!isDesktop}
-                    /> :
-                    <span>Select a category above to get started.</span>
+                <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+                    <h2 style={{ display: "flex", margin: "0 0 10px", padding: 0, gap: "1rem", alignItems: "center", justifyContent: "center", width: "max-content" }}>
+                        {Object.entries(achievements).map(([category]) =>
+                            <div
+                                key={category}
+                                className={`tab-header ${activeTab === category ? "active" : ""}`}
+                                style={{ fontSize: "1rem" }}
+                                onClick={() => setActiveTab(category)}
+                            >
+                                {category}
+                            </div>
+                        )}
+                        <div
+                            key={"rewards"}
+                            className={`tab-header ${activeTab === "rewards" ? "active" : ""}`}
+                            style={{ fontSize: "1rem" }}
+                            onClick={() => setActiveTab("rewards")}
+                        >
+                            Rewards
+                        </div>
+                    </h2>
+                </div>
+
+                {
+                    activeTab === "rewards" ?
+                        <RewardsTab totalPoints={xp} /> :
+                        activeTab in achievements ?
+                            <AchievementTab
+                                achievements={achievements[activeTab]}
+                                sortClearedToBottom={sortClearedToBottom}
+                                tracking={tracking}
+                                setAchievementTracking={setAchievementTracking}
+                                isSmall={!isDesktop}
+                            /> :
+                            <span>Select a category above to get started.</span>
+                }
+            </>
         }
     </div>
 }

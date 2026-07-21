@@ -261,11 +261,12 @@ export default function EgosPage({ initEgos }) {
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
             <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.Os</h1>
-            <div style={{textAlign: "center", maxWidth: "800px"}}>
-                Browse through all available E.G.O using search or a comprehensive set of filters.
-                <br/><br/>
-                Use compare mode to view details of multiple E.G.O at once. Basic lets you view the full details of selected E.G.O, while Advanced lets you view certain parts across all filtered E.G.O like all Passives.
-            </div>
+            <p style={{ margin: 0 }}>
+                Browse through all available E.G.O using search and a comprehensive set of filters.
+            </p>
+            <p className="sub-text" style={{ margin: 0 }}>
+                Use Compare Mode to view multiple E.G.O side by side. Basic compares the complete details of selected E.G.O, while Advanced compares specific sections across all filtered E.G.O, such as Passives.
+            </p>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                     <span style={{ textAlign: 'end' }}>Search:</span>

@@ -9,9 +9,9 @@ import PlansSearchComponent from "../components/search/PlansSearchComponent";
 import { searchMdPlans } from "../database/mdPlans";
 import useLocalState from "../lib/useLocalState";
 
-export default function MdPlansPage() {
+export default function MdPlansPage({ popularMdPlans }) {
     const [plans, setPlans] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("mdPlanActiveTab", "popular");
     const [refreshCounter, setRefreshCounter] = useState(0);
     const searchParams = useSearchParams();
@@ -24,18 +24,16 @@ export default function MdPlansPage() {
     }, [searchParams, setActiveTab]);
 
     useEffect(() => {
-        if (!activeTab || !activeTabInitialized) return;
+        if (!activeTab || !activeTabInitialized || activeTab === "popular") return;
 
         let canceled = false;
 
         const fetchPlans = async () => {
             try {
                 setLoading(true);
-                const data = activeTab === "popular" ?
-                    await searchMdPlans({ published: true, sortBy: "popular" }, 1) :
-                    activeTab === "new" ?
-                        await searchMdPlans({ published: true, sortBy: "new" }, 1) :
-                        await searchMdPlans({ published: true, sortBy: "random" }, 1)
+                const data = activeTab === "new" ?
+                    await searchMdPlans({ published: true, sortBy: "new" }, 1) :
+                    await searchMdPlans({ published: true, sortBy: "random" }, 1)
                 if (!canceled) {
                     setPlans(data || []);
                 }
@@ -62,7 +60,8 @@ export default function MdPlansPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>MD Plans</h1>
-        <div className="sub-text">Browse community-shared Mirror Dungeon plans.</div>
+        <p style={{ margin: 0 }}>Browse community-created Mirror Dungeon plans. </p>
+        <p className="sub-text" style={{ margin: 0 }}>Discover recommended teams, gifts, theme packs, floor routes, and other strategies. Discover popular plans, explore new submissions, or share your own optimized routes with the community.</p>
         <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
@@ -74,7 +73,9 @@ export default function MdPlansPage() {
             <div className="title-text">
                 {"Loading MD plans..."}
             </div> :
-            <MdPlansSearchDisplay plans={plans} />
+            activeTab === "popular" ?
+                <MdPlansSearchDisplay plans={popularMdPlans} /> :
+                <MdPlansSearchDisplay plans={plans} />
         }
     </div>;
 }

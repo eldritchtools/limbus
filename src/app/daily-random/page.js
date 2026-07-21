@@ -131,24 +131,30 @@ export default function DailyRandomizedPage() {
         setPrevDateStr(date2);
     }, [identities, identitiesLoading]);
 
-    if (identitiesLoading) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Daily Randomized Team</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Get a new randomized team each day for Mirror Dungeon and other content.</span>
-        <div className="sub-text">Resets daily at 6AM KST ({kstToLocalTime("6AM")} local) (same schedule as the in-game reset).</div>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                <h3 style={{ margin: 0 }}>Today&apos;s Team ({dateStr})</h3>
-                <BuildIdentitiesGrid identityIds={identityIds} scale={isMobile ? .2 : .33} />
-                <TeamCodeComponent teamCode={constructTeamCode(identityIds, [], [])} />
+        <p style={{ margin: 0 }}>
+            View the daily randomized team for Mirror Dungeon and other content.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Updates daily at 6AM KST ({kstToLocalTime("6AM")} local) (same schedule as the in-game reset).
+        </p>
+
+        {identitiesLoading ?
+            <LoadingContentPageTemplate /> :
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                    <h3 style={{ margin: 0 }}>Today&apos;s Team ({dateStr})</h3>
+                    <BuildIdentitiesGrid identityIds={identityIds} scale={isMobile ? .2 : .33} />
+                    <TeamCodeComponent teamCode={constructTeamCode(identityIds, [], [])} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                    <h3 style={{ margin: 0 }}>Yesterday&apos;s Team ({prevDateStr})</h3>
+                    <BuildIdentitiesGrid identityIds={prevIdentityIds} scale={isMobile ? .2 : .33} />
+                    <TeamCodeComponent teamCode={constructTeamCode(prevIdentityIds, [], [])} />
+                </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                <h3 style={{ margin: 0 }}>Yesterday&apos;s Team ({prevDateStr})</h3>
-                <BuildIdentitiesGrid identityIds={prevIdentityIds} scale={isMobile ? .2 : .33} />
-                <TeamCodeComponent teamCode={constructTeamCode(prevIdentityIds, [], [])} />
-            </div>
-        </div>
+        }
         <h3 style={{ margin: 0 }}>How does this randomizer work?</h3>
         <span style={{ maxWidth: "1000px", textAlign: "start", lineHeight: "1.3" }}>
             The type of random team it generates differs depending on the day of the week. These rules may change at any moment if I think of or if people suggest more interesting ones.

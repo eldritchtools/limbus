@@ -60,7 +60,7 @@ export default function TimersPage() {
                 // handleEntry(kw, "identity", identity);
                 handleEntry(kw, rank, identity);
             })
-            if(identity.season >= 9100) {
+            if (identity.season >= 9100) {
                 handleEntry("walp", rank, identity);
             }
         });
@@ -86,7 +86,7 @@ export default function TimersPage() {
                     handleEntry(statusKeywordMapping[kw], rank, ego);
                 }
             });
-            if(ego.season >= 9100) {
+            if (ego.season >= 9100) {
                 handleEntry("walp", rank, ego);
             }
         });
@@ -94,34 +94,36 @@ export default function TimersPage() {
         return results;
     }, [identities, identitiesLoading, egos, egosLoading])
 
-    if (identitiesLoading || egosLoading || timersLoading) return <LoadingContentPageTemplate />;
-
     const local10 = kstToLocalTime("10AM");
     const local12 = kstToLocalTime("12PM");
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Timers and Roadmap</h1>
-        <span className="sub-text" style={{ textAlign: "center" }}>
-            Timers for content, seasonal roadmap, and time since past releases of Identities and E.G.Os.
-        </span>
+        <p style={{ margin: 0 }}>
+            Timers for ongoing and upcoming content, the seasonal roadmap, and the number of days since each character&apos;s latest Identity and E.G.O release.
+        </p>
 
-        <h3 style={{ margin: 0 }}>Time Until (10AM KST • {local10} local):</h3>
-        <DragContainer style={{ width: "max-content", maxWidth: "100%" }}>
-            <TimersTable timers={timers} />
-        </DragContainer>
+        {identitiesLoading || egosLoading || timersLoading ?
+            <LoadingContentPageTemplate /> : <>
+                <h3 style={{ margin: 0 }}>Time Until (10AM KST • {local10} local):</h3>
+                <DragContainer style={{ width: "max-content", maxWidth: "100%" }}>
+                    <TimersTable timers={timers} />
+                </DragContainer>
 
-        <h3 style={{ margin: 0 }}>Season Roadmap:</h3>
-        <DragContainer>
-            <Roadmap />
-        </DragContainer>
+                <h3 style={{ margin: 0 }}>Season Roadmap:</h3>
+                <DragContainer>
+                    <Roadmap />
+                </DragContainer>
 
-        <h3 style={{ margin: 0 }}>Days Since (12PM KST • {local12} local):</h3>
-        <div>
-            <label>
-                <input type="checkbox" checked={show00} onChange={e => setShow00(e.target.checked)}/>
-                Show 00s
-            </label>
-        </div>
-        <DaysSinceTable entries={entries} identities={identities} egos={egos} show00={show00} />
+                <h3 style={{ margin: 0 }}>Days Since (12PM KST • {local12} local):</h3>
+                <div>
+                    <label>
+                        <input type="checkbox" checked={show00} onChange={e => setShow00(e.target.checked)} />
+                        Show 00s
+                    </label>
+                </div>
+                <DaysSinceTable entries={entries} identities={identities} egos={egos} show00={show00} />
+            </>
+        }
     </div>;
 }

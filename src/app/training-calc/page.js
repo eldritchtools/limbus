@@ -220,36 +220,42 @@ export default function TrainingCalcPage() {
         </div>;
     }
 
-    if (identitiesLoading || egosLoading) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Dispenser and Training Calculator</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>
-            Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os. Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of shards from crate rewards.
-        </span>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Dispense and Training Calculator</h1>
+        <p style={{ margin: 0 }}>
+            Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of shards from crate rewards.
+        </p>
 
-        <div style={{
-            display: "flex", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row", gap: "1rem",
-            alignItems: "center", justifyContent: isMobile ? null : "center", maxWidth: "100%"
-        }}>
-            <SelectedTable
-                identities={identities} egos={egos}
-                selected={selected} setSelected={setSelected}
-                starts={starts} setStarts={setStarts}
-                targets={targets} setTargets={setTargets}
-            />
-            {totalComponent()}
-        </div>
+        {identitiesLoading || egosLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
+                <div style={{
+                    display: "flex", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row", gap: "1rem",
+                    alignItems: "center", justifyContent: isMobile ? null : "center", maxWidth: "100%"
+                }}>
+                    <SelectedTable
+                        identities={identities} egos={egos}
+                        selected={selected} setSelected={setSelected}
+                        starts={starts} setStarts={setStarts}
+                        targets={targets} setTargets={setTargets}
+                    />
+                    {totalComponent()}
+                </div>
 
-        <h3 style={{ margin: 0 }}>Choose Identities or E.G.Os</h3>
-        <AllIdEgoSelector
-            identityIds={selected.filter(x => `${x}`[0] === "1")}
-            egoIds={selected.filter(x => `${x}`[0] === "2")}
-            setIdentityId={selectItem}
-            setEgoId={selectItem}
-            identityOptions={identities}
-            egoOptions={egos}
-        />
+                <h3 style={{ margin: 0 }}>Choose Identities or E.G.Os</h3>
+                <AllIdEgoSelector
+                    identityIds={selected.filter(x => `${x}`[0] === "1")}
+                    egoIds={selected.filter(x => `${x}`[0] === "2")}
+                    setIdentityId={selectItem}
+                    setEgoId={selectItem}
+                    identityOptions={identities}
+                    egoOptions={egos}
+                />
+
+            </>}
 
         <LuxTable />
     </div>;

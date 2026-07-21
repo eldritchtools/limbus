@@ -300,48 +300,53 @@ export default function TeamRandomizerPage() {
         </div>;
     }, [wbList, wbListDisplay, identities, egos, identitiesLoading, egosLoading])
 
-    if (identitiesLoading || egosLoading || initializing) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Randomizer</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>
-            Generate randomized teams using customizable settings like fixed units, whitelist, and blacklist options.
-            <br /> <br />
-            You can export a generated team directly into a Team Build if you want to save or share it.
-        </span>
-        <div style={{ width: "100%" }}>
-            <BuildEditingComponent
-                identityIds={identityIds} setIdentityIds={handleSetFixedIdentityIds}
-                egoIds={egoIds} setEgoIds={handleSetFixedEgoIds}
-                minimalEditor={true} replaceDeployment={replacementComponents}
-                insertPanel={[settingsPanel, buttonsPanel]}
-            />
-        </div>
+        <p style={{ margin: 0 }}>
+            Generate randomized teams using customizable settings like fixed identities, whitelist, and blacklist options.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Generated teams can be exported directly into a Team Build to save or share them.
+        </p>
+        {
+            identitiesLoading || egosLoading || initializing ?
+                <LoadingContentPageTemplate /> :
+                <>
+                    <div style={{ width: "100%" }}>
+                        <BuildEditingComponent
+                            identityIds={identityIds} setIdentityIds={handleSetFixedIdentityIds}
+                            egoIds={egoIds} setEgoIds={handleSetFixedEgoIds}
+                            minimalEditor={true} replaceDeployment={replacementComponents}
+                            insertPanel={[settingsPanel, buttonsPanel]}
+                        />
+                    </div>
 
-        {wbListOpen ? <>
-            <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
-                <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
-                <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
-                <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
-                <button onClick={() => setWbList([])}>Clear All</button>
-            </div>
-            <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <span>Display:</span>
-                    <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>
-                    <span className={`tab-header ${wbListDisplay === "sinner" ? "active" : null}`} onClick={() => setWbListDisplay("sinner")}>Per Sinner</span>
-                </div>
-                {wbListComponent}
-            </div>
-            <AllIdEgoSelector
-                identityIds={wbList.filter(x => `${x}`[0] === "1")}
-                egoIds={wbList.filter(x => `${x}`[0] === "2")}
-                setIdentityId={x => setWbList(p => [...p, x])}
-                setEgoId={x => setWbList(p => [...p, x])}
-                identityOptions={identities}
-                egoOptions={egos}
-            />
-        </> : null
+                    {wbListOpen ? <>
+                        <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
+                            <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
+                            <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
+                            <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
+                            <button onClick={() => setWbList([])}>Clear All</button>
+                        </div>
+                        <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                                <span>Display:</span>
+                                <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>
+                                <span className={`tab-header ${wbListDisplay === "sinner" ? "active" : null}`} onClick={() => setWbListDisplay("sinner")}>Per Sinner</span>
+                            </div>
+                            {wbListComponent}
+                        </div>
+                        <AllIdEgoSelector
+                            identityIds={wbList.filter(x => `${x}`[0] === "1")}
+                            egoIds={wbList.filter(x => `${x}`[0] === "2")}
+                            setIdentityId={x => setWbList(p => [...p, x])}
+                            setEgoId={x => setWbList(p => [...p, x])}
+                            identityOptions={identities}
+                            egoOptions={egos}
+                        />
+                    </> : null
+                    }
+                </>
         }
     </div>;
 }

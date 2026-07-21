@@ -150,7 +150,7 @@ export default function ThemePacksPage() {
         if (themePacksLoading || giftsLoading) return;
         return Object.entries(themePacksData).reduce((acc, [id, themePack]) => {
             acc[id] = [themePack.name];
-            if (themePack.exclusive_gifts) 
+            if (themePack.exclusive_gifts)
                 acc[id].push(...themePack.exclusive_gifts.map(x => giftsData[x]?.names[0] ?? "").filter(x => x.length > 0))
             return acc;
         }, {});
@@ -185,6 +185,12 @@ export default function ThemePacksPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Theme Packs</h1>
+        <p style={{ margin: 0 }}>
+            Browse all Mirror Dungeon Theme Packs.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Search by name or filter Theme Packs. Click a Theme Pack to display its encounters and unique gifts.
+        </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
@@ -194,7 +200,7 @@ export default function ThemePacksPage() {
                     <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
                         className="hover-text"
                     >
-                        Include Gifts
+                        Include Exclusive Gifts
                     </span>
                 </label>
             </div>
@@ -213,11 +219,7 @@ export default function ThemePacksPage() {
             <div />
             <label>
                 <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
-                <span {...getGeneralTooltipProps("Force all theme packs to show their exclusive gifts")}
-                    className="hover-text"
-                >
-                    Force Open all Theme Packs
-                </span>
+                <span>Show details for all theme packs</span>
             </label>
         </div>
 

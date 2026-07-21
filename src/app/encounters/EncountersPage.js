@@ -81,10 +81,10 @@ function Encounter({ category, categoryName, encounter, tab, handleSetTab }) {
 
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
             <div className={`tab-header ${actualTab === "details" ? "active" : ""}`} onClick={() => handleSetTab("details")}>Details</div>
-            {["reflectrial", "story", "luxcavation", "rr"].includes(category) && 
+            {["reflectrial", "story", "luxcavation", "rr"].includes(category) &&
                 <div className={`tab-header ${actualTab === "builds" ? "active" : ""}`} onClick={() => handleSetTab("builds")}>Builds</div>
             }
-            {["reflectrial", "rr"].includes(category) && 
+            {["reflectrial", "rr"].includes(category) &&
                 <div className={`tab-header ${actualTab === "clears" ? "active" : ""}`} onClick={() => handleSetTab("clears")}>Clear Records</div>
             }
         </div>
@@ -160,45 +160,54 @@ export default function EncountersPage() {
         router.replace(`/encounters?${params.toString()}`, { scroll: false });
     }, [selectedCategory, selectedEncounter, router]);
 
-    if (encountersLoading) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Encounters</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Browse encounter details, related team builds, and community comments. Stage codes are used to reduce the chances of accidental spoilers.</span>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>For Refraction Railways and Reflectrials, you can submit your clears for others to see.</span>
-        <div className="sub-text">More encounters and details will gradually be added to this page over time. Suggestions for encounters to prioritize are welcome.</div>
-        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
-                <Select
-                    options={categoryOptions}
-                    value={selectedCategory}
-                    onChange={handleSetCategory}
-                    placeholder={"Choose category..."}
-                    filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
-                    styles={selectStyle}
-                />
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Encounter</span>
-                <Select
-                    options={encounterOptions}
-                    value={selectedEncounter}
-                    onChange={handleSetEncounter}
-                    placeholder={"Choose encounter..."}
-                    filterOption={(candidate, input) => checkFilterMatch(input, [candidate.data.name, candidate.data.altName])}
-                    styles={selectStyle}
-                />
-            </div>
-        </div>
-        <HorizontalDivider />
-        {selectedCategory && selectedEncounter ?
-            <Encounter 
-                category={selectedCategory.value} 
-                categoryName={selectedCategory.label} 
-                encounter={selectedEncounter.value} 
-                tab={searchParams.tab}
-                handleSetTab={handleSetTab}
-            /> :
-            null
+        <p style={{ margin: 0 }}>
+            Browse notable encounters in Limbus Company, including boss skills, passives, and other encounter details.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Non-Mirror Dungeon encounters also include community-submitted team builds tagged for their respective encounters.
+            <br /> <br />
+            Refraction Railway and Reflectrial encounters include clear records and community leaderboards where players can submit successful clears along with details about their runs.
+        </p>
+
+        {encountersLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
+                <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
+                        <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
+                        <Select
+                            options={categoryOptions}
+                            value={selectedCategory}
+                            onChange={handleSetCategory}
+                            placeholder={"Choose category..."}
+                            filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
+                            styles={selectStyle}
+                        />
+                        <span style={{ fontWeight: "bold", textAlign: "end" }}>Encounter</span>
+                        <Select
+                            options={encounterOptions}
+                            value={selectedEncounter}
+                            onChange={handleSetEncounter}
+                            placeholder={"Choose encounter..."}
+                            filterOption={(candidate, input) => checkFilterMatch(input, [candidate.data.name, candidate.data.altName])}
+                            styles={selectStyle}
+                        />
+                    </div>
+                </div>
+                <HorizontalDivider />
+                {selectedCategory && selectedEncounter ?
+                    <Encounter
+                        category={selectedCategory.value}
+                        categoryName={selectedCategory.label}
+                        encounter={selectedEncounter.value}
+                        tab={searchParams.tab}
+                        handleSetTab={handleSetTab}
+                    /> :
+                    null
+                }
+            </>
         }
     </div>;
 }

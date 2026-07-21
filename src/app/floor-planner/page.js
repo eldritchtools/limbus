@@ -236,14 +236,14 @@ export default function FloorPlannerPage() {
     const floors = difficulty === "E" ? 15 : (difficulty === "I" ? 10 : 5);
     const size = isDesktop ? "400px" : "330px";
 
-    if (themePacksLoading || floorPacksLoading) return <LoadingContentPageTemplate />;
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Floor Planner</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "center" }}>Plan Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.</span>
-        <div className="sub-text">
-            You can transfer your floor plan into a full MD Plan using the button below.
-        </div>
+        <p style={{margin: 0}}>
+            Plan Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.
+        </p>
+        <p className="sub-text" style={{margin: 0}}>
+            Use the Exclusive Gifts Helper to find Theme Packs that contain the gifts you want. Floor Plans can be exported directly into full MD Plans.
+        </p>
         <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
             <label>
                 <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
@@ -268,50 +268,55 @@ export default function FloorPlannerPage() {
             </button>
             <button onClick={copyToMdPlan}>Copy to MD Plan</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${size})`, justifyContent: "center", width: "100%", gap: "0.5rem" }}>
-            {Array.from({ length: floors }).map((_, index) =>
-                <div key={index} style={{ display: "flex", flexDirection: "column", padding: "0.25rem 0" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr auto", width: size }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <span>Floor {index + 1}</span>
-                            {
-                                selectedFloors[index] && "exclusive_gifts" in themePacks[selectedFloors[index]] ?
-                                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                                        {themePacks[selectedFloors[index]].exclusive_gifts.map(giftId =>
-                                            <Gift key={giftId} id={giftId} includeTooltip={true} scale={isDesktop ? .66 : .5} />
-                                        )}
-                                    </div> :
-                                    null
+        {themePacksLoading || floorPacksLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${size})`, justifyContent: "center", width: "100%", gap: "0.5rem" }}>
+                    {Array.from({ length: floors }).map((_, index) =>
+                        <div key={index} style={{ display: "flex", flexDirection: "column", padding: "0.25rem 0" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", width: size }}>
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    <span>Floor {index + 1}</span>
+                                    {
+                                        selectedFloors[index] && "exclusive_gifts" in themePacks[selectedFloors[index]] ?
+                                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+                                                {themePacks[selectedFloors[index]].exclusive_gifts.map(giftId =>
+                                                    <Gift key={giftId} id={giftId} includeTooltip={true} scale={isDesktop ? .66 : .5} />
+                                                )}
+                                            </div> :
+                                            null
+                                    }
+                                </div>
+                                <FloorSelector
+                                    value={selectedFloors[index]}
+                                    setValue={v => setSelectedFloor(v, index)}
+                                    options={getOptions(index + 1)}
+                                    isSmall={!isDesktop}
+                                />
+                            </div>
+                            {selectedFloors[index] && showEncounters && <>
+                                {
+                                    themePacks[selectedFloors[index]]["bossEncounters"] ?
+                                        <div style={{ display: "flex", flexDirection: "column", justifySelf: "start", textAlign: "center", padding: "0 1rem" }}>
+                                            <span>Possible Bosses:</span>
+                                            {themePacks[selectedFloors[index]]["bossEncounters"].map(enc =>
+                                                <MarkdownRenderer key={enc} content={`{enc:${enc}}`} />
+                                            )}
+                                        </div> :
+                                        <div style={{ textAlign: "center" }}>
+                                            Boss data to be added
+                                        </div>
+                                }
+                            </>
                             }
                         </div>
-                        <FloorSelector
-                            value={selectedFloors[index]}
-                            setValue={v => setSelectedFloor(v, index)}
-                            options={getOptions(index + 1)}
-                            isSmall={!isDesktop}
-                        />
-                    </div>
-                    {selectedFloors[index] && showEncounters && <>
-                        {
-                            themePacks[selectedFloors[index]]["bossEncounters"] ?
-                                <div style={{ display: "flex", flexDirection: "column", justifySelf: "start", textAlign: "center", padding: "0 1rem" }}>
-                                    <span>Possible Bosses:</span>
-                                    {themePacks[selectedFloors[index]]["bossEncounters"].map(enc =>
-                                        <MarkdownRenderer key={enc} content={`{enc:${enc}}`} />
-                                    )}
-                                </div> :
-                                <div style={{ textAlign: "center" }}>
-                                    Boss data to be added
-                                </div>
-                        }
-                    </>
-                    }
+                    )}
                 </div>
-            )}
-        </div>
-        {showExclusiveHelper ?
-            <ExclusiveGiftList selectedFloors={selectedFloors} /> :
-            null
+                {showExclusiveHelper ?
+                    <ExclusiveGiftList selectedFloors={selectedFloors} /> :
+                    null
+                }
+            </>
         }
     </div>;
 }

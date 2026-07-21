@@ -47,7 +47,7 @@ export default function GuidePage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Manager&apos;s Guide</h1>
         <span>
-            This page is a directory of everything available on the site. If you&apos;re wondering what a page does, or looking for features you may have missed, you can check this page.
+            This page is a directory of every page and major feature available on the site. If you&apos;re looking for a specific tool or wondering what a page does, you can find it here.
         </span>
         <span className="sub-text">
             Please note that this page may not always be up to date.

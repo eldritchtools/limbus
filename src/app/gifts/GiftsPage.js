@@ -268,6 +268,12 @@ export default function GiftsPage({ initGifts }) {
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.O Gifts</h1>
+        <p style={{ margin: 0 }}>
+            Browse all Mirror Dungeon E.G.O Gifts and view detailed information about each gift.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Search gifts by name or description, or use a wide range of tags and filters. Selecting a gift displays its effects, fusion recipes, linked events and Theme Packs, and other related information.
+        </p>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>

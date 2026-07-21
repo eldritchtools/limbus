@@ -147,8 +147,8 @@ export default function ExtractionSimulatorPage() {
         const ids3 = [], ids2 = [], ids1 = [];
         let latestSeason = 0;
         Object.values(identities).forEach(x => {
-            if(x.season >= 9000) return;
-            if(x.season > latestSeason) latestSeason = x.season;
+            if (x.season >= 9000) return;
+            if (x.season > latestSeason) latestSeason = x.season;
         });
 
         Object.entries(identities).forEach(([id, obj]) => {
@@ -178,12 +178,12 @@ export default function ExtractionSimulatorPage() {
     }, [egos, egosLoading, isWalpurgis, extractedEgos, selected])
 
     const extractableAnnouncers = useMemo(() => {
-        if(announcersLoading) return [];
-        if(!(isWalpurgis || selected?.isWalpurgis)) return [];
+        if (announcersLoading) return [];
+        if (!(isWalpurgis || selected?.isWalpurgis)) return [];
 
         const result = [];
         Object.entries(announcers).forEach(([id, obj]) => {
-            if(obj.walpurgis) result.push(id);
+            if (obj.walpurgis) result.push(id);
         })
         return result;
     }, [announcers, announcersLoading, isWalpurgis, selected]);
@@ -298,7 +298,7 @@ export default function ExtractionSimulatorPage() {
             let rnd = Math.random() * 100;
             if (items.announcer.length > 0 || extractableAnnouncers.length > 0) {
                 if (rnd < 1.3) {
-                    if(items.announcer.length > 0 && Math.random() < 0.5) return ["announcer", pickRandom(items.announcer)];
+                    if (items.announcer.length > 0 && Math.random() < 0.5) return ["announcer", pickRandom(items.announcer)];
                     else return ["announcer", pickRandom(extractableAnnouncers)];
                 }
                 rnd -= 1.3;
@@ -431,108 +431,117 @@ export default function ExtractionSimulatorPage() {
         }
     }
 
-    if (timersLoading || identitiesLoading || egosLoading) return <LoadingContentPageTemplate />
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Extraction Simulator</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "start" }}>
-            Choose or create a banner and simulate extractions.
-        </span>
-        <span className="sub-text">
-            There may be some inaccuracies due to possible differences between how the randomization is implemented.
-        </span>
-        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.25rem", maxWidth: "min(1600px, 100vw)" }}>
-            <div className="panel-container">
-                <h3 style={{ margin: 0, textAlign: "center" }}>Banner Selection</h3>
-                <div style={{ display: "flex", flexDirection: "column", overflowY: "auto", overflowX: "hidden", maxHeight: "450px", minWidth: "300px" }}>
-                    <CustomBanner
-                        identityIds={customIdentityIds} setIdentityIds={setCustomIdentityIds}
-                        egoIds={customEgoIds} setEgoIds={setCustomEgoIds}
-                        announcers={customAnnouncers} setAnnouncers={setCustomAnnouncers}
-                        selected={selected?.name === "custom"} setSelected={setSelected}
-                    />
-                    <Banner banner={timers.banners.main}
-                        identities={identities} egos={egos}
-                        isMobile={isMobile} selected={selected?.name === timers.banners.main.name} setSelected={setSelected}
-                    />
-                    {
-                        timers.banners.others.map((banner, i) =>
-                            <Banner key={i} banner={banner}
-                                identities={identities} egos={egos}
-                                isMobile={isMobile} selected={selected?.name === banner.name} setSelected={setSelected}
+        <p style={{ margin: 0 }}>
+            Choose an existing or custom banner to simulate extractions.
+        </p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Calculate the probability of obtaining featured items over a specified number of pulls.
+            <br /><br />
+            Results may differ slightly from the game due to possible differences in how randomization is implemented.
+        </p>
+
+        {timersLoading || identitiesLoading || egosLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.25rem", maxWidth: "min(1600px, 100vw)" }}>
+                    <div className="panel-container">
+                        <h3 style={{ margin: 0, textAlign: "center" }}>Banner Selection</h3>
+                        <div style={{ display: "flex", flexDirection: "column", overflowY: "auto", overflowX: "hidden", maxHeight: "450px", minWidth: "300px" }}>
+                            <CustomBanner
+                                identityIds={customIdentityIds} setIdentityIds={setCustomIdentityIds}
+                                egoIds={customEgoIds} setEgoIds={setCustomEgoIds}
+                                announcers={customAnnouncers} setAnnouncers={setCustomAnnouncers}
+                                selected={selected?.name === "custom"} setSelected={setSelected}
                             />
-                        )
+                            <Banner banner={timers.banners.main}
+                                identities={identities} egos={egos}
+                                isMobile={isMobile} selected={selected?.name === timers.banners.main.name} setSelected={setSelected}
+                            />
+                            {
+                                timers.banners.others.map((banner, i) =>
+                                    <Banner key={i} banner={banner}
+                                        identities={identities} egos={egos}
+                                        isMobile={isMobile} selected={selected?.name === banner.name} setSelected={setSelected}
+                                    />
+                                )
+                            }
+                            <Banner banner={{ name: "Standard Extraction", src: "standard" }}
+                                identities={identities} egos={egos}
+                                isMobile={isMobile} selected={selected?.name === "Standard Extraction"} setSelected={setSelected}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="panel-container" style={{ gap: "0.2rem", alignItems: "center", }}>
+                        <h3 style={{ margin: 0, textAlign: "center" }}>Pulls</h3>
+                        <div style={{
+                            display: "flex", flexDirection: "column", gap: "0.5rem",
+                            width: isMobile ? "300px" : "750px",
+                            height: isMobile ? "420px" : "300px",
+                            border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem",
+                            alignItems: "center", justifyContent: "center"
+                        }}>
+                            {selected ? pulledComponents : <span>Select a banner</span>}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", justifyContent: "center" }}>
+                            <label>
+                                <input type="checkbox" checked={isWalpurgis || (selected?.isWalpurgis ?? false)} onChange={e => setIsWalpurgis(e.target.checked)} disabled={selected?.isWalpurgis} />
+                                <span>Include Walpurgis</span>
+                            </label>
+                            <button onClick={() => executePull(1)}>Pull 1</button>
+                            <button onClick={() => executePull(10)}>Pull 10</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)" }}>
+                    <h3 style={{ display: "flex", gap: "0.5rem", alignItems: "center", margin: 0 }}>
+                        Extractable E.G.Os
+                        <button onClick={applyCompanyData} disabled={companyLoading}>Apply Company Data</button>
+                    </h3>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxHeight: "500px", overflowY: "auto", justifyContent: "center" }}>
+                        {extractableEgoComponents}
+                    </div>
+                </div>
+
+                <div className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)", gap: "0.5rem" }}>
+                    <h3 style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", margin: 0 }}>
+                        Probabilities Calculator
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            Target:
+                            <DropdownButton value={calculateMode} setValue={setCalculateMode} options={modes} />
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            Pulls:
+                            <NumberInput min={0} max={1000} value={maxPulls} onChange={setMaxPulls} style={{ width: "5ch" }} />
+                        </div>
+                        <button onClick={() => triggerSolver()} style={{ background: calculating ? "#dc3545" : "#1e7e34" }} disabled={!selected}>
+                            {calculating ? "Cancel" : "Compute!"}
+                        </button>
+                    </h3>
+
+                    {calculatedMode &&
+                        <span>
+                            {
+                                calculatedMode === "all" ?
+                                    `Probability of getting all banner 000s, E.G.Os, and announcers from ${calculatedBanner}.` :
+                                    `Probability of getting at least n unique banner ${modes[calculatedMode]} from ${calculatedBanner}.`
+                            }
+                        </span>
                     }
-                    <Banner banner={{name: "Standard Extraction", src: "standard"}}
-                        identities={identities} egos={egos}
-                        isMobile={isMobile} selected={selected?.name === "Standard Extraction"} setSelected={setSelected}
+
+                    <ResultsChart
+                        data={calculateResults}
+                        calculateMode={calculatedMode}
                     />
+
+                    <span className="sub-text">
+                        This computation assumes E.G.Os are still pullable. Pity from Idealty is not included in the results. Please note that increasing the number of pulls too much could cause the page to crash due to memory issues.
+                    </span>
                 </div>
-            </div>
-
-            <div className="panel-container" style={{ gap: "0.2rem", alignItems: "center", }}>
-                <h3 style={{ margin: 0, textAlign: "center" }}>Pulls</h3>
-                <div style={{
-                    display: "flex", flexDirection: "column", gap: "0.5rem",
-                    width: isMobile ? "300px" : "750px",
-                    height: isMobile ? "420px" : "300px",
-                    border: "1px var(--secondary-border-color) solid", borderRadius: "0.5rem",
-                    alignItems: "center", justifyContent: "center"
-                }}>
-                    {selected ? pulledComponents : <span>Select a banner</span>}
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", justifyContent: "center" }}>
-                    <label>
-                        <input type="checkbox" checked={isWalpurgis || (selected?.isWalpurgis ?? false)} onChange={e => setIsWalpurgis(e.target.checked)} disabled={selected?.isWalpurgis} />
-                        <span>Include Walpurgis</span>
-                    </label>
-                    <button onClick={() => executePull(1)}>Pull 1</button>
-                    <button onClick={() => executePull(10)}>Pull 10</button>
-                </div>
-            </div>
-        </div>
-
-        <div className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)"}}>
-            <h3 style={{ display: "flex", gap: "0.5rem", alignItems: "center", margin: 0 }}>
-                Extractable E.G.Os
-                <button onClick={applyCompanyData} disabled={companyLoading}>Apply Company Data</button>
-            </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxHeight: "500px", overflowY: "auto", justifyContent: "center" }}>
-                {extractableEgoComponents}
-            </div>
-        </div>
-
-        <div className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)", gap: "0.5rem" }}>
-            <h3 style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", margin: 0 }}>
-                Probabilities Calculator
-                <DropdownButton value={calculateMode} setValue={setCalculateMode} options={modes} />
-                <div>
-                    Pulls:
-                    <NumberInput min={0} max={1000} value={maxPulls} onChange={setMaxPulls} style={{ width: "5ch" }} />
-                </div>
-                <button onClick={() => triggerSolver()} style={{ background: calculating ? "#dc3545" : "#1e7e34" }} disabled={!selected}>
-                    {calculating ? "Cancel" : "Compute!"}
-                </button>
-            </h3>
-
-            {calculatedMode &&
-                <span>
-                    {
-                        calculatedMode === "all" ?
-                            `Probability of getting all banner 000s, E.G.Os, and announcers from ${calculatedBanner}.` :
-                            `Probability of getting at least n unique banner ${modes[calculatedMode]} from ${calculatedBanner}.`
-                    }
-                </span>
-            }
-
-            <ResultsChart
-                data={calculateResults}
-                calculateMode={calculatedMode}
-            />
-
-            <span className="sub-text">
-                This computation assumes E.G.Os are still pullable. Pity from Idealty is not included in the results. Please note that increasing the number of pulls too much could cause the page to crash due to memory issues.
-            </span>
-        </div>
+            </>
+        }
     </div>
 }

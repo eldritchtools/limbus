@@ -301,15 +301,16 @@ export default function CommunityAssetsPage() {
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>
             Community Assets
         </h1>
-        <span style={{ maxWidth: "1000px", textAlign: "center", display: "block" }}>
-            Upload emojis and stickers that can be used with tokens across the site. All uploaded assets are open to use for everyone.
-        </span>
-        <span className="sub-text">
+        <p style={{margin: 0}}>
+            Upload community emotes and stickers that anyone can use in posts, comments, and other content through the site&apos;s token system.
+        </p>
+        <p className="sub-text" style={{margin: 0}}>
+            Uploaded emotes and stickers are searchable through the emote/sticker picker available in every Markdown editor on the site.
+            <br /><br/>
             Please only upload content you have permission to use. Inappropriate content or misuse of the system may result in upload restrictions.
-        </span>
-        <span className="sub-text">
-            Use search to check for existing assets before uploading new ones.
-        </span>
+            <br/><br/>
+            Search for existing assets before uploading to help avoid duplicates.
+        </p>
 
         <div style={{ display: "flex", gap: "1rem" }}>
             <div

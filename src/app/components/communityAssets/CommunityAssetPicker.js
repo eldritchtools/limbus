@@ -41,7 +41,7 @@ export default function CommunityAssetPicker({ type, onClick }) {
             setLoading(false);
         };
 
-        if(first){
+        if (first) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setFirst(false);
             fetchAssets();
@@ -66,7 +66,7 @@ export default function CommunityAssetPicker({ type, onClick }) {
     return <div style={{ display: "flex", flexDirection: "column", maxWidth: isMobile ? "85vw" : "800px" }}>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." />
         <div style={{
-            height: isMobile ? "200px" : "300px", overflowY: "auto", overflowX: "hidden", width: "min(95vw, 600px)",
+            height: isMobile ? "200px" : "300px", overflowY: "auto", overflowX: "hidden", width: "min(85vw, 600px)",
             display: "flex", flexDirection: "column",
             scrollbarWidth: "thin", scrollbarColor: "var(--secondary-border-color) var(--bg-primary)"
         }}>
@@ -84,17 +84,24 @@ export default function CommunityAssetPicker({ type, onClick }) {
                 }
                 {loading ?
                     <span style={{ alignSelf: "center" }}>Loading...</span> :
-                    (assets.length > 0 && <>
+                    <>
                         <span className="sub-text">Your Uploads</span>
-                        <div style={gridStyle}>
-                            {assets.map(x =>
-                                <div key={x} className={styles.asset} onClick={() => handleClick(x)}>
-                                    <CommunityAsset key={x} id={x} type={"sm"} style={{ maxWidth: `${size}px` }} />
+                        {
+                            assets.length > 0 ?
+                                <div style={gridStyle}>
+                                    {assets.map(x =>
+                                        <div key={x} className={styles.asset} onClick={() => handleClick(x)}>
+                                            <CommunityAsset key={x} id={x} type={"sm"} style={{ maxWidth: `${size}px` }} />
+                                        </div>
+                                    )}
+                                </div> :
+                                <div style={{textAlign: "center"}}>
+                                    You have no uploaded {type === "emote" ? "emotes" : "stickers"}. 
+                                    <br/>
+                                    Consider uploading in the Community Assets page.
                                 </div>
-                            )}
-                        </div>
+                        }
                     </>
-                    )
                 }
             </> :
                 (loading ?
@@ -108,7 +115,13 @@ export default function CommunityAssetPicker({ type, onClick }) {
                                     </div>
                                 )}
                             </div> :
-                            <span style={{ alignSelf: "center" }}>No results...</span>
+                            <div style={{ marginTop: "5rem", textAlign: "center", alignSelf: "center", justifySelf: "center" }}>
+                                No results...
+                                <br/>
+                                Try a different search term 
+                                <br/> 
+                                or upload one yourself in the Community Assets page.
+                            </div>
                         }
                     </>
                 )
