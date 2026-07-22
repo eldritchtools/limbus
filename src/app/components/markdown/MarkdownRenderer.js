@@ -144,7 +144,7 @@ function SkillItem({ val, context }) {
         return <span
             {...getSkillTooltipProps(ownerId, skillId)}
             style={{ display: "inline", fontWeight: "bold" }}>
-            <span>{skillName}</span>
+            {skillName}
         </span>
     else {
         return <span>{`{skill:${ownerId}|${skillId}}`}</span>
