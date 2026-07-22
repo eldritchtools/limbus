@@ -1,6 +1,5 @@
 "use client";
 
-import { useBreakpoint } from "@eldritchtools/shared-components";
 import { ArrowPathIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
 
@@ -65,7 +64,7 @@ function HeaderComponent({ identityData }) {
     </div>
 }
 
-function RatingTab({ id, isMobile }) {
+function RatingTab({ id }) {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [globalData, setGlobalData] = useState(null);
@@ -101,7 +100,7 @@ function RatingTab({ id, isMobile }) {
         setRefresh(true);
     }
 
-    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 0 : "0.5rem" }}>
+    return <div className={styles.ratingTab}>
         <RatingComponent
             type={"identity"} id={id} globalData={globalData} userData={userData} onChange={onChange}
             reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing}
@@ -143,9 +142,8 @@ function BuildsTab({ builds }) {
     </DragContainer>
 }
 
-export default function IdentityPage({ params, identityData, initSkillData, notesTab, initSkillsTab }) {
+export default function IdentityPage({ id, identityData, initSkillData, notesTab, initSkillsTab }) {
     const { getData } = useDataProvider();
-    const { id } = React.use(params);
     const [level, setLevel] = useState(LEVEL_CAP);
     const [uptie, setUptie] = useState(4);
     const [preuptie, setPreuptie] = useState(1);
@@ -159,8 +157,6 @@ export default function IdentityPage({ params, identityData, initSkillData, note
 
     const { skills: preSkills, combatPassives: preCombatPassives, supportPassives: preSupportPassives } =
         compareMode ? skillData[preuptie] : { skills: null, combatPassives: null, supportPassives: null }
-
-    const { isMobile } = useBreakpoint();
 
     if (!identityData) return <span className="title-text">Identity not found</span>
 
@@ -217,8 +213,8 @@ export default function IdentityPage({ params, identityData, initSkillData, note
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
             <HeaderComponent identityData={identityData} />
 
-            <div className="panel-container" style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", gap: "1rem" }}>
-                <div style={{ flex: isMobile ? 1 : "0 1 500px", display: "grid", gridTemplateColumns: "auto" }}>
+            <div className={`panel-container ${styles.statsContainer}`}>
+                <div className={styles.profileContainer}>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                         <RarityIcon rarity={identityData.rank} style={{ display: "inline", height: "2rem" }} />
                         <SinnerIcon num={identityData.sinnerId} style={{ width: "40px", height: "40px" }} />
@@ -281,7 +277,7 @@ export default function IdentityPage({ params, identityData, initSkillData, note
                     </div>
                 </div>
 
-                <div style={{ flex: isMobile ? 1 : "0 1 400px", display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gridTemplateRows: "auto auto", minWidth: 0 }}>
+                <div className={styles.otherContainer}>
                     <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
                         <span style={{ fontWeight: "bold" }}>Release Date</span>
                         <span>{identityData.date}</span>
@@ -345,7 +341,7 @@ export default function IdentityPage({ params, identityData, initSkillData, note
                         activeTab === "notes" ?
                             notesTab :
                             activeTab === "rating" ?
-                                <RatingTab id={id} isMobile={isMobile} /> :
+                                <RatingTab id={id} /> :
                                 <BuildsTab builds={builds} />
                     )
                 }

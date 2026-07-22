@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 
 import CommunityPoll from "./CommunityPoll";
 import MdPlan from "./components/contentCards/MdPlan";
@@ -69,7 +69,9 @@ export default async function HomePage() {
             </p>
             <PopularityPoll />
             <LinksMenu />
-            <HomepageTimers />
+            <Suspense fallback={null}>
+                <HomepageTimers />
+            </Suspense>
             <CommunityPoll initPoll={poll} />
             <RandomTips />
             <RecentAdditions />

@@ -1,6 +1,5 @@
 "use client";
 
-import { useBreakpoint } from "@eldritchtools/shared-components";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
 
@@ -54,7 +53,7 @@ function HeaderComponent({ egoData }) {
     </div>
 }
 
-function RatingTab({ id, isMobile }) {
+function RatingTab({ id }) {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [globalData, setGlobalData] = useState(null);
@@ -90,7 +89,7 @@ function RatingTab({ id, isMobile }) {
         setRefresh(true);
     }
 
-    return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 0 : "0.5rem" }}>
+    return <div className={styles.ratingTab}>
         <RatingComponent
             type={"ego"} id={id} globalData={globalData} userData={userData} onChange={onChange}
             reviewText={reviewText} setReviewText={setReviewText} isReviewing={isReviewing} setIsReviewing={setIsReviewing}
@@ -133,9 +132,8 @@ function BuildsTab({ builds }) {
     </DragContainer>
 }
 
-export default function IdentityPage({ params, egoData, initSkillData, notesTab, initSkillsTab }) {
+export default function IdentityPage({ id, egoData, initSkillData, notesTab, initSkillsTab }) {
     const { getData } = useDataProvider();
-    const { id } = React.use(params);
     const [uptie, setUptie] = useState(egoData?.maxThreadspin ?? 4);
     const [preuptie, setPreuptie] = useState(1);
     const [activeTab, setActiveTab] = useLocalState("egoActiveTab", "notes");
@@ -147,8 +145,6 @@ export default function IdentityPage({ params, egoData, initSkillData, notesTab,
     const { awakeningSkills, corrosionSkills, passives } = skillData[uptie];
     const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } =
         compareMode ? skillData[preuptie] : { awakeningSkills: null, corrosionSkills: null, passives: null }
-
-    const { isMobile } = useBreakpoint();
 
     if (!egoData) return <span className="title-text">E.G.O not found</span>
 
@@ -192,8 +188,8 @@ export default function IdentityPage({ params, egoData, initSkillData, notesTab,
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
             <HeaderComponent egoData={egoData} />
 
-            <div className="panel-container" style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", gap: "1rem" }}>
-                <div style={{ flex: isMobile ? 1 : "0 1 500px", display: "grid", gridTemplateColumns: "auto auto auto", alignItems: "center" }}>
+            <div className={`panel-container ${styles.statsContainer}`}>
+                <div className={styles.profileContainer}>
                     <div style={{ gridColumn: "span 3", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                         <RarityIcon rarity={egoData.rank.toLowerCase()} style={{ display: "inline", height: "2rem" }} />
                         <SinnerIcon num={egoData.sinnerId} style={{ width: "40px", height: "40px" }} />
@@ -283,7 +279,7 @@ export default function IdentityPage({ params, egoData, initSkillData, notesTab,
                         activeTab === "notes" ?
                             notesTab :
                             activeTab === "rating" ?
-                                <RatingTab id={id} isMobile={isMobile} /> :
+                                <RatingTab id={id} /> :
                                 <BuildsTab builds={builds} />
                     )
                 }

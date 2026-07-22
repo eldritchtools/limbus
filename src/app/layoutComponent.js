@@ -12,7 +12,7 @@ import { Layout } from "@eldritchtools/shared-components";
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
@@ -98,18 +98,25 @@ const description = <span>
     Limbus Company Tools is a community-driven website for users to share and discover team builds and Mirror Dungeon plans, view an Identities and E.G.Os database complete with community ratings and reviews, use Mirror Dungeon reference pages with an Achievemenet Tracker, or use tools such as calculators, solvers, randomizers, and planners.
 </span>;
 
-function Announcement() {
-    const [hidden, setHidden] = useState(false);
+function AnnouncementNavigationWatcher({ setHidden }) {
     const pathname = usePathname();
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (pathname === "/popularity-poll") setHidden(true);
-    }, [pathname]);
+    }, [pathname, setHidden]);
+
+    return null;
+}
+
+function Announcement() {
+    const [hidden, setHidden] = useState(false);
 
     if (hidden) return null;
 
     return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
+        <Suspense fallback={null}>
+            <AnnouncementNavigationWatcher setHidden={setHidden} />
+        </Suspense>
         <div style={{ backgroundColor: "var(--bg-hover)", borderRadius: "1rem", border: "1px solid var(--secondary-border-color)", maxWidth: "1200px", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>

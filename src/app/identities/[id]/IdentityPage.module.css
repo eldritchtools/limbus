@@ -45,3 +45,49 @@
   background: rgba(0, 0, 0, 0.6);
   text-align: center;
 }
+
+.statsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.profileContainer {
+  flex: 0 1 500px;
+  display: grid;
+  grid-template-columns: auto;
+}
+
+.otherContainer {
+  flex: 0 1 400px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  min-width: 0;
+}
+
+.ratingTab {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .statsContainer {
+    flex-direction: column;
+  }
+
+  .profileContainer {
+    flex: 1;
+  }
+
+  .otherContainer {
+    flex: 1;
+  }
+
+  .ratingTab {
+    flex-direction: column;
+    gap: 0;
+  }
+}

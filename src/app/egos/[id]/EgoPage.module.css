@@ -45,3 +45,38 @@
   background: rgba(0, 0, 0, 0.6);
   text-align: center;
 }
+
+.statsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.profileContainer {
+  flex: 0 1 500px;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+}
+
+.ratingTab {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .statsContainer {
+    flex-direction: column;
+  }
+
+  .profileContainer {
+    flex: 1;
+  }
+
+  .ratingTab {
+    flex-direction: column;
+    gap: 0;
+  }
+}
