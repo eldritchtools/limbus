@@ -19,12 +19,12 @@ import RecommendedListDisplay from "../mdPlans/RecommendedListDisplay";
 import RecommendedSpecBuildDisplay from "../mdPlans/RecommendedSpecBuildDisplay";
 import { useModal } from "../modals/ModalProvider";
 import ImageCarousel, { finalizeImageIds } from "../objects/ImageCarousel";
-import { ImageUploader } from "../objects/ImageUploader";
 import { LoadingContentPageTemplate } from "../pageTemplates/ContentPageTemplate";
 import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
 import SkillReplace from "../skill/SkillReplace";
 
 import { useAuth } from "@/app/database/authProvider";
+import { invalidateMdPlan } from "@/app/database/dbCacheClient";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { createMdPlan, getMdPlan, updateMdPlan } from "@/app/database/mdPlans";
@@ -87,12 +87,12 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
     const [message, setMessage] = useState("");
     const [saving, setSaving] = useState(false);
     const [createdAt, setCreatedAt] = useState(null);
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const { isMobile } = useBreakpoint();
 
     useEffect(() => {
-        if(!loading) return;
+        if(!loading || authLoading) return;
         if (mode === "edit") {
             const handleMdPlan = mdPlan => {
                 if (!mdPlan || (mdPlan.user_id && mdPlan.user_id !== user.id)) {
@@ -137,7 +137,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                     router.push(`/md-plans/${mdPlanId}`);
                 });
         }
-    }, [mode, mdPlanId, loading, router, user]);
+    }, [mode, mdPlanId, loading, authLoading, router, user]);
 
     const keywordOptions = useMemo(() => mdDataLoading ? [] :
         Object.keys(mdData.startGiftPool).map(x => ({
@@ -237,6 +237,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             if (mode === "edit") {
                 planData.planId = mdPlanId;
                 const data = await updateMdPlan(planData);
+                await invalidateMdPlan(mdPlanId);
                 router.push(`/md-plans/${data}`);
             } else {
                 const data = await createMdPlan(planData);

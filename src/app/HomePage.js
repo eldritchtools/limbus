@@ -9,7 +9,7 @@ import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import DragContainer from "./components/objects/DragContainer";
-import { getHomepagePosts } from "./database/homepage";
+import { getHomepagePosts } from "./database/serverSafeDb";
 import styles from "./homepage.module.css";
 import { LinksMenu, UpdatesComponent } from "./HomePageComponents";
 import { mergeUpcoming } from "./lib/upcoming";

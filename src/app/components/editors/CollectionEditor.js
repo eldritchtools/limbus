@@ -120,11 +120,11 @@ export default function CollectionEditor({ mode, collectionId }) {
     const [message, setMessage] = useState("");
     const [saving, setSaving] = useState(false);
     const [createdAt, setCreatedAt] = useState(null);
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading) return;
+        if (!loading || authLoading) return;
         if (mode === "edit") {
             const handleCollection = collection => {
                 if (!collection || (collection.user_id && collection.user_id !== user.id)) {
@@ -156,7 +156,7 @@ export default function CollectionEditor({ mode, collectionId }) {
                     router.push(`/collections/${collectionId}`);
                 });
         }
-    }, [mode, collectionId, loading, router, user]);
+    }, [mode, collectionId, loading, authLoading, router, user]);
 
     const handleSave = async (isPublished) => {
         if (title === "") {

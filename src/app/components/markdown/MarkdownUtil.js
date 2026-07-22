@@ -36,6 +36,7 @@ export function extractMarkdownDependencies(markdown) {
         skill: new Set(),
         status: new Set(),
         gift: new Set(),
+        gifticon: new Set(),
         themepack: new Set(),
         encounter: new Set(),
         icon: new Set()
@@ -62,7 +63,7 @@ export function extractMarkdownDependencies(markdown) {
                 deps.gift.add(part.tokenValues[0]);
                 break;
             case "gifticons":
-                part.tokenValues.forEach(x => deps.gift.add(x));
+                part.tokenValues.forEach(x => deps.gifticon.add(x));
                 break;
             case "themepack":
                 deps.themepack.add(part.tokenValues[0]);

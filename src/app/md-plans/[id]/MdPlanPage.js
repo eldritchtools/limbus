@@ -15,14 +15,14 @@ import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisp
 import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
 import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import ImageCarousel from "@/app/components/objects/ImageCarousel";
-import ContentPageTemplate from "@/app/components/pageTemplates/ContentPageTemplate";
+import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import SkillReplace from "@/app/components/skill/SkillReplace";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 
-function TeamDisplay({ plan, extraOpts }) {
+function TeamDisplay({ plan }) {
     if (plan.recommendation_mode === "list")
         return <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Identities and E.G.Os</span>
@@ -35,7 +35,8 @@ function TeamDisplay({ plan, extraOpts }) {
             <RecommendedBuildsDisplay builds={plan.builds} editable={false} />
         </>
 
-    if (plan.recommendation_mode === "specbuild")
+    if (plan.recommendation_mode === "specbuild") {
+        const extraOpts = decodeBuildExtraOpts(plan.extra_opts) ?? "";
         return <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
             <RecommendedSpecBuildDisplay
@@ -43,12 +44,13 @@ function TeamDisplay({ plan, extraOpts }) {
                 extraOpts={extraOpts} editable={false}
             />
         </>
+    }
 
     return null;
 }
 
 export default function MdPlanPage({ id, plan, giftsData, themePacksData }) {
-    const extraOpts = decodeBuildExtraOpts(plan.extra_opts) ?? "";
+    if (!plan) return <LoadingContentPageTemplate />
 
     return <ContentPageTemplate
         targetType={"md_plan"} targetId={id} content={plan}
@@ -59,7 +61,7 @@ export default function MdPlanPage({ id, plan, giftsData, themePacksData }) {
                 <span style={{ fontSize: "1.2rem" }}>Difficulty: {mdDiffculties[plan.difficulty].name}</span>
             </div>
             <div className={styles.mdPlan}>
-                <TeamDisplay plan={plan} extraOpts={extraOpts} />
+                <TeamDisplay plan={plan} />
 
                 {plan?.body?.length > 0 && <>
                     <span style={{ fontSize: "1.2rem" }}>Description</span>

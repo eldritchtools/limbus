@@ -95,6 +95,12 @@ export default async function Page({ params }) {
 
     const schemaData = schema(id, plan);
 
+    if(!plan) 
+        return <>
+            <JsonLd data={schemaData} />
+            <MdPlanPage id={id} plan={plan} />
+        </>;
+
     const giftIds = new Set();
     const themePackIds = new Set();
 
