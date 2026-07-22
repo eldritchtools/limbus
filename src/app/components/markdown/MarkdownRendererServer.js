@@ -39,7 +39,7 @@ export default async function MarkdownRendererServer({ content, guardedLinks }) 
         fetchList.push(["status", "statuses"]);
     }
 
-    if (deps.gift.size > 0) {
+    if (deps.gift.size > 0 || deps.gifticon.size > 0) {
         fetchList.push(["gift", "gifts"]);
     }
 
@@ -93,10 +93,11 @@ export default async function MarkdownRendererServer({ content, guardedLinks }) 
             case "gift":
                 context.gift =
                     Object.fromEntries(Object.entries(data)
-                        .filter(([id]) => deps[fetchList[i][0]].has(id))
+                        .filter(([id]) => deps[fetchList[i][0]].has(id) || deps["gifticon"].has(id))
                         .map(([id, data]) => {
-                            const { names } = data;
-                            return [id, { id, names }]
+                            const { names, srcPath, keyword, tier } = data;
+                            if (deps.gifticon.has(id)) return [id, { id, names, srcPath, keyword, tier }];
+                            else return [id, { id, names }];
                         })
                     )
                 break;

@@ -64,6 +64,6 @@ export default async function Page({ params }) {
 
     return <>
         <JsonLd data={schemaData} />
-        <IdentityPage params={params} identityData={identities[id]} initSkillData={skillData} notesTab={notesTab} initSkillsTab={initSkillsTab}/>
+        <IdentityPage id={id} identityData={identities[id]} initSkillData={skillData} notesTab={notesTab} initSkillsTab={initSkillsTab}/>
     </>;
 }

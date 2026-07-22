@@ -15,7 +15,7 @@ import RecommendedListDisplay from "@/app/components/mdPlans/RecommendedListDisp
 import RecommendedSpecBuildDisplay from "@/app/components/mdPlans/RecommendedSpecBuildDisplay";
 import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import ImageCarousel from "@/app/components/objects/ImageCarousel";
-import ContentPageTemplate from "@/app/components/pageTemplates/ContentPageTemplate";
+import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import SkillReplace from "@/app/components/skill/SkillReplace";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
@@ -35,7 +35,7 @@ function TeamDisplay({ plan, extraOpts }) {
             <RecommendedBuildsDisplay builds={plan.builds} editable={false} />
         </>
 
-    if (plan.recommendation_mode === "specbuild")
+    if (plan.recommendation_mode === "specbuild") {
         return <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
             <RecommendedSpecBuildDisplay
@@ -43,11 +43,13 @@ function TeamDisplay({ plan, extraOpts }) {
                 extraOpts={extraOpts} editable={false}
             />
         </>
+    }
 
     return null;
 }
 
 export default function MdPlanPage({ id, plan, giftsData, themePacksData }) {
+    if (!plan) return <LoadingContentPageTemplate />
     const extraOpts = decodeBuildExtraOpts(plan.extra_opts) ?? "";
 
     return <ContentPageTemplate

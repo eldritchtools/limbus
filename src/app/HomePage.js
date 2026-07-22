@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 
 import CommunityPoll from "./CommunityPoll";
 import MdPlan from "./components/contentCards/MdPlan";
@@ -9,7 +9,7 @@ import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import DragContainer from "./components/objects/DragContainer";
-import { getHomepagePosts } from "./database/homepage";
+import { getHomepagePosts } from "./database/serverSafeDb";
 import styles from "./homepage.module.css";
 import { LinksMenu, UpdatesComponent } from "./HomePageComponents";
 import { mergeUpcoming } from "./lib/upcoming";
@@ -69,7 +69,9 @@ export default async function HomePage() {
             </p>
             <PopularityPoll />
             <LinksMenu />
-            <HomepageTimers />
+            <Suspense fallback={null}>
+                <HomepageTimers />
+            </Suspense>
             <CommunityPoll initPoll={poll} />
             <RandomTips />
             <RecentAdditions />

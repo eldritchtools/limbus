@@ -21,7 +21,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     const [egos, egosLoading] = useEgosWithUpcoming();
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
     const [dataConverted, setDataConverted] = useState(false);
-    const [additionalToggle, setAdditionalToggle] = useState(false);
+    // const [additionalToggle, setAdditionalToggle] = useState(false);
 
     const identitiesConverted = useMemo(() => {
         if (identitiesLoading) return null;
@@ -37,55 +37,65 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         return newEgoIds;
     }, [egos, egosLoading, egoIds]);
 
-    const teamCode = useMemo(
-        // additional guard in case react resets the data
-        () => dataConverted && identitiesConverted.length === 12 ?
-            constructTeamCode(identitiesConverted, egoIds, extraOpts.deploymentOrder ?? []) :
-            null,
-        [identitiesConverted, egoIds, extraOpts, dataConverted]
-    );
-
-    useEffect(() => {
-        if (identitiesLoading || egosLoading) return;
+    const [optsConverted, additionalToggle, changed] = useMemo(() => {
+        let addToggle = false;
+        let changed = false;
 
         const newExtraOpts = { ...extraOpts };
-        let setNew = false;
 
         if (newExtraOpts.deploymentOrder === undefined) {
             newExtraOpts.deploymentOrder = [];
-            setNew = true;
+            changed = true;
         }
         if (newExtraOpts.activeSinners === undefined) {
             newExtraOpts.activeSinners = 7;
-            setNew = true;
+            changed = true;
         }
         if (newExtraOpts.identityUpties === undefined) {
             newExtraOpts.identityUpties = Array.from({ length: 12 }, () => "");
-            setNew = true;
-        } else setAdditionalToggle(true);
+            changed = true;
+        } else addToggle = true;
         if (newExtraOpts.identityLevels === undefined) {
             newExtraOpts.identityLevels = Array.from({ length: 12 }, () => "");
-            setNew = true;
-        } else setAdditionalToggle(true);
+            changed = true;
+        } else addToggle = true;
         if (newExtraOpts.egoThreadspins === undefined) {
             newExtraOpts.egoThreadspins = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
-            setNew = true;
-        } else setAdditionalToggle(true);
+            changed = true;
+        } else addToggle = true;
+        if (newExtraOpts.iconSwaps === undefined) {
+            newExtraOpts.iconSwaps = [];
+            changed = true;
+        } else addToggle = true;
         if (newExtraOpts.sinnerNotes === undefined) {
             newExtraOpts.sinnerNotes = Array.from({ length: 12 }, () => "");
-            setNew = true;
-        } else setAdditionalToggle(true);
+            changed = true;
+        } else addToggle = true;
         if (newExtraOpts.skillReplaces === undefined) {
             newExtraOpts.skillReplaces = {};
-            setNew = true;
-        } else setAdditionalToggle(true);
+            changed = true;
+        } else addToggle = true;
 
-        if (setNew) setExtraOpts(newExtraOpts);
+        return [newExtraOpts, addToggle, changed];
+    }, [extraOpts])
+
+    const teamCode = useMemo(
+        // additional guard in case react resets the data
+        () => identitiesConverted && identitiesConverted.length === 12 ?
+            constructTeamCode(identitiesConverted, egosConverted, optsConverted.deploymentOrder ?? []) :
+            null,
+        [identitiesConverted, egosConverted, optsConverted]
+    );
+
+    useEffect(() => {
+        if (!changed || !editable) return;
+
+        if (changed && setExtraOpts) setExtraOpts(optsConverted);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDataConverted(true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [identitiesLoading, egosLoading, editable]);
+    }, [changed, optsConverted, setExtraOpts, dataConverted, editable]);
 
-    if (!dataConverted || !identitiesConverted || !egosConverted) return null;
+    if (!identitiesConverted || !egosConverted) return null;
 
     if (editable) {
         const handleSetIdentityIds = fn => setIdentityIds(fn(identitiesConverted));
@@ -96,13 +106,14 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         return <BuildEditingComponent
             identityIds={identitiesConverted} setIdentityIds={handleSetIdentityIds}
             egoIds={egosConverted} setEgoIds={handleSetEgoIds}
-            deploymentOrder={extraOpts.deploymentOrder} setDeploymentOrder={f => handleOptsFunction(f, "deploymentOrder")}
-            activeSinners={extraOpts.activeSinners} setActiveSinners={v => handleOptsValue(v, "activeSinners")}
-            identityLevels={extraOpts.identityLevels} setIdentityLevels={f => handleOptsFunction(f, "identityLevels")}
-            identityUpties={extraOpts.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
-            egoThreadspins={extraOpts.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
-            sinnerNotes={extraOpts.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
-            skillReplaces={extraOpts.skillReplaces} setSkillReplaces={f => handleOptsFunction(f, "skillReplaces")}
+            deploymentOrder={optsConverted.deploymentOrder} setDeploymentOrder={f => handleOptsFunction(f, "deploymentOrder")}
+            activeSinners={optsConverted.activeSinners} setActiveSinners={v => handleOptsValue(v, "activeSinners")}
+            identityLevels={optsConverted.identityLevels} setIdentityLevels={f => handleOptsFunction(f, "identityLevels")}
+            identityUpties={optsConverted.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
+            egoThreadspins={optsConverted.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
+            iconSwaps={optsConverted.iconSwaps} setIconSwaps={f => handleOptsFunction(f, "iconSwaps")}
+            sinnerNotes={optsConverted.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
+            skillReplaces={optsConverted.skillReplaces} setSkillReplaces={f => handleOptsFunction(f, "skillReplaces")}
             defaultAdditionalToggle={additionalToggle} includeEventRolls={true}
         />
     }
@@ -111,13 +122,14 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         <BuildDisplay
             identityIds={identitiesConverted}
             egoIds={egosConverted}
-            identityUpties={extraOpts.identityUpties}
-            identityLevels={extraOpts.identityLevels}
-            egoThreadspins={extraOpts.egoThreadspins}
-            sinnerNotes={extraOpts.sinnerNotes}
-            skillReplaces={extraOpts.skillReplaces}
-            deploymentOrder={extraOpts.deploymentOrder}
-            activeSinners={extraOpts.activeSinners}
+            identityUpties={optsConverted.identityUpties}
+            identityLevels={optsConverted.identityLevels}
+            egoThreadspins={optsConverted.egoThreadspins}
+            iconSwaps={optsConverted.iconSwaps}
+            sinnerNotes={optsConverted.sinnerNotes}
+            skillReplaces={optsConverted.skillReplaces}
+            deploymentOrder={optsConverted.deploymentOrder}
+            activeSinners={optsConverted.activeSinners}
             displayType={displayType}
         />
 
@@ -129,16 +141,16 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             </BuildDisplayMenuCard>
             <Distribution
                 identityIds={identitiesConverted}
-                identityUpties={extraOpts.identityUpties}
+                identityUpties={optsConverted.identityUpties}
                 egoIds={egosConverted}
-                deploymentOrder={extraOpts.deploymentOrder}
-                activeSinners={extraOpts.activeSinners}
+                deploymentOrder={optsConverted.deploymentOrder}
+                activeSinners={optsConverted.activeSinners}
             />
             <EventRolls
                 identityIds={identitiesConverted}
-                identityUpties={extraOpts.identityUpties}
-                deploymentOrder={extraOpts.deploymentOrder}
-                activeSinners={extraOpts.activeSinners}
+                identityUpties={optsConverted.identityUpties}
+                deploymentOrder={optsConverted.deploymentOrder}
+                activeSinners={optsConverted.activeSinners}
             />
             <TeamCodeComponent teamCode={teamCode} />
         </div>

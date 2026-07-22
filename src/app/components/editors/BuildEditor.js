@@ -17,7 +17,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
-import { deleteCached } from "@/app/database/dbCache";
+import { invalidateBuild } from "@/app/database/dbCacheClient";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { handleCreateTag } from "@/app/database/tags";
@@ -59,7 +59,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     const [message, setMessage] = useState("");
     const [saving, setSaving] = useState(false);
     const [createdAt, setCreatedAt] = useState(null);
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
 
     const [identitiesMini, identitiesMiniLoading] = useData("identities_mini");
@@ -78,7 +78,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
     );
 
     useEffect(() => {
-        if (!loading) return;
+        if (!loading || authLoading) return;
         if (mode === "edit") {
             const handleBuild = build => {
                 if (!build || (build.user_id && build.user_id !== user.id)) {
@@ -126,7 +126,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                     router.push(`/builds/${buildId}`);
                 });
         }
-    }, [mode, buildId, loading, router, user]);
+    }, [mode, buildId, loading, authLoading, router, user]);
 
     useEffect(() => {
         if (!initTeamCode) return;
@@ -240,7 +240,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             if (mode === "edit") {
                 buildData.buildId = buildId;
                 const data = await updateBuild(buildData);
-                await deleteCached(`build:${buildId}`)
+                await invalidateBuild(buildId);
                 router.push(`/builds/${data}`);
             } else {
                 const data = await insertBuild(buildData);

@@ -14,7 +14,7 @@ import { IdentityDropdownSelector } from "../components/selectors/IdentitySelect
 import { getLocalStore } from "../database/localDB";
 import { uiColors } from "../lib/colors";
 import { sinnerIdMapping } from "../lib/constants";
-import { selectStyleWide } from "../styles/selectStyle";
+import { selectStyleVariable } from "../styles/selectStyle";
 
 function Crop({ id, uptie, crop, style = {} }) {
     return <div style={{
@@ -148,7 +148,9 @@ function Guesser({ mode, setMode }) {
                 </span>
             )}
 
-            <IdentityDropdownSelector selected={null} setSelected={x => { if (x) quiz.submitGuess(x); }} hideIcons={true} styles={selectStyleWide} excludeOptions={quiz.answers ?? []} />
+            <div style={{ width: "min(100%, 1000px)" }}>
+                <IdentityDropdownSelector selected={null} setSelected={x => { if (x) quiz.submitGuess(x); }} hideIcons={true} styles={selectStyleVariable} excludeOptions={quiz.answers ?? []} />
+            </div>
 
             {mode === "standard" &&
                 <span className="text-link" onClick={quiz.skip}
@@ -157,6 +159,7 @@ function Guesser({ mode, setMode }) {
                     Skip
                 </span>
             }
+            <div style={{ minHeight: "300px" }} />
         </>
 
     if (quiz.phase === "reveal") {

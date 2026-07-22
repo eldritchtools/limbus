@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, Suspense, useContext, useEffect, useState } from "react";
 
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
 import CommunityAssetModalContent from "./CommunityAssetModalContent";
@@ -11,6 +11,7 @@ import GiftModalContent from "./GiftModalContent";
 import ImageCarouselModalContent from "./ImageCarouselModalContent";
 import ImageModalContent from "./ImageModalContent";
 import ModalContainer from "./ModalContainer";
+import ModalNavigationWatcher from "./ModalNavigationWatcher";
 import PollResultModalContent from "./PollResultModalContent";
 import RatingModalContent from "./RatingModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
@@ -44,13 +45,6 @@ const MODAL_COMPONENTS = {
 
 export function ModalProvider({ children }) {
     const [stack, setStack] = useState([]);
-
-    const pathname = usePathname();
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setStack([]);
-    }, [pathname]);
 
     useEffect(() => {
         if (stack.length === 0) {
@@ -186,6 +180,9 @@ export function ModalProvider({ children }) {
     }
 
     return <ModalContext.Provider value={exportFunctions}>
+        <Suspense fallback={null}>
+            <ModalNavigationWatcher clearModals={clearModals} />
+        </Suspense>
         {children}
 
         {stack.map((entry, index) => {
