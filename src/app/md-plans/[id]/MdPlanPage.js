@@ -22,7 +22,7 @@ import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 
-function TeamDisplay({ plan }) {
+function TeamDisplay({ plan, extraOpts }) {
     if (plan.recommendation_mode === "list")
         return <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Identities and E.G.Os</span>
@@ -36,7 +36,6 @@ function TeamDisplay({ plan }) {
         </>
 
     if (plan.recommendation_mode === "specbuild") {
-        const extraOpts = decodeBuildExtraOpts(plan.extra_opts) ?? "";
         return <>
             <span style={{ fontSize: "1.2rem" }}>Recommended Team Build</span>
             <RecommendedSpecBuildDisplay
@@ -51,6 +50,7 @@ function TeamDisplay({ plan }) {
 
 export default function MdPlanPage({ id, plan, giftsData, themePacksData }) {
     if (!plan) return <LoadingContentPageTemplate />
+    const extraOpts = decodeBuildExtraOpts(plan.extra_opts) ?? "";
 
     return <ContentPageTemplate
         targetType={"md_plan"} targetId={id} content={plan}
@@ -61,7 +61,7 @@ export default function MdPlanPage({ id, plan, giftsData, themePacksData }) {
                 <span style={{ fontSize: "1.2rem" }}>Difficulty: {mdDiffculties[plan.difficulty].name}</span>
             </div>
             <div className={styles.mdPlan}>
-                <TeamDisplay plan={plan} />
+                <TeamDisplay plan={plan} extraOpts={extraOpts} />
 
                 {plan?.body?.length > 0 && <>
                     <span style={{ fontSize: "1.2rem" }}>Description</span>
