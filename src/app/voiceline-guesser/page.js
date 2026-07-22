@@ -14,7 +14,7 @@ import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
 import { getLocalStore } from "../database/localDB";
 import { uiColors } from "../lib/colors";
 import { sinnerIdMapping } from "../lib/constants";
-import { selectStyleWide } from "../styles/selectStyle";
+import { selectStyleVariable } from "../styles/selectStyle";
 
 const GUESSER_ID = "voiceline";
 
@@ -86,7 +86,10 @@ function Guesser({ mode, setMode }) {
                 </span>
             )}
 
-            <EgoDropdownSelector selected={null} setSelected={x => { if (x) quiz.submitGuess(x) }} styles={selectStyleWide} excludeOptions={quiz.answers ?? []} />
+
+            <div style={{ width: "min(100%, 1000px)" }}>
+                <EgoDropdownSelector selected={null} setSelected={x => { if (x) quiz.submitGuess(x) }} styles={selectStyleVariable} excludeOptions={quiz.answers ?? []} />
+            </div>
 
             {mode === "standard" &&
                 <span className="text-link" onClick={quiz.skip}
@@ -95,6 +98,8 @@ function Guesser({ mode, setMode }) {
                     Skip
                 </span>
             }
+
+            <div style={{ minHeight: "300px" }} />
         </>
 
     if (quiz.phase === "reveal") {
