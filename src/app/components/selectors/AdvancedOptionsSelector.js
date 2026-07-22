@@ -9,6 +9,10 @@ import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, LEVEL_CAP } from "@/app/lib/constants";
 import { selectStyleSmall } from "@/app/styles/selectStyle";
 
+const allOptionTypes = {
+    "strict": "Strict Filtering"
+}
+
 const bothOptionTypes = {
     "season": "Season Filter",
     "strict": "Strict Filtering"
@@ -24,6 +28,11 @@ const advancedOptionTypes = {
 
 const identityAdvancedOptionTypes = {
     "faction": "Faction Filter"
+}
+
+const announcerAdvancedOptionTypes = {
+    "walpurgis": "Walpurgis",
+    "ideality": "Ideality"
 }
 
 const advancedOptionStyle = {
@@ -130,9 +139,14 @@ const dropdownStyle = {
 }
 
 function AdvancedOption({ mode, type, param, affinity, order, cond, value, faction, season, setOptionParam, removeOption }) {
-    const options = mode === "both" ?
-        bothOptionTypes :
-        { ...advancedOptionTypes, ...(mode === "id" ? identityAdvancedOptionTypes : {}) }
+    const options =
+        mode === "all" ?
+            allOptionTypes :
+            mode === "both" ?
+                bothOptionTypes :
+                mode === "announcer" ?
+                    announcerAdvancedOptionTypes :
+                    { ...advancedOptionTypes, ...(mode === "id" ? identityAdvancedOptionTypes : {}) }
 
     const typeDropdown = <DropdownButton
         value={type} setValue={x => setOptionParam("type", x)}
@@ -201,7 +215,7 @@ function AdvancedOption({ mode, type, param, affinity, order, cond, value, facti
         return <div style={advancedOptionStyle}>
             {typeDropdown}
             <span style={{ fontWeight: "bold" }}>:</span>
-            <SeasonDropdownSelector selected={season} setSelected={x => setOptionParam("season", x)} styles={selectStyleSmall}/>
+            <SeasonDropdownSelector selected={season} setSelected={x => setOptionParam("season", x)} styles={selectStyleSmall} />
             {remButton}
         </div>
     }
@@ -214,21 +228,15 @@ function AdvancedOption({ mode, type, param, affinity, order, cond, value, facti
 
 export default function AdvancedOptionsSelector({ mode, options, setOptions }) {
     const addAdvancedOption = () => {
-        if (mode === "id")
-            setOptions(p => [...p, { type: null }])
-        else
-            setOptions(p => [...p, { type: null }])
+        setOptions(p => [...p, { type: null }])
     }
 
     const setOptionParam = (i, key, value) => {
-        if (mode === "id")
-            setOptions(p => p.map((x, ind) => ind === i ? { ...x, [key]: value } : x));
-        else
-            setOptions(p => p.map((x, ind) => ind === i ? { ...x, [key]: value } : x));
+        setOptions(p => p.map((x, ind) => ind === i ? { ...x, [key]: value } : x));
     }
 
     return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.1rem", alignItems: "center" }}>
-        <button style={{fontSize: "0.9rem"}} onClick={() => addAdvancedOption()}>Add Advanced Option</button>
+        <button style={{ fontSize: "0.9rem" }} onClick={() => addAdvancedOption()}>Add Advanced Option</button>
         {options.map((x, i) =>
             <AdvancedOption key={i} mode={mode} {...x}
                 setOptionParam={(k, v) => setOptionParam(i, k, v)}
@@ -263,11 +271,17 @@ export function getFilterSortAdvancedOptionsData(mode, advancedOptions) {
                     if (opt.param === undefined || opt.cond === undefined) return true;
                     const v = identityExtractParams[opt.param](data);
                     return compare(v, opt.value ?? 0, opt.cond);
-                } else {
+                } else if (mode === "ego") {
                     if (opt.param === undefined || opt.affinity === undefined || opt.cond === undefined) return true;
                     const v = egoExtractParams[opt.param](data, opt.affinity);
                     return compare(v, opt.value ?? 0, opt.cond);
                 }
+            }
+            if (opt.type === "walpurgis" && mode === "announcer") {
+                return data.walpurgis;
+            }
+            if (opt.type === "ideality" && mode === "announcer") {
+                return data.ideality;
             }
             return true;
         })) return true;
@@ -296,9 +310,11 @@ export function AdvancedOptionsLabels({ mode, advancedOptions, data }) {
         return advancedOptions
             .filter(({ type, param }) => ["sort", "filter"].includes(type) && param)
             .map((opt, i) => identityParamLabels[opt.param](i, data))
-    } else {
+    } else if (mode === "ego") {
         return advancedOptions
             .filter(({ type, param, affinity }) => ["sort", "filter"].includes(type) && param && affinity)
             .map((opt, i) => egoParamLabels[opt.param](i, data, opt.affinity))
+    } else {
+        return null;
     }
 } 

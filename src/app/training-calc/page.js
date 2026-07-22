@@ -14,8 +14,8 @@ import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import { getLevelCost, getUptieCost, mdCrates, threadLux, xpLux } from "../lib/training";
 
 export default function TrainingCalcPage() {
-    const [identities, identitiesLoading] = useData("identities_mini");
-    const [egos, egosLoading] = useData("egos_mini");
+    const [identities, identitiesLoading] = useData("identities");
+    const [egos, egosLoading] = useData("egos");
 
     const [selected, setSelected] = useState([]);
     const [starts, setStarts] = useState({ default: { level: 1, uptie: "unowned" } });

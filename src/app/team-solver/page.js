@@ -13,6 +13,7 @@ import SinnerIcon from "../components/icons/SinnerIcon";
 import StatusIcon from "../components/icons/StatusIcon";
 import NumberInput from "../components/objects/NumberInput";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
+import WbList, { useWbState } from "../components/objects/WbList";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
@@ -123,11 +124,8 @@ export default function TeamSolverPage() {
 
     const [placeholders, setPlaceholders] = useState([]);
 
-    const [wbMode, setWbMode] = useState("b");
-    const [wbList, setWbList] = useState([]);
-    const [wbListDisplay, setWbListDisplay] = useState("mixed");
+    const wbState = useWbState();
     const [wbListOpen, setWbListOpen] = useState(false);
-    const [companyLoading, setCompanyLoading] = useState(false);
 
     const [initializing, setInitializing] = useState(true);
     const [solving, setSolving] = useState(false);
@@ -152,9 +150,17 @@ export default function TeamSolverPage() {
             if (data.solvers) setSolvers(data.solvers);
             if (data.keywordModifiers) setKeywordModifiers(data.keywordModifiers);
             if (data.placeholders) setPlaceholders(data.placeholders);
-            if (data.wbMode) setWbMode(data.wbMode);
-            if (data.wbList) setWbList(data.wbList);
-            if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
+
+            if (data.wbState) {
+                wbState.updateState(data.wbState);
+            } else {
+                const tempWbState = {};
+                if (data.wbMode) tempWbState.mode = data.wbMode;
+                if (data.wbList) tempWbState.list = data.wbList;
+                if (data.wbListDisplay) tempWbState.listDisplay = data.wbListDisplay;
+                if (Object.keys(tempWbState).length) wbState.updateState(tempWbState);
+            }
+
             if (data.wbListOpen) setWbListOpen(data.wbListOpen);
         }
 
@@ -162,7 +168,7 @@ export default function TeamSolverPage() {
             if (!x) getLocalStore("keywordSolver").get("main").then(handleData);
             else handleData(x);
         });
-    }, [initializing]);
+    }, [initializing, wbState]);
 
     useEffect(() => {
         if (initializing) return;
@@ -172,7 +178,7 @@ export default function TeamSolverPage() {
                 id: "main",
                 fixedIdentityIds, enabledSinners, deployedSinners,
                 keywordTargets, statusTargets, tagTargets, placeholders,
-                solvers, keywordModifiers, wbMode, wbList, wbListDisplay, wbListOpen
+                solvers, keywordModifiers, wbState: wbState.getSavedState(), wbListOpen
             }
 
             await getLocalStore("teamSolver").save(data);
@@ -191,7 +197,7 @@ export default function TeamSolverPage() {
         return () => clearTimeout(saveTimeout.current);
     }, [initializing, fixedIdentityIds, enabledSinners, deployedSinners,
         keywordTargets, statusTargets, tagTargets, placeholders, solvers,
-        keywordModifiers, wbMode, wbList, wbListDisplay, wbListOpen]);
+        keywordModifiers, wbState, wbListOpen]);
 
     const handleSetFixedIdentityId = (index, id) => {
         setFixedIdentityIds(p => p.map((v, i) => i === index ? id : v));
@@ -268,9 +274,9 @@ export default function TeamSolverPage() {
 
             const params = {
                 identityOptions:
-                    wbMode === "w" ?
-                        wbList.map(id => identities[id]) :
-                        Object.values(identities).filter(x => !wbList.includes(x.id)),
+                    wbState.mode === "w" ?
+                        wbState.list.map(id => identities[id]) :
+                        Object.values(identities).filter(x => !wbState.list.includes(x.id)),
                 fixedIdentityIds:
                     fixedIdentityIds.reduce((acc, id, i) => {
                         if (!id) return acc;
@@ -309,37 +315,6 @@ export default function TeamSolverPage() {
             });
         }
     }
-
-    const wbListComponent = useMemo(() => {
-        if (identitiesLoading) return null;
-
-        const component = (id, i) => {
-            return <div key={i} className={styles.wbComponent} onClick={() => setWbList(p => p.filter(x => x !== id))}>
-                <IdentityIcon id={id} uptie={4} displayName={true} displayRarity={true} />
-            </div>
-        }
-
-        if (wbListDisplay === "mixed")
-            return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem" }}>
-                {wbList.map((x, i) => component(x, i))}
-            </div>
-
-        const bySinner = {};
-        wbList.forEach(x => {
-            let sinnerId = identities[x].sinnerId;
-            if (sinnerId in bySinner) bySinner[sinnerId].push(x);
-            else bySinner[sinnerId] = [x];
-        })
-
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-            {Object.entries(bySinner).map(([sinnerId, list]) => <div key={sinnerId} style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem" }}>
-                    {list.map((x, i) => component(x, i))}
-                </div>
-            </div>)}
-        </div>;
-    }, [wbList, wbListDisplay, identities, identitiesLoading]);
 
     const [identityOptions, statusOptions, tagOptions] = useMemo(() => {
         if (identitiesLoading) return [];
@@ -446,7 +421,7 @@ export default function TeamSolverPage() {
                             </span>
                         </label>
                         <button onClick={() => setWbListOpen(p => !p)}>
-                            {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
+                            {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbState.list.length > 0 ? ` (${wbState.list.length})` : null}
                         </button>
                         <button onClick={() => resetSinners()}>
                             Reset sinner settings
@@ -514,34 +489,11 @@ export default function TeamSolverPage() {
                     </div>)}
                 </div>
 
-                {wbListOpen ? <>
-                    <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
-                        <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
-                        <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
-                        <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
-                        <button onClick={() => setWbList([])}>Clear All</button>
-                    </div>
-                    <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                            <span>Display:</span>
-                            <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>
-                            <span className={`tab-header ${wbListDisplay === "sinner" ? "active" : null}`} onClick={() => setWbListDisplay("sinner")}>Per Sinner</span>
-                        </div>
-                        {wbListComponent}
-                    </div>
-                    <AllIdEgoSelector
-                        identityIds={wbList}
-                        setIdentityId={x => setWbList(p => [...p, x])}
-                        identityOptions={identities}
-                    />
-                </> : null
-                }
+                {wbListOpen && <WbList wbState={wbState} />}
 
                 <span style={{ maxWidth: "1000px", textAlign: "left" }}>
                     The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. You can switch between Balanced, Faster, and Variety modes depending on whether you prefer speed or more varied results. Only identities that match at least one of your requirements will be considered.
                 </span>
-
-
 
                 <h3 style={{ margin: 0 }}>Results</h3>
 

@@ -118,6 +118,7 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
 
         for (const filterType in f) {
             if (type === "identity") {
+                if (filterType === "egoTier") return false;
                 if (!(filterType in identityFilterMatchFunctions)) continue;
 
                 if (strictFiltering) {
@@ -126,6 +127,7 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
                     if (!f[filterType].some(x => identityFilterMatchFunctions[filterType](x, item))) return false;
                 }
             } else if (type === "ego") {
+                if (filterType === "identityTier") return false;
                 if (!(filterType in egoFilterMatchFunctions)) continue;
 
                 if (strictFiltering) {
@@ -141,6 +143,8 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
                 } else {
                     if (!f[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
                 }
+            } else if (type === "announcer") {
+                return false;
             }
         }
 
@@ -154,6 +158,8 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
             } else if (type === "gift") {
                 if (!(filterType in giftFilterMatchFunctions)) continue;
                 if (fe[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
+            } else if (type === "announcer") {
+
             }
         }
         return true;
