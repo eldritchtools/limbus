@@ -42,8 +42,8 @@ export function useWbState() {
 
 export default function WbList({ wbState }) {
     const { user } = useAuth();
-    const [identities, identitiesLoading] = useData("identities_mini");
-    const [egos, egosLoading] = useData("egos_mini");
+    const [identities, identitiesLoading] = useData("identities");
+    const [egos, egosLoading] = useData("egos");
 
     const applyCompanyData = useCallback(() => {
         if (identitiesLoading || egosLoading) return;

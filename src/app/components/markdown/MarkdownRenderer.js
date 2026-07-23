@@ -144,7 +144,7 @@ function SkillItem({ val, context }) {
         return <span
             {...getSkillTooltipProps(ownerId, skillId)}
             style={{ display: "inline", fontWeight: "bold" }}>
-            <span>{skillName}</span>
+            {skillName}
         </span>
     else {
         return <span>{`{skill:${ownerId}|${skillId}}`}</span>
@@ -500,7 +500,7 @@ export default function MarkdownRenderer({ content, context, guardedLinks }) {
         </ReactMarkdown>
     }, [content, context, guardedLinks]);
 
-    return <div style={{ lineHeight: "1.4", textAlign: "justify", wordWrap: "break-word", overflowWrap: "break-word", wordBreak: "break-word" }}>
+    return <div style={{ lineHeight: "1.4", textAlign: "start", wordWrap: "break-word", overflowWrap: "break-word", wordBreak: "break-word" }}>
         {renderedMarkdown}
     </div>
 

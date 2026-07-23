@@ -56,10 +56,11 @@ export function BuildDisplaySection({ build }) {
         />
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
-                <BuildDisplayMenuCard>
+                <BuildDisplayMenuCard width={240}>
                     <div>Display Type</div>
                     <DisplayTypeButton value={displayType} setValue={setDisplayType} />
                     <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
+                    <TeamCodeComponent teamCode={teamCode} />
                 </BuildDisplayMenuCard>
                 <Distribution
                     identityIds={build.identity_ids}
@@ -68,7 +69,6 @@ export function BuildDisplaySection({ build }) {
                     deploymentOrder={build.deployment_order}
                     activeSinners={build.active_sinners}
                 />
-                <TeamCodeComponent teamCode={teamCode} />
             </div>
         </DragContainer>
     </>

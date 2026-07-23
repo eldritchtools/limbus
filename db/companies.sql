@@ -2,24 +2,27 @@ create table public.companies (
   user_id uuid primary key references auth.users(id) on delete cascade,
   identities text[] not null default '{}',
   egos text[] not null default '{}',
+  announcers not null default "0",
   updated_at timestamptz default now()
 );
 
-create or replace function public.get_company_by_username(p_username text)
+create or replace function public.get_company_by_username_v2(p_username text)
 returns table (
   user_id uuid,
   identities text[],
   egos text[],
+  announcers text,
   updated_at timestamptz
 )
 language sql
-security definer
+security invoker
 set search_path = public
 as $$
   select
     c.user_id,
     c.identities,
     c.egos,
+    c.announcers,
     c.updated_at
   from public.companies c
   join public.users u on c.user_id = u.id

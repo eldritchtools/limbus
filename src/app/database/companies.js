@@ -22,6 +22,7 @@ async function updateCompany(user, userData) {
                 user_id: user.id,
                 identities: userData.identities,
                 egos: userData.egos,
+                announcers: userData.announcers,
                 updated_at: new Date()
             })
 
@@ -31,7 +32,7 @@ async function updateCompany(user, userData) {
 }
 
 async function getCompanyByUsername(username) {
-    const result = await callRPC("get_company_by_username", { p_username: username });
+    const result = await callRPC("get_company_by_username_v2", { p_username: username });
     if (result.length === 0) return null;
     return result[0];
 }

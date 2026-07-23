@@ -31,14 +31,16 @@ function constructEgoOptsMap() {
 
 export function generateChoices(settings, wbState, identitiesData, egosData, identities, egos, blocked, addBlocked) {
     if (settings.randomizationRule === "strict") {
+        const wbIdentities = Object.entries(identitiesData).filter(([id]) => wbFilter(id, wbState))
 
-        const sinnerOpts = identities.map((x, i) => x === null ? i + 1 : null).filter(x => x);
+        const sinnerOpts = identities.map((x, i) =>
+            (x === null && wbIdentities.some(([, data]) => data.sinnerId === i + 1)) ? i + 1 : null
+        ).filter(x => x);
         const sinnerId = pickRandom(sinnerOpts);
 
         const identityOpts =
-            Object.entries(identitiesData)
+            wbIdentities
                 .filter(([, data]) => data.sinnerId === sinnerId)
-                .filter(([id]) => wbFilter(id, wbState))
                 .map(([id]) => id)
 
         const pickedIds = pickMultiple(identityOpts, settings.choices);
@@ -63,15 +65,16 @@ export function generateChoices(settings, wbState, identitiesData, egosData, ide
     }
 
     if (settings.randomizationRule === "standard") {
-        const sinnerOpts = identities.map((x, i) => x === null ? i + 1 : null).filter(x => x);
+        const wbIdentities = Object.entries(identitiesData).filter(([id]) => wbFilter(id, wbState))
 
-        const identityOptsPreBlock =
-            Object.entries(identitiesData)
-                .filter(([, data]) => sinnerOpts.includes(data.sinnerId))
-                .filter(([id]) => wbFilter(id, wbState))
+        const sinnerOpts = identities.map((x, i) =>
+            (x === null && wbIdentities.some(([, data]) => data.sinnerId === i + 1)) ? i + 1 : null
+        ).filter(x => x);
+
+        const identityOptsPreBlock = wbIdentities.filter(([, data]) => sinnerOpts.includes(data.sinnerId))
 
         const identityOptsPostBlock = identityOptsPreBlock.filter(([id]) => !blocked.has(id))
-        const identityOpts = (identityOptsPostBlock.length === 0 ? identityOptsPreBlock : identityOptsPostBlock).map(([id]) => id);
+        const identityOpts = (identityOptsPostBlock.length < settings.choices ? identityOptsPreBlock : identityOptsPostBlock).map(([id]) => id);
 
         const pickedIds = pickMultiple(identityOpts, settings.choices);
         addBlocked(pickedIds);
@@ -108,7 +111,7 @@ export function generateChoices(settings, wbState, identitiesData, egosData, ide
                 .filter(([id]) => wbFilter(id, wbState))
 
         const identityOptsPostBlock = identityOptsPreBlock.filter(([id]) => !blocked.has(id))
-        const identityOpts = (identityOptsPostBlock.length === 0 ? identityOptsPreBlock : identityOptsPostBlock).map(([id]) => id);
+        const identityOpts = (identityOptsPostBlock.length < settings.choices ? identityOptsPreBlock : identityOptsPostBlock).map(([id]) => id);
 
         const pickedIds = pickMultiple(identityOpts, settings.choices);
         addBlocked(pickedIds);

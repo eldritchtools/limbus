@@ -6,6 +6,7 @@ import ReactTimeAgo from "react-time-ago";
 
 import styles from "./CompanyDisplay.module.css";
 import { useData } from "../DataProvider";
+import AnnouncerIcon from "../icons/AnnouncerIcon";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
@@ -25,6 +26,10 @@ import useLocalState from "@/app/lib/useLocalState";
 const itemOwned = (bitsets, item) => bitsetFunctions.hasFlag(bitsets[item.sinnerId - 1], Number(item.id.slice(-2)) - 1);
 const setFlag = (bitset, item) => bitsetFunctions.setFlag(bitset, Number(item.id.slice(-2)) - 1);
 const unsetFlag = (bitset, item) => bitsetFunctions.unsetFlag(bitset, Number(item.id.slice(-2)) - 1);
+
+const announcerItemOwned = (bitset, item) => bitsetFunctions.hasFlag(bitset, Number(item.id) - 1);
+const announcerSetFlag = (bitset, item) => bitsetFunctions.setFlag(bitset, Number(item.id) - 1);
+const announcerUnsetFlag = (bitset, item) => bitsetFunctions.unsetFlag(bitset, Number(item.id) - 1);
 
 function IdentityDisplay({ identity, identityBitsets, setIdentityBitsets, editable, data, advancedOptions }) {
     const owned = itemOwned(identityBitsets, identity);
@@ -76,16 +81,41 @@ function EgoDisplay({ ego, egoBitsets, setEgoBitsets, editable, data, advancedOp
     }
 }
 
-function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, setEgoBitsets, identities, egos, editable, setForceSave, saveString }) {
+function AnnouncerDisplay({ announcer, announcerBitset, setAnnouncerBitset, editable }) {
+    const owned = announcerItemOwned(announcerBitset, announcer);
+    const className = `${styles.clickableIcon} ${owned ? styles.owned : styles.unowned}`;
+
+    if (editable) {
+        const handleClick = () =>
+            setAnnouncerBitset(p => owned ? announcerUnsetFlag(p, announcer) : announcerSetFlag(p, announcer))
+
+        return <div onClick={handleClick} className={className}>
+            <AnnouncerIcon announcer={announcer} displayName={true} />
+        </div>
+    } else {
+        return <div className={className}>
+            <AnnouncerIcon announcer={announcer} displayName={true} />
+        </div>
+    }
+}
+
+function CompanyDisplayMain({
+    identityBitsets, setIdentityBitsets,
+    egoBitsets, setEgoBitsets,
+    announcerBitset, setAnnouncerBitset,
+    identities, egos, announcers,
+    editable, setForceSave, saveString
+}) {
     const [altNames, altNamesLoading] = useData("alt_names");
-    const [activeTab, setActiveTab] = useLocalState("companyActiveTab", "both");
+    const [activeTab, setActiveTab] = useLocalState("companyActiveTab", "all");
     const [ownedFilter, setOwnedFilter] = useLocalState("companyOwnedFilter", "both");
     const [separateSinners, setSeparateSinners] = useLocalState("companySeparateSinners", false);
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
     const [identityAdvOpts, setIdentityAdvOpts] = useState([]);
     const [egoAdvOpts, setEgoAdvOpts] = useState([]);
-    const [bothAdvOpts, setBothAdvOpts] = useState([]);
+    const [announcerAdvOpts, setAnnouncerAdvOpts] = useState([]);
+    const [allAdvOpts, setAllAdvOpts] = useState([]);
     const { isMobile } = useBreakpoint();
 
     const cycleOwnedFilter = () => {
@@ -99,13 +129,23 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
         const sortFunctions = [];
 
         const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs } =
-            getFilterSortAdvancedOptionsData(activeTab, activeTab === "both" ? bothAdvOpts : (activeTab === "id" ? identityAdvOpts : egoAdvOpts));
+            getFilterSortAdvancedOptionsData(activeTab,
+                activeTab === "all" ?
+                    allAdvOpts :
+                    (activeTab === "id" ?
+                        identityAdvOpts :
+                        (activeTab === "ego" ?
+                            egoAdvOpts :
+                            announcerAdvOpts
+                        )
+                    )
+            );
 
         sortFunctions.push(...sortFuncs);
 
         let count = 0, totalCount = 0;
 
-        if (activeTab === "both" || activeTab === "id") {
+        if (activeTab === "all" || activeTab === "id") {
             const items = filterByFilters("identity",
                 Object.values(identities),
                 [...filters, ...addedFilters],
@@ -124,10 +164,10 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 if (itemOwned(identityBitsets, identity)) count += 1;
             });
 
-            filtered.push(...items);
+            filtered.push(...items.map(x => ["id", x]));
         }
 
-        if (activeTab === "both" || activeTab === "ego") {
+        if (activeTab === "all" || activeTab === "ego") {
             const items = filterByFilters("ego",
                 Object.values(egos),
                 [...filters, ...addedFilters],
@@ -146,16 +186,58 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
                 if (itemOwned(egoBitsets, ego)) count += 1;
             });
 
-            filtered.push(...items);
+            filtered.push(...items.map(x => ["ego", x]));
         }
 
-        sortFunctions.push((a, b) => a.sinnerId - b.sinnerId);
-        sortFunctions.push((a, b) => a.id[0] - b.id[0]);
-        sortFunctions.push((a, b) => b.id.localeCompare(a.id));
+        if (activeTab === "all" || activeTab === "announcer") {
+            const items = filterByFilters("announcer",
+                Object.values(announcers),
+                [...filters, ...addedFilters],
+                announcer => {
+                    if (announcer.hidden) return false;
+                    if (searchString.length > 0 && !checkFilterMatch(searchString, [announcer.name])) return false;
+                    if (ownedFilter === "yes" && !announcerItemOwned(announcerBitset, announcer)) return false;
+                    if (ownedFilter === "no" && announcerItemOwned(announcerBitset, announcer)) return false;
+                    if (!filterFunction(announcer)) return false;
+                    return true;
+                },
+                strict
+            );
+
+            items.forEach(announcer => {
+                totalCount += 1;
+                if (announcerItemOwned(announcerBitset, announcer)) count += 1;
+            });
+
+            filtered.push(...items.map(x => ["announcer", x]));
+        }
+
+        const sortFunctionsB = [
+            ([a], [b]) => {
+                if (a === b) return 0;
+                if (a === "id") return -1;
+                if (b === "id") return 1;
+                if (a === "ego") return -1;
+                if (b === "ego") return 1;
+                return 0;
+            },
+            ([, a], [, b]) => {
+                if (a.sinnerId === b.sinnerId) return 0;
+                if (!a.sinnerId) return 1;
+                if (!b.sinnerId) return -1;
+                return a.sinnerId - b.sinnerId;
+            },
+            ([, a], [, b]) => Number(b.id) - Number(a.id)
+        ];
 
         filtered = filtered.sort((a, b) => {
             for (let i = 0; i < sortFunctions.length; i++) {
-                const res = sortFunctions[i](a, b);
+                const res = sortFunctions[i](a[1], b[1]);
+                if (res === 0) continue;
+                return res;
+            }
+            for (let i = 0; i < sortFunctionsB.length; i++) {
+                const res = sortFunctionsB[i](a, b);
                 if (res === 0) continue;
                 return res;
             }
@@ -164,9 +246,10 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
 
         if (separateSinners) {
             return [
-                filtered.reduce((acc, item) => {
-                    if (item.sinnerId in acc) acc[item.sinnerId].push(item);
-                    else acc[item.sinnerId] = [item];
+                filtered.reduce((acc, [t, item]) => {
+                    const sinnerId = item.sinnerId ?? 99;
+                    if (sinnerId in acc) acc[sinnerId].push([t, item]);
+                    else acc[sinnerId] = [[t, item]];
                     return acc;
                 }, {}),
                 count,
@@ -175,33 +258,50 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
         }
 
         return [filtered, count, totalCount];
-    }, [identityBitsets, egoBitsets, identities, egos, activeTab, ownedFilter, separateSinners, searchString, filters, altNames, altNamesLoading, bothAdvOpts, identityAdvOpts, egoAdvOpts]);
+    }, [
+        identityBitsets, egoBitsets, announcerBitset,
+        identities, egos, announcers,
+        activeTab, ownedFilter, separateSinners, searchString,
+        filters, altNames, altNamesLoading,
+        allAdvOpts, identityAdvOpts, egoAdvOpts, announcerAdvOpts
+    ]);
 
     const contentDisplay = () => {
         const listToComponents = list =>
             <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
-                {list.map(obj =>
-                    obj.id[0] === "1" ?
+                {list.map(([t, obj]) =>
+                    t === "id" ?
                         <IdentityDisplay key={obj.id}
                             identity={obj} identityBitsets={identityBitsets}
                             setIdentityBitsets={setIdentityBitsets} editable={editable}
-                            data={obj} advancedOptions={activeTab === "both" ? bothAdvOpts : identityAdvOpts}
+                            data={obj} advancedOptions={activeTab === "all" ? allAdvOpts : identityAdvOpts}
                         /> :
-                        <EgoDisplay key={obj.id}
-                            ego={obj} egoBitsets={egoBitsets}
-                            setEgoBitsets={setEgoBitsets} editable={editable}
-                            data={obj} advancedOptions={activeTab === "both" ? bothAdvOpts : egoAdvOpts}
-                        />
+                        t === "ego" ?
+                            <EgoDisplay key={obj.id}
+                                ego={obj} egoBitsets={egoBitsets}
+                                setEgoBitsets={setEgoBitsets} editable={editable}
+                                data={obj} advancedOptions={activeTab === "all" ? allAdvOpts : egoAdvOpts}
+                            /> :
+                            t === "announcer" ?
+                                <AnnouncerDisplay key={obj.id}
+                                    announcer={obj} announcerBitset={announcerBitset}
+                                    setAnnouncerBitset={setAnnouncerBitset} editable={editable}
+                                /> :
+                                null
                 )}
             </div>
 
         if (separateSinners) {
             return <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
                 {Object.entries(items).map(([sinnerId, list]) => [
-                    <div key={sinnerId} style={{ display: "flex", flexDirection: "row", alignItems: "center", fontSize: "1.2rem", fontWeight: "bold" }}>
-                        <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
-                        {sinnerIdMapping[sinnerId]}
-                    </div>,
+                    sinnerId !== "99" ?
+                        <div key={sinnerId} style={{ display: "flex", flexDirection: "row", alignItems: "center", fontSize: "1.2rem", fontWeight: "bold" }}>
+                            <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
+                            {sinnerIdMapping[sinnerId]}
+                        </div> :
+                        <div style={{ display: "flex", alignItems: "center", fontSize: "1.2rem", height: "48px", fontWeight: "bold" }}>
+                            Announcers
+                        </div>,
                     <div key={`${sinnerId}-list`}>
                         {listToComponents(list)}
                     </div>
@@ -213,37 +313,45 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
     }
 
     const setAllFiltered = () => {
-        const list = separateSinners ? Object.entries(items).map(([, list]) => list).flat() : items;
+        const list = separateSinners ? 
+            Object.entries(items).map(([, list]) => list).reduce((acc, list) => {acc.push(...list); return acc;}, []) : items;
         const newIdBitsets = [...identityBitsets];
-        const newEgoBitsets = [...egoBitsets]
+        const newEgoBitsets = [...egoBitsets];
+        let newAnnouncerBitset = announcerBitset;
 
-        list.forEach(obj => {
-            if (obj.id[0] === "1") {
+        list.forEach(([t, obj]) => {
+            if (t === "id")
                 newIdBitsets[obj.sinnerId - 1] = setFlag(newIdBitsets[obj.sinnerId - 1], obj);
-            } else {
+            else if (t === "ego")
                 newEgoBitsets[obj.sinnerId - 1] = setFlag(newEgoBitsets[obj.sinnerId - 1], obj);
-            }
+            else if (t === "announcer")
+                newAnnouncerBitset = announcerSetFlag(newAnnouncerBitset, obj);
         })
 
         setIdentityBitsets(newIdBitsets);
         setEgoBitsets(newEgoBitsets);
+        setAnnouncerBitset(newAnnouncerBitset);
     }
 
     const unsetAllFiltered = () => {
-        const list = separateSinners ? Object.entries(items).map(([, list]) => list).flat() : items;
+        const list = separateSinners ? 
+            Object.entries(items).map(([, list]) => list).reduce((acc, list) => {acc.push(...list); return acc;}, []) : items;
         const newIdBitsets = [...identityBitsets];
         const newEgoBitsets = [...egoBitsets]
+        let newAnnouncerBitset = announcerBitset;
 
-        list.forEach(obj => {
-            if (obj.id[0] === "1") {
+        list.forEach(([t, obj]) => {
+            if (t === "id")
                 newIdBitsets[obj.sinnerId - 1] = unsetFlag(newIdBitsets[obj.sinnerId - 1], obj);
-            } else {
+            else if (t === "ego")
                 newEgoBitsets[obj.sinnerId - 1] = unsetFlag(newEgoBitsets[obj.sinnerId - 1], obj);
-            }
+            else if (t === "announcer")
+                newAnnouncerBitset = announcerUnsetFlag(newAnnouncerBitset, obj);
         })
 
         setIdentityBitsets(newIdBitsets);
         setEgoBitsets(newEgoBitsets);
+        setAnnouncerBitset(newAnnouncerBitset);
     }
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
@@ -256,9 +364,10 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
             </div>
         </div>}
         <h2 style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${activeTab === "both" ? "active" : ""}`} onClick={() => setActiveTab("both")}>Both</div>
+            <div className={`tab-header ${activeTab === "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>All</div>
             <div className={`tab-header ${activeTab === "id" ? "active" : ""}`} onClick={() => setActiveTab("id")}>Identities</div>
             <div className={`tab-header ${activeTab === "ego" ? "active" : ""}`} onClick={() => setActiveTab("ego")}>E.G.Os</div>
+            <div className={`tab-header ${activeTab === "announcer" ? "active" : ""}`} onClick={() => setActiveTab("announcer")}>Announcers</div>
         </h2>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.1rem", alignItems: "center" }}>
@@ -281,17 +390,19 @@ function CompanyDisplayMain({ identityBitsets, setIdentityBitsets, egoBitsets, s
             }
         </div>
 
-        {activeTab === "both" ?
+        {activeTab === "all" ?
             <IconsSelector type={"row"} categories={["identityTier", "egoTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} borderless={true} /> :
             activeTab === "id" ?
                 <IconsSelector type={"row"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} borderless={true} /> :
-                <IconsSelector type={"row"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} borderless={true} />
+                activeTab === "ego" ?
+                    <IconsSelector type={"row"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} borderless={true} /> :
+                    null
         }
 
         <AdvancedOptionsSelector
             mode={activeTab}
-            options={activeTab === "both" ? bothAdvOpts : activeTab === "id" ? identityAdvOpts : egoAdvOpts}
-            setOptions={activeTab === "both" ? setBothAdvOpts : activeTab === "id" ? setIdentityAdvOpts : setEgoAdvOpts}
+            options={activeTab === "all" ? allAdvOpts : activeTab === "id" ? identityAdvOpts : (activeTab === "ego" ? egoAdvOpts : announcerAdvOpts)}
+            setOptions={activeTab === "all" ? setAllAdvOpts : activeTab === "id" ? setIdentityAdvOpts : (activeTab === "ego" ? setEgoAdvOpts : setAnnouncerAdvOpts)}
         />
 
         <span style={{ fontWeight: "bold", alignSelf: "center", fontSize: "1.2rem" }}>
@@ -306,8 +417,10 @@ export default function CompanyDisplay({ username, editable = false }) {
     const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");
+    const [announcers, announcersLoading] = useData("announcers");
     const [identityBitsets, setIdentityBitsets] = useState([]);
     const [egoBitsets, setEgoBitsets] = useState([]);
+    const [announcerBitset, setAnnouncerBitset] = useState(null);
     const [contentLoading, setContentLoading] = useState(true);
     const [notSet, setNotSet] = useState(false);
 
@@ -326,12 +439,14 @@ export default function CompanyDisplay({ username, editable = false }) {
                 if (editable) {
                     setIdentityBitsets(Array.from({ length: 12 }, () => bitsetFunctions.newMask(1)));
                     setEgoBitsets(Array.from({ length: 12 }, () => bitsetFunctions.newMask(1)));
+                    setAnnouncerBitset(bitsetFunctions.newMask(0));
                 } else {
                     setNotSet(true);
                 }
             } else {
                 setIdentityBitsets(company.identities.map(mask => bitsetFunctions.fromString(mask)));
                 setEgoBitsets(company.egos.map(mask => bitsetFunctions.fromString(mask)));
+                setAnnouncerBitset(bitsetFunctions.fromString(company.announcers));
             }
             setContentLoading(false);
         }
@@ -351,7 +466,8 @@ export default function CompanyDisplay({ username, editable = false }) {
         const saveData = async () => {
             const data = {
                 identities: identityBitsets.map(bitset => bitsetFunctions.toString(bitset)),
-                egos: egoBitsets.map(bitset => bitsetFunctions.toString(bitset))
+                egos: egoBitsets.map(bitset => bitsetFunctions.toString(bitset)),
+                announcers: bitsetFunctions.toString(announcerBitset)
             }
 
             if (user) {
@@ -384,7 +500,7 @@ export default function CompanyDisplay({ username, editable = false }) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setForceSave(false);
         return () => clearTimeout(saveTimeout.current);
-    }, [identityBitsets, egoBitsets, changed, user, editable, forceSave, firstSave]);
+    }, [identityBitsets, egoBitsets, announcerBitset, changed, user, editable, forceSave, firstSave]);
 
     const saveString = useMemo(() => {
         if (saveStatus === "idle") return null;
@@ -394,7 +510,7 @@ export default function CompanyDisplay({ username, editable = false }) {
         return null;
     }, [saveStatus, lastSaved]);
 
-    if (loading || contentLoading || identitiesLoading || egosLoading) return <h3 style={{ textAlign: "center" }}>Loading...</h3>;
+    if (loading || contentLoading || identitiesLoading || egosLoading || announcersLoading) return <h3 style={{ textAlign: "center" }}>Loading...</h3>;
     if (notSet) return <h3 style={{ textAlign: "center" }}>Company has not been set.</h3>;
 
     const handleSetIdentityBitsets = newBitsets => {
@@ -409,10 +525,17 @@ export default function CompanyDisplay({ username, editable = false }) {
         setEgoBitsets(newBitsets);
     }
 
+    const handleSetAnnouncerBitset = newBitset => {
+        if (!editable) return;
+        setChanged(true);
+        setAnnouncerBitset(newBitset);
+    }
+
     return <CompanyDisplayMain
         identityBitsets={identityBitsets} setIdentityBitsets={handleSetIdentityBitsets}
         egoBitsets={egoBitsets} setEgoBitsets={handleSetEgoBitsets}
-        identities={identities} egos={egos}
+        announcerBitset={announcerBitset} setAnnouncerBitset={handleSetAnnouncerBitset}
+        identities={identities} egos={egos} announcers={announcers}
         editable={editable} setForceSave={setForceSave} saveString={saveString}
     />
 }

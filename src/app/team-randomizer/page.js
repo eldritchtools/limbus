@@ -3,29 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import styles from "./teamRandomizer.module.css";
 import BuildDisplayMenuCard from "../components/build/BuildDisplayMenuCard";
 import { useData } from "../components/DataProvider";
 import BuildEditingComponent from "../components/editors/BuildEditingComponent";
-import EgoIcon from "../components/icons/EgoIcon";
-import IdentityIcon from "../components/icons/IdentityIcon";
-import SinnerIcon from "../components/icons/SinnerIcon";
 import NumberInput from "../components/objects/NumberInput";
+import WbList, { useWbState } from "../components/objects/WbList";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
-import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
-import { useAuth } from "../database/authProvider";
-import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
-import { bitsetFunctions } from "../lib/bitset";
 import { egoRankMapping } from "../lib/constants";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 import { constructTeamCode } from "../lib/teamCodeEncoding";
 
 export default function TeamRandomizerPage() {
-    const { user, loading } = useAuth();
-    const [identities, identitiesLoading] = useData("identities_mini");
-    const [egos, egosLoading] = useData("egos_mini");
+    const [identities, identitiesLoading] = useData("identities");
+    const [egos, egosLoading] = useData("egos");
 
     const [identityIds, setIdentityIds] = useState(Array.from({ length: 12 }, () => null));
     const [egoIds, setEgoIds] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => null)));
@@ -33,11 +25,8 @@ export default function TeamRandomizerPage() {
     const [fixedIdentityIds, setFixedIdentityIds] = useState(Array.from({ length: 12 }, () => null));
     const [fixedEgoIds, setFixedEgoIds] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => null)));
 
-    const [wbMode, setWbMode] = useState("b");
-    const [wbList, setWbList] = useState([]);
-    const [wbListDisplay, setWbListDisplay] = useState("mixed");
+    const wbState = useWbState();
     const [wbListOpen, setWbListOpen] = useState(false);
-    const [companyLoading, setCompanyLoading] = useState(false);
 
     const [randomizeIdentities, setRandomizeIdentities] = useState(true);
     const [randomizeEgos, setRandomizeEgos] = useState(true);
@@ -60,9 +49,17 @@ export default function TeamRandomizerPage() {
                 setFixedEgoIds(data.fixedEgoIds);
                 setEgoIds(data.fixedEgoIds);
             }
-            if (data.wbMode) setWbMode(data.wbMode);
-            if (data.wbList) setWbList(data.wbList);
-            if (data.wbListDisplay) setWbListDisplay(data.wbListDisplay);
+
+            if(data.wbState) {
+                wbState.updateState(data.wbState);
+            } else {
+                const tempWbState = {};
+                if (data.wbMode) tempWbState.mode = data.wbMode;
+                if (data.wbList) tempWbState.list = data.wbList;
+                if (data.wbListDisplay) tempWbState.listDisplay = data.wbListDisplay;
+                if (Object.keys(tempWbState).length) wbState.updateState(tempWbState);
+            }
+
             if (data.wbListOpen) setWbListOpen(data.wbListOpen);
             if (data.randomizeIdentities) setRandomizeIdentities(data.randomizeIdentities);
             if (data.randomizeEgos) setRandomizeEgos(data.randomizeEgos);
@@ -70,7 +67,7 @@ export default function TeamRandomizerPage() {
         }
 
         getLocalStore("teamRandomizer").get("main").then(handleData);
-    }, [initializing]);
+    }, [initializing, wbState]);
 
     useEffect(() => {
         if (initializing) return;
@@ -79,7 +76,7 @@ export default function TeamRandomizerPage() {
             const data = {
                 id: "main",
                 fixedIdentityIds, fixedEgoIds,
-                wbMode, wbList, wbListDisplay, wbListOpen,
+                wbState: wbState.getSavedState(), wbListOpen,
                 randomizeIdentities, randomizeEgos, emptyEgoProb
             }
 
@@ -97,7 +94,8 @@ export default function TeamRandomizerPage() {
         }, 1000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [initializing, fixedIdentityIds, fixedEgoIds, wbMode, wbList, wbListDisplay, wbListOpen, randomizeIdentities, randomizeEgos, emptyEgoProb]);
+    }, [initializing, fixedIdentityIds, fixedEgoIds, wbState, wbListOpen, 
+        randomizeIdentities, randomizeEgos, emptyEgoProb]);
 
     const handleSetFixedIdentityIds = newIdsFunc => {
         const newIds = newIdsFunc(identityIds);
@@ -150,9 +148,9 @@ export default function TeamRandomizerPage() {
     const triggerRandomize = () => {
         triggerToolUsedGAEvent("Team Randomizer");
         if (randomizeIdentities) {
-            const idOptions = wbMode === "w" ?
-                wbList.filter(x => `${x}`[0] === "1") :
-                Object.keys(identities).filter(x => !wbList.includes(x));
+            const idOptions = wbState.mode === "w" ?
+                wbState.list.filter(x => `${x}`[0] === "1") :
+                Object.keys(identities).filter(x => !wbState.list.includes(x));
 
             const randomizedIds = fixedIdentityIds.map((x, i) => {
                 if (x) return x;
@@ -165,9 +163,9 @@ export default function TeamRandomizerPage() {
         }
 
         if (randomizeEgos) {
-            const idOptions = wbMode === "w" ?
-                wbList.filter(x => `${x}`[0] === "2") :
-                Object.keys(egos).filter(x => !wbList.includes(x));
+            const idOptions = wbState.mode === "w" ?
+                wbState.list.filter(x => `${x}`[0] === "2") :
+                Object.keys(egos).filter(x => !wbState.list.includes(x));
 
             const randomizedIds = fixedEgoIds.map((xi, i) =>
                 xi.map((x, j) => {
@@ -188,43 +186,13 @@ export default function TeamRandomizerPage() {
         router.push(`/builds/new?${params.toString()}`)
     }
 
-    const applyCompanyData = () => {
-        if (identitiesLoading || egosLoading || loading) return;
-        setCompanyLoading(true);
-
-        const handleCompany = company => {
-            if (!company) return;
-            const newValues = [];
-            const idMasks = company.identities.map(mask => bitsetFunctions.fromString(mask));
-            Object.entries(identities).forEach(([id, identity]) => {
-                if (bitsetFunctions.hasFlag(idMasks[identity.sinnerId - 1], Number(id.slice(-2)) - 1)) return;
-                newValues.push(id);
-            });
-            const egoMasks = company.egos.map(mask => bitsetFunctions.fromString(mask));
-            Object.entries(egos).forEach(([id, ego]) => {
-                if (bitsetFunctions.hasFlag(egoMasks[ego.sinnerId - 1], Number(id.slice(-2)) - 1)) return;
-                newValues.push(id);
-            });
-
-            setWbMode("b");
-            setWbList(newValues);
-            setCompanyLoading(false);
-        }
-
-        if (user) {
-            getCompany(user).then(handleCompany);
-        } else {
-            getLocalStore("companies").get("main").then(handleCompany);
-        }
-    }
-
     const buttonsPanel = <BuildDisplayMenuCard key={"button"}>
         <div style={{ display: "flex" }}>
             <button onClick={clearAll}>Clear all</button>
             <button onClick={clearAllUnfixed}>Clear all unfixed</button>
         </div>
         <button onClick={() => setWbListOpen(p => !p)}>
-            {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbList.length > 0 ? ` (${wbList.length})` : null}
+            {wbListOpen ? "Hide " : "Show "}Black/Whitelist{wbState.list.length > 0 ? ` (${wbState.list.length})` : null}
         </button>
         <div style={{ display: "flex" }}>
             <button onClick={() => triggerRandomize()} style={{ background: "#1e7e34" }}>
@@ -264,42 +232,6 @@ export default function TeamRandomizerPage() {
         </div>
     </BuildDisplayMenuCard>
 
-    const wbListComponent = useMemo(() => {
-        if (identitiesLoading || egosLoading) return null;
-
-        const component = (id, i) => {
-            if (`${id}`[0] === "1")
-                return <div key={i} className={styles.wbComponent} onClick={() => setWbList(p => p.filter(x => x !== id))}>
-                    <IdentityIcon id={id} uptie={4} displayName={true} displayRarity={true} />
-                </div>
-            else
-                return <div key={i} className={styles.wbComponent} onClick={() => setWbList(p => p.filter(x => x !== id))}>
-                    <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} />
-                </div>
-        }
-
-        if (wbListDisplay === "mixed")
-            return <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem" }}>
-                {wbList.map((x, i) => component(x, i))}
-            </div>
-
-        const bySinner = {};
-        wbList.forEach(x => {
-            let sinnerId = `${x}`[0] === "1" ? identities[x].sinnerId : egos[x].sinnerId;
-            if (sinnerId in bySinner) bySinner[sinnerId].push(x);
-            else bySinner[sinnerId] = [x];
-        })
-
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-            {Object.entries(bySinner).map(([sinnerId, list]) => <div key={sinnerId} style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem" }}>
-                    {list.map((x, i) => component(x, i))}
-                </div>
-            </div>)}
-        </div>;
-    }, [wbList, wbListDisplay, identities, egos, identitiesLoading, egosLoading])
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Randomizer</h1>
         <p style={{ margin: 0 }}>
@@ -321,31 +253,7 @@ export default function TeamRandomizerPage() {
                         />
                     </div>
 
-                    {wbListOpen ? <>
-                        <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
-                            <span className={`tab-header ${wbMode === "b" ? "active" : null}`} onClick={() => setWbMode("b")}>Blacklist</span>
-                            <span className={`tab-header ${wbMode === "w" ? "active" : null}`} onClick={() => setWbMode("w")}>Whitelist</span>
-                            <button onClick={() => applyCompanyData()} disabled={companyLoading}>Apply Company Data</button>
-                            <button onClick={() => setWbList([])}>Clear All</button>
-                        </div>
-                        <div className="panel-container" style={{ width: "100%", gap: "0.5rem" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                                <span>Display:</span>
-                                <span className={`tab-header ${wbListDisplay === "mixed" ? "active" : null}`} onClick={() => setWbListDisplay("mixed")}>Mixed</span>
-                                <span className={`tab-header ${wbListDisplay === "sinner" ? "active" : null}`} onClick={() => setWbListDisplay("sinner")}>Per Sinner</span>
-                            </div>
-                            {wbListComponent}
-                        </div>
-                        <AllIdEgoSelector
-                            identityIds={wbList.filter(x => `${x}`[0] === "1")}
-                            egoIds={wbList.filter(x => `${x}`[0] === "2")}
-                            setIdentityId={x => setWbList(p => [...p, x])}
-                            setEgoId={x => setWbList(p => [...p, x])}
-                            identityOptions={identities}
-                            egoOptions={egos}
-                        />
-                    </> : null
-                    }
+                    {wbListOpen && <WbList wbState={wbState} />}
                 </>
         }
     </div>;

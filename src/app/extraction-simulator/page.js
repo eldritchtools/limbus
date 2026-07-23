@@ -53,7 +53,7 @@ function CustomBanner({ identityIds, setIdentityIds, egoIds, setEgoIds, announce
     </div>
 }
 
-function Banner({ banner, identities, egos, isMobile, selected, setSelected }) {
+function Banner({ banner, identities, egos, announcers, isMobile, selected, setSelected }) {
     const items = { 3: [], 2: [], 1: [], "ego": [], "announcer": [], "offAnnouncer": [] };
     let isWalpurgis = false;
     Object.entries(banner.bannerConds ?? []).forEach(([k, v]) => {
@@ -92,7 +92,7 @@ function Banner({ banner, identities, egos, isMobile, selected, setSelected }) {
         if (String(k) === "2") return `[00] ${identities[id].name}`;
         if (String(k) === "1") return `[0] ${identities[id].name}`;
         if (k === "ego") return `[${egos[id].rank}] ${egos[id].name}`;
-        if (k === "announcer") return `[Announcer] ${id}`;
+        if (k === "announcer") return `[Announcer] ${announcers[id].name}`;
         return "";
     }
 
@@ -232,9 +232,9 @@ export default function ExtractionSimulatorPage() {
 
         const constructPulledComponent = (i, obj) => {
             let comp;
-            if (obj[0] === "id") comp = <IdentityIcon id={obj[1]} uptie={4} displayRarity={true} displayName={true} />
-            else if (obj[0] === "ego") comp = <EgoIcon id={obj[1]} type={"awaken"} displayRarity={true} displayName={true} />
-            else comp = <AnnouncerIcon id={obj[1]} />
+            if (obj[0] === "id") comp = <IdentityIcon identity={identities[obj[1]]} uptie={4} displayRarity={true} displayName={true} />
+            else if (obj[0] === "ego") comp = <EgoIcon ego={egos[obj[1]]} type={"awaken"} displayRarity={true} displayName={true} />
+            else comp = <AnnouncerIcon announcer={announcers[obj[1]]} displayName={true} />
 
             return <div key={`${pullCount}-${i}`} style={iconStyle(isMobile)}>
                 {comp}
@@ -267,7 +267,7 @@ export default function ExtractionSimulatorPage() {
                 {pulled.slice(5, 10).map((x, i) => constructPulledComponent(i + 5, x))}
             </div>
         ]
-    }, [pulled, pullCount, isMobile]);
+    }, [identities, egos, announcers, pulled, pullCount, isMobile]);
 
     const pickRandom = list => {
         const rnd = Math.floor(Math.random() * list.length);
@@ -298,8 +298,12 @@ export default function ExtractionSimulatorPage() {
             let rnd = Math.random() * 100;
             if (items.announcer.length > 0 || extractableAnnouncers.length > 0) {
                 if (rnd < 1.3) {
-                    if (items.announcer.length > 0 && Math.random() < 0.5) return ["announcer", pickRandom(items.announcer)];
-                    else return ["announcer", pickRandom(extractableAnnouncers)];
+                    if(extractableAnnouncers.length > 0) {
+                        if (items.announcer.length > 0 && Math.random() < 0.5) return ["announcer", pickRandom(items.announcer)];
+                        else return ["announcer", pickRandom(extractableAnnouncers)];
+                    } else {
+                        return ["announcer", pickRandom(items.announcer)];
+                    }
                 }
                 rnd -= 1.3;
             }
@@ -456,19 +460,19 @@ export default function ExtractionSimulatorPage() {
                                 selected={selected?.name === "custom"} setSelected={setSelected}
                             />
                             <Banner banner={timers.banners.main}
-                                identities={identities} egos={egos}
+                                identities={identities} egos={egos} announcers={announcers}
                                 isMobile={isMobile} selected={selected?.name === timers.banners.main.name} setSelected={setSelected}
                             />
                             {
                                 timers.banners.others.map((banner, i) =>
                                     <Banner key={i} banner={banner}
-                                        identities={identities} egos={egos}
+                                        identities={identities} egos={egos} announcers={announcers}
                                         isMobile={isMobile} selected={selected?.name === banner.name} setSelected={setSelected}
                                     />
                                 )
                             }
                             <Banner banner={{ name: "Standard Extraction", src: "standard" }}
-                                identities={identities} egos={egos}
+                                identities={identities} egos={egos} announcers={announcers}
                                 isMobile={isMobile} selected={selected?.name === "Standard Extraction"} setSelected={setSelected}
                             />
                         </div>

@@ -4,6 +4,8 @@
 // import Image from "next/image";
 
 import { useData } from "../DataProvider";
+import styles from "./Icon.module.css";
+import ProcessedText from "../texts/ProcessedText";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
@@ -11,11 +13,20 @@ export function getAnnouncerImgSrc(announcer) {
     return `${ASSETS_ROOT}/announcers/${announcer.imgStr}.webp`;
 }
 
-function AnnouncerIconMain({ announcer, style }) {
-    const img = <img src={getAnnouncerImgSrc(announcer)} alt={announcer.name} title={announcer.name} style={{ ...style,  width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+function AnnouncerIconMain({ announcer, displayName = false, style }) {
+    const img = <img src={getAnnouncerImgSrc(announcer)} alt={announcer.name} title={announcer.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
 
-    return <div style={{ width: style.width, aspectRatio: "1/1" }}>
+    return <div className={styles.identityIconContainer} style={{ width: style.width, aspectRatio: "1/1" }}>
         {img}
+        {displayName ?
+            <div
+                className={styles.identityIconName}
+                style={{ fontSize: `clamp(0.6rem, calc(10cqw - (${announcer.name.length} * 0.02px)), 1rem)` }}
+            >
+                <ProcessedText text={announcer.name} />
+            </div> :
+            null
+        }
     </div>
 }
 

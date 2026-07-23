@@ -12,6 +12,7 @@ import TeamCodeComponent from "../build/TeamCodeComponent";
 import TeamBuild from "../contentCards/TeamBuild";
 import KeywordIcon from "../icons/KeywordIcon";
 import { useModal } from "../modals/ModalProvider";
+import DragContainer from "../objects/DragContainer";
 import UsernameWithTime from "../user/UsernameWithTime";
 
 import { keywordIdMapping } from "@/app/database/keywordIds";
@@ -31,7 +32,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
         [builds, index]
     );
     const teamCode = useMemo(() => build ? constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order) : build, [build]);
-    
+
     const buildsRef = useRef(builds);
     useEffect(() => { buildsRef.current = builds }, [builds]);
 
@@ -92,27 +93,30 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                 }
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", alignSelf: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                <BuildDisplayMenuCard>
-                    <div>Display Type</div>
-                    <DisplayTypeButton value={displayType} setValue={setDisplayType} />
-                    <span className="sub-text" style={{textAlign: "center"}}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
-                </BuildDisplayMenuCard>
-                <Distribution
-                    identityIds={build.identity_ids}
-                    identityUpties={extraOpts.identityUpties}
-                    egoIds={build.ego_ids}
-                    deploymentOrder={build.deployment_order}
-                    activeSinners={build.active_sinners}
-                />
-                <EventRolls
-                    identityIds={build.identity_ids}
-                    identityUpties={extraOpts.identityUpties}
-                    deploymentOrder={build.deployment_order}
-                    activeSinners={build.active_sinners}
-                />
-                <TeamCodeComponent teamCode={teamCode} />
-            </div>
+            <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
+                <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
+                    <BuildDisplayMenuCard width={240}>
+                        <div>Display Type</div>
+                        <DisplayTypeButton value={displayType} setValue={setDisplayType} />
+                        <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
+
+                        <TeamCodeComponent teamCode={teamCode} />
+                    </BuildDisplayMenuCard>
+                    <Distribution
+                        identityIds={build.identity_ids}
+                        identityUpties={extraOpts.identityUpties}
+                        egoIds={build.ego_ids}
+                        deploymentOrder={build.deployment_order}
+                        activeSinners={build.active_sinners}
+                    />
+                    <EventRolls
+                        identityIds={build.identity_ids}
+                        identityUpties={extraOpts.identityUpties}
+                        deploymentOrder={build.deployment_order}
+                        activeSinners={build.active_sinners}
+                    />
+                </div>
+            </DragContainer>
         </> :
             <div style={{ borderTop: "1px var(--secondary-border-color) dotted", borderBottom: "1px var(--secondary-border-color) dotted", borderRadius: "1rem", boxSizing: "border-box" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start", padding: "1rem", boxSizing: "border-box" }}>

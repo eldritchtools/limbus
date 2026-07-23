@@ -8,7 +8,6 @@ import SetupScreen from "./SetupScreen";
 import { useDraft } from "./useDraft";
 import { useData } from "../components/DataProvider";
 import { useWbState } from "../components/objects/WbList";
-import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { getLocalStore } from "../database/localDB";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
 

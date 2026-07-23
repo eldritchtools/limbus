@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function NumberInput({ min = null, max = null, value, onChange, allowEmpty = false, style = {}, disabled }) {
+    console.log(min, max, value, onChange, allowEmpty);
     const [local, setLocal] = useState(value.toString());
 
     useEffect(() => {

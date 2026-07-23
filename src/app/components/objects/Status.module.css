@@ -1,12 +1,10 @@
 .statusContainer {
-    display: inline-flex;
-    align-items: center;
-    vertical-align: middle;
-    transform: translateY(-0.15rem)
+    display: inline;
 }
 
 .statusIcon {
-    display: inline;
+    display: inline-block;
+    vertical-align: middle;
     width: 1.5rem;
     height: 1.5rem;
     margin-left: -1px;
