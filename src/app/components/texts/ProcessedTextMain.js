@@ -10,6 +10,9 @@ const tagMap = {
     // 
     Bloodfiend: ({children, key}) => <span key={key}>{`<Bloodfiend>`}{children}</span>,
     "La Manchaland[TabExplain]": ({children, key}) => <span key={key}>{`<La Manchaland>`}{children}</span>,
+    "Lake Entity": ({children, key}) => <span key={key}>{`<Lake Entity>`}{children}</span>,
+    "District 8 Sweepers": ({children, key}) => <span key={key}>{`<District 8 Sweepers>`}{children}</span>,
+    "District 8 Sweepers [Interpreted]": ({children, key}) => <span key={key}>{`<District 8 Sweepers [Interpreted]>`}{children}</span>
 };
 
 function parseToTree(input) {

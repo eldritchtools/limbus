@@ -13,13 +13,8 @@ export function getAnnouncerImgSrc(announcer) {
     return `${ASSETS_ROOT}/announcers/${announcer.imgStr}.webp`;
 }
 
-function getName(announcer) {
-    if(announcer.id === "47" || announcer.id === "48") return announcer.name;
-    return <ProcessedText text={announcer.name} />;
-}
-
 function AnnouncerIconMain({ announcer, displayName = false, style }) {
-    const img = <img src={getAnnouncerImgSrc(announcer)} alt={announcer.name} title={announcer.name} style={{ ...style,  width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+    const img = <img src={getAnnouncerImgSrc(announcer)} alt={announcer.name} title={announcer.name} style={{ ...style, width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
 
     return <div className={styles.identityIconContainer} style={{ width: style.width, aspectRatio: "1/1" }}>
         {img}
@@ -28,7 +23,7 @@ function AnnouncerIconMain({ announcer, displayName = false, style }) {
                 className={styles.identityIconName}
                 style={{ fontSize: `clamp(0.6rem, calc(10cqw - (${announcer.name.length} * 0.02px)), 1rem)` }}
             >
-                {getName(announcer)}
+                <ProcessedText text={announcer.name} />
             </div> :
             null
         }
