@@ -225,21 +225,24 @@ export default function BuildEditingComponent({
                     >
                         Toggle All Ids & E.G.Os Menu
                     </button>
-                    <span style={{marginTop: "0.5rem"}}>Deployment</span>
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <span style={{ textAlign: "center" }}>Active<br />Sinners</span>
-                        <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
-                    </div>
-                    <div>
-                        <button onClick={() => setDeploymentOrder(_ => [])}>Reset Order</button>
-                        <button onClick={
-                            () => openSelectDeploymentModal({
-                                initialActive: deploymentOrder, identityIds, activeSinners, onSave: setDeploymentOrder
-                            })
-                        }>
-                            Easy Menu
-                        </button>
-                    </div>
+                    {!minimalEditor ? <>
+                        <span style={{ marginTop: "0.5rem" }}>Deployment</span>
+                        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                            <span style={{ textAlign: "center" }}>Active<br />Sinners</span>
+                            <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
+                        </div>
+                        <div>
+                            <button onClick={() => setDeploymentOrder(_ => [])}>Reset Order</button>
+                            <button onClick={
+                                () => openSelectDeploymentModal({
+                                    initialActive: deploymentOrder, identityIds, activeSinners, onSave: setDeploymentOrder
+                                })
+                            }>
+                                Easy Menu
+                            </button>
+                        </div>
+                    </> : null
+                    }
                 </BuildDisplayMenuCard>
                 {!minimalEditor ?
                     <Distribution identityIds={identityIds} identityUpties={identityUpties} egoIds={egoIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
@@ -247,6 +250,12 @@ export default function BuildEditingComponent({
                 }
                 {includeEventRolls ?
                     <EventRolls identityIds={identityIds} identityUpties={identityUpties} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
+                    null
+                }
+                {minimalEditor ?
+                    <BuildDisplayMenuCard>
+                        <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} />
+                    </BuildDisplayMenuCard> :
                     null
                 }
             </div>
