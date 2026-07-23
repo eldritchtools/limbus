@@ -80,8 +80,14 @@ function TimeComponent({ date, dateString, label = "Date" }) {
             <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}><TimeString date={target} /></span>
         </div>
     } else {
-        const [y, m, d] = dateString.split("-").map(Number);
-        const target = new Date(Date.UTC(y, m - 1, d, 1, 0, 0)); // 10AM KST
+        const timestamp = Date.parse(dateString);
+        if (Number.isNaN(timestamp))
+            return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center" }}>
+                <span>{label}: {dateString}</span>
+                <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>--:--:--:--</span>
+            </div>
+
+        const target = new Date(timestamp + HOUR); // 10 AM KST = 1 AM UTC
         return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", alignItems: "center" }}>
             <span>{label}: {dateString}</span>
             <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}><TimeString date={target} /></span>
@@ -180,12 +186,16 @@ export function HomepageTimers() {
             <TimerRow title={`Weekly Reset\n6AM KST • ${timeLocal} local`} date={getNextDayOfWeek(4)} column={true} />
         </div>
         {!timersLoading && timers?.events ?
-            <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={true} tooltip={"events"} /> :
-            <div className={styles.timerBannerContainer}/>
+            (
+                timers.events.main.showSeason ?
+                    <TimerRow title={timers.season.name} src={timers.season.src} endDate={timers.season.endDate} column={true} tooltip={"events"} /> :
+                    <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={true} tooltip={"events"} />
+            ) :
+            <div className={styles.timerBannerContainer} />
         }
         {!timersLoading && timers?.banners ?
             <TimerRow title={timers.banners.main.name} src={timers.banners.main.src} startDate={timers.banners.main.startDate} endDate={timers.banners.main.endDate} column={true} tooltip={"banners"} /> :
-            <div className={styles.timerBannerContainer}/>
+            <div className={styles.timerBannerContainer} />
         }
     </div>
 }

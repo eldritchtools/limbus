@@ -252,6 +252,7 @@
     },
     "rr": {
       "line-1-bg": "Line 1: MADNESS BokGak",
+      "line-2-bg": "Line 2: Mobius BokGak",
       "line-6": "Line 6: Maru no Uchi no Sanzu no kawa"
     },
     "story": {
@@ -386,6 +387,7 @@
     "10113": "N Corp. E.G.O:: Fell Bullet",
     "10114": "Heishou Pack - Wu Branch Adept",
     "10115": "The House of Spiders: The Index Nursefather",
+    "10116": "LCE E.G.O:: Dimension Shredder",
     "10201": "LCB Sinner",
     "10202": "W Corp. L2 Cleanup Agent",
     "10203": "Lobotomy Corp. Remnant",

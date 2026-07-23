@@ -13,6 +13,14 @@
     container-type: size;
 }
 
+.egoIconContainer {
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    position: relative;
+    container-type: size;
+}
+
 .upcomingLabel {
     position: absolute;
     top: 4px;
@@ -35,6 +43,15 @@
     pointer-events: none;
 }
 
+.egoRarityIcon {
+    position: absolute;
+    top: 4px;
+    left: 4px; 
+    height: 1.5rem; 
+    object-fit: contain;
+    pointer-events: none;
+}
+
 .identityIconName {
     position: absolute;
     bottom: 4px;
@@ -49,6 +66,31 @@
     line-height: 1.1;
     text-wrap: balance;
     text-shadow: 0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000;
+}
+
+.egoIconName {
+    position: absolute; 
+    overflow: hidden; 
+    text-wrap: balance; 
+    font-weight: bold; 
+    text-shadow: 0 0 4px #000, 0 0 12px #000, 2px 2px 8px #000, -2px -2px 8px #000;
+}
+
+.egoIconName.banner {
+    font-size: 0.75rem; 
+    max-height: 100%;
+    text-align: center;
+}
+
+.egoIconName.standard {
+    bottom: 4px; 
+    right: 4px; 
+    max-width: 100%; 
+    max-height: 70%; 
+    display: block; 
+    text-align: right;
+    color: #ddd; 
+    line-height: 1.1;
 }
 
 .identityUptieIcon {
@@ -66,6 +108,13 @@
     font-weight: 600;
     line-height: 1.1;
     font-size: 1rem;
+}
+
+.egoThreadspinIcon {
+    position: absolute; 
+    right: 4px;
+    text-align: right; 
+    text-shadow: 0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000;
 }
 
 .skillIconContainer {
