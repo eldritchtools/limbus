@@ -137,7 +137,7 @@ export default function Distribution({ identityIds, identityUpties, egoIds, depl
     return <BuildDisplayMenuCard>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".2rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
-                <span className="hover-text" {...getGeneralTooltipProps("Bright sections are for active sinners, while dark sections are for backup sinners.\nFor Keywords, the yellow ring represents 5 identities.\nHovering over a section will show the exact numbers.")}>Team Stats:</span>
+                <span className="hover-text" {...getGeneralTooltipProps("Bright sections are for active sinners, while dark sections are for backup sinners.\nFor Keywords, the yellow ring represents 5 identities.\nHovering over a section will show the exact numbers.\nAuto will automatically cycle through the different stats.")}>Team Stats:</span>
                 <DropdownButton
                     value={mode ?? "kw"}
                     setValue={x => setMode(x)}
