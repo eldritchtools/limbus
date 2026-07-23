@@ -33,6 +33,11 @@ export function useDraft(settings, generateChoices) {
             newBlocked => setBlocked(p => new Set([...p, ...newBlocked]))
         );
 
+        if(generated.length === 0) {
+            goto("finished");
+            return;
+        }
+
         setChoices(generated);
         setChosen(null);
         setCountdown(settings.countdownTime);
