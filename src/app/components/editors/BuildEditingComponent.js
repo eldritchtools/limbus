@@ -104,10 +104,10 @@ export default function BuildEditingComponent({
                                 return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", minWidth: 0 }}>
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid`, borderRadius: "0.5rem" }}>
                                         <div style={{ gridColumn: "1", gridRow: "1 / 5" }}>
-                                            <IdentityMenuSelector 
-                                                value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)} 
-                                                options={identityOptions[index + 1]} num={index + 1} 
-                                                uptie={identityUpties?.[index] === "" ? 4 : identityUpties?.[index]} swapIcon={iconSwaps?.includes(index + 1)} 
+                                            <IdentityMenuSelector
+                                                value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)}
+                                                options={identityOptions[index + 1]} num={index + 1}
+                                                uptie={identityUpties?.[index] === "" ? 4 : identityUpties?.[index]} swapIcon={iconSwaps?.includes(index + 1)}
                                             />
                                         </div>
                                         <div style={{ gridColumn: "1", gridRow: "5", alignItems: "stretch", justifyContent: "stretch" }}>
@@ -194,10 +194,11 @@ export default function BuildEditingComponent({
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
                 {insertPanel ? insertPanel : null}
                 {!minimalEditor ?
-                    <BuildDisplayMenuCard>
+                    <BuildDisplayMenuCard width={240}>
                         <div>Display Type</div>
                         <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
                         <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
+                        <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} editable={true} />
                     </BuildDisplayMenuCard> :
                     null
                 }
@@ -224,36 +225,30 @@ export default function BuildEditingComponent({
                     >
                         Toggle All Ids & E.G.Os Menu
                     </button>
+                    <span style={{marginTop: "0.5rem"}}>Deployment</span>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <span style={{ textAlign: "center" }}>Active<br />Sinners</span>
+                        <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
+                    </div>
+                    <div>
+                        <button onClick={() => setDeploymentOrder(_ => [])}>Reset Order</button>
+                        <button onClick={
+                            () => openSelectDeploymentModal({
+                                initialActive: deploymentOrder, identityIds, activeSinners, onSave: setDeploymentOrder
+                            })
+                        }>
+                            Easy Menu
+                        </button>
+                    </div>
                 </BuildDisplayMenuCard>
                 {!minimalEditor ?
-                    <BuildDisplayMenuCard>
-                        <span>Deployment</span>
-                        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                            <span style={{ textAlign: "center" }}>Active<br />Sinners</span>
-                            <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
-                        </div>
-                        <div>
-                            <button onClick={() => setDeploymentOrder(_ => [])}>Reset Order</button>
-                            <button onClick={
-                                () => openSelectDeploymentModal({
-                                    initialActive: deploymentOrder, identityIds, activeSinners, onSave: setDeploymentOrder
-                                })
-                            }>
-                                Easy Menu
-                            </button>
-                        </div>
-                    </BuildDisplayMenuCard> :
-                    null
-                }
-                {!minimalEditor ?
-                    <Distribution identityIds={identityIds} egoIds={egoIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
+                    <Distribution identityIds={identityIds} identityUpties={identityUpties} egoIds={egoIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
                     null
                 }
                 {includeEventRolls ?
                     <EventRolls identityIds={identityIds} identityUpties={identityUpties} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
                     null
                 }
-                <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} editable={true} />
             </div>
         </DragContainer>
     </div>

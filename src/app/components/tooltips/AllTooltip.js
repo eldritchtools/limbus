@@ -1,3 +1,4 @@
+import DistributionTooltip from "./DistributionTooltip";
 import EgoTooltip from "./EgoTooltip";
 import EncounterTooltip from "./EncounterTooltip";
 import GeneralTooltip from "./GeneralTooltip";
@@ -27,5 +28,6 @@ export default function AllTooltips() {
         <RatingHelpTooltip />
         <TeamCodeTooltip />
         <SkillTooltip />
+        <DistributionTooltip />
     </>;
 }

@@ -1,7 +1,6 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRef, useState } from "react";
 
-import BuildDisplayMenuCard from "./BuildDisplayMenuCard";
 import styles from "./TeamCodeComponent.module.css";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
@@ -24,7 +23,7 @@ export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
         }
     };
 
-    return <BuildDisplayMenuCard>
+    return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0.25rem", gap: "0.2rem"}}>
         <div>
             <span className="hover-text" style={{ fontSize: "1.2rem" }} {...getGeneralTooltipProps("teamcode")}>Team Code</span>
         </div>
@@ -47,5 +46,5 @@ export default function TeamCodeComponent({ teamCode, setTeamCode, editable }) {
                 null
             }
         </div>
-    </BuildDisplayMenuCard>
+    </div>
 }
