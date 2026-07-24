@@ -7,6 +7,7 @@ import styles from "./gifts.module.css";
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
+import GiftIcon from "../components/icons/GiftIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import { GiftEffectsSelector, GiftTriggersSelector } from "../components/selectors/GiftSelectors";
@@ -25,41 +26,37 @@ function GiftDesc({ gift, clickable }) {
 
     return <div
         className={`panel-container ${styles.giftDesc}`}
-        onClick={clickable ? () => openGiftModal({ gift, enhanceRank: 0 }) : null}
+        onClick={clickable ? () => openGiftModal({ id: gift.id, enhanceRank: 0 }) : null}
     >
-        <div style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "bold", textAlign: "start", color: affinityColorMapping[gift.affinity] }}>
+        <div className={`${styles.giftName} ${styles.desc}`} style={{ color: affinityColorMapping[gift.affinity] }}>
             {gift.names[0]}
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <Gift gift={gift} includeTooltip={false} />
+            <div className={styles.giftIconContainer}>
+                <GiftIcon gift={gift} includeTooltip={false} />
             </div>
-            <div style={{ display: "inline-block", fontSize: "1rem", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
+            <div className={styles.giftDescText}>
                 <ProcessedText text={gift.descs[0]} />
             </div>
         </div>
     </div>
 }
 
-function GiftCard({ gift, isSmall, clickable }) {
+function GiftCard({ gift, clickable }) {
     const { openGiftModal } = useModal();
 
     return <div
         className={`panel-container ${styles.giftCard}`}
-        style={{ height: isSmall ? "175px" : "250px" }}
-        onClick={clickable ? () => openGiftModal({ gift, enhanceRank: 0 }) : null}
+        onClick={clickable ? () => openGiftModal({ id: gift.id, enhanceRank: 0 }) : null}
     >
-        <div style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "bold", textAlign: "center", color: affinityColorMapping[gift.affinity] }}>
+        <div className={`${styles.giftName} ${styles.card}`} style={{ color: affinityColorMapping[gift.affinity] }}>
             {gift.names[0]}
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <Gift gift={gift} includeTooltip={false} scale={isSmall ? .6 : 1} />
+            <div className={styles.giftIconContainer}>
+                <GiftIcon gift={gift} includeTooltip={false} />
             </div>
-            <div style={{
-                display: "inline-block", fontSize: "1rem", lineHeight: "1.5", inlineSize: "50ch", textWrap: "wrap",
-                whiteSpace: "pre-wrap", textAlign: "start", height: isSmall ? "150px" : "200px", overflowY: "auto"
-            }}>
+            <div className={styles.giftCardText}>
                 <ProcessedText text={gift.descs[0]} />
             </div>
         </div>
@@ -79,8 +76,11 @@ function GiftList({ gifts, displayType, tracking, setTracking, isSmall }) {
 
         const buildComponent = (id, gift, clickable) => {
             switch (displayType) {
-                case "icon": return <Gift key={id} gift={gift} includeTooltip={true} scale={isSmall ? .6 : 1} expandable={clickable} />;
-                case "card": return <GiftCard key={id} gift={gift} isSmall={isSmall} clickable={clickable} />;
+                case "icon":
+                    return <div key={id} className={styles.giftIconContainer}>
+                        <Gift gift={gift} includeTooltip={true} expandable={clickable} />
+                    </div>;
+                case "card": return <GiftCard key={id} gift={gift} clickable={clickable} />;
                 case "desc": return <GiftDesc key={id} gift={gift} clickable={clickable} />;
                 default: return null;
             }
@@ -107,7 +107,7 @@ function GiftList({ gifts, displayType, tracking, setTracking, isSmall }) {
         })
 
         return [...unmarked, ...marked];
-    }, [gifts, displayType, tracking, setTracking, isSmall]);
+    }, [gifts, displayType, tracking, setTracking]);
 
     const columns = displayType === "icon" ?
         `repeat(auto-fill, minmax(${isSmall ? 60 : 100}px, 1fr))` :
@@ -140,7 +140,7 @@ export default function GiftsPage({ initGifts }) {
     const [effectFilters, setEffectFilters] = useState([]);
     const [effectFilterExcluding, setEffectFilterExcluding] = useState(false);
     const [selectedThemePacks, setSelectedThemePacks] = useState([]);
-    const { isDesktop } = useBreakpoint();
+    const { isMobile } = useBreakpoint();
 
     const newGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.new), [giftsData, giftsLoading]);
     const updatedGifts = useMemo(() => giftsLoading ? [] : Object.entries(giftsData).filter(([, gift]) => gift.updated), [giftsData, giftsLoading]);
@@ -150,14 +150,17 @@ export default function GiftsPage({ initGifts }) {
     const saveTimeout = useRef(null);
     const [firstSave, setFirstSave] = useState(true);
 
-    const initState =
+    const initState = useMemo(() =>
+    (
         searchString.length === 0 &&
         filters.length === 0 &&
-        displayType === "icon" &&
         tagFilters.length === 0 &&
         triggerFilters.length === 0 &&
         effectFilters.length === 0 &&
         selectedThemePacks.length === 0
+    ),
+        [searchString, filters, tagFilters, triggerFilters, effectFilters, selectedThemePacks]
+    )
 
     const themePackList = useMemo(() => {
         if (giftsLoading) return [];
@@ -169,7 +172,7 @@ export default function GiftsPage({ initGifts }) {
     }, [giftsData, giftsLoading]);
 
     const filteredGifts = useMemo(() => {
-        if (giftsLoading) return [];
+        if (giftsLoading || initState) return initGifts;
         const combinedFilters = [
             ...filters,
             ...tagFilters.map(tag => ["tag", tag]),
@@ -196,7 +199,10 @@ export default function GiftsPage({ initGifts }) {
             },
             strictFiltering
         ).map(x => [x.id, x]);
-    }, [filters, tagFilters, triggerFilters, effectFilters, giftsData, giftsLoading, searchString, includeDescription, strictFiltering, selectedThemePacks]);
+    }, [filters, tagFilters, triggerFilters, effectFilters, 
+        giftsData, giftsLoading, initState, initGifts, 
+        searchString, includeDescription, strictFiltering, selectedThemePacks
+    ]);
 
     useEffect(() => {
         if (loading) {
@@ -393,9 +399,7 @@ export default function GiftsPage({ initGifts }) {
             }
         </div>
         <HorizontalDivider />
-        {!giftsLoading && filters.length === 0 && tagFilters.length === 0 &&
-            triggerFilters.length === 0 && effectFilters.length === 0 &&
-            searchString.length === 0 && selectedThemePacks.length === 0 ?
+        {!giftsLoading && initState ?
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", width: "100%" }}>
                 {newGifts.length > 0 ? <React.Fragment>
                     <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>New</span>
@@ -414,16 +418,14 @@ export default function GiftsPage({ initGifts }) {
                     </div>
                 </React.Fragment> : null}
             </div> :
-            null}
-        {
-            (giftsLoading || initState) ? initGifts :
-                <GiftList
-                    gifts={filteredGifts}
-                    displayType={displayType}
-                    tracking={tracking}
-                    setTracking={setTracking}
-                    isSmall={!isDesktop}
-                />
+            null
         }
+        <GiftList
+            gifts={filteredGifts}
+            displayType={displayType}
+            tracking={tracking}
+            setTracking={setTracking}
+            isSmall={isMobile}
+        />
     </div>;
 }

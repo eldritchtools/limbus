@@ -44,11 +44,11 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>Announcers have been added to the {wrapLink("Company", "/company")} page.</li>
                     <li>{wrapLink("Artwork Guesser", "/artwork-guesser")} and {wrapLink("Voiceline Guesser", "/voiceline-guesser")} have been added. They&apos;re still a bit experimental at the moment, but try them out for fun!</li>
                     <li>{wrapLink("Team Draft", "/team-draft")} has been added. Build a team by drafting from randomly generated options. Try it out if you&apos;re looking for a fresh way to play the game.</li>
                     <li>E.G.O Gifts can now be filtered by Triggers and Effects newly assigned to them. Triggers are conditions that enable or modify their effects, while Effects are the outcomes when those Triggers are fulfilled. These are manually assigned to gifts so there may be some mistakes or missing assignments. Some of them may be changed or improved on in the future.</li>
                     <li>The {wrapLink("Encounters", "/encounters")} page now supports submitting clear records which will show up on a leaderboard sorted by turn count. This is only supported for Reflectrials and Refraction Railway encounters.</li>
-                    <li>The bumps system for Reviews have been reworked into a more standard Upvotes and Funny Votes system similar to Steam Reviews. Existing reviews with bump scores have been given a boost equivalent to their bumps.</li>
                 </> : null}
             </ul>
         </div>
