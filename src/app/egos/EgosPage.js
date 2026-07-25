@@ -90,11 +90,21 @@ function EgoCard({ ego }) {
     </div>
 }
 
-function EgoList({ egos, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedSeasons, compareMode }) {
+function EgoList({ initEgos, egos, egosLoading, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedSeasons, compareMode }) {
     const [altNames, altNamesLoading] = useData("alt_names");
     const { isMobile } = useBreakpoint();
 
+    const initState = useMemo(() => (
+        searchString.length === 0 &&
+        filters.length === 0 &&
+        !separateSinners &&
+        compareMode === "off" &&
+        selectedStatuses.length === 0 &&
+        selectedSeasons.length === 0
+    ), [searchString, filters, separateSinners, compareMode, selectedStatuses, selectedSeasons]);
+
     const list = useMemo(() => {
+        if (egosLoading || initState) return initEgos;
         const combinedFilters = [...filters];
         if (selectedStatuses.length > 0) selectedStatuses.forEach(x => combinedFilters.push(["statusFull", x]));
         if (selectedSeasons.length > 0) selectedSeasons.forEach(x => combinedFilters.push(["season", x]));
@@ -109,7 +119,10 @@ function EgoList({ egos, searchString, filters, displayType, separateSinners, st
             .map(x => [x.id, x])
             .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
-        [egos, searchString, filters, selectedStatuses, selectedSeasons, strictFiltering, altNames, altNamesLoading]);
+        [initState, initEgos, egos, egosLoading,
+            searchString, filters, selectedStatuses, selectedSeasons,
+            strictFiltering, altNames, altNamesLoading
+        ]);
 
     if (compareMode === "basic") {
         return <EgoComparisonBasic />
@@ -249,15 +262,6 @@ export default function EgosPage({ initEgos }) {
         ]
     }, [egos, egosLoading, statuses, statusesLoading]);
 
-    const initState =
-        searchString.length === 0 &&
-        filters.length === 0 &&
-        displayType === "icon" &&
-        !separateSinners &&
-        compareMode === "off" &&
-        selectedStatuses.length === 0 &&
-        selectedSeasons.length === 0;
-
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
             <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.Os</h1>
@@ -345,19 +349,19 @@ export default function EgosPage({ initEgos }) {
                 <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
             </div>
             <HorizontalDivider />
-            {initState ? initEgos :
-                egosLoading ? null :
-                    <EgoList
-                        egos={egos}
-                        searchString={searchString}
-                        filters={filters}
-                        displayType={displayType}
-                        separateSinners={separateSinners}
-                        strictFiltering={strictFiltering}
-                        selectedStatuses={selectedStatuses}
-                        selectedSeasons={selectedSeasons}
-                        compareMode={compareMode}
-                    />}
+            <EgoList
+                initEgos={initEgos}
+                egos={egos}
+                egosLoading={egosLoading}
+                searchString={searchString}
+                filters={filters}
+                displayType={displayType}
+                separateSinners={separateSinners}
+                strictFiltering={strictFiltering}
+                selectedStatuses={selectedStatuses}
+                selectedSeasons={selectedSeasons}
+                compareMode={compareMode}
+            />
         </div>
     </>;
 }

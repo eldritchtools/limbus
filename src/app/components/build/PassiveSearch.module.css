@@ -1,0 +1,13 @@
+.card {
+    display: flex;
+    align-items: start;
+    gap: 0.2rem;
+    transition: ease 0.2s all;
+    border-top: 1px var(--secondary-border-color) solid;
+    border-bottom: 1px var(--secondary-border-color) solid;
+    padding: 0.2rem;
+}
+
+.card:hover {
+    filter: brightness(1.3);
+}

@@ -88,11 +88,24 @@ function IdentityCard({ identity }) {
     </div>
 }
 
-function IdentityList({ identities, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedFactionTags, selectedSeasons, compareMode }) {
+function IdentityList({ initIdentities, identities, identitiesLoading, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedFactionTags, selectedSeasons, compareMode }) {
     const [altNames, altNamesLoading] = useData("alt_names");
     const { isMobile } = useBreakpoint();
 
+    const initState = useMemo(() => (
+        searchString.length === 0 &&
+        filters.length === 0 &&
+        !separateSinners &&
+        compareMode === "off" &&
+        selectedStatuses.length === 0 &&
+        selectedFactionTags.length === 0 &&
+        selectedSeasons.length === 0
+    ),
+        [searchString, filters, separateSinners, compareMode, selectedStatuses, selectedFactionTags, selectedSeasons]
+    )
+
     const list = useMemo(() => {
+        if(identitiesLoading || initState) return initIdentities;
         const combinedFilters = [...filters];
         if (selectedStatuses.length > 0) selectedStatuses.forEach(x => combinedFilters.push(["statusFull", x]));
         if (selectedFactionTags.length > 0) selectedFactionTags.forEach(x => combinedFilters.push(["tag", x]));
@@ -108,7 +121,7 @@ function IdentityList({ identities, searchString, filters, displayType, separate
             .map(x => [x.id, x])
             .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
-        [identities, searchString, filters, selectedStatuses, selectedFactionTags, selectedSeasons, strictFiltering, altNames, altNamesLoading]);
+        [initState, initIdentities, identities, identitiesLoading, searchString, filters, selectedStatuses, selectedFactionTags, selectedSeasons, strictFiltering, altNames, altNamesLoading]);
 
     if (compareMode === "basic") {
         return <IdentityComparisonBasic />
@@ -244,16 +257,6 @@ export default function IdentitiesPage({ initIdentities }) {
         ]
     }, [identities, identitiesLoading]);
 
-    const initState =
-        searchString.length === 0 &&
-        filters.length === 0 &&
-        displayType === "icon" &&
-        !separateSinners &&
-        compareMode === "off" &&
-        selectedStatuses.length === 0 &&
-        selectedFactionTags.length === 0 &&
-        selectedSeasons.length === 0;
-
     return <>
         <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
             <h2 style={{ margin: 0 }}>Identities</h2>
@@ -354,21 +357,20 @@ export default function IdentitiesPage({ initIdentities }) {
                 <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
             </div>
             <HorizontalDivider />
-            {initState ? initIdentities :
-                identitiesLoading ? null :
-                    <IdentityList
-                        identities={identities}
-                        searchString={searchString}
-                        filters={filters}
-                        displayType={displayType}
-                        separateSinners={separateSinners}
-                        strictFiltering={strictFiltering}
-                        selectedStatuses={selectedStatuses}
-                        selectedFactionTags={selectedFactionTags}
-                        selectedSeasons={selectedSeasons}
-                        compareMode={compareMode}
-                    />
-            }
+            <IdentityList
+                initIdentities={initIdentities}
+                identities={identities}
+                identitiesLoading={identitiesLoading}
+                searchString={searchString}
+                filters={filters}
+                displayType={displayType}
+                separateSinners={separateSinners}
+                strictFiltering={strictFiltering}
+                selectedStatuses={selectedStatuses}
+                selectedFactionTags={selectedFactionTags}
+                selectedSeasons={selectedSeasons}
+                compareMode={compareMode}
+            />
         </div>
     </>;
 }

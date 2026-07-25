@@ -1,3 +1,23 @@
+.tab {
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--disabled-text-color);
+    padding: 0.5rem;
+    border: 1px transparent solid;
+}
+
+.tab:hover {
+    color: var(--secondary-text-color);
+}
+
+.tab.active {
+    color: var(--primary-text-color);
+    border: 1px var(--secondary-border-color) solid;
+    border-radius: 0.5rem;
+}
+
 .clickableIcon {
     cursor: pointer;
     transition: all 0.2s ease;

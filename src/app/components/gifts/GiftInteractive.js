@@ -16,11 +16,11 @@ export default function GiftInteractive({ id, enhanceRank = 0, includeTooltip = 
 
     let props = {};
     if (includeTooltip && (!expandable || canHover)) {
-        props = { ...props, ...getGiftTooltipProps(id ?? gift?.id, enhanceRank, expandable) };
+        props = { ...props, ...getGiftTooltipProps(id, enhanceRank, expandable) };
     }
 
     if (expandable) {
-        props.onClick = () => openGiftModal({ id: id ?? gift?.id, enhanceRank, forceTriggersEffects });
+        props.onClick = () => openGiftModal({ id: id, enhanceRank, forceTriggersEffects });
     }
 
     return <span {...props}>{children}</span>;

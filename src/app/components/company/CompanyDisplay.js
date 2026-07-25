@@ -107,16 +107,27 @@ function CompanyDisplayMain({
     editable, setForceSave, saveString
 }) {
     const [altNames, altNamesLoading] = useData("alt_names");
-    const [activeTab, setActiveTab] = useLocalState("companyActiveTab", "all");
+    const [activeTabs, setActiveTabs] = useLocalState("companyActiveTabs", ["id", "ego", "announcer"])
     const [ownedFilter, setOwnedFilter] = useLocalState("companyOwnedFilter", "both");
     const [separateSinners, setSeparateSinners] = useLocalState("companySeparateSinners", false);
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
-    const [identityAdvOpts, setIdentityAdvOpts] = useState([]);
-    const [egoAdvOpts, setEgoAdvOpts] = useState([]);
-    const [announcerAdvOpts, setAnnouncerAdvOpts] = useState([]);
-    const [allAdvOpts, setAllAdvOpts] = useState([]);
+    const [advOpts, setAdvOpts] = useState([]);
     const { isMobile } = useBreakpoint();
+
+    const advOptsMode = useMemo(() => {
+        const idsOn = activeTabs.includes("id");
+        const egosOn = activeTabs.includes("ego");
+        const announcersOn = activeTabs.includes("announcer");
+        if (idsOn && egosOn) {
+            if (announcersOn) return "all";
+            return "both";
+        }
+        if (idsOn && !announcersOn) return "id";
+        if (egosOn && !announcersOn) return "ego";
+        if (announcersOn && !idsOn && !egosOn) return "announcer";
+        return "none";
+    }, [activeTabs]);
 
     const cycleOwnedFilter = () => {
         if (ownedFilter === "both") setOwnedFilter("yes");
@@ -129,23 +140,13 @@ function CompanyDisplayMain({
         const sortFunctions = [];
 
         const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs } =
-            getFilterSortAdvancedOptionsData(activeTab,
-                activeTab === "all" ?
-                    allAdvOpts :
-                    (activeTab === "id" ?
-                        identityAdvOpts :
-                        (activeTab === "ego" ?
-                            egoAdvOpts :
-                            announcerAdvOpts
-                        )
-                    )
-            );
+            getFilterSortAdvancedOptionsData(advOptsMode, advOpts);
 
         sortFunctions.push(...sortFuncs);
 
         let count = 0, totalCount = 0;
 
-        if (activeTab === "all" || activeTab === "id") {
+        if (activeTabs.includes("id")) {
             const items = filterByFilters("identity",
                 Object.values(identities),
                 [...filters, ...addedFilters],
@@ -167,7 +168,7 @@ function CompanyDisplayMain({
             filtered.push(...items.map(x => ["id", x]));
         }
 
-        if (activeTab === "all" || activeTab === "ego") {
+        if (activeTabs.includes("ego")) {
             const items = filterByFilters("ego",
                 Object.values(egos),
                 [...filters, ...addedFilters],
@@ -189,7 +190,7 @@ function CompanyDisplayMain({
             filtered.push(...items.map(x => ["ego", x]));
         }
 
-        if (activeTab === "all" || activeTab === "announcer") {
+        if (activeTabs.includes("announcer")) {
             const items = filterByFilters("announcer",
                 Object.values(announcers),
                 [...filters, ...addedFilters],
@@ -261,9 +262,9 @@ function CompanyDisplayMain({
     }, [
         identityBitsets, egoBitsets, announcerBitset,
         identities, egos, announcers,
-        activeTab, ownedFilter, separateSinners, searchString,
+        activeTabs, ownedFilter, separateSinners, searchString,
         filters, altNames, altNamesLoading,
-        allAdvOpts, identityAdvOpts, egoAdvOpts, announcerAdvOpts
+        advOptsMode, advOpts
     ]);
 
     const contentDisplay = () => {
@@ -274,13 +275,13 @@ function CompanyDisplayMain({
                         <IdentityDisplay key={obj.id}
                             identity={obj} identityBitsets={identityBitsets}
                             setIdentityBitsets={setIdentityBitsets} editable={editable}
-                            data={obj} advancedOptions={activeTab === "all" ? allAdvOpts : identityAdvOpts}
+                            data={obj} advancedOptions={advOpts}
                         /> :
                         t === "ego" ?
                             <EgoDisplay key={obj.id}
                                 ego={obj} egoBitsets={egoBitsets}
                                 setEgoBitsets={setEgoBitsets} editable={editable}
-                                data={obj} advancedOptions={activeTab === "all" ? allAdvOpts : egoAdvOpts}
+                                data={obj} advancedOptions={advOpts}
                             /> :
                             t === "announcer" ?
                                 <AnnouncerDisplay key={obj.id}
@@ -299,7 +300,7 @@ function CompanyDisplayMain({
                             <SinnerIcon num={sinnerId} style={{ width: "48px", height: "48px" }} />
                             {sinnerIdMapping[sinnerId]}
                         </div> :
-                        <div style={{ display: "flex", alignItems: "center", fontSize: "1.2rem", height: "48px", fontWeight: "bold" }}>
+                        <div key={"announcer"} style={{ display: "flex", alignItems: "center", fontSize: "1.2rem", height: "48px", fontWeight: "bold" }}>
                             Announcers
                         </div>,
                     <div key={`${sinnerId}-list`}>
@@ -313,8 +314,8 @@ function CompanyDisplayMain({
     }
 
     const setAllFiltered = () => {
-        const list = separateSinners ? 
-            Object.entries(items).map(([, list]) => list).reduce((acc, list) => {acc.push(...list); return acc;}, []) : items;
+        const list = separateSinners ?
+            Object.entries(items).map(([, list]) => list).reduce((acc, list) => { acc.push(...list); return acc; }, []) : items;
         const newIdBitsets = [...identityBitsets];
         const newEgoBitsets = [...egoBitsets];
         let newAnnouncerBitset = announcerBitset;
@@ -334,8 +335,8 @@ function CompanyDisplayMain({
     }
 
     const unsetAllFiltered = () => {
-        const list = separateSinners ? 
-            Object.entries(items).map(([, list]) => list).reduce((acc, list) => {acc.push(...list); return acc;}, []) : items;
+        const list = separateSinners ?
+            Object.entries(items).map(([, list]) => list).reduce((acc, list) => { acc.push(...list); return acc; }, []) : items;
         const newIdBitsets = [...identityBitsets];
         const newEgoBitsets = [...egoBitsets]
         let newAnnouncerBitset = announcerBitset;
@@ -354,6 +355,16 @@ function CompanyDisplayMain({
         setAnnouncerBitset(newAnnouncerBitset);
     }
 
+    const createTab = (key, label) => <div
+        className={`${styles.tab} ${activeTabs.includes(key) ? styles.active : null}`}
+        onClick={() => {
+            if (activeTabs.includes(key)) setActiveTabs(p => p.filter(x => x !== key));
+            else setActiveTabs(p => ([...p, key]));
+            setAdvOpts([]);
+        }}>
+        {label}
+    </div>
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
         {editable && <div style={{ display: "flex", alignItems: "center", alignSelf: "center", gap: "0.2rem" }}>
             <button onClick={() => setForceSave(true)}>
@@ -363,11 +374,11 @@ function CompanyDisplayMain({
                 {saveString}
             </div>
         </div>}
-        <h2 style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${activeTab === "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>All</div>
-            <div className={`tab-header ${activeTab === "id" ? "active" : ""}`} onClick={() => setActiveTab("id")}>Identities</div>
-            <div className={`tab-header ${activeTab === "ego" ? "active" : ""}`} onClick={() => setActiveTab("ego")}>E.G.Os</div>
-            <div className={`tab-header ${activeTab === "announcer" ? "active" : ""}`} onClick={() => setActiveTab("announcer")}>Announcers</div>
+        <h2 style={{ display: "flex", alignItems: "center", marginBottom: "0.5rem", gap: "0.5rem" }}>
+            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Display:</span>
+            {createTab("id", "Identities")}
+            {createTab("ego", "E.G.Os")}
+            {createTab("announcer", "Announcers")}
         </h2>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.1rem", alignItems: "center" }}>
@@ -390,23 +401,19 @@ function CompanyDisplayMain({
             }
         </div>
 
-        {activeTab === "all" ?
+        {advOptsMode === "all" || advOptsMode === "both" ?
             <IconsSelector type={"row"} categories={["identityTier", "egoTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} borderless={true} /> :
-            activeTab === "id" ?
+            advOptsMode === "id" ?
                 <IconsSelector type={"row"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} borderless={true} /> :
-                activeTab === "ego" ?
+                advOptsMode === "ego" ?
                     <IconsSelector type={"row"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} borderless={true} /> :
                     null
         }
 
-        <AdvancedOptionsSelector
-            mode={activeTab}
-            options={activeTab === "all" ? allAdvOpts : activeTab === "id" ? identityAdvOpts : (activeTab === "ego" ? egoAdvOpts : announcerAdvOpts)}
-            setOptions={activeTab === "all" ? setAllAdvOpts : activeTab === "id" ? setIdentityAdvOpts : (activeTab === "ego" ? setEgoAdvOpts : setAnnouncerAdvOpts)}
-        />
+        <AdvancedOptionsSelector mode={advOptsMode} options={advOpts} setOptions={setAdvOpts} />
 
         <span style={{ fontWeight: "bold", alignSelf: "center", fontSize: "1.2rem" }}>
-            Owned Stats: {count}/{totalCount} ({(100 * count / totalCount).toFixed(2)}%)
+            Owned Stats: {count}/{totalCount}{totalCount > 0 ? ` (${(100 * count / totalCount).toFixed(2)})%` : ""}
         </span>
 
         {contentDisplay()}
