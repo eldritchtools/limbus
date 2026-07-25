@@ -123,9 +123,9 @@ function CompanyDisplayMain({
             if (announcersOn) return "all";
             return "both";
         }
-        if (idsOn) return "id";
-        if (egosOn) return "ego";
-        if (announcersOn) return "announcer";
+        if (idsOn && !announcersOn) return "id";
+        if (egosOn && !announcersOn) return "ego";
+        if (announcersOn && !idsOn && !egosOn) return "announcer";
         return "none";
     }, [activeTabs]);
 

@@ -78,7 +78,8 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         } else addToggle = true;
 
         return [newExtraOpts, addToggle, changed];
-    }, [extraOpts])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const teamCode = useMemo(
         // additional guard in case react resets the data
@@ -92,7 +93,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         if (!changed || !editable) return;
 
         if (changed && setExtraOpts) setExtraOpts(optsConverted);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+
         setDataConverted(true);
     }, [changed, optsConverted, setExtraOpts, dataConverted, editable]);
 

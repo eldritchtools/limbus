@@ -138,15 +138,17 @@ const dropdownStyle = {
     fontSize: "0.9rem"
 }
 
+const optionsMapping = {
+    "all": allOptionTypes,
+    "both": bothOptionTypes,
+    "announcer": announcerAdvancedOptionTypes,
+    "id": {...advancedOptionTypes, ...identityAdvancedOptionTypes},
+    "ego": {...advancedOptionTypes, ...{}},
+    "none": allOptionTypes
+}
+
 function AdvancedOption({ mode, type, param, affinity, order, cond, value, faction, season, setOptionParam, removeOption }) {
-    const options =
-        mode === "all" ?
-            allOptionTypes :
-            mode === "both" ?
-                bothOptionTypes :
-                mode === "announcer" ?
-                    announcerAdvancedOptionTypes :
-                    { ...advancedOptionTypes, ...(mode === "id" ? identityAdvancedOptionTypes : {}) }
+    const options = optionsMapping[mode];
 
     const typeDropdown = <DropdownButton
         value={type} setValue={x => setOptionParam("type", x)}
