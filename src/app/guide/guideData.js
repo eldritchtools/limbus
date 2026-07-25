@@ -72,6 +72,7 @@ export const guideData = [
                     "An additional details button allows optionally inputting levels, uptie/threadspin levels, and additional notes for each sinner.",
                     "Builds also have a title, description, optional images, assigned keywords (for display and searching), a YouTube video id, and tags.",
                     "For easier selection of identities and E.G.Os, a menu with search and filter options can be toggled. See the Shared Features section for more details on the advanced filtering/sorting options.",
+                    "For easier searching and planning of passives, a Passive Search option is available to allow users to search for Identities based on Support Passives or E.G.O based on Passives.",
                     "You can also paste a team code from the game inside the team code text box in order to easily populate the build.",
                     "A separate popup menu is provided for a click and drag version of assigning deployment order if the user prefers it.",
                     "Keyword and sin distribution counts depending on the selected identities are automatically available below the build.",
@@ -212,9 +213,9 @@ export const guideData = [
             },
             {
                 title: "Company",
-                description: "Manage the Identities and E.G.O you own for use in your profile and filtering in tools.",
+                description: "Manage the Identities, E.G.O, and Announcers you own for use in your profile and filtering in tools.",
                 details: [
-                    "This page allows you to select all the Identities and E.G.O you own. Any changes are automatically saved after being idle for a while, but there is also a button to manually trigger a save.",
+                    "This page allows you to select all the Identities, E.G.O, and Announcers you own. Any changes are automatically saved after being idle for a while, but there is also a button to manually trigger a save.",
                     "Once set, your company is viewable in your profile. You can use this to more easily share what you have instead of taking screenshots in-game.",
                     "You can also use your company to filter out builds with Identities or E.G.Os you don't own when searching in the Team Builds page.",
                     "Some of the tools on the site also allow you to use your company to quickly apply relevant settings like blacklisting.",
