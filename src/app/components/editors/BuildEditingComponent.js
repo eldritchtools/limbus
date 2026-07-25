@@ -9,6 +9,7 @@ import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DeploymentComponent from "../build/DeploymentComponent";
 import DisplayTypeButton from "../build/DisplayTypeButton";
 import Distribution from "../build/Distribution";
+import PassiveSearch from "../build/PassiveSearch";
 import TeamCodeComponent from "../build/TeamCodeComponent";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import RarityIcon from "../icons/RarityIcon";
@@ -50,6 +51,7 @@ export default function BuildEditingComponent({
     const [teamCode, setTeamCode] = useState('');
     const [additionalToggle, setAdditionalToggle] = useState(defaultAdditionalToggle);
     const [allIdEgoToggle, setAllIdEgoToggle] = useState(false);
+    const [passiveSearchToggle, setPassiveSearchToggle] = useState(false);
     const [displayType, setDisplayType] = useState("edit");
 
     const identityOptions = useMemo(() => {
@@ -59,7 +61,10 @@ export default function BuildEditingComponent({
         }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, []])));
     }, [identities, identitiesLoading]);
 
-    const setIdentityId = (identityId, index) => setIdentityIds(prev => prev.map((x, i) => i === index ? identityId : x));
+    const setIdentityId = (identityId, index) => {
+        const finalIndex = index === undefined ? identities[identityId].sinnerId - 1 : index;
+        setIdentityIds(prev => prev.map((x, i) => i === finalIndex ? identityId : x));
+    }
 
     const egoOptions = useMemo(() => {
         if (egosLoading) return [];
@@ -69,7 +74,11 @@ export default function BuildEditingComponent({
         }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, Array.from({ length: 5 }, () => [])])));
     }, [egos, egosLoading]);
 
-    const setEgoId = (egoId, index, rank) => setEgoIds(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? egoId : y) : x));
+    const setEgoId = (egoId, index, rank) => {
+        const finalIndex = index === undefined ? egos[egoId].sinnerId - 1 : index;
+        const finalRank = rank === undefined ? egoRankMapping[egos[egoId].rank] : rank;
+        setEgoIds(prev => prev.map((x, i) => i === finalIndex ? x.map((y, r) => r === finalRank ? egoId : y) : x));
+    }
 
     const setIdentityLevel = (level, index) => setIdentityLevels(prev => prev.map((x, i) => i === index ? level : x));
     const setIdentityUptie = (uptie, index) => setIdentityUpties(prev => prev.map((x, i) => i === index ? uptie : x));
@@ -166,15 +175,19 @@ export default function BuildEditingComponent({
                             })}
                         </div>
                         {
-                            allIdEgoToggle ?
-                                <AllIdEgoSelector
-                                    identityIds={identityIds}
-                                    egoIds={egoIds}
-                                    setIdentityId={setIdentityId}
-                                    setEgoId={setEgoId}
-                                    identityOptions={identities}
-                                    egoOptions={egos}
-                                /> : null
+                            allIdEgoToggle &&
+                            <AllIdEgoSelector
+                                identityIds={identityIds}
+                                egoIds={egoIds}
+                                setIdentityId={setIdentityId}
+                                setEgoId={setEgoId}
+                                identityOptions={identities}
+                                egoOptions={egos}
+                            />
+                        }
+                        {
+                            passiveSearchToggle &&
+                            <PassiveSearch setIdentityId={setIdentityId} setEgoId={setEgoId} />
                         }
                     </div> :
                     <BuildDisplay
@@ -219,12 +232,22 @@ export default function BuildEditingComponent({
                     }
                     <button
                         className={`toggle-button ${allIdEgoToggle ? "active" : ""}`}
-                        onClick={() => setAllIdEgoToggle(p => !p)}
+                        onClick={() => { setAllIdEgoToggle(p => !p); setPassiveSearchToggle(false); }}
                         {...getGeneralTooltipProps("allIdEgoMenu")}
                         style={{ fontSize: "0.95rem" }}
                     >
                         Toggle All Ids & E.G.Os Menu
                     </button>
+                    {!minimalEditor ?
+                        <button
+                            className={`toggle-button ${passiveSearchToggle ? "active" : ""}`}
+                            onClick={() => { setPassiveSearchToggle(p => !p); setAllIdEgoToggle(false); }}
+                            style={{ fontSize: "0.95rem" }}
+                        >
+                            Toggle Passive Search
+                        </button> :
+                        null
+                    }
                     {!minimalEditor ? <>
                         <span style={{ marginTop: "0.5rem" }}>Deployment</span>
                         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
