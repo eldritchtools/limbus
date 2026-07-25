@@ -23,5 +23,5 @@ export default function GiftInteractive({ id, enhanceRank = 0, includeTooltip = 
         props.onClick = () => openGiftModal({ id: id, enhanceRank, forceTriggersEffects });
     }
 
-    return <div {...props}>{children}</div>;
+    return <span {...props}>{children}</span>;
 }
