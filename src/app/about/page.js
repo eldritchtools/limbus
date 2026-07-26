@@ -71,15 +71,11 @@ export default function AboutPage() {
                 Yes. The site is open to collaboration with creators.
                 <br />
                 Send me a message on Discord or use the <NoPrefetchLink href={"/feedback"} className="text-link">Contact</NoPrefetchLink> page.
-                <br />
-                You can also check out the <NoPrefetchLink href={"/supporters"} className="text-link">Supporters</NoPrefetchLink> page.
             </details>
 
             <details>
                 <summary>How can I support the site?</summary>
-                Sharing the site and contributing content is the best way to help.
-                <br />
-                More ways to support the site may be added in the future once it grows further.
+                Check out the <NoPrefetchLink href={"/support"} className="text-link">Support</NoPrefetchLink> page for more details.
             </details>
         </div>
     </div>;

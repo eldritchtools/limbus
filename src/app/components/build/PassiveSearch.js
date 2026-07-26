@@ -7,6 +7,7 @@ import styles from "./PassiveSearch.module.css";
 import { useData } from "../DataProvider";
 import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
+import TierIcon from "../icons/TierIcon";
 import PassiveCard from "../skill/PassiveCard";
 
 import { romanMapping } from "@/app/lib/constants";
@@ -32,47 +33,68 @@ export default function PassiveSearch({ setIdentityId, setEgoId }) {
 
         if (mode === "both" || mode === "id") {
             Object.entries(passives.support).forEach(([id, list]) => {
-                list.forEach(({ uptie, passives }) => {
-                    if (searching) {
-                        const score = paragraphScore(searchString, replaceStatusesInString(passives[0].desc, statuses, skillTags));
-                        if(score > 0) valid.push([id, uptie, score]);
-                    } else {
-                        valid.push([id, uptie, 0]);
-                    }
-                })
+                if (searching) {
+                    let score = 0;
+                    list.forEach(({ passives }) => {
+                        const sc = paragraphScore(searchString, replaceStatusesInString(passives[0].desc, statuses, skillTags));
+                        if (sc > score) score = sc;
+                    })
+                    if (score > 0) valid.push([id, score]);
+                } else {
+                    valid.push([id, 0]);
+                }
             })
         }
 
         if (mode === "both" || mode === "ego") {
             Object.entries(passives.ego).forEach(([id, list]) => {
-                const passive = list[list.length - 1]
                 if (searching) {
-                    const score = paragraphScore(searchString, replaceStatusesInString(passive.desc, statuses, skillTags));
-                    if(score > 0) valid.push([id, null, score]);
+                    let score = 0;
+                    list.forEach(({ desc }) => {
+                        const sc = paragraphScore(searchString, replaceStatusesInString(desc, statuses, skillTags));
+                        if (sc > score) score = sc;
+                    })
+                    if (score > 0) valid.push([id, score]);
                 } else {
-                    valid.push([id, null, 0]);
+                    valid.push([id, 0]);
                 }
             })
         }
 
         return valid
-            .sort(([, , as], [, , bs]) => bs - as)
-            .map(([id, uptie]) => {
+            .sort(([, as], [, bs]) => bs - as)
+            .map(([id]) => {
                 if (id[0] === '1') {
-                    const passive = passives.support[id].find(x => x.uptie === uptie);
-                    return <div key={`${id}-${uptie}`} className={styles.card} onClick={() => setIdentityId(id)}>
-                        <div style={{ textAlign: "center" }}>
-                            <IdentityIcon id={id} uptie={uptie} displayName={true} displayRarity={true} displayUptie={true} size={isMobile ? 72 : 128} />
-                            Uptie: {romanMapping[uptie]}
+                    return <div key={id} className={styles.card} onClick={() => setIdentityId(id)}>
+                        <div style={{ flex: 0 }}>
+                            <IdentityIcon id={id} displayName={true} displayRarity={true} displayUptie={true} size={isMobile ? 72 : 128} />
                         </div>
-                        <PassiveCard passive={passive.passives[0]} noBorder={true} />
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            {
+                                passives.support[id].map(({ uptie, passives }) =>
+                                    <div key={uptie} style={{ display: "flex", alignItems: "center" }}>
+                                        <TierIcon tier={uptie} />
+                                        <PassiveCard passive={passives[0]} noBorder={true} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 } else if (id[0] === '2') {
-                    const passiveList = passives.ego[id];
-                    const passive = passiveList[passiveList.length - 1];
                     return <div key={id} className={styles.card} onClick={() => setEgoId(id)}>
-                        <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} size={isMobile ? 72 : 128} />
-                        <PassiveCard passive={passive} noBorder={true} />
+                        <div style={{ flex: 0 }}>
+                            <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} size={isMobile ? 72 : 128} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            {
+                                passives.ego[id].map((passive, i) =>
+                                    <div key={i} style={{ display: "flex", alignItems: "center" }}>
+                                        <TierIcon tier={i === 0 ? 2 : 5} />
+                                        <PassiveCard passive={passive} noBorder={true} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 } else {
                     return null;

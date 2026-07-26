@@ -11,6 +11,7 @@ import EgoIcon from "../icons/EgoIcon";
 import IdentityIcon from "../icons/IdentityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import NoPrefetchLink from "../NoPrefetchLink";
+import HintText from "../objects/HintText";
 import AdvancedOptionsSelector, { AdvancedOptionsLabels, getFilterSortAdvancedOptionsData } from "../selectors/AdvancedOptionsSelector";
 import IconsSelector from "../selectors/IconsSelector";
 
@@ -22,6 +23,7 @@ import { sinnerIdMapping } from "@/app/lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 import { triggerToolUsedGAEvent } from "@/app/lib/gaEvents";
 import useLocalState from "@/app/lib/useLocalState";
+import { SITE_ROOT } from "@/app/paths";
 
 const itemOwned = (bitsets, item) => bitsetFunctions.hasFlag(bitsets[item.sinnerId - 1], Number(item.id.slice(-2)) - 1);
 const setFlag = (bitset, item) => bitsetFunctions.setFlag(bitset, Number(item.id.slice(-2)) - 1);
@@ -100,6 +102,7 @@ function AnnouncerDisplay({ announcer, announcerBitset, setAnnouncerBitset, edit
 }
 
 function CompanyDisplayMain({
+    username,
     identityBitsets, setIdentityBitsets,
     egoBitsets, setEgoBitsets,
     announcerBitset, setAnnouncerBitset,
@@ -114,6 +117,7 @@ function CompanyDisplayMain({
     const [filters, setFilters] = useState([]);
     const [advOpts, setAdvOpts] = useState([]);
     const { isMobile } = useBreakpoint();
+    const [hintText, setHintText] = useState(null);
 
     const advOptsMode = useMemo(() => {
         const idsOn = activeTabs.includes("id");
@@ -365,8 +369,28 @@ function CompanyDisplayMain({
         {label}
     </div>
 
+    const handleLinkCopy = async () => {
+        if(!username) return;
+        try {
+            await navigator.clipboard.writeText(`${SITE_ROOT}/profiles/${username}?tab=company`);
+            setHintText('Copied!');
+            setTimeout(() => setHintText(null), 1500);
+        } catch (err) {
+            setHintText('Failed to copy!');
+            setTimeout(() => setHintText(null), 1500);
+            console.error('Failed to copy text: ', err);
+        }
+    }
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.5rem", width: "100%" }}>
         {editable && <div style={{ display: "flex", alignItems: "center", alignSelf: "center", gap: "0.2rem" }}>
+            {username &&
+                <HintText hintText={hintText}>
+                    <button onClick={handleLinkCopy}>
+                        Copy Share Link
+                    </button>
+                </HintText>
+            }
             <button onClick={() => setForceSave(true)}>
                 Save Changes
             </button>
@@ -421,7 +445,7 @@ function CompanyDisplayMain({
 }
 
 export default function CompanyDisplay({ username, editable = false }) {
-    const { user, loading } = useAuth();
+    const { user, profile, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
     const [egos, egosLoading] = useData("egos");
     const [announcers, announcersLoading] = useData("announcers");
@@ -539,6 +563,7 @@ export default function CompanyDisplay({ username, editable = false }) {
     }
 
     return <CompanyDisplayMain
+        username={profile?.username}
         identityBitsets={identityBitsets} setIdentityBitsets={handleSetIdentityBitsets}
         egoBitsets={egoBitsets} setEgoBitsets={handleSetEgoBitsets}
         announcerBitset={announcerBitset} setAnnouncerBitset={handleSetAnnouncerBitset}
