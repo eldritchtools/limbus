@@ -1,5 +1,7 @@
 // const ROOT = "https://limbus-assets.eldritchtools.com";
 
+const SITE_ROOT = "https://limbus.eldritchtools.com";
+
 const ASSETS_ROOT =
     process.env.NODE_ENV === "development" ?
         "http://localhost:3000/api/local-assets" :
@@ -16,4 +18,4 @@ const UPLOADS_ROOT = `https://limbus-uploads.eldritchtools.com`;
 
 const PUBLIC_ROOT = "https://limbus-assets.eldritchtools.com";
 
-export { ASSETS_ROOT, DATA_ROOT, AUDIO_ROOT, PUBLIC_ROOT, UPLOADS_ROOT };
+export { SITE_ROOT, ASSETS_ROOT, DATA_ROOT, AUDIO_ROOT, PUBLIC_ROOT, UPLOADS_ROOT };

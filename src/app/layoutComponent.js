@@ -22,6 +22,7 @@ import AllTooltips from "./components/tooltips/AllTooltip";
 import UserStatus from "./components/user/UserStatus";
 import { AuthProvider } from "./database/authProvider";
 import { RequestsCacheProvider } from "./database/RequestsCacheProvider";
+import useLocalState from "./lib/useLocalState";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -108,10 +109,12 @@ function AnnouncementNavigationWatcher({ setHidden }) {
     return null;
 }
 
-function Announcement() {
-    const [hidden, setHidden] = useState(false);
+const ANNOUNCEMENT_NUMBER = 1;
 
-    if (hidden) return null;
+function Announcement() {
+    const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
+
+    if (!init || hidden >= ANNOUNCEMENT_NUMBER) return null;
 
     return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
         <Suspense fallback={null}>
@@ -129,7 +132,7 @@ function Announcement() {
 
                 <button
                     style={{ background: "none", border: "none", color: "var(--secondary-text-color)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold" }}
-                    onClick={() => setHidden(true)}
+                    onClick={() => setHidden(ANNOUNCEMENT_NUMBER)}
                 >
                     ✕
                 </button>
