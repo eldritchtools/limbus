@@ -21,7 +21,8 @@ CREATE TABLE public.builds (
   view_count INTEGER NOT NULL DEFAULT 0,
   block_discovery BOOLEAN NOT NULL DEFAULT FALSE,
   pinned_comment_id UUID REFERENCES public.comments(id) ON DELETE SET NULL,
-  search_vector tsvector
+  search_vector tsvector,
+  indexable BOOLEAN DEFAULT FALSE
 );
 
 ALTER TABLE public.builds
@@ -264,7 +265,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION create_build_v6(
+CREATE OR REPLACE FUNCTION create_build_v7(
   p_user_id uuid,
   p_title TEXT,
   p_body TEXT,
@@ -279,7 +280,8 @@ CREATE OR REPLACE FUNCTION create_build_v6(
   p_extra_opts TEXT,
   p_block_discovery BOOLEAN,
   p_published BOOLEAN,
-  p_image_ids uuid[]
+  p_image_ids uuid[],
+  p_indexable BOOLEAN
 )
 RETURNS uuid
 AS $$
@@ -309,7 +311,8 @@ BEGIN
     block_discovery,
     is_published,
     published_at,
-    search_vector
+    search_vector,
+    indexable
   )
   VALUES (
     p_user_id,
@@ -333,7 +336,8 @@ BEGIN
       coalesce(p_title,'') || ' ' ||
       coalesce(p_body,'') || ' ' ||
       coalesce(v_username,'')
-    )
+    ),
+    p_indexable
   )
   RETURNING id INTO new_build_id;
 
@@ -369,7 +373,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION update_build_v6(
+CREATE OR REPLACE FUNCTION update_build_v7(
   p_build_id UUID,
   p_user_id UUID,
   p_title TEXT,
@@ -385,7 +389,8 @@ CREATE OR REPLACE FUNCTION update_build_v6(
   p_extra_opts TEXT,
   p_block_discovery BOOLEAN,
   p_published BOOLEAN,
-  p_image_ids uuid[]
+  p_image_ids uuid[],
+  p_indexable BOOLEAN
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -433,6 +438,7 @@ BEGIN
     extra_opts = p_extra_opts,
     is_published = p_published,
     block_discovery = p_block_discovery,
+    indexable = p_indexable,
     published_at = CASE
       WHEN was_published = FALSE AND p_published = TRUE AND published_at IS NULL
       THEN NOW()
@@ -492,7 +498,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_build_v7(
+CREATE OR REPLACE FUNCTION public.get_build_v8(
   p_build_id UUID,
   p_for_edit BOOLEAN DEFAULT FALSE
 )
@@ -594,6 +600,7 @@ BEGIN
       'published_at', b.published_at,
       'updated_at', b.updated_at,
       'is_published', b.is_published,
+      'indexable', b.indexable,
       'view_count',
         case
           when owner_id = v_user_id then b.view_count

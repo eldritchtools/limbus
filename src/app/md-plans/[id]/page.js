@@ -7,12 +7,6 @@ import { isUuid } from "@/app/database/uuidCheck";
 import JsonLd, { getArticleSchema } from "@/app/lib/jsonLd";
 import { cleanMetadataDescription } from "@/app/lib/metadataHelper";
 
-const MIN_INDEXABLE_DESCRIPTION = 150;
-
-function getTotalDescriptionLength(plan) {
-    return plan.body.length;
-}
-
 export async function generateMetadata({ params }) {
     const { id } = await params;
 
@@ -43,7 +37,7 @@ export async function generateMetadata({ params }) {
             canonical: `/md-plans/${id}`
         },
         robots: {
-            index: getTotalDescriptionLength(data) >= MIN_INDEXABLE_DESCRIPTION,
+            index: data.indexable ?? false,
             follow: true,
         }
     };

@@ -65,6 +65,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                 identityLevels={extraOpts.identityLevels}
                 egoThreadspins={extraOpts.egoThreadspins}
                 sinnerNotes={extraOpts.sinnerNotes}
+                iconSwaps={extraOpts.iconSwaps}
                 deploymentOrder={build.deployment_order}
                 activeSinners={build.active_sinners}
                 displayType={displayType}

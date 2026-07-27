@@ -32,6 +32,7 @@ import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtra
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
 import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
+import { checkMdPlanIndexable } from "@/app/lib/indexable";
 import { mdDiffculties, observeCost } from "@/app/lib/mirrorDungeon";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -41,7 +42,7 @@ function handleInitFloors(initFloors) {
     return initFloors.map((f, i) => {
         if (f === "") return null;
         const floorSet = i >= 10 ? "11-15": (i >= 5 ? "6-10" : `${i+1}`);
-        return {floorSet: floorSet, label: `${i+1}`, themePacks: [f], "gifts": [], "note": ""}
+        return {floorSet: floorSet, label: `${i+1}`, themePacks: [f], gifts: [], note: ""}
     }).filter(x => x).map((x, i) => ({...x, key: i}));
 }
 
@@ -231,7 +232,8 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 blockDiscovery,
                 buildIds: planBuilds.map(build => build.id),
                 tags: tagsConverted,
-                imageIds: finalizedImageIds
+                imageIds: finalizedImageIds,
+                indexable: checkMdPlanIndexable(body, extraOpts.sinnerNotes, floors)
             }
 
             if (mode === "edit") {

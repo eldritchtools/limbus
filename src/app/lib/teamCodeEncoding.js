@@ -1,4 +1,3 @@
-"use client";
 import pako from "pako";
 
 function base64ToUint8Array(b64) {

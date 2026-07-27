@@ -40,7 +40,7 @@ export const getCollectionForMetadata = async id => getFromDatabase("collections
 export const getMdPlanForMetadata = async id => getFromDatabase("md_plans", id);
 
 const getMetadataIndex = async () => {
-    const res = await fetch(`${DATA_ROOT}/metadata_index.json`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${DATA_ROOT}/metadata_index.json`, { next: { tags: ["cdn-data"] } });
 
     if (!res.ok) {
         return metadataIndexFallback;

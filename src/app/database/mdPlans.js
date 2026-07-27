@@ -34,7 +34,8 @@ const createParams = {
     blockDiscovery: "p_block_discovery",
     buildIds: "p_build_ids",
     tags: "p_tags",
-    imageIds: "p_image_ids"
+    imageIds: "p_image_ids",
+    indexable: "p_indexable"
 }
 
 export async function searchMdPlans(params, page, pageSize = null) {
@@ -42,15 +43,15 @@ export async function searchMdPlans(params, page, pageSize = null) {
 }
 
 export async function getMdPlan(planId) {
-    return callRPC("get_md_plan_v5", { p_plan_id: planId });
+    return callRPC("get_md_plan_v6", { p_plan_id: planId });
 }
 
 export async function createMdPlan(params) {
-    return callRPC("create_md_plan_v5", convertParams(params, createParams));
+    return callRPC("create_md_plan_v6", convertParams(params, createParams));
 }
 
 export async function updateMdPlan(params) {
-    await callRPC("update_md_plan_v5", convertParams(params, createParams));
+    await callRPC("update_md_plan_v6", convertParams(params, createParams));
     return params.planId;
 }
 

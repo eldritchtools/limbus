@@ -197,6 +197,7 @@ export default function BuildEditingComponent({
                         identityLevels={identityLevels}
                         egoThreadspins={egoThreadspins}
                         sinnerNotes={sinnerNotes}
+                        iconSwaps={iconSwaps}
                         deploymentOrder={deploymentOrder}
                         activeSinners={activeSinners}
                         displayType={displayType}

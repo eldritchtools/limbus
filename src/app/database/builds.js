@@ -36,7 +36,8 @@ const createParams = {
     extraOpts: "p_extra_opts",
     blockDiscovery: "p_block_discovery",
     published: "p_published",
-    imageIds: "p_image_ids"
+    imageIds: "p_image_ids",
+    indexable: "p_indexable"
 };
 
 export async function getPopularBuilds(page = 1, pageSize = null) {
@@ -48,15 +49,15 @@ export async function searchBuilds(params, page = 1, pageSize = null) {
 }
 
 export async function getBuild(id, forEdit = false) {
-    return callRPC("get_build_v7", { p_build_id: id, p_for_edit: forEdit });
+    return callRPC("get_build_v8", { p_build_id: id, p_for_edit: forEdit });
 }
 
 export async function insertBuild(params) {
-    return callRPC("create_build_v6", convertParams(params, createParams));
+    return callRPC("create_build_v7", convertParams(params, createParams));
 }
 
 export async function updateBuild(params) {
-    await callRPC("update_build_v6", convertParams(params, createParams));
+    await callRPC("update_build_v7", convertParams(params, createParams));
     return params.buildId;
 }
 

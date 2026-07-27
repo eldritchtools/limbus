@@ -28,6 +28,7 @@ CREATE TABLE public.md_plans (
   score NUMERIC DEFAULT 0,
   search_vector tsvector,
   pinned_comment_id UUID REFERENCES public.comments(id) ON DELETE SET NULL,
+  indexable BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE public.md_plan_builds (
@@ -296,7 +297,7 @@ begin
 end;
 $$;
 
-create or replace function public.create_md_plan_v5(
+create or replace function public.create_md_plan_v6(
   p_title text,
   p_body text,
   p_recommendation_mode text,
@@ -317,7 +318,8 @@ create or replace function public.create_md_plan_v5(
   p_block_discovery boolean,
   p_build_ids uuid[],
   p_tags text[],
-  p_image_ids uuid[]
+  p_image_ids uuid[],
+  p_indexable boolean
 )
 returns uuid
 language plpgsql
@@ -359,7 +361,8 @@ begin
     is_published,
     block_discovery,
     published_at,
-    search_vector
+    search_vector,
+    indexable
   )
   values (
     v_user_id,
@@ -387,7 +390,8 @@ begin
       coalesce(p_title,'') || ' ' ||
       coalesce(p_body,'') || ' ' ||
       coalesce(v_username,'')
-    )
+    ),
+    p_indexable
   )
   returning id into v_plan_id;
 
@@ -444,7 +448,7 @@ begin
 end;
 $$;
 
-create or replace function public.update_md_plan_v5(
+create or replace function public.update_md_plan_v6(
   p_plan_id uuid,
   p_title text,
   p_body text,
@@ -466,7 +470,8 @@ create or replace function public.update_md_plan_v5(
   p_block_discovery boolean,
   p_build_ids uuid[],
   p_tags text[],
-  p_image_ids uuid[]
+  p_image_ids uuid[],
+  p_indexable boolean
 )
 returns void
 language plpgsql
@@ -524,7 +529,8 @@ begin
         coalesce(p_title,'') || ' ' ||
         coalesce(p_body,'') || ' ' ||
         coalesce(v_username,'')
-      )
+      ),
+    indexable = p_indexable
   where id = p_plan_id;
 
   delete from public.md_plan_builds
@@ -592,7 +598,7 @@ begin
 end;
 $$;
 
-create or replace function public.get_md_plan_v5(
+create or replace function public.get_md_plan_v6(
   p_plan_id uuid
 )
 returns jsonb
@@ -704,6 +710,7 @@ begin
     'created_at', p.created_at,
     'published_at', p.published_at,
     'updated_at', p.updated_at,
+    'indexable', p.indexable,
     'view_count',
       case when p.user_id = v_user_id then p.view_count else null end,
     'like_count', p.like_count,

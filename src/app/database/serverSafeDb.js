@@ -33,7 +33,7 @@ export async function getBuild(id) {
     // cacheLife({ stale: 300 });
     // cacheTag(`build:${id}`);
 
-    return callRPC("get_build_v7", { p_build_id: id, p_for_edit: false, });
+    return callRPC("get_build_v8", { p_build_id: id, p_for_edit: false, });
 }
 
 export async function getPopularBuilds(page = 1, pageSize = null) {
@@ -52,7 +52,7 @@ export async function getMdPlan(id) {
     // cacheLife({ stale: 300 });
     // cacheTag(`mdplan:${id}`);
 
-    return callRPC("get_md_plan_v5", { p_plan_id: id, });
+    return callRPC("get_md_plan_v6", { p_plan_id: id, });
 }
 
 export async function getPopularMdPlans(page = 1, pageSize = null) {

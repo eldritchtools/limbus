@@ -94,7 +94,7 @@ function FloorItem({
     </div>
 
     const noteComponent = editable ?
-        <div style={{ minWidth: "min(80ch, 90vw)" }}>
+        <div style={{ minWidth: "min(80ch, 90vw)", flex: 1 }}>
             <MarkdownEditorWrapper
                 value={floor.note}
                 onChange={x => setFloor({ note: x })}
