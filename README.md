@@ -36,7 +36,3 @@ These projects were eventually merged into this repository:
 
 - [Team Building Hub](https://github.com/eldritchtools/limbus-team-building-hub)
 - [Mirror Dungeon Resource](https://github.com/eldritchtools/limbus-mirror-dungeon-resource)
-
-## License
-
-This repository is licensed under the MIT License.
