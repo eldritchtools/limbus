@@ -4,7 +4,7 @@ export const metadata = {
     title: "Absolute Pride Resonance 2026",
     description: "Schedule and links to individual events for the Absolute Pride Resonance 2026 community charity event.",
     alternates: {
-        canonical: "/apr-2026"
+        canonical: "/archive/apr-2026"
     }
 };
 
@@ -14,7 +14,7 @@ const schema = {
         getWebPageSchema({
             title: "Absolute Pride Resonance 2026",
             description: "Schedule and links to individual events for the Absolute Pride Resonance 2026 community charity event.",
-            url: "https://limbus.eldritchtools.com/apr-2026"
+            url: "https://limbus.eldritchtools.com/archive/apr-2026"
         })
     ]
 };
