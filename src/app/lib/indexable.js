@@ -14,7 +14,7 @@ function getWordCount(text = "") {
 
 export function checkBuildIndexable(body, sinnerNotes) {
     let totalCount = getWordCount(body);
-    sinnerNotes.forEach(note => {
+    if(sinnerNotes) sinnerNotes.forEach(note => {
         if (note) totalCount += getWordCount(note);
     });
     return totalCount >= 200;

@@ -52,6 +52,7 @@ CREATE INDEX md_plans_published_created_at_idx ON public.md_plans(is_published, 
 CREATE INDEX md_plans_user_created_at_idx ON public.md_plans(user_id, created_at desc);
 CREATE INDEX md_plans_score_idx ON public.md_plans(score DESC);
 CREATE INDEX md_plans_search_idx ON public.md_plans USING GIN(search_vector);
+CREATE INDEX md_plans_sitemap_idx ON public.md_plans (created_at ASC) WHERE indexable = true;
 
 CREATE INDEX md_plan_builds_plan_idx ON public.md_plan_builds(plan_id);
 CREATE INDEX md_plan_builds_position_idx ON public.md_plan_builds(plan_id, position);

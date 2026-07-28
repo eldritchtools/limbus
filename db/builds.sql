@@ -42,6 +42,7 @@ CREATE INDEX idx_builds_identities ON builds USING GIN (identity_ids);
 CREATE INDEX idx_builds_egos ON builds USING GIN (ego_ids);
 CREATE INDEX idx_builds_keywords ON builds USING GIN (keyword_ids);
 CREATE INDEX idx_builds_search ON builds USING GIN(search_vector);
+CREATE INDEX builds_sitemap_idx ON public.builds (created_at ASC) WHERE indexable = true;
 
 ALTER TABLE public.builds ENABLE ROW LEVEL SECURITY;
 

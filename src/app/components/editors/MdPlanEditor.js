@@ -233,7 +233,7 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
                 buildIds: planBuilds.map(build => build.id),
                 tags: tagsConverted,
                 imageIds: finalizedImageIds,
-                indexable: checkMdPlanIndexable(body, extraOpts.sinnerNotes, floors)
+                indexable: isPublished && checkMdPlanIndexable(body, extraOpts.sinnerNotes, floors)
             }
 
             if (mode === "edit") {

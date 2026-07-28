@@ -15,7 +15,7 @@ export async function GET() {
         return new Response(buildUrlSet(urls), {
             headers: {
                 'Content-Type': 'application/xml',
-                'Cache-Control': 'public, max-age=86400',
+                'Cache-Control': 'public, max-age=3600',
             },
         });
     } catch {

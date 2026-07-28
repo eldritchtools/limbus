@@ -236,7 +236,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 imageIds: finalizedImageIds,
                 extraOpts, blockDiscovery,
                 published: isPublished,
-                indexable: checkBuildIndexable(body, sinnerNotes)
+                indexable: isPublished && checkBuildIndexable(body, sinnerNotes)
             }
 
             if (mode === "edit") {
