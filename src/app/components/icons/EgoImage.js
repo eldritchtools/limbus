@@ -2,17 +2,12 @@
 "use client";
 
 import { useData } from "../DataProvider";
-
-import { ASSETS_ROOT } from "@/app/paths";
-
-function getSrc(ego) {
-    return `${ASSETS_ROOT}/egos/${ego.id}_cg.webp`;
-}
+import { getEgoArtSrc } from "./imgSrc";
 
 function EgoImageMain({ ego, className, style }) {
     return <img
         className={className}
-        src={getSrc(ego)}
+        src={getEgoArtSrc(ego.id)}
         alt={ego.name} title={ego.name}
         style={{ ...style, objectFit: "cover" }}
         loading="lazy"

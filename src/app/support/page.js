@@ -1,5 +1,3 @@
-"use client";
-
 import SupporterIcon from "../components/icons/SupporterIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import SocialsDisplay from "../components/user/SocialsDisplay";
@@ -47,14 +45,14 @@ export default function SupportPage() {
                 ]} expandedDefault={true} button={true} />
             </div>
             <span style={{ lineHeight: "1.3" }}>
-                In the future, I may introduce a small number of unobtrusive ads to help cover costs. There is an option in the <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink> page to disable them, but if you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money.
+                In the future, I may introduce a small number of unobtrusive ads to help cover costs. There is an option in the <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page to disable them, but if you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
             </span>
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Other Support</h2>
             <span style={{ lineHeight: "1.3" }}>
-                Sharing the site with friends or other members of the community is one of the best ways to help it grow.
+                Sharing the site with friends or other members of the community is one of the best ways to support it.
                 <br /> <br />
-                You can also simply continue using the site. Contributing builds, ratings, and reviews, liking or commenting on other posts, upvoting reviews, and any other site activity helps out a lot. You can also report bugs and suggest features through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page.
+                You can also simply continue using the site. Contributing builds, ratings, and reviews, liking or commenting on other posts, upvoting reviews, and any other site activity helps out a lot. Reporting bugs and suggesting features through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page or through Discord also helps a lot in improving the site.
             </span>
 
             <div style={{ height: "0.5rem" }} />

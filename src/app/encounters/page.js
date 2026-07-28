@@ -21,6 +21,17 @@ export async function generateMetadata({ searchParams }) {
         description: description,
         alternates: {
             canonical: "/encounters"
+        },
+        openGraph: {
+            title: title,
+            description: description,
+            url: "/encounters",
+            type: "website",
+        },
+        twitter: {
+            card: "summary",
+            title: title,
+            description: description
         }
     };
 }
@@ -36,39 +47,6 @@ const schema = {
     ]
 };
 
-// Encounter loaded client-side, dynamic jsonld supposedly not recommended
-
-// const schema = async (searchParams) => {
-//     const { category, encounter } = searchParams;
-
-//     let title = "Encounters";
-//     let description = "View details or relevant builds on various encounters.";
-//     let url = "https://limbus.eldritchtools.com/encounters";
-
-//     if (category && encounter) {
-//         const encounters = await getEncountersForMetadata();
-
-//         if (category in encounters && encounter in encounters[category]) {
-//             title = `${encounterCategoryLabels[category]}: ${encounters[category][encounter]}`;
-//             description = `Details for ${encounters[category][encounter]}`;
-//             url = `https://limbus.eldritchtools.com/encounters?category=${category}&encounter=${encounter}`;
-//         }
-//     }
-
-//     return {
-//         "@context": "https://schema.org",
-//         "@graph": [
-//             getWebPageSchema({
-//                 title,
-//                 description,
-//                 url
-//             })
-//         ]
-//     };
-// };
-
-// export default async function Page({ searchParams }) {
-// const schemaData = await schema(searchParams);
 export default function Page() {
 
     return <>

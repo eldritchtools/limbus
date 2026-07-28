@@ -2,6 +2,7 @@ import IdentityPage from "./IdentityPage";
 import { NotesTab, SkillsTab } from "./IdentityPageComponents";
 
 import { fetchData } from "@/app/components/DataFetcherServer";
+import { getIdentityArtSrc } from "@/app/components/icons/imgSrc";
 import { LEVEL_CAP, sinnerIdMapping } from "@/app/lib/constants";
 import JsonLd from "@/app/lib/jsonLd";
 import { getIdentityMetadata } from "@/app/lib/metadataHelper";
@@ -15,13 +16,31 @@ export async function generateMetadata({ params }) {
         return { title: "Identity not found" };
     }
 
-    const fullName = identity ? `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${identity}` : "Identity";
+    const fullName = `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${identity}`;
+    const desc = `Identity details for ${fullName} in Limbus Company, including stats, effects, notes, and usage information.`;
+    const path = `/identities/${id}`;
+    const img = getIdentityArtSrc(id, true);
 
     return {
         title: fullName,
-        description: `Identity details for ${fullName} in Limbus Company, including stats, effects, notes, and usage information.`,
+        description: desc,
         alternates: {
-            canonical: `/identities/${id}`
+            canonical: path
+        },
+
+        openGraph: {
+            title: fullName,
+            description: desc,
+            url: path,
+            type: "website",
+            images: [{url: img, alt: fullName}]
+        },
+
+        twitter: {
+            card: "summary_large_image",
+            title: fullName,
+            description: desc,
+            images: [img]
         }
     };
 }
@@ -60,13 +79,13 @@ export default async function Page({ params }) {
     const notesTab = skillData ? <NotesTab notes={skillData.notes} /> : null;
     const initSkillsTab = <SkillsTab
         identityData={identities[id]} level={LEVEL_CAP}
-        skills={skillData.skills} 
+        skills={skillData.skills}
         combatPassives={skillData.combatPassives} supportPassives={skillData.supportPassives}
         compareMode={false} serverText={true}
     />
 
     return <>
         <JsonLd data={schemaData} />
-        <IdentityPage id={id} identityData={identities[id]} initSkillData={skillData} notesTab={notesTab} initSkillsTab={initSkillsTab}/>
+        <IdentityPage id={id} identityData={identities[id]} initSkillData={skillData} notesTab={notesTab} initSkillsTab={initSkillsTab} />
     </>;
 }

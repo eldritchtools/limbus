@@ -2,11 +2,26 @@ import CollectionsPage from "./CollectionsPage";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
+    const name = "Collections";
+    const desc = "Browse community collections of team builds and Mirror Dungeon plans in Limbus Company.";
+    const path = "/collections";
+
     return {
-        title: "Collections",
-        description: "Browse community collections of team builds and Mirror Dungeon plans in Limbus Company.",
+        title: name,
+        description: desc,
         alternates: {
-            canonical: "/collections"
+            canonical: path
+        },
+        openGraph: {
+            title: name,
+            description: desc,
+            url: path,
+            type: "website",
+        },
+        twitter: {
+            card: "summary",
+            title: name,
+            description: desc
         }
     };
 }

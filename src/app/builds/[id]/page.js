@@ -19,25 +19,31 @@ export async function generateMetadata({ params }) {
         };
     }
 
-    // if (status === "error") {
-    //     return {
-    //         title: "Team Build",
-    //         description: "Temporary issue loading title.",
-    //         alternates: {
-    //             canonical: `/builds/${id}`
-    //         }
-    //     };
-    // }
+    const name = data.title ?? "Team Build";
+    const desc = cleanMetadataDescription(data.body);
+    const path = `/builds/${id}`;
 
     return {
-        title: data.title ?? "Team Build",
-        description: cleanMetadataDescription(data.body),
+        title: name,
+        description: desc,
         alternates: {
-            canonical: `/builds/${id}`
+            canonical: path
         },
         robots: {
             index: data.indexable ?? false,
             follow: true,
+        },
+        openGraph: {
+            title: name,
+            description: desc,
+            url: path,
+            type: "website",
+        },
+
+        twitter: {
+            card: "summary",
+            title: name,
+            description: desc
         }
     };
 }

@@ -1,10 +1,26 @@
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
+const name = "Dispense and Training Calculator";
+const desc = "Calculate Dispenser and upgrade costs for Identities and E.G.Os in Limbus Company.";
+const path = "/training-calc"
+
 export const metadata = {
-    title: "Dispense and Training Calculator",
-    description: "Calculate Dispenser and upgrade costs for Identities and E.G.Os in Limbus Company.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/training-calc"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getAppSchema({
-            name: "Dispense and Training Calculator",
-            description: "Calculate Dispenser and upgrade costs for Identities and E.G.Os in Limbus Company.",
-            url: "https://limbus.eldritchtools.com/training-calc"
+            name: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

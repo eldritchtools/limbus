@@ -8,9 +8,9 @@ export default function AboutPage() {
             <h1 style={{ fontSize: "1.75rem", margin: 0 }}>About this Site</h1>
             <p>
                 Limbus Company Tools is an unofficial fan-made project created for the Limbus Company community.
-                <br/> <br/>
+                <br /> <br />
                 It provides tools, reference databases, and community features to support gameplay planning and experimentation.
-                <br/> <br/>
+                <br /> <br />
                 This site is independently maintained by a single developer, with feedback and support from the community.
             </p>
 
@@ -56,7 +56,9 @@ export default function AboutPage() {
 
             <details>
                 <summary>Can I use the site without an account?</summary>
-                Yes. All tools and most features are available without an account, but posting requires signing in. Any posts created without an account are only saved locally on your device.
+                Yes. All tools and most features are available without an account, but posting requires signing in.
+                <br />
+                Any posts created without an account are only saved locally on your device.
             </details>
 
             <details>

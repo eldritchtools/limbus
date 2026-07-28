@@ -1,10 +1,26 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
+const name = "Choice Events";
+const desc = "Browse choice events available in Limbus Company Mirror Dungeons.";
+const path = "/md-events";
+
 export const metadata = {
-    title: "Choice Events",
-    description: "Browse choice events available in Limbus Company Mirror Dungeons.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/md-events"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getWebPageSchema({
-            title: "Choice Events",
-            description: "Browse choice events available in Limbus Company Mirror Dungeons.",
-            url: "https://limbus.eldritchtools.com/md-events"
+            title: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

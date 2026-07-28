@@ -13,7 +13,10 @@ export const metadata = {
         default: "Limbus Company Tools",
         template: "%s | Limbus Company Tools",
     },
-    description: "Comprehensive Limbus Company fan hub with team build sharing, Mirror Dungeon planners, Identity & E.G.O reviews, ownership displays, advanced searchable databases, event timers, and powerful tools like calculators, solvers, and planners."
+    description: "Comprehensive Limbus Company fan hub with team build sharing, Mirror Dungeon planners, Identity & E.G.O reviews, ownership displays, advanced searchable databases, event timers, and powerful tools like calculators, solvers, and planners.",
+    openGraph: {
+        siteName: "Limbus Company Tools"
+    }
 };
 
 const schema = {

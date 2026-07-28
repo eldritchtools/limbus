@@ -4,11 +4,26 @@ import { isolateBuildExtraOpts } from "../lib/buildExtraOpts";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
+    const name = "Team Builds";
+    const desc = "Browse and discover team builds shared by the Limbus Company community.";
+    const path = "/builds";
+
     return {
-        title: "Team Builds",
-        description: "Browse and discover team builds shared by the Limbus Company community.",
+        title: name,
+        description: desc,
         alternates: {
-            canonical: "/builds"
+            canonical: path
+        },
+        openGraph: {
+            title: name,
+            description: desc,
+            url: path,
+            type: "website",
+        },
+        twitter: {
+            card: "summary",
+            title: name,
+            description: desc
         }
     };
 }

@@ -1,20 +1,36 @@
-import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
+import JsonLd, { getAppSchema } from "../lib/jsonLd";
+
+const name = "Extraction Simulator";
+const desc = "Simulate extractions on banners or calculate your pulling odds in Limbus Company.";
+const path = "/extraction-simulator";
 
 export const metadata = {
-    title: "Extraction Simulator",
-    description: "Simulate extractions on banners or calculate your pulling odds in Limbus Company.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/extraction-simulator"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
 const schema = {
     "@context": "https://schema.org",
     "@graph": [
-        getWebPageSchema({
-            title: "Extraction Simulator",
-            description: "Simulate extractions on banners or calculate your pulling odds in Limbus Company.",
-            url: "https://limbus.eldritchtools.com/extraction-simulator"
+        getAppSchema({
+            title: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

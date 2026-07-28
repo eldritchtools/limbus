@@ -1,10 +1,26 @@
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
+const name = "Team Solver";
+const desc = "Find teams in Limbus Company that satisfy keyword or status requirements and other custom constraints.";
+const path = "/team-solver";
+
 export const metadata = {
-    title: "Team Solver",
-    description: "Find teams in Limbus Company that satisfy keyword or status requirements and other custom constraints.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/team-solver"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getAppSchema({
-            name: "Team Solver",
-            description: "Find teams in Limbus Company that satisfy keyword or status requirements and other custom constraints.",
-            url: "https://limbus.eldritchtools.com/team-solver"
+            name: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };
