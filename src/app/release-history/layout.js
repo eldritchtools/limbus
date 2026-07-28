@@ -26,17 +26,6 @@ export const metadata = {
     }
 };
 
-const schema = {
-    "@context": "https://schema.org",
-    "@graph": [
-        getAppSchema({
-            name: name,
-            description: desc,
-            url: `https://limbus.eldritchtools.com${path}`
-        })
-    ]
-};
-
 export default function ReleaseHistoryLayout({ children }) {
   return children;
 }
