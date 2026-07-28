@@ -60,10 +60,7 @@ export default function CollectionsPage() {
         window.location.href = `/collections/search?${params.toString()}`;
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Collections</h1>
-        <p style={{ margin: 0 }}>Browse collections organizing related builds and Mirror Dungeon plans. </p>
-        <p className="sub-text" style={{ margin: 0 }}>Some collections accept community submissions, allowing owners to review and curate contributions from other users.</p>
+    return <>
         <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
@@ -77,5 +74,5 @@ export default function CollectionsPage() {
             </div> :
             <CollectionsSearchDisplay collections={collections} />
         }
-    </div>;
+    </>;
 }

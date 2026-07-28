@@ -2,7 +2,7 @@ import IdentityPage from "./IdentityPage";
 import { NotesTab, SkillsTab } from "./IdentityPageComponents";
 
 import { fetchData } from "@/app/components/DataFetcherServer";
-import { LEVEL_CAP } from "@/app/lib/constants";
+import { LEVEL_CAP, sinnerIdMapping } from "@/app/lib/constants";
 import JsonLd from "@/app/lib/jsonLd";
 import { getIdentityMetadata } from "@/app/lib/metadataHelper";
 import { compileSkillData } from "@/app/lib/skill";
@@ -15,9 +15,11 @@ export async function generateMetadata({ params }) {
         return { title: "Identity not found" };
     }
 
+    const fullName = identity ? `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${identity}` : "Identity";
+
     return {
-        title: identity ?? "Identity",
-        description: `Identity details for ${identity} in Limbus Company, including stats, effects, notes, and usage information.`,
+        title: fullName,
+        description: `Identity details for ${fullName} in Limbus Company, including stats, effects, notes, and usage information.`,
         alternates: {
             canonical: `/identities/${id}`
         }
@@ -25,13 +27,14 @@ export async function generateMetadata({ params }) {
 }
 
 const schema = async id => {
-    const identity = (await getIdentityMetadata(id)) ?? "Temporary missing name";
+    const name = await getIdentityMetadata(id);
+    const fullName = name ? `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${name}` : "Temporary missing name";
 
     return {
         "@context": "https://schema.org",
         "@type": "Thing",
         "@id": `https://limbus.eldritchtools.com/identities/${id}`,
-        "name": identity,
+        "name": fullName,
         "url": `https://limbus.eldritchtools.com/identities/${id}`,
         "isPartOf": {
             "@id": "https://limbus.eldritchtools.com/#website"

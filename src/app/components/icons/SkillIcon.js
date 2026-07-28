@@ -42,7 +42,7 @@ export default function SkillIcon({ skillData, scale = 1 }) {
     const icon =
         skillData.type ?
             container(
-                <img src={getSkillIconSrc(skillData)} alt={skillData.iconId} style={{ width: "100%" }} loading="lazy" />,
+                <img src={getSkillIconSrc(skillData)} alt={skillData.name} style={{ width: "100%" }} loading="lazy" />,
                 true
             ) :
             container(

@@ -1,5 +1,3 @@
-"use client";
-
 import AnswerSection from "./AnswerSection";
 
 const submissions = 153;
@@ -13,7 +11,7 @@ function ConcernSection({ title, response }) {
 
 export default function SurveyPage() {
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        <h2 style={{ margin: 0 }}>Survey Results</h2>
+        <h1 style={{ margin: 0 }}>Survey Results</h1>
         <span>
             Hi! This page shows the results of the survey conducted between 2026-05-26 to 2026-06-09 about the future direction of the site in case people are curious.
         </span>

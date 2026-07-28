@@ -2,6 +2,7 @@ import EgoPage from "./EgoPage";
 import { NotesTab, SkillsTab } from "./EgoPageComponents";
 
 import { fetchData } from "@/app/components/DataFetcherServer";
+import { sinnerIdMapping } from "@/app/lib/constants";
 import JsonLd from "@/app/lib/jsonLd";
 import { getEgoMetadata } from "@/app/lib/metadataHelper";
 import { compileSkillData } from "@/app/lib/skill";
@@ -14,9 +15,11 @@ export async function generateMetadata({ params }) {
         return { title: "E.G.O not found" };
     }
 
+    const fullName = ego ? `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${ego}` : "E.G.O";
+
     return {
-        title: ego ?? "E.G.O",
-        description: `E.G.O details for ${ego} in Limbus Company, including stats, effects, notes, and usage information.`,
+        title: fullName,
+        description: `E.G.O details for ${fullName} in Limbus Company, including stats, effects, notes, and usage information.`,
         alternates: {
             canonical: `/egos/${id}`
         }
@@ -24,13 +27,14 @@ export async function generateMetadata({ params }) {
 }
 
 const schema = async id => {
-    const ego = (await getEgoMetadata(id)) ?? "Temporary missing name";
+    const name = await getEgoMetadata(id);
+    const fullName = name ? `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${name}` : "Temporary missing name";
 
     return {
         "@context": "https://schema.org",
         "@type": "Thing",
         "@id": `https://limbus.eldritchtools.com/egos/${id}`,
-        "name": ego,
+        "name": fullName,
         "url": `https://limbus.eldritchtools.com/egos/${id}`,
         "isPartOf": {
             "@id": "https://limbus.eldritchtools.com/#website"

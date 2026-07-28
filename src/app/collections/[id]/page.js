@@ -29,6 +29,10 @@ export async function generateMetadata({ params }) {
         description: cleanMetadataDescription(data.body),
         alternates: {
             canonical: `/collections/${id}`
+        },
+        robots: {
+            index: false,
+            follow: true
         }
     };
 }
