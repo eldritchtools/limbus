@@ -5,6 +5,10 @@ export const metadata = {
     description: "Archive of old pages for past events.",
     alternates: {
         canonical: "/archive"
+    },
+    robots: {
+        index: false,
+        follow: false
     }
 };
 

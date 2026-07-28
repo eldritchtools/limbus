@@ -1,10 +1,26 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
+const name = "Manager's Guide";
+const desc = "Guide on site features.";
+const path = "/guide";
+
 export const metadata = {
-    title: "Manager's Guide",
-    description: "Guide on site features.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/guide"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,13 +28,12 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getWebPageSchema({
-            title: "Manager's Guide",
-            description: "Guide on site features.",
-            url: "https://limbus.eldritchtools.com/guide"
+            title: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };
-
 
 export default function GuideLayout({ children }) {
     return <>

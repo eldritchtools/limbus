@@ -3,13 +3,38 @@ import { fetchData } from "../components/DataFetcherServer";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
+    const name = "E.G.Os";
+    const desc = "Browse all E.G.Os in Limbus Company with advanced search, filters, and comparison tools.";
+    const path = "/egos"
     return {
-        title: "E.G.Os",
-        description: "Browse all E.G.Os in Limbus Company with advanced search, filters, and comparison tools.",
+        title: name,
+        description: desc,
         alternates: {
-            canonical: "/egos"
+            canonical: path
+        },
+        openGraph: {
+            title: name,
+            description: desc,
+            url: path,
+            type: "website",
+        },
+
+        twitter: {
+            card: "summary",
+            title: name,
+            description: desc
         }
     };
+}
+
+const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "E.G.Os",
+    "url": "https://limbus.eldritchtools.com/egos",
+    "isPartOf": {
+        "@id": "https://limbus.eldritchtools.com/#website"
+    }
 }
 
 export default async function Page() {
@@ -23,15 +48,7 @@ export default async function Page() {
 
 
     return <>
-        <JsonLd data={{
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "E.G.Os",
-            "url": "https://limbus.eldritchtools.com/egos",
-            "isPartOf": {
-                "@id": "https://limbus.eldritchtools.com/#website"
-            }
-        }} />
+        <JsonLd data={schema} />
         <EgosPage initEgos={minifiedEgos} />
     </>;
 }

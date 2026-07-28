@@ -7,6 +7,10 @@ export async function generateMetadata({ params }) {
         description: "View user profile information and shared content.",
         alternates: {
             canonical: `/profiles/${username}`
+        },
+        robots: {
+            index: false,
+            follow: true
         }
     };
 }

@@ -1,10 +1,26 @@
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
+const name = "Team Draft";
+const desc = "Generate a team through a randomized drafting system for Limbus Company.";
+const path = "/team-draft";
+
 export const metadata = {
-    title: "Team Draft",
-    description: "Generate a team through a randomized drafting system for Limbus Company.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/team-draft"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getAppSchema({
-            name: "Team Draft",
-            description: "Generate a team through a randomized drafting system for Limbus Company.",
-            url: "https://limbus.eldritchtools.com/team-draft"
+            name: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

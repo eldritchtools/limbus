@@ -6,7 +6,7 @@ export async function GET() {
     const today = new Date().toISOString().split('T')[0];
 
     const buildPages = Math.ceil((await getBuildsCountForSitemap()) / CHUNK_SIZE);
-    const collectionPages = Math.ceil((await getCollectionsCountForSitemap()) / CHUNK_SIZE);
+    // const collectionPages = Math.ceil((await getCollectionsCountForSitemap()) / CHUNK_SIZE);
     const mdPlanPages = Math.ceil((await getMdPlansCountForSitemap()) / CHUNK_SIZE);
 
     const sitemaps = [
@@ -14,9 +14,9 @@ export async function GET() {
         ...Array.from({ length: buildPages }, (_, i) =>
             `${SITE_URL}/sitemaps/builds/${i + 1}`
         ),
-        ...Array.from({ length: collectionPages }, (_, i) =>
-            `${SITE_URL}/sitemaps/collections/${i + 1}`
-        ),
+        // ...Array.from({ length: collectionPages }, (_, i) =>
+        //     `${SITE_URL}/sitemaps/collections/${i + 1}`
+        // ),
         ...Array.from({ length: mdPlanPages }, (_, i) =>
             `${SITE_URL}/sitemaps/md-plans/${i + 1}`
         ),

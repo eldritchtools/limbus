@@ -105,7 +105,7 @@ function IdentityList({ initIdentities, identities, identitiesLoading, searchStr
     )
 
     const list = useMemo(() => {
-        if(identitiesLoading || initState) return initIdentities;
+        if (identitiesLoading || initState) return initIdentities;
         const combinedFilters = [...filters];
         if (selectedStatuses.length > 0) selectedStatuses.forEach(x => combinedFilters.push(["statusFull", x]));
         if (selectedFactionTags.length > 0) selectedFactionTags.forEach(x => combinedFilters.push(["tag", x]));
@@ -258,119 +258,110 @@ export default function IdentitiesPage({ initIdentities }) {
     }, [identities, identitiesLoading]);
 
     return <>
-        <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
-            <h2 style={{ margin: 0 }}>Identities</h2>
-            <p style={{ margin: 0 }}>
-                Browse through all available Identities using search and a comprehensive set of filters.
-            </p>
-            <p className="sub-text" style={{ margin: 0 }}>
-                Use Compare Mode to view multiple Identities side by side. Basic compares the complete details of selected Identities, while Advanced compares specific sections across all filtered Identities, such as Support Passives.
-            </p>
-            <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                    <span style={{ textAlign: 'end' }}>Search:</span>
-                    <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder="Identity Name" />
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Statuses:</div>
-                        <div
-                            className={`toggle-text ${statusesExcluding ? "red" : "green"}`}
-                            onClick={() => setStatusesExcluding(p => !p)}
-                        >
-                            {statusesExcluding ? "Exclude" : "Include"}
-                        </div>
-                    </div>
-                    <StatusDropdownSelector
-                        selected={selectedStatuses}
-                        setSelected={setSelectedStatuses}
-                        options={statusOptions}
-                        isMulti={true}
-                        excludeMode={statusesExcluding}
-                    />
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Factions/Tags:</div>
-                        <div
-                            className={`toggle-text ${factionTagsExcluding ? "red" : "green"}`}
-                            onClick={() => setFactionTagsExcluding(p => !p)}
-                        >
-                            {factionTagsExcluding ? "Exclude" : "Include"}
-                        </div>
-                    </div>
-                    <FactionDropdownSelector
-                        selected={selectedFactionTags}
-                        setSelected={setSelectedFactionTags}
-                        options={tagOptions}
-                        isMulti={true}
-                        excludeMode={factionTagsExcluding}
-                    />
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                        <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Season:</div>
-                        <div
-                            className={`toggle-text ${seasonsExcluding ? "red" : "green"}`}
-                            onClick={() => setSeasonsExcluding(p => !p)}
-                        >
-                            {seasonsExcluding ? "Exclude" : "Include"}
-                        </div>
-                    </div>
-                    <SeasonDropdownSelector
-                        selected={selectedSeasons}
-                        setSelected={setSelectedSeasons}
-                        options={seasonOptions}
-                        isMulti={true}
-                        excludeMode={seasonsExcluding}
-                    />
-                    <span style={{ textAlign: "end" }}>Display Type:</span>
-                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-                        <label>
-                            <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
-                            Icons Only
-                        </label>
-                        <label>
-                            <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                            Cards
-                        </label>
-                        <label>
-                            <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                            Full Details
-                        </label>
-                    </div>
-                    <div />
-                    <div>
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
-                            <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                            Strict Filtering
-                            <span className="sub-text">(Require all selected filters)</span>
-                        </label>
-                    </div>
-                    <div />
-                    <div>
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                            <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
-                            Separate by Sinner
-                        </label>
-                    </div>
-                    <div />
-                    <div>
-                        <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting, including searching through skills and passives.</div>
+        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                <span style={{ textAlign: 'end' }}>Search:</span>
+                <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder="Identity Name" />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                    <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Statuses:</div>
+                    <div
+                        className={`toggle-text ${statusesExcluding ? "red" : "green"}`}
+                        onClick={() => setStatusesExcluding(p => !p)}
+                    >
+                        {statusesExcluding ? "Exclude" : "Include"}
                     </div>
                 </div>
-                <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
+                <StatusDropdownSelector
+                    selected={selectedStatuses}
+                    setSelected={setSelectedStatuses}
+                    options={statusOptions}
+                    isMulti={true}
+                    excludeMode={statusesExcluding}
+                />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                    <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Factions/Tags:</div>
+                    <div
+                        className={`toggle-text ${factionTagsExcluding ? "red" : "green"}`}
+                        onClick={() => setFactionTagsExcluding(p => !p)}
+                    >
+                        {factionTagsExcluding ? "Exclude" : "Include"}
+                    </div>
+                </div>
+                <FactionDropdownSelector
+                    selected={selectedFactionTags}
+                    setSelected={setSelectedFactionTags}
+                    options={tagOptions}
+                    isMulti={true}
+                    excludeMode={factionTagsExcluding}
+                />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                    <div {...getGeneralTooltipProps("includeExclude")} className="hover-text">Filter Season:</div>
+                    <div
+                        className={`toggle-text ${seasonsExcluding ? "red" : "green"}`}
+                        onClick={() => setSeasonsExcluding(p => !p)}
+                    >
+                        {seasonsExcluding ? "Exclude" : "Include"}
+                    </div>
+                </div>
+                <SeasonDropdownSelector
+                    selected={selectedSeasons}
+                    setSelected={setSelectedSeasons}
+                    options={seasonOptions}
+                    isMulti={true}
+                    excludeMode={seasonsExcluding}
+                />
+                <span style={{ textAlign: "end" }}>Display Type:</span>
+                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                    <label>
+                        <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
+                        Icons Only
+                    </label>
+                    <label>
+                        <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
+                        Cards
+                    </label>
+                    <label>
+                        <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
+                        Full Details
+                    </label>
+                </div>
+                <div />
+                <div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                        Strict Filtering
+                        <span className="sub-text">(Require all selected filters)</span>
+                    </label>
+                </div>
+                <div />
+                <div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <input type="checkbox" checked={separateSinners} onChange={e => setSeparateSinners(e.target.checked)} />
+                        Separate by Sinner
+                    </label>
+                </div>
+                <div />
+                <div>
+                    <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
+                    <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting, including searching through skills and passives.</div>
+                </div>
             </div>
-            <HorizontalDivider />
-            <IdentityList
-                initIdentities={initIdentities}
-                identities={identities}
-                identitiesLoading={identitiesLoading}
-                searchString={searchString}
-                filters={filters}
-                displayType={displayType}
-                separateSinners={separateSinners}
-                strictFiltering={strictFiltering}
-                selectedStatuses={selectedStatuses}
-                selectedFactionTags={selectedFactionTags}
-                selectedSeasons={selectedSeasons}
-                compareMode={compareMode}
-            />
+            <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
         </div>
+        <HorizontalDivider />
+        <IdentityList
+            initIdentities={initIdentities}
+            identities={identities}
+            identitiesLoading={identitiesLoading}
+            searchString={searchString}
+            filters={filters}
+            displayType={displayType}
+            separateSinners={separateSinners}
+            strictFiltering={strictFiltering}
+            selectedStatuses={selectedStatuses}
+            selectedFactionTags={selectedFactionTags}
+            selectedSeasons={selectedSeasons}
+            compareMode={compareMode}
+        />
     </>;
 }

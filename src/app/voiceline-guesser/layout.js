@@ -1,10 +1,26 @@
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
+const name = "Voiceline Guesser";
+const desc = "Guess identities or E.G.O from Limbus Company from small snippets of their voicelines.";
+const path = "/voiceline-guesser"
+
 export const metadata = {
-    title: "Voiceline Guesser",
-    description: "Guess identities or E.G.O from Limbus Company from small snippets of their voicelines.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/voiceline-guesser"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getAppSchema({
-            name: "Voiceline Guesser",
-            description: "Guess identities or E.G.O from Limbus Company from small snippets of their voicelines.",
-            url: "https://limbus.eldritchtools.com/voiceline-guesser"
+            name: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

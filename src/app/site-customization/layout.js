@@ -2,7 +2,11 @@ import { Suspense } from "react";
 
 export const metadata = {
     title: "Site Customization",
-    description: "Customize site settings and appearance preferences."
+    description: "Customize site settings and appearance preferences.",
+    robots: {
+        index: false,
+        follow: false
+    }
 };
 
 export default function SiteCustomizationLayout({ children }) {

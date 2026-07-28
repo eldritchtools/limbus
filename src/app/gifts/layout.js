@@ -1,10 +1,26 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
+const name = "E.G.O Gifts";
+const desc = "Browse E.G.O Gifts available in Limbus Company Mirror Dungeons.";
+const path = "/gifts";
+
 export const metadata = {
-    title: "E.G.O Gifts",
-    description: "Browse E.G.O Gifts available in Limbus Company Mirror Dungeons.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/gifts"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getWebPageSchema({
-            title: "E.G.O Gifts",
-            description: "Browse E.G.O Gifts available in Limbus Company Mirror Dungeons.",
-            url: "https://limbus.eldritchtools.com/gifts"
+            title: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

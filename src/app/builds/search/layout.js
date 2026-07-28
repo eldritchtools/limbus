@@ -3,9 +3,12 @@ import { Suspense } from "react";
 export const metadata = {
   title: "Team Builds",
   description: "Browse team builds",
+  alternates: {
+      canonical: "/builds/search"
+  },
   robots: {
     index: false,
-    follow: false
+    follow: true
   }
 };
 

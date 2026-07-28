@@ -176,10 +176,7 @@ export default function BuildsPage({ popularBuilds }) {
         router.push(`/builds/search?${params.toString()}`);
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Builds</h1>
-        <p style={{ margin: 0 }}>Browse community-created team builds. </p>
-        <p className="sub-text" style={{ margin: 0 }}>Discover teams for general content, Mirror Dungeon, Railway, Luxcavation, story battles, and specific encounters. Explore popular builds, see the latest submissions, or find strategies for individual boss fights.</p>
+    return <>
         <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
@@ -206,5 +203,5 @@ export default function BuildsPage({ popularBuilds }) {
                     </div> :
                     <BuildsSearchDisplay builds={builds} />
         }
-    </div>;
+    </>;
 }

@@ -16,7 +16,6 @@ import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { affinities } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
-import { selectStyle, selectStyleVariable, selectStyleWide } from "../styles/selectStyle";
 
 function ChoiceEventCard({ choiceEvent }) {
     const { openChoiceEventModal } = useModal();
@@ -88,29 +87,22 @@ export default function MDEventsPage() {
     const [selectedThemePacks, setSelectedThemePacks] = useState([]);
 
     const themePackList = useMemo(() => {
-        if(themePacksLoading) return [];
+        if (themePacksLoading) return [];
         return Object.entries(themePacks).filter(([id, pack]) => "eventPool" in pack && pack.eventPool.length > 0).map(([id]) => id)
     }, [themePacks, themePacksLoading]);
 
     const packEvents = useMemo(() => {
-        if(choiceEventsLoading) return [];
-        if(themePacksLoading || selectedThemePacks.length === 0) return Object.values(choiceEvents);
+        if (choiceEventsLoading) return [];
+        if (themePacksLoading || selectedThemePacks.length === 0) return Object.values(choiceEvents);
         const events = new Set();
-        selectedThemePacks.forEach(id => 
+        selectedThemePacks.forEach(id =>
             themePacks[id].eventPool.forEach(x => events.add(x))
         );
 
         return [...events].map(id => choiceEvents[id]).filter(x => x);
     }, [selectedThemePacks, themePacks, choiceEvents, themePacksLoading, choiceEventsLoading])
 
-    return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Choice Events</h1>
-        <p style={{margin: 0}}>
-            Browse all Mirror Dungeon Choice Events.
-        </p>
-        <p className="sub-text" style={{margin: 0}}>
-            Search by title, gift rewards, or choice text, and view the effects of every available outcome.
-        </p>
+    return <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
@@ -143,5 +135,5 @@ export default function MDEventsPage() {
                 giftsData={gifts}
             />
         }
-    </div>;
+    </>;
 }

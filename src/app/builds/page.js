@@ -4,11 +4,26 @@ import { isolateBuildExtraOpts } from "../lib/buildExtraOpts";
 import JsonLd from "../lib/jsonLd";
 
 export function generateMetadata() {
+    const name = "Team Builds";
+    const desc = "Browse and discover team builds shared by the Limbus Company community.";
+    const path = "/builds";
+
     return {
-        title: "Team Builds",
-        description: "Browse and discover team builds shared by the Limbus Company community.",
+        title: name,
+        description: desc,
         alternates: {
-            canonical: "/builds"
+            canonical: path
+        },
+        openGraph: {
+            title: name,
+            description: desc,
+            url: path,
+            type: "website",
+        },
+        twitter: {
+            card: "summary",
+            title: name,
+            description: desc
         }
     };
 }
@@ -33,8 +48,11 @@ export default async function Page() {
         return { ...rest, extra_opts: extraOpts };
     });
 
-    return <>
+    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
         <JsonLd data={schema} />
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Builds</h1>
+        <p style={{ margin: 0 }}>Browse community-created team builds. </p>
+        <p className="sub-text" style={{ margin: 0 }}>Discover teams for general content, Mirror Dungeon, Railway, Luxcavation, story battles, and specific encounters. Explore popular builds, see the latest submissions, or find strategies for individual boss fights.</p>
         <BuildsPage popularBuilds={buildsMinified} />
-    </>;
+    </div>;
 }

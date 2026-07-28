@@ -24,11 +24,31 @@ export async function generateMetadata({ params }) {
         };
     }
 
+    const name = data.title ?? "Collection";
+    const desc = cleanMetadataDescription(data.body);
+    const path = `/collections/${id}`;
+
     return {
-        title: data.title ?? "Collection",
-        description: cleanMetadataDescription(data.body),
+        title: name,
+        description: desc,
         alternates: {
-            canonical: `/collections/${id}`
+            canonical: path
+        },
+        robots: {
+            index: false,
+            follow: true
+        },
+        openGraph: {
+            title: name,
+            description: desc,
+            url: path,
+            type: "website",
+        },
+
+        twitter: {
+            card: "summary",
+            title: name,
+            description: desc
         }
     };
 }

@@ -446,7 +446,7 @@ export default function ExtractionSimulatorPage() {
             Results may differ slightly from the game due to possible differences in how randomization is implemented.
         </p>
 
-        {timersLoading || identitiesLoading || egosLoading ?
+        {timersLoading || identitiesLoading || egosLoading || announcersLoading ?
             <LoadingContentPageTemplate /> :
             <>
                 <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "0.25rem", maxWidth: "min(1600px, 100vw)" }}>

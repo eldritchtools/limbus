@@ -27,6 +27,7 @@ import { contentConfig } from "@/app/lib/contentConfig";
 import { getEncounterCategoryOptions, getEncounterOptions } from "@/app/lib/encounters";
 import { checkFilterMatch } from "@/app/lib/filter";
 import { triggerPostCreateGAEvent } from "@/app/lib/gaEvents";
+import { checkBuildIndexable } from "@/app/lib/indexable";
 import { parseTeamCode } from "@/app/lib/teamCodeEncoding";
 import { uiStrings } from "@/app/lib/uiStrings";
 import { extractYouTubeId } from "@/app/lib/youtube";
@@ -235,6 +236,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 imageIds: finalizedImageIds,
                 extraOpts, blockDiscovery,
                 published: isPublished,
+                indexable: checkBuildIndexable(body, sinnerNotes)
             }
 
             if (mode === "edit") {

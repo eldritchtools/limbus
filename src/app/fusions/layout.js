@@ -1,10 +1,26 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
+const name = "Fusions";
+const desc = "Browse fusion recipes for E.G.O gifts in Limbus Company Mirror Dungeons.";
+const path = "/fusions";
+
 export const metadata = {
-    title: "Fusions",
-    description: "Browse fusion recipes for E.G.O gifts in Limbus Company Mirror Dungeons.",
+    title: name,
+    description: desc,
     alternates: {
-        canonical: "/fusions"
+        canonical: path
+    },
+    openGraph: {
+        title: name,
+        description: desc,
+        url: path,
+        type: "website",
+    },
+
+    twitter: {
+        card: "summary",
+        title: name,
+        description: desc
     }
 };
 
@@ -12,9 +28,9 @@ const schema = {
     "@context": "https://schema.org",
     "@graph": [
         getWebPageSchema({
-            title: "Fusions",
-            description: "Browse fusion recipes for E.G.O gifts in Limbus Company Mirror Dungeons.",
-            url: "https://limbus.eldritchtools.com/fusions"
+            title: name,
+            description: desc,
+            url: `https://limbus.eldritchtools.com${path}`
         })
     ]
 };

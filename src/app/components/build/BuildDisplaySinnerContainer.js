@@ -3,6 +3,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 
 import BuildDisplaySinnerBase from "./BuildDisplaySinnerBase";
+import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import { EgoSkillCalc, IdentitySkillCalc } from "../skill/SkillCalc";
@@ -132,10 +133,18 @@ function EgoStatsOverlay({ egos, displayType }) {
 }
 
 export default function BuildDisplaySinnerContainer({ 
-    displayType, sinnerId, identity, egos, 
+    displayType, sinnerId, identityId, egoIds, 
     identityLevel, egoThreadspins, identityUptie, deploymentOrder, swapIcon,
     activeSinners, otherOpts, disableLinks
 }) {
+    const [iData, identitiesLoading] = useIdentitiesWithUpcoming();
+    const [eData, egosLoading] = useEgosWithUpcoming();
+
+    if(identitiesLoading || egosLoading) return null;
+
+    const identity = identityId ? iData[identityId] : null;
+    const egos = egoIds.map(id => id ? eData[id] : null)
+
     const baseComponent = <BuildDisplaySinnerBase
         displayType={displayType}
         sinnerId={sinnerId}

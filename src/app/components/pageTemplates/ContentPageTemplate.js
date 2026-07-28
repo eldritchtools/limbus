@@ -97,12 +97,12 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
             </button>
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap", marginTop: 0, marginBottom: "0.5rem" }}>
+            <h1 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap", marginTop: 0, marginBottom: "0.5rem" }}>
                 {titleIcons}
                 {(keywordIcons ?? []).map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
                 {(addedIcons ?? []).map(id => <StatusIcon key={id} id={id} style={{ width: "32px" }} />)}
                 {content.title}
-            </h2>
+            </h1>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
                     <UsernameWithTime data={content} scale={0.9} avatarId={content.user_avatar_id} withFollowButton={true} />
