@@ -120,7 +120,7 @@ AS $$
   SELECT 
     score 
     / POWER(
-        (EXTRACT(EPOCH FROM (NOW() - COALESCE(published_at, created_at))) / 86400) + 5, 
-        0.85
+        (EXTRACT(EPOCH FROM (NOW() - COALESCE(published_at, created_at))) / 86400) + 4, 
+        0.95
     );
 $$;
