@@ -5,6 +5,7 @@ import { useState } from "react";
 import styles from "./Collection.module.css";
 import NoPrefetchLink from "../NoPrefetchLink";
 import MdPlan from "./MdPlan";
+import { getTierStyle } from "./scoring";
 import BuildEntry from "./TeamBuild";
 import CommentButton from "../contentActions/CommentButton";
 import ContributeButton from "../contentActions/ContributeButton";
@@ -25,7 +26,7 @@ export default function Collection({ collection, complete = true }) {
 
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
-    return <div className={`${styles.collection} ${!blockHover ? styles.canHover : null}`}>
+    return <div className={`${styles.collection} ${!blockHover ? styles.canHover : null} ${getTierStyle(collection.score)}`}>
         <NoPrefetchLink href={`/collections/${collection.id}`} className={styles.collectionLink} />
 
         <div className={styles.collectionContent} style={{maxWidth: collection.user_avatar_id ? "calc(100% - 32px)" : "100%"}}>

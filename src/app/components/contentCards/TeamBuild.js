@@ -3,6 +3,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useState } from "react";
 
+import { getTierStyle } from "./scoring";
 import styles from "./TeamBuild.module.css";
 import BuildIdentitiesGrid from "../build/BuildIdentitiesGrid";
 import CommentButton from "../contentActions/CommentButton";
@@ -51,7 +52,10 @@ export default function TeamBuild({ build, size, complete = true, clickable = tr
 
     const hoverWrap = x => <HoverBlocker setBlockHover={setBlockHover}>{x}</HoverBlocker>
 
-    return <div className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null}`} style={{ width: sizes.width, ...styleOverride }}>
+    return <div 
+        className={`${styles.teamBuild} ${!blockHover ? styles.canHover : null} ${getTierStyle(build.score)}`} 
+        style={{ width: sizes.width, ...styleOverride }}
+    >
         {clickable ? <NoPrefetchLink href={`/builds/${build.id}`} className={styles.teamBuildLink} guarded={guardedLinks} /> : null}
 
         {icons.length > 0 ?
