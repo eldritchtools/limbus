@@ -144,7 +144,7 @@ with check (
   )
 );
 
-create or replace function public.search_collections_v5(
+create or replace function public.search_collections_v6(
   p_query text default null,
   collection_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -170,7 +170,8 @@ returns table (
   tags TEXT[],
   like_count INT,
   comment_count INT,
-  items jsonb
+  items jsonb,
+  score NUMERIC
 )
 language plpgsql
 security definer
@@ -210,12 +211,28 @@ begin
       c.search_vector,
       c.like_count,
       c.comment_count,
+      c.score,
       CASE
-        WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN ts_rank(c.search_vector, v_tsquery)
-        WHEN v_sort = 'new' THEN EXTRACT(EPOCH FROM COALESCE(c.published_at, c.created_at))
-        WHEN v_sort = 'popular' THEN public.compute_popularity(c.like_count, c.comment_count, c.view_count, c.created_at, c.published_at)
-        WHEN v_sort = 'random' THEN RANDOM()
-      END AS sort_value 
+          WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN
+              ts_rank(c.search_vector, v_tsquery)
+              * (1 + LN(c.score + 1) * 0.08)
+
+          WHEN v_sort = 'new' THEN
+              EXTRACT(EPOCH FROM COALESCE(c.published_at, c.created_at))
+
+          WHEN v_sort = 'top' THEN
+              c.score
+
+          WHEN v_sort = 'active' THEN
+              public.compute_decayed_score(
+                  c.score,
+                  c.created_at,
+                  c.published_at
+              )
+
+          WHEN v_sort = 'random' THEN
+              RANDOM()
+      END AS sort_value
     FROM public.collections c
     JOIN public.users u ON c.user_id = u.id
     WHERE c.is_published = p_published
@@ -261,7 +278,7 @@ begin
 
   builds AS (
     SELECT *
-    FROM public.search_builds_v11(
+    FROM public.search_builds_v12(
       build_id_filter := ARRAY(SELECT abi.id FROM all_build_ids abi),
       p_limit := 1000,
       p_ignore_block_discovery := true
@@ -270,7 +287,7 @@ begin
 
   md_plans AS (
     SELECT *
-    FROM public.search_md_plans_v5(
+    FROM public.search_md_plans_v6(
       plan_id_filter := ARRAY(SELECT ami.id FROM all_md_plan_ids ami),
       p_limit := 1000,
       p_ignore_block_discovery := true
@@ -333,7 +350,8 @@ begin
     COALESCE(ct.tags, ARRAY[]::TEXT[]) AS tags,
     c.like_count,
     c.comment_count,
-    COALESCE(i.items, '[]'::jsonb) AS items
+    COALESCE(i.items, '[]'::jsonb) AS items,
+    c.score
 
   FROM collections c
   LEFT JOIN items i ON i.collection_id = c.id
@@ -354,7 +372,8 @@ begin
     c.sort_value,
     c.like_count,
     c.comment_count,
-    i.items
+    i.items,
+    c.score
   ORDER BY c.sort_value DESC;
 end;
 $$;

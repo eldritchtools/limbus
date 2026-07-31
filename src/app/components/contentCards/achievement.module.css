@@ -1,0 +1,55 @@
+.achievement {
+    position: relative;
+}
+
+.achievement::after {
+    content: "";
+    position: absolute;
+    inset: -3;
+    padding: 3px;
+    border-radius: inherit;
+    pointer-events: none;
+
+    background: var(--achievement-gradient);
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.achievementBronze::after {
+    --achievement-gradient: linear-gradient(135deg,
+            #5C3A28,
+            #8A5A3B,
+            #C1875D,
+            #8A5A3B,
+            #5C3A28);
+}
+
+.achievementSilver::after {
+    --achievement-gradient: linear-gradient(135deg,
+            #8A8F96,
+            #D5D9DE,
+            #FFFFFF,
+            #D5D9DE,
+            #8A8F96);
+
+    box-shadow:
+        0 0 0 3px #C9CED5,
+        0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.achievementGold::after {
+    --achievement-gradient: linear-gradient(135deg,
+            #9C741A,
+            #D9B44A,
+            #FFF0A0,
+            #D9B44A,
+            #9C741A);
+
+    box-shadow:
+        0 0 0 3px #D9B44A,
+        0 0 0 4px rgba(255, 241, 160, 0.35);
+}

@@ -1,5 +1,5 @@
 import MdPlansPage from "./MdPlansPage";
-import { getPopularMdPlans } from "../database/serverSafeDb";
+import { getActiveMdPlans } from "../database/serverSafeDb";
 import { isolateBuildExtraOpts } from "../lib/buildExtraOpts";
 import JsonLd from "../lib/jsonLd";
 
@@ -38,7 +38,7 @@ const schema = {
 };
 
 export default async function Page() {
-    const plans = await getPopularMdPlans();
+    const plans = await getActiveMdPlans();
 
     const plansMinified = plans.map(plan => {
         const extraOpts = isolateBuildExtraOpts(plan.extra_opts, ["do", "as", "iu"]);
@@ -48,6 +48,6 @@ export default async function Page() {
 
     return <>
         <JsonLd data={schema} />
-        <MdPlansPage popularMdPlans={plansMinified} />
+        <MdPlansPage activeMdPlans={plansMinified} />
     </>;
 }

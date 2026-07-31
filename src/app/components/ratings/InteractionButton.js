@@ -31,7 +31,7 @@ export default function InteractionButton({ reviewId, count, type, userId, itemI
 
     let opacity = 0;
     if (count || delta)
-        opacity = Math.min(0.25 + 0.75 * ((count + delta) / 10), 1);
+        opacity = Math.min(0.5 + 0.5 * ((count + delta) / 10), 1);
 
     let disabled = !user || user.id === userId;
 
@@ -56,7 +56,7 @@ export default function InteractionButton({ reviewId, count, type, userId, itemI
         }
     }, [type, state]);
 
-    return <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+    return <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
         <button
             {...getGeneralTooltipProps(type === "upvote" ? "Upvote" : "Funny")}
             onClick={handleClick}

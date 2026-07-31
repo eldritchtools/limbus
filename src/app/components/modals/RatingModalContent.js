@@ -190,7 +190,7 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
 
     useEffect(() => {
         const fetchBuilds = async () => {
-            const params = { published: true, sortBy: "popular" };
+            const params = { published: true, sortBy: "top" };
             if (type === "identity") params["identities"] = [id];
             else if (type === "ego") params["egos"] = [id];
 
@@ -241,7 +241,7 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
                     <div className={`tab-header ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>
                         {type === "identity" ? "Identity " : "E.G.O "}Details
                     </div>
-                    <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Popular Builds</div>
+                    <div className={`tab-header ${tab === "builds" ? "active" : ""}`} onClick={() => setTab("builds")}>Top Builds</div>
                 </div>
             </div>
             <div style={isDesktop ? { overflowY: "auto", flex: 1, minHeight: 0 } : {}}>

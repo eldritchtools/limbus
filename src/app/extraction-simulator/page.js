@@ -92,7 +92,7 @@ function Banner({ banner, identities, egos, announcers, isMobile, selected, setS
         if (String(k) === "2") return `[00] ${identities[id].name}`;
         if (String(k) === "1") return `[0] ${identities[id].name}`;
         if (k === "ego") return `[${egos[id].rank}] ${egos[id].name}`;
-        if (k === "announcer") return `[Announcer] ${announcers[id].name}`;
+        if (k === "announcer") return `[Announcer] ${id in announcers ? announcers[id].name : id}`;
         return "";
     }
 
@@ -234,7 +234,7 @@ export default function ExtractionSimulatorPage() {
             let comp;
             if (obj[0] === "id") comp = <IdentityIcon identity={identities[obj[1]]} uptie={4} displayRarity={true} displayName={true} />
             else if (obj[0] === "ego") comp = <EgoIcon ego={egos[obj[1]]} type={"awaken"} displayRarity={true} displayName={true} />
-            else comp = <AnnouncerIcon announcer={announcers[obj[1]]} displayName={true} />
+            else comp = obj[1] in announcers ? <AnnouncerIcon announcer={announcers[obj[1]]} displayName={true} /> : <span>{obj[1]}</span>
 
             return <div key={`${pullCount}-${i}`} style={iconStyle(isMobile)}>
                 {comp}

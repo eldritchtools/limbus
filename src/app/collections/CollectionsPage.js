@@ -12,13 +12,13 @@ import useLocalState from "../lib/useLocalState";
 export default function CollectionsPage() {
     const [collections, setCollections] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("collectionsActiveTab", "popular");
+    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("collectionsActiveTab", "active");
     const [refreshCounter, setRefreshCounter] = useState(0);
     const searchParams = useSearchParams();
 
     useEffect(() => {
         const mode = searchParams.get('mode');
-        if (["popular", "new", "random"].includes(mode)) {
+        if (["active", "top", "new", "random"].includes(mode)) {
             setActiveTab(mode);
         }
     }, [searchParams, setActiveTab]);
@@ -31,11 +31,12 @@ export default function CollectionsPage() {
         const fetchCollections = async () => {
             try {
                 setLoading(true);
-                const data = activeTab === "popular" ?
-                    await searchCollections({ published: true, sortBy: "popular" }, 1) :
-                    activeTab === "new" ?
-                        await searchCollections({ published: true, sortBy: "new" }, 1) :
-                        await searchCollections({ published: true, sortBy: "random" }, 1)
+                let data;
+                if(activeTab === "active") data = await searchCollections({ published: true, sortBy: "active" }, 1)
+                else if(activeTab === "top") data = await searchCollections({ published: true, sortBy: "top" }, 1)
+                else if(activeTab === "new") data = await searchCollections({ published: true, sortBy: "new" }, 1)
+                else if(activeTab === "random") data = await searchCollections({ published: true, sortBy: "random" }, 1)
+
                 if (!canceled) {
                     setCollections(data || []);
                 }
@@ -64,7 +65,8 @@ export default function CollectionsPage() {
         <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
-            <div className={`tab-header ${activeTab === "popular" ? "active" : ""}`} onClick={() => handleTabClick("popular")}>Popular</div>
+            <div className={`tab-header ${activeTab === "active" ? "active" : ""}`} onClick={() => handleTabClick("active")}>Active</div>
+            <div className={`tab-header ${activeTab === "top" ? "active" : ""}`} onClick={() => handleTabClick("top")}>Top</div>
             <div className={`tab-header ${activeTab === "new" ? "active" : ""}`} onClick={() => handleTabClick("new")}>New</div>
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
         </div>

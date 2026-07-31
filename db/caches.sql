@@ -54,10 +54,8 @@ BEGIN
   FROM (
     SELECT
       b.id,
-      public.compute_popularity(
-        b.like_count,
-        b.comment_count,
-        b.view_count,
+      public.compute_decayed_score(
+        b.score,
         b.created_at,
         b.published_at
       ) AS score

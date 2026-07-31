@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import NoPrefetchLink from "../NoPrefetchLink";
 import styles from "./MdPlan.module.css";
+import { getTierStyle } from "./scoring";
 import BuildIdentitiesGrid from "../build/BuildIdentitiesGrid";
 import CommentButton from "../contentActions/CommentButton";
 import LikeButton from "../contentActions/LikeButton";
@@ -68,7 +69,7 @@ export default function MdPlan({ plan, complete = true, clickable = true, styleO
         return null;
     }, [plan]);
 
-    return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null}`} style={styleOverride}>
+    return <div className={`${styles.mdPlan} ${!blockHover ? styles.canHover : null} ${getTierStyle(plan.score)}`} style={styleOverride}>
         {clickable ? <NoPrefetchLink href={`/md-plans/${plan.id}`} className={styles.mdPlanLink} /> : null}
 
         <div className={styles.mdPlanContent}>

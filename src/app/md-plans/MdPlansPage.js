@@ -9,31 +9,33 @@ import PlansSearchComponent from "../components/search/PlansSearchComponent";
 import { searchMdPlans } from "../database/mdPlans";
 import useLocalState from "../lib/useLocalState";
 
-export default function MdPlansPage({ popularMdPlans }) {
+export default function MdPlansPage({ activeMdPlans }) {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("mdPlanActiveTab", "popular");
+    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("mdPlanActiveTab", "active");
     const [refreshCounter, setRefreshCounter] = useState(0);
     const searchParams = useSearchParams();
 
     useEffect(() => {
         const mode = searchParams.get('mode');
-        if (["popular", "new", "random"].includes(mode)) {
+        if (["active", "top", "new", "random"].includes(mode)) {
             setActiveTab(mode);
         }
     }, [searchParams, setActiveTab]);
 
     useEffect(() => {
-        if (!activeTab || !activeTabInitialized || activeTab === "popular") return;
+        if (!activeTab || !activeTabInitialized || activeTab === "active") return;
 
         let canceled = false;
 
         const fetchPlans = async () => {
             try {
                 setLoading(true);
-                const data = activeTab === "new" ?
-                    await searchMdPlans({ published: true, sortBy: "new" }, 1) :
-                    await searchMdPlans({ published: true, sortBy: "random" }, 1)
+                const data = activeTab === "top" ?
+                    await searchMdPlans({ published: true, sortBy: "top" }, 1) :
+                    activeTab === "new" ?
+                        await searchMdPlans({ published: true, sortBy: "new" }, 1) :
+                        await searchMdPlans({ published: true, sortBy: "random" }, 1)
                 if (!canceled) {
                     setPlans(data || []);
                 }
@@ -65,7 +67,8 @@ export default function MdPlansPage({ popularMdPlans }) {
         <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
-            <div className={`tab-header ${activeTab === "popular" ? "active" : ""}`} onClick={() => handleTabClick("popular")}>Popular</div>
+            <div className={`tab-header ${activeTab === "active" ? "active" : ""}`} onClick={() => handleTabClick("active")}>Active</div>
+            <div className={`tab-header ${activeTab === "top" ? "active" : ""}`} onClick={() => handleTabClick("top")}>Top</div>
             <div className={`tab-header ${activeTab === "new" ? "active" : ""}`} onClick={() => handleTabClick("new")}>New</div>
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
         </div>
@@ -73,8 +76,8 @@ export default function MdPlansPage({ popularMdPlans }) {
             <div className="title-text">
                 {"Loading MD plans..."}
             </div> :
-            activeTab === "popular" ?
-                <MdPlansSearchDisplay plans={popularMdPlans} /> :
+            activeTab === "active" ?
+                <MdPlansSearchDisplay plans={activeMdPlans} /> :
                 <MdPlansSearchDisplay plans={plans} />
         }
     </div>;

@@ -17,7 +17,6 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 import { useAuth } from "@/app/database/authProvider";
 import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
-import { invalidateBuild } from "@/app/database/dbCacheClient";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { handleCreateTag } from "@/app/database/tags";
@@ -236,13 +235,12 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 imageIds: finalizedImageIds,
                 extraOpts, blockDiscovery,
                 published: isPublished,
-                indexable: checkBuildIndexable(body, sinnerNotes)
+                indexable: isPublished && checkBuildIndexable(body, sinnerNotes)
             }
 
             if (mode === "edit") {
                 buildData.buildId = buildId;
                 const data = await updateBuild(buildData);
-                await invalidateBuild(buildId);
                 router.push(`/builds/${data}`);
             } else {
                 const data = await insertBuild(buildData);

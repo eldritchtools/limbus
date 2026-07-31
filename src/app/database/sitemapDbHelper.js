@@ -7,7 +7,6 @@ export async function getBuildsForSitemap(page, count) {
         const { data, error } = await getSupabase()
             .from('builds')
             .select('id, created_at, updated_at')
-            .eq('is_published', true)
             .eq('indexable', true)
             .order('created_at', { ascending: true })
             .range(offset, offset + count - 1);
@@ -22,7 +21,6 @@ export async function getBuildsCountForSitemap() {
         const { count, error } = await getSupabase()
             .from('builds')
             .select('*', { count: 'exact', head: true })
-            .eq('is_published', true)
             .eq('indexable', true);
 
         if (error) throw (error);
@@ -63,7 +61,6 @@ export async function getMdPlansForSitemap(page, count) {
         const { data, error } = await getSupabase()
             .from('md_plans')
             .select('id, created_at, updated_at')
-            .eq('is_published', true)
             .eq('indexable', true)
             .order('created_at', { ascending: true })
             .range(offset, offset + count - 1);
@@ -78,7 +75,6 @@ export async function getMdPlansCountForSitemap() {
         const { count, error } = await getSupabase()
             .from('md_plans')
             .select('*', { count: 'exact', head: true })
-            .eq('is_published', true)
             .eq('indexable', true);
 
         if (error) throw (error);

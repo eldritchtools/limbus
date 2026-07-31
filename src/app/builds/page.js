@@ -1,5 +1,5 @@
 import BuildsPage from "./BuildsPage";
-import { getPopularBuilds } from "../database/serverSafeDb";
+import { getActiveBuilds } from "../database/serverSafeDb";
 import { isolateBuildExtraOpts } from "../lib/buildExtraOpts";
 import JsonLd from "../lib/jsonLd";
 
@@ -40,7 +40,7 @@ const schema = {
 
 
 export default async function Page() {
-    const builds = await getPopularBuilds();
+    const builds = await getActiveBuilds();
 
     const buildsMinified = builds.map(build => {
         const extraOpts = isolateBuildExtraOpts(build.extra_opts, ["iu", "ai", "is"]);
@@ -53,6 +53,6 @@ export default async function Page() {
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Builds</h1>
         <p style={{ margin: 0 }}>Browse community-created team builds. </p>
         <p className="sub-text" style={{ margin: 0 }}>Discover teams for general content, Mirror Dungeon, Railway, Luxcavation, story battles, and specific encounters. Explore popular builds, see the latest submissions, or find strategies for individual boss fights.</p>
-        <BuildsPage popularBuilds={buildsMinified} />
+        <BuildsPage activeBuilds={buildsMinified} />
     </div>;
 }

@@ -42,6 +42,7 @@ CREATE INDEX idx_builds_identities ON builds USING GIN (identity_ids);
 CREATE INDEX idx_builds_egos ON builds USING GIN (ego_ids);
 CREATE INDEX idx_builds_keywords ON builds USING GIN (keyword_ids);
 CREATE INDEX idx_builds_search ON builds USING GIN(search_vector);
+CREATE INDEX builds_sitemap_idx ON public.builds (created_at ASC) WHERE indexable = true;
 
 ALTER TABLE public.builds ENABLE ROW LEVEL SECURITY;
 
@@ -68,7 +69,7 @@ ON public.builds
 FOR DELETE
 USING (auth.uid() = user_id);
 
-CREATE OR REPLACE FUNCTION public.search_builds_v11(
+CREATE OR REPLACE FUNCTION public.search_builds_v12(
   p_query TEXT DEFAULT NULL,
   build_id_filter UUID[] DEFAULT NULL,
   username_exact_filter TEXT DEFAULT NULL,
@@ -156,10 +157,25 @@ BEGIN
       b.search_vector,
 
       CASE
-        WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN ts_rank(b.search_vector, v_tsquery)
-        WHEN v_sort = 'new' THEN EXTRACT(EPOCH FROM COALESCE(b.published_at, b.created_at))
-        WHEN v_sort = 'popular' THEN public.compute_popularity(b.like_count, b.comment_count, b.view_count, b.created_at, b.published_at)
-        WHEN v_sort = 'random' THEN RANDOM()
+          WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN
+              ts_rank(b.search_vector, v_tsquery)
+              * (1 + LN(b.score + 1) * 0.08)
+
+          WHEN v_sort = 'new' THEN
+              EXTRACT(EPOCH FROM COALESCE(b.published_at, b.created_at))
+
+          WHEN v_sort = 'top' THEN
+              b.score
+
+          WHEN v_sort = 'active' THEN
+              public.compute_decayed_score(
+                  b.score,
+                  b.created_at,
+                  b.published_at
+              )
+
+          WHEN v_sort = 'random' THEN
+              RANDOM()
       END AS sort_value
 
     FROM public.builds b

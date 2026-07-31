@@ -51,7 +51,7 @@ SELECT cron.schedule(
   $$SELECT public.add_homepage_showcase_build();$$
 );
 
-CREATE OR REPLACE FUNCTION public.get_homepage_posts_v6(
+CREATE OR REPLACE FUNCTION public.get_homepage_posts_v7(
   popular_limit INTEGER DEFAULT 3,
   newest_limit INTEGER DEFAULT 3,
   showcase_limit INTEGER DEFAULT 3,
@@ -78,7 +78,7 @@ BEGIN
       SELECT json_agg(n)
       FROM (
         SELECT *
-        FROM public.search_builds_v11(
+        FROM public.search_builds_v12(
           p_sort_by := 'new',
           p_limit := newest_limit,
           p_offset := 0
@@ -97,7 +97,7 @@ BEGIN
           LIMIT showcase_limit
         ) top_show
       ) ids,
-      LATERAL public.search_builds_v11(
+      LATERAL public.search_builds_v12(
         build_id_filter := ids.show_ids,
         p_limit := showcase_limit
       ) s
@@ -107,7 +107,7 @@ BEGIN
       SELECT json_agg(m)
       FROM (
         SELECT *
-        FROM public.search_md_plans_v5(
+        FROM public.search_md_plans_v6(
           p_sort_by := 'new',
           p_limit := mdplans_limit,
           p_offset := 0
@@ -119,7 +119,7 @@ BEGIN
       SELECT json_agg(c)
       FROM (
         SELECT *
-        FROM public.search_collections_v5(
+        FROM public.search_collections_v6(
           p_sort_by := 'new',
           p_limit := collections_limit,
           p_offset := 0
