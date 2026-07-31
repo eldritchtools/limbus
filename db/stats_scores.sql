@@ -59,13 +59,11 @@ BEGIN
         SET
             like_count = like_count + $1,
             comment_count = comment_count + $2,
-            score =
-                ((like_count + $1) * 2 + (comment_count + $2))
-                /
-                POWER(
-                    (EXTRACT(EPOCH FROM (NOW() - COALESCE(published_at, created_at))) / 86400) + 2,
-                    1.05
-                )
+            score = compute_score(
+                like_count + $1,
+                comment_count + $2,
+                view_count
+            )
         WHERE id = $3
         ',
         target_table
@@ -98,10 +96,20 @@ CREATE TRIGGER trg_comment_update
 AFTER UPDATE OF deleted ON public.comments
 FOR EACH ROW EXECUTE FUNCTION public.update_target_stats();
 
-CREATE OR REPLACE FUNCTION public.compute_popularity(
+CREATE OR REPLACE FUNCTION public.compute_score(
   like_count INT,
   comment_count INT,
-  view_count INT,
+  view_count INT
+)
+RETURNS DOUBLE PRECISION
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT (like_count * 3 + comment_count * 2) + 0.6 * LN(view_count + 1);
+$$;
+
+CREATE OR REPLACE FUNCTION public.compute_decayed_score(
+  score DOUBLE PRECISION,
   created_at TIMESTAMPTZ,
   published_at TIMESTAMPTZ
 )
@@ -109,14 +117,10 @@ RETURNS DOUBLE PRECISION
 LANGUAGE sql
 STABLE
 AS $$
-  SELECT
-    (
-      (like_count * 2 + comment_count)
-      + 0.6 * LN(view_count + 1)
-    )
-    /
-    POWER(
-      (EXTRACT(EPOCH FROM (NOW() - COALESCE(published_at, created_at))) / 86400) + 2,
-      1.05
+  SELECT 
+    score 
+    / POWER(
+        (EXTRACT(EPOCH FROM (NOW() - COALESCE(published_at, created_at))) / 86400) + 5, 
+        0.85
     );
 $$;

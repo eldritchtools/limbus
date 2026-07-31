@@ -99,10 +99,10 @@ function EncountersSelection({ category, encounter }) {
     </div>
 }
 
-export default function BuildsPage({ popularBuilds }) {
+export default function BuildsPage({ activeBuilds }) {
     const [builds, setBuilds] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("buildsActiveTab", "popular");
+    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("buildsActiveTab", "active");
     const [encounterCategory, setEncounterCategory] = useState(null);
     const [encounter, setEncounter] = useState(null);
     const [refreshCounter, setRefreshCounter] = useState(0);
@@ -111,7 +111,7 @@ export default function BuildsPage({ popularBuilds }) {
 
     useEffect(() => {
         const mode = searchParams.get('mode');
-        if (["popular", "new", "random", "enc"].includes(mode)) {
+        if (["active", "top", "new", "random", "enc"].includes(mode)) {
             setActiveTab(mode);
         }
         const cat = searchParams.get('category');
@@ -121,7 +121,7 @@ export default function BuildsPage({ popularBuilds }) {
     }, [searchParams, setActiveTab]);
 
     useEffect(() => {
-        if (!activeTab || !activeTabInitialized || activeTab === "popular") return;
+        if (!activeTab || !activeTabInitialized || activeTab === "active") return;
 
         let canceled = false;
 
@@ -129,7 +129,9 @@ export default function BuildsPage({ popularBuilds }) {
             try {
                 setLoading(true);
                 let data;
-                if (activeTab === "new")
+                if (activeTab === "top")
+                    data = await searchBuilds({ published: true, sortBy: "top" }, 1);
+                else if (activeTab === "new")
                     data = await searchBuilds({ published: true, sortBy: "new" }, 1);
                 else if (activeTab === "random")
                     data = await searchBuilds({ published: true, sortBy: "random" }, 1);
@@ -180,7 +182,8 @@ export default function BuildsPage({ popularBuilds }) {
         <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
-            <div className={`tab-header ${activeTab === "popular" ? "active" : ""}`} onClick={() => handleTabClick("popular")}>Popular</div>
+            <div className={`tab-header ${activeTab === "active" ? "active" : ""}`} onClick={() => handleTabClick("active")}>Active</div>
+            <div className={`tab-header ${activeTab === "top" ? "active" : ""}`} onClick={() => handleTabClick("top")}>Top</div>
             <div className={`tab-header ${activeTab === "new" ? "active" : ""}`} onClick={() => handleTabClick("new")}>New</div>
             <div className={`tab-header ${activeTab === "random" ? "active" : ""}`} onClick={() => handleTabClick("random")}>Random</div>
             <div className={`tab-header ${activeTab === "enc" ? "active" : ""}`} onClick={() => handleTabClick("enc")}>Encounters</div>
@@ -190,12 +193,12 @@ export default function BuildsPage({ popularBuilds }) {
             <div className="title-text">
                 {"Loading builds..."}
             </div> :
-            activeTab === "popular" ?
+            activeTab === "active" ?
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <p style={{ color: "var(secondary-text-color)", fontSize: "1rem", textAlign: "center", alignSelf: "center", marginTop: 0, marginBottom: "0.5rem" }}>
-                        Most popular builds are recomputed every few hours.
+                        Most active builds are recomputed every few hours.
                     </p>
-                    <BuildsSearchDisplay builds={popularBuilds} />
+                    <BuildsSearchDisplay builds={activeBuilds} />
                 </div> :
                 builds.length === 0 ?
                     <div style={{ marginTop: "1rem", color: "var(--disabled-text-color)" }} >

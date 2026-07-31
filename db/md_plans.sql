@@ -127,7 +127,7 @@ with check (
   )
 );
 
-create or replace function public.search_md_plans_v5(
+create or replace function public.search_md_plans_v6(
   p_query text default null,
   plan_id_filter uuid[] default null,
   username_exact_filter text default null,
@@ -159,7 +159,8 @@ returns table (
   published_at timestamptz,
   tags text[],
   like_count int,
-  comment_count int
+  comment_count int,
+  score numeric
 )
 language plpgsql
 security definer
@@ -205,12 +206,28 @@ begin
       p.search_vector,
       p.like_count,
       p.comment_count,
+      p.score,
 
       CASE
-        WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN ts_rank(p.search_vector, v_tsquery)
-        WHEN v_sort = 'new' THEN extract(epoch from coalesce(p.published_at, p.created_at))
-        WHEN v_sort = 'popular' THEN public.compute_popularity(p.like_count, p.comment_count, p.view_count, p.created_at, p.published_at)
-        WHEN v_sort = 'random' THEN random()
+          WHEN v_sort = 'search' AND v_tsquery IS NOT NULL THEN
+              ts_rank(p.search_vector, v_tsquery)
+              * (1 + LN(p.score + 1) * 0.08)
+
+          WHEN v_sort = 'new' THEN
+              EXTRACT(EPOCH FROM COALESCE(p.published_at, p.created_at))
+
+          WHEN v_sort = 'top' THEN
+              p.score
+
+          WHEN v_sort = 'active' THEN
+              public.compute_decayed_score(
+                  p.score,
+                  p.created_at,
+                  p.published_at
+              )
+
+          WHEN v_sort = 'random' THEN
+              RANDOM()
       END AS sort_value
 
     FROM public.md_plans p
@@ -266,7 +283,8 @@ begin
     p.published_at,
     coalesce(pt.tags, array[]::text[]) AS tags,
     p.like_count,
-    p.comment_count
+    p.comment_count,
+    p.score
   FROM plans p
   LEFT JOIN plan_tags pt ON pt.plan_id = p.id
 
@@ -291,7 +309,8 @@ begin
     pt.tags,
     p.sort_value,
     p.like_count,
-    p.comment_count
+    p.comment_count,
+    p.score
 
   ORDER BY p.sort_value DESC;
 

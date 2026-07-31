@@ -23,7 +23,7 @@ export async function getHomepagePosts() {
     // cacheLife({ stale: 300 });
     // cacheTag("homepage");
 
-    const loader = async () => callRPC("get_homepage_posts_v6", { popular_limit: 5, newest_limit: 5, showcase_limit: 5, mdplans_limit: 5, collections_limit: 0 });
+    const loader = async () => callRPC("get_homepage_posts_v7", { popular_limit: 5, newest_limit: 5, showcase_limit: 5, mdplans_limit: 5, collections_limit: 0 });
     return getCached("homepage", loader);
 }
 
@@ -36,14 +36,14 @@ export async function getBuild(id) {
     return callRPC("get_build_v8", { p_build_id: id, p_for_edit: false, });
 }
 
-export async function getPopularBuilds(page = 1, pageSize = null) {
+export async function getActiveBuilds(page = 1, pageSize = null) {
     // "use cache";
 
     // cacheLife({ stale: 300 });
     // cacheTag("popular-builds");
 
     const loader = async () => callRPC("get_popular_builds_v6", paginateParams({}, page, pageSize ?? 24));
-    return getCached("popular-builds", loader);
+    return getCached("active-builds", loader);
 }
 
 export async function getMdPlan(id) {
@@ -55,12 +55,12 @@ export async function getMdPlan(id) {
     return callRPC("get_md_plan_v6", { p_plan_id: id, });
 }
 
-export async function getPopularMdPlans(page = 1, pageSize = null) {
+export async function getActiveMdPlans(page = 1, pageSize = null) {
     // "use cache";
 
     // cacheLife({ stale: 300 });
     // cacheTag("popular-md-plans");
 
-    const loader = async () => callRPC("search_md_plans_v5", paginateParams({ p_published: true, p_sort_by: "popular" }, page, pageSize ?? 30));
-    return getCached("popular-md-plans", loader);
+    const loader = async () => callRPC("search_md_plans_v6", paginateParams({ p_published: true, p_sort_by: "active" }, page, pageSize ?? 30));
+    return getCached("active-md-plans", loader);
 }

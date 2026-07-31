@@ -192,7 +192,7 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
     const handleSetActiveTab = async tab => {
         setActiveTab(tab);
         if (tab === "builds" && !builds) {
-            setBuilds(await searchBuilds({ "identities": [id], published: true, sortBy: "popular" }, 1, 6) || []);
+            setBuilds(await searchBuilds({ "identities": [id], published: true, sortBy: "top" }, 1, 6) || []);
         }
     }
 
@@ -315,10 +315,10 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                             Tips/Summary
                         </div>
                         <div
-                            {...getGeneralTooltipProps("Loads the most popular builds that use this identity.")}
+                            {...getGeneralTooltipProps("Loads the top builds that use this identity.")}
                             className={`tab-header ${activeTab === "builds" ? "active" : ""}`}
                             style={{ fontSize: "1rem" }} onClick={() => handleSetActiveTab("builds")}>
-                            Popular Builds
+                            Top Builds
                         </div>
                     </div>
                 </div>
