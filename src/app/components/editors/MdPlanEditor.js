@@ -24,7 +24,6 @@ import TagSelector, { tagToTagSelectorOption } from "../selectors/TagSelector";
 import SkillReplace from "../skill/SkillReplace";
 
 import { useAuth } from "@/app/database/authProvider";
-import { invalidateMdPlan } from "@/app/database/dbCacheClient";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { createMdPlan, getMdPlan, updateMdPlan } from "@/app/database/mdPlans";
@@ -239,7 +238,6 @@ export default function MdPlanEditor({ mode, mdPlanId, initDifficulty, initFloor
             if (mode === "edit") {
                 planData.planId = mdPlanId;
                 const data = await updateMdPlan(planData);
-                await invalidateMdPlan(mdPlanId);
                 router.push(`/md-plans/${data}`);
             } else {
                 const data = await createMdPlan(planData);
