@@ -121,11 +121,11 @@ export default async function HomePage() {
                 <div className={styles.panelContainer} style={{ "gap": "0.5rem" }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <h3 style={{ margin: 0 }}>Popular Builds</h3>
-                            <NoPrefetchLink className="text-link" href={"/builds?mode=popular"}>view more popular builds ➔</NoPrefetchLink>
+                            <h3 style={{ margin: 0 }}>Active Builds</h3>
+                            <NoPrefetchLink className="text-link" href={"/builds?mode=active"}>view more active builds ➔</NoPrefetchLink>
                         </div>
                         <div className="sub-text" style={{ alignSelf: "start", textAlign: "start" }}>
-                            The most popular builds. Updated once every four hours.
+                            The most active builds. Updated once every four hours.
                         </div>
                         <DragContainer style={{ paddingLeft: "1rem" }}>
                             <div style={{ display: "flex", gap: "1rem" }}>
