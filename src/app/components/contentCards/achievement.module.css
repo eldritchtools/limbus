@@ -6,7 +6,7 @@
     content: "";
     position: absolute;
     inset: -3;
-    padding: 3px;
+    padding: 4px;
     border-radius: inherit;
     pointer-events: none;
 
@@ -37,8 +37,8 @@
             #8A8F96);
 
     box-shadow:
-        0 0 0 3px #C9CED5,
-        0 0 0 4px rgba(255, 255, 255, 0.2);
+        0 0 0 4px #C9CED5,
+        0 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
 .achievementGold::after {
@@ -50,6 +50,6 @@
             #9C741A);
 
     box-shadow:
-        0 0 0 3px #D9B44A,
-        0 0 0 4px rgba(255, 241, 160, 0.35);
+        0 0 0 4px #D9B44A,
+        0 0 0 8px rgba(255, 241, 160, 0.35);
 }
