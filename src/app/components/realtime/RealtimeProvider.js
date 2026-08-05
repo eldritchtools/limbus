@@ -1,5 +1,5 @@
 import { Socket } from "phoenix";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { createContext, useContext } from "react";
 
 import useRealtimeChatApi from "./useRealtimeChatApi";

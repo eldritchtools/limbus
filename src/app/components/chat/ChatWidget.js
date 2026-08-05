@@ -7,6 +7,7 @@ import ChatInput from "./ChatInput";
 import ChatRooms from "./ChatRooms";
 import styles from "./ChatWidget.module.css";
 import { useRealtime } from "../realtime/RealtimeProvider";
+import useRealtimeClientId from "../realtime/useRealtimeClientId";
 import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 import useLocalState from "@/app/lib/useLocalState";
@@ -55,25 +56,14 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
     }
 }
 
-export default function ChatWidget({ userId, username }) {
+export default function ChatWidget({ username }) {
     const { chat } = useRealtime();
     const { getCustomizationValue } = useSiteCustomization();
     const [view, setView] = useState(CHAT_WIDGET_VIEWS.CHAT);
     const [expanded, setExpanded] = useState(false);
     const [activeRoomId, setActiveRoomId] = useState(GLOBAL_CHAT_ID);
     const [displayName, setDisplayName] = useLocalState("chatDisplayName", username ?? "Guest");
-    const [clientId, setClientId] = useState(userId);
-
-    useEffect(() => {
-        if(clientId) return;
-
-        const stored = localStorage.getItem("chatClientId");
-        if(stored) return stored;
-
-        const id = crypto.randomUUID();
-        localStorage.setItem("chatClientId", id);
-        setClientId(id);
-    }, [clientId]);
+    const clientId = useRealtimeClientId();
     
     const viewRef = useRef(view);
     const expandedRef = useRef(expanded);
