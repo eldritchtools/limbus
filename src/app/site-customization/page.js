@@ -24,6 +24,7 @@ import { deleteCustomization, loadCustomization, saveCustomization } from "../da
 import { uiColors } from "../lib/colors";
 import { customizationDefaults } from "../lib/customizationDefaults";
 import { HomepageLinkList } from "../lib/homepageLinks";
+import useLocalState from "../lib/useLocalState";
 
 function SettingContainer({ name, desc, children }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem" }}>
@@ -234,7 +235,10 @@ export default function SiteCustomizationPage() {
         <div className="sub-text">
             Settings are saved locally on your device and persist even when logged in.
             <br /> <br />
-            More customization options will be added over time. Suggestions can be submitted via the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.</div>
+            More customization options will be added over time. Suggestions can be submitted via the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.
+        </div>
+
+
 
         <SettingContainer
             name={"Favorite Links"}
@@ -377,6 +381,41 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Show ids on tooltips</span>
             </label>
+        </SettingContainer>
+
+        <SettingContainer
+            name={"Chat"}
+            desc={""}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.hideChat ?? customizationDefaults.hideChat}
+                    onChange={e => setData(p => ({ ...p, hideChat: e.target.checked }))}
+                />
+                <span>Hide Chat When Disconnected</span>
+            </label>
+            <span className="sub-text">Hide the chat widget when not connected to any chat room.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.autoConnectGlobalChat ?? customizationDefaults.autoConnectGlobalChat}
+                    onChange={e => setData(p => ({ ...p, autoConnectGlobalChat: e.target.checked }))}
+                />
+                <span>Automatically join Global Chat</span>
+            </label>
+            <span className="sub-text">Automatically join Global Chat when the site loads. Uses the stored display name.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.autoConnectChat ?? customizationDefaults.autoConnectChat}
+                    onChange={e => setData(p => ({ ...p, autoConnectChat: e.target.checked }))}
+                />
+                <span>Automatically join Chat Rooms</span>
+            </label>
+            <span className="sub-text">Automatically join Chat Rooms when using related features. Uses the stored display name.</span>
+            <span />
+
+            <span className="sub-text">Display names are stored locally and default to your username if logged in or &quot;Guest&quot; otherwise.</span>
         </SettingContainer>
 
         <SettingContainer

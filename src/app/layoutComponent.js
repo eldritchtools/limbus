@@ -14,9 +14,11 @@ import en from "javascript-time-ago/locale/en"
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
+import ChatWrapper from "./components/chat/ChatWrapper";
 import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
+import RealtimeProvider from "./components/realtime/RealtimeProvider";
 import { SiteCustomizationProvider } from "./components/SiteCustomizationProvider";
 import AllTooltips from "./components/tooltips/AllTooltip";
 import UserStatus from "./components/user/UserStatus";
@@ -147,22 +149,25 @@ export default function LayoutComponent({ lastUpdated, children }) {
             <SiteCustomizationProvider>
                 <DataProvider>
                     <ModalProvider>
-                        <Layout
-                            title={"Limbus Company Tools"}
-                            lastUpdated={lastUpdated}
-                            // linkSet={"limbus"}
-                            description={description}
-                            gameName={"Limbus Company"}
-                            developerName={"Project Moon"}
-                            githubLink={"https://github.com/eldritchtools/limbus"}
-                            paths={paths}
-                            LinkComponent={NoPrefetchLink}
-                            topComponent={<UserStatus />}
-                        >
-                            <Announcement />
-                            {children}
-                            <AllTooltips />
-                        </Layout>
+                        <RealtimeProvider>
+                            <Layout
+                                title={"Limbus Company Tools"}
+                                lastUpdated={lastUpdated}
+                                // linkSet={"limbus"}
+                                description={description}
+                                gameName={"Limbus Company"}
+                                developerName={"Project Moon"}
+                                githubLink={"https://github.com/eldritchtools/limbus"}
+                                paths={paths}
+                                LinkComponent={NoPrefetchLink}
+                                topComponent={<UserStatus />}
+                            >
+                                <Announcement />
+                                {children}
+                                <AllTooltips />
+                            </Layout>
+                            <ChatWrapper />
+                        </RealtimeProvider>
                     </ModalProvider>
                 </DataProvider>
             </SiteCustomizationProvider>

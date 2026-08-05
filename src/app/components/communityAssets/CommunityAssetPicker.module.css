@@ -11,3 +11,30 @@
     filter: brightness(1.2);
     background-color: var(--bg-hover);
 }
+
+.picker {
+    display: flex; 
+    flex-direction: column; 
+    max-width: 800px;
+}
+
+.pickerBody {
+    height: 300px;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    width: min(85vw, 600px);
+    display: flex; 
+    flex-direction: column;
+    scrollbar-width: thin; 
+    scrollbar-color: var(--secondary-border-color) var(--bg-primary);
+}
+
+@media (max-width:768px) {
+    .picker {
+        max-width: 85vw;
+    }
+
+    .pickerBody {
+        height: 200px;
+    }
+}

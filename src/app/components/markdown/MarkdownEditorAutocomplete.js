@@ -483,8 +483,8 @@ async function tokenCompletionSource(context) {
                             insert: getApplyString(token)
                         },
                         selection: {
-                            anchor: from + token.length + 1,
-                            head: from + token.length + 1
+                            anchor: from + token.length + (multi ? 0 : 1),
+                            head: from + token.length + (multi ? 0 : 1)
                         }
                     });
 
