@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import EgoComparisonAdvanced from "./EgoComparisonAdvanced";
 import EgoComparisonBasic from "./EgoComparisonBasic";
@@ -19,6 +19,10 @@ import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelec
 import IconsSelector from "../components/selectors/IconsSelector";
 import { SeasonDropdownSelector } from "../components/selectors/SeasonSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { useAuth } from "../database/authProvider";
+import { getCompany } from "../database/companies";
+import { getLocalStore } from "../database/localDB";
+import { bitsetFunctions } from "../lib/bitset";
 import { ColoredResistance } from "../lib/colors";
 import { affinities, sinnerIdMapping } from "../lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
@@ -90,8 +94,15 @@ function EgoCard({ ego }) {
     </div>
 }
 
-function EgoList({ initEgos, egos, egosLoading, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedSeasons, compareMode }) {
+function EgoList({
+    initEgos, egos, egosLoading,
+    searchString, filters, displayType,
+    separateSinners, companyFilter, strictFiltering,
+    selectedStatuses, selectedSeasons, compareMode
+}) {
     const [altNames, altNamesLoading] = useData("alt_names");
+    const [company, setCompany] = useState(null);
+    const { user } = useAuth();
     const { isMobile } = useBreakpoint();
 
     const initState = useMemo(() => (
@@ -100,8 +111,30 @@ function EgoList({ initEgos, egos, egosLoading, searchString, filters, displayTy
         !separateSinners &&
         compareMode === "off" &&
         selectedStatuses.length === 0 &&
-        selectedSeasons.length === 0
-    ), [searchString, filters, separateSinners, compareMode, selectedStatuses, selectedSeasons]);
+        selectedSeasons.length === 0 &&
+        !companyFilter
+    ), [searchString, filters, separateSinners, compareMode, selectedStatuses, selectedSeasons, companyFilter]);
+
+    useEffect(() => {
+        if (egosLoading) return;
+
+        const handleCompany = company => {
+            if (!company) return;
+            const newValue = new Set();
+            const masks = company.egos.map(mask => bitsetFunctions.fromString(mask));
+            Object.entries(egos).forEach(([id, ego]) => {
+                if (bitsetFunctions.hasFlag(masks[ego.sinnerId - 1], Number(id.slice(-2)) - 1))
+                    newValue.add(id);
+            });
+            setCompany(newValue);
+        }
+
+        if (user) {
+            getCompany(user).then(handleCompany);
+        } else {
+            getLocalStore("companies").get("main").then(handleCompany);
+        }
+    }, [egos, egosLoading, companyFilter, user]);
 
     const list = useMemo(() => {
         if (egosLoading || initState) return initEgos;
@@ -113,14 +146,19 @@ function EgoList({ initEgos, egos, egosLoading, searchString, filters, displayTy
             "ego",
             Object.values(egos),
             combinedFilters,
-            ego => searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames)),
+            ego => {
+                if (companyFilter && company && !company.has(ego.id)) return false;
+                return searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames));
+            },
             strictFiltering
         )
             .map(x => [x.id, x])
             .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
-        [initState, initEgos, egos, egosLoading,
-            searchString, filters, selectedStatuses, selectedSeasons,
+        [
+            initState, initEgos, egos, egosLoading,
+            searchString, filters, company, companyFilter, 
+            selectedStatuses, selectedSeasons,
             strictFiltering, altNames, altNamesLoading
         ]);
 
@@ -231,6 +269,7 @@ export default function EgosPage({ initEgos }) {
     const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "icon");
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);
+    const [companyFilter, setCompanyFilter] = useLocalState("idEgoCompanyFilter", false);
     const [compareMode, setCompareMode] = useState("off");
 
     const [selectedStatuses, setSelectedStatuses] = useState([]);
@@ -269,7 +308,7 @@ export default function EgosPage({ initEgos }) {
                 Browse through all available E.G.O using search and a comprehensive set of filters.
             </p>
             <p className="sub-text" style={{ margin: 0 }}>
-                Use Compare Mode to view multiple E.G.O side by side. Basic compares the complete details of selected E.G.O, while Advanced compares specific sections across all filtered E.G.O, such as Passives.
+                Use Compare Mode to view multiple E.G.O side by side. Basic compares the complete details of selected E.G.O, while Advanced compares specific sections across all filtered E.G.O, such as Passives, and provides more comprehensive filters and sorting.
             </p>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
@@ -342,8 +381,14 @@ export default function EgosPage({ initEgos }) {
                     </div>
                     <div />
                     <div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                            <input type="checkbox" checked={companyFilter} onChange={e => setCompanyFilter(e.target.checked)} />
+                            Apply Company Filter
+                        </label>
+                    </div>
+                    <div />
+                    <div>
                         <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                        <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting, including searching through skills and passives.</div>
                     </div>
                 </div>
                 <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
@@ -357,6 +402,7 @@ export default function EgosPage({ initEgos }) {
                 filters={filters}
                 displayType={displayType}
                 separateSinners={separateSinners}
+                companyFilter={companyFilter}
                 strictFiltering={strictFiltering}
                 selectedStatuses={selectedStatuses}
                 selectedSeasons={selectedSeasons}

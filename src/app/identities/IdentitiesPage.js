@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import styles from "./identities.module.css";
 import IdentityComparisonAdvanced from "./IdentityComparisonAdvanced";
@@ -20,6 +20,10 @@ import { SeasonDropdownSelector } from "../components/selectors/SeasonSelectors"
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
 import ProcessedText from "../components/texts/ProcessedText";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { useAuth } from "../database/authProvider";
+import { getCompany } from "../database/companies";
+import { getLocalStore } from "../database/localDB";
+import { bitsetFunctions } from "../lib/bitset";
 import { sinnerIdMapping } from "../lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
@@ -88,8 +92,16 @@ function IdentityCard({ identity }) {
     </div>
 }
 
-function IdentityList({ initIdentities, identities, identitiesLoading, searchString, filters, displayType, separateSinners, strictFiltering, selectedStatuses, selectedFactionTags, selectedSeasons, compareMode }) {
+function IdentityList({
+    initIdentities, identities, identitiesLoading,
+    searchString, filters, displayType,
+    separateSinners, strictFiltering, companyFilter,
+    selectedStatuses, selectedFactionTags, selectedSeasons,
+    compareMode
+}) {
     const [altNames, altNamesLoading] = useData("alt_names");
+    const [company, setCompany] = useState(null);
+    const { user } = useAuth();
     const { isMobile } = useBreakpoint();
 
     const initState = useMemo(() => (
@@ -99,10 +111,32 @@ function IdentityList({ initIdentities, identities, identitiesLoading, searchStr
         compareMode === "off" &&
         selectedStatuses.length === 0 &&
         selectedFactionTags.length === 0 &&
-        selectedSeasons.length === 0
+        selectedSeasons.length === 0 &&
+        !companyFilter
     ),
-        [searchString, filters, separateSinners, compareMode, selectedStatuses, selectedFactionTags, selectedSeasons]
+        [searchString, filters, separateSinners, compareMode, selectedStatuses, selectedFactionTags, selectedSeasons, companyFilter]
     )
+
+    useEffect(() => {
+        if (identitiesLoading) return;
+
+        const handleCompany = company => {
+            if (!company) return;
+            const newValue = new Set();
+            const masks = company.identities.map(mask => bitsetFunctions.fromString(mask));
+            Object.entries(identities).forEach(([id, identity]) => {
+                if (bitsetFunctions.hasFlag(masks[identity.sinnerId - 1], Number(id.slice(-2)) - 1))
+                    newValue.add(id);
+            });
+            setCompany(newValue);
+        }
+
+        if (user) {
+            getCompany(user).then(handleCompany);
+        } else {
+            getLocalStore("companies").get("main").then(handleCompany);
+        }
+    }, [identities, identitiesLoading, companyFilter, user]);
 
     const list = useMemo(() => {
         if (identitiesLoading || initState) return initIdentities;
@@ -115,13 +149,21 @@ function IdentityList({ initIdentities, identities, identitiesLoading, searchStr
             "identity",
             Object.values(identities),
             combinedFilters,
-            identity => searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(identity, altNamesLoading ? null : altNames)),
+            identity => {
+                if (companyFilter && company && !company.has(identity.id)) return false;
+                return searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(identity, altNamesLoading ? null : altNames));
+            },
             strictFiltering
         )
             .map(x => [x.id, x])
             .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
     },
-        [initState, initIdentities, identities, identitiesLoading, searchString, filters, selectedStatuses, selectedFactionTags, selectedSeasons, strictFiltering, altNames, altNamesLoading]);
+        [
+            initState, initIdentities, identities, identitiesLoading,
+            searchString, filters, company, companyFilter,
+            selectedStatuses, selectedFactionTags, selectedSeasons,
+            strictFiltering, altNames, altNamesLoading
+        ]);
 
     if (compareMode === "basic") {
         return <IdentityComparisonBasic />
@@ -228,6 +270,7 @@ export default function IdentitiesPage({ initIdentities }) {
     const [displayType, setDisplayType] = useLocalState("idEgoDisplayType", "icon");
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);
+    const [companyFilter, setCompanyFilter] = useLocalState("idEgoCompanyFilter", false);
     const [compareMode, setCompareMode] = useState("off");
 
     const [selectedStatuses, setSelectedStatuses] = useState([]);
@@ -342,8 +385,14 @@ export default function IdentitiesPage({ initIdentities }) {
                 </div>
                 <div />
                 <div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <input type="checkbox" checked={companyFilter} onChange={e => setCompanyFilter(e.target.checked)} />
+                        Apply Company Filter
+                    </label>
+                </div>
+                <div />
+                <div>
                     <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
-                    <div className="sub-text" style={{ maxWidth: "250px" }}>Use Advanced Compare Mode for more comprehensive filters and sorting, including searching through skills and passives.</div>
                 </div>
             </div>
             <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
@@ -357,6 +406,7 @@ export default function IdentitiesPage({ initIdentities }) {
             filters={filters}
             displayType={displayType}
             separateSinners={separateSinners}
+            companyFilter={companyFilter}
             strictFiltering={strictFiltering}
             selectedStatuses={selectedStatuses}
             selectedFactionTags={selectedFactionTags}

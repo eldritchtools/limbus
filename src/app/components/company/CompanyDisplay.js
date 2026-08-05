@@ -434,7 +434,7 @@ function CompanyDisplayMain({
                     null
         }
 
-        <AdvancedOptionsSelector mode={advOptsMode} options={advOpts} setOptions={setAdvOpts} />
+        <AdvancedOptionsSelector mode={advOptsMode} options={advOpts} setOptions={setAdvOpts} noCompany={true} />
 
         <span style={{ fontWeight: "bold", alignSelf: "center", fontSize: "1.2rem" }}>
             Owned Stats: {count}/{totalCount}{totalCount > 0 ? ` (${(100 * count / totalCount).toFixed(2)})%` : ""}
