@@ -14,9 +14,11 @@ import en from "javascript-time-ago/locale/en"
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
+import ChatWrapper from "./components/chat/ChatWrapper";
 import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
+import RealtimeProvider from "./components/realtime/RealtimeProvider";
 import { SiteCustomizationProvider } from "./components/SiteCustomizationProvider";
 import AllTooltips from "./components/tooltips/AllTooltip";
 import UserStatus from "./components/user/UserStatus";
@@ -99,17 +101,17 @@ const description = <span>
     Limbus Company Tools is a community-driven website for users to share and discover team builds and Mirror Dungeon plans, view an Identities and E.G.Os database complete with community ratings and reviews, use Mirror Dungeon reference pages with an Achievemenet Tracker, or use tools such as calculators, solvers, randomizers, and planners.
 </span>;
 
-function AnnouncementNavigationWatcher({ setHidden }) {
-    const pathname = usePathname();
+// function AnnouncementNavigationWatcher({ setHidden }) {
+//     const pathname = usePathname();
 
-    useEffect(() => {
-        if (pathname === "/popularity-poll") setHidden(true);
-    }, [pathname, setHidden]);
+//     useEffect(() => {
+//         if (pathname === "/popularity-poll") setHidden(true);
+//     }, [pathname, setHidden]);
 
-    return null;
-}
+//     return null;
+// }
 
-const ANNOUNCEMENT_NUMBER = 1;
+const ANNOUNCEMENT_NUMBER = 2;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -117,16 +119,20 @@ function Announcement() {
     if (!init || hidden >= ANNOUNCEMENT_NUMBER) return null;
 
     return <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}>
             <AnnouncementNavigationWatcher setHidden={setHidden} />
-        </Suspense>
+        </Suspense> */}
         <div style={{ backgroundColor: "var(--bg-hover)", borderRadius: "1rem", border: "1px solid var(--secondary-border-color)", maxWidth: "1200px", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Hi! An end-of-season popularity poll is currently ongoing on the site. If you&apos;d like to leave a response or see the current results you can find it <NoPrefetchLink className="text-link" href="/popularity-poll">here</NoPrefetchLink>.
-                        <br /> <br />
-                        By request, I&apos;ve added the RR6 bosses to the Favorite Boss Fight question. I&apos;ve also added Dimension Shredder Yi Sang ahead of time to the Favorite Identity questions. As before, you can update your responses if you want to change your votes.
+                        Sorry for the long announcement, but there are a few things I want to mention with this latest update.
+                        <br/><br/>
+                        A real-time server component has been added to the site. This allows me to add features where users can interact with each other live. The first is a chat widget in the bottom-right corner of the site. Currently it only has a Global Chat where anyone can talk or ask for help with the site, but I&apos;m also working on other real-time features, like multiplayer support for the Guessers and collaborative editing for Builds and MD Plans, which will also have their own chat rooms. These are opt-in features so they won&apos;t affect site performance or use extra data unless you use them. I&apos;m still figuring things out so you may run into some issues and the chat may briefly disconnect when I&apos;m deploying updates.
+                        <br/><br/>
+                        Last month, the site came very close to reaching the point where I&apos;d need to upgrade my hosting plan. Because of that, I need to start thinking more seriously about the financial side of the site. Based on the results of the previous <NoPrefetchLink className="text-link" href={"/archive/survey-2026-05-26"}>site survey</NoPrefetchLink>, I plan to introduce ads some time later this month. I&apos;ll keep them minimal and unobtrusive, so they won&apos;t affect the site experience, but if you&apos;d rather not see them, you can disable them in <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink>.
+                        <br/><br/>
+                        Scissors Don has been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. As always, you can edit your answers if you want to change your votes.
                     </span>
                 </div>
 
@@ -147,22 +153,25 @@ export default function LayoutComponent({ lastUpdated, children }) {
             <SiteCustomizationProvider>
                 <DataProvider>
                     <ModalProvider>
-                        <Layout
-                            title={"Limbus Company Tools"}
-                            lastUpdated={lastUpdated}
-                            // linkSet={"limbus"}
-                            description={description}
-                            gameName={"Limbus Company"}
-                            developerName={"Project Moon"}
-                            githubLink={"https://github.com/eldritchtools/limbus"}
-                            paths={paths}
-                            LinkComponent={NoPrefetchLink}
-                            topComponent={<UserStatus />}
-                        >
-                            <Announcement />
-                            {children}
-                            <AllTooltips />
-                        </Layout>
+                        <RealtimeProvider>
+                            <Layout
+                                title={"Limbus Company Tools"}
+                                lastUpdated={lastUpdated}
+                                // linkSet={"limbus"}
+                                description={description}
+                                gameName={"Limbus Company"}
+                                developerName={"Project Moon"}
+                                githubLink={"https://github.com/eldritchtools/limbus"}
+                                paths={paths}
+                                LinkComponent={NoPrefetchLink}
+                                topComponent={<UserStatus />}
+                            >
+                                <Announcement />
+                                {children}
+                                <AllTooltips />
+                            </Layout>
+                            <ChatWrapper />
+                        </RealtimeProvider>
                     </ModalProvider>
                 </DataProvider>
             </SiteCustomizationProvider>

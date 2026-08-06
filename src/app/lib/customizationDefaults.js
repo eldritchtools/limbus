@@ -12,5 +12,9 @@ export const customizationDefaults = {
     idEgoSelectionMenuStyle: "icon",
     showIdsOnTooltips: false,
     giftTriggersEffectsDisplay: false,
-    showAds: true
+    showAds: true,
+    inContentAds: "none",
+    hideChat: false,
+    autoConnectGlobalChat: false,
+    autoConnectChat: false
 }

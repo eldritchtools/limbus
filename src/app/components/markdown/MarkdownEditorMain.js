@@ -1,11 +1,11 @@
 'use client';
 
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-import { EditorSelection, EditorState } from '@codemirror/state';
+import { EditorSelection, EditorState, Prec } from '@codemirror/state';
 import { Transaction } from "@codemirror/state";
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap, placeholder as cmPlaceholder } from '@codemirror/view';
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
     FaBold, FaItalic, FaHeading, FaQuoteRight,
@@ -204,6 +204,7 @@ function CommunityAssetPickerButton({ type, getView }) {
     const ref = useRef(null);
     const menuRef = useRef(null);
     const [rect, setRect] = useState(null);
+    const [position, setPosition] = useState(null);
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -232,8 +233,29 @@ function CommunityAssetPickerButton({ type, getView }) {
 
     const handleOpen = () => {
         setOpen(o => !o);
-        if (ref.current) setRect(ref.current.getBoundingClientRect());
+        if (ref.current) {
+            const newRect = ref.current.getBoundingClientRect();
+            setRect(newRect);
+            setPosition({ left: newRect.left, top: newRect.bottom });
+        }
     }
+
+    useLayoutEffect(() => {
+        if (!open || !menuRef.current || !rect)
+            return;
+
+        const popup = menuRef.current.getBoundingClientRect();
+        const PADDING = 8;
+
+        let left = rect.left;
+        let top = rect.bottom;
+
+        if (left + popup.width > window.innerWidth - PADDING) left = rect.right - popup.width;
+        if (top + popup.height > window.innerHeight - PADDING) top = rect.top - popup.height;
+
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPosition({ left: Math.max(PADDING, left), top: Math.max(PADDING, top) });
+    }, [open, rect]);
 
     return <div ref={ref} style={{ display: "inline", position: "relative" }}>
         <button className="editor-button-style" onClick={handleOpen} {...getGeneralTooltipProps(`Insert ${type}`)}>
@@ -246,9 +268,9 @@ function CommunityAssetPickerButton({ type, getView }) {
         {open && (
             createPortal(
                 <div ref={menuRef} style={{
-                    position: "fixed", top: rect.bottom, left: rect.left, background: "var(--bg-secondary)",
-                    border: "1px solid var(--secondary-border-color)", borderRadius: "8px",
-                    zIndex: 10, padding: "0.2rem", boxSizing: "border-box", maxWidth: "90%"
+                    position: "fixed", top: position?.top ?? rect.bottom, left: position?.left ?? rect.left, 
+                    background: "var(--bg-secondary)", border: "1px solid var(--secondary-border-color)", borderRadius: "8px",
+                    zIndex: 2010, padding: "0.2rem", boxSizing: "border-box", maxWidth: "90%"
                 }}>
                     <CommunityAssetPicker type={type} onClick={handleClick} />
                 </div>,
@@ -266,7 +288,9 @@ export default function MarkdownEditorMain({
     onChange,
     placeholder = 'Write here...',
     short = false,
-    mini = false
+    mini = false,
+    onSubmit,
+    autoFocus
 }) {
     const editorRef = useRef(null);
     const viewRef = useRef();
@@ -286,6 +310,33 @@ export default function MarkdownEditorMain({
     useEffect(() => {
         if (!editorRef.current) return;
 
+        const enterKeymap = onSubmit
+            ? Prec.highest(keymap.of([
+                {
+                    key: "Enter",
+                    async run(view) {
+                        const submit = await onSubmit();
+                        if (submit) {
+                            view.dispatch({
+                                changes: {
+                                    from: 0,
+                                    to: view.state.doc.length,
+                                    insert: ""
+                                }
+                            });
+                            return true;
+                        }
+                    }
+                },
+                {
+                    key: "Shift-Enter",
+                    run() {
+                        return false;
+                    }
+                }
+            ]))
+            : [];
+
         const state = EditorState.create({
             doc: value,
             extensions: [
@@ -300,8 +351,9 @@ export default function MarkdownEditorMain({
                 backspaceTriggersCompletion,
                 tabAcceptsCompletion,
                 dataFacetExtension,
-                tokenAutocomplete,
+                Prec.highest(tokenAutocomplete),
                 cmPlaceholder(`${placeholder} (Type { to start a token)`),
+                enterKeymap,
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         onChange?.(update.state.doc.toString());
@@ -319,12 +371,19 @@ export default function MarkdownEditorMain({
             parent: editorRef.current,
         });
 
+        if(autoFocus) viewRef.current.focus();
+
         return () => {
             viewRef.current?.destroy();
             viewRef.current = null;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataFacetExtension]);
+
+    useEffect(() => {
+        if(autoFocus && viewRef.current)
+            viewRef.current.focus();
+    }, [viewRef, autoFocus])
 
     return (
         <div style={{ position: 'relative', border: "1px var(--secondary-border-color) solid", borderRadius: "4px" }}>

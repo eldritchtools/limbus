@@ -24,6 +24,7 @@ import { deleteCustomization, loadCustomization, saveCustomization } from "../da
 import { uiColors } from "../lib/colors";
 import { customizationDefaults } from "../lib/customizationDefaults";
 import { HomepageLinkList } from "../lib/homepageLinks";
+import useLocalState from "../lib/useLocalState";
 
 function SettingContainer({ name, desc, children }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem" }}>
@@ -75,6 +76,13 @@ const fontOptions = {
     "'Merriweather', serif": "Serif",
     "'JetBrains Mono', monospace": "Monospace"
 };
+
+const inContentAdsOptions = {
+    "none": { next: "min", label: "None" },
+    "min": { next: "avg", label: "Minimal" },
+    "avg": { next: "high", label: "Average" },
+    "high": { next: "none", label: "High" },
+}
 
 export default function SiteCustomizationPage() {
     const [identities, identitiesLoading] = useData("identities");
@@ -225,6 +233,8 @@ export default function SiteCustomizationPage() {
     if (data.favoriteLinks) for (let i = 0; i < data.favoriteLinks.length; i += 5) chunked.push(data.favoriteLinks.slice(i, i + 5));
     const favoritesSectionWidth = isMobile ? "160px" : "200px";
 
+    const inContentAds = data.inContentAds ?? customizationDefaults.inContentAds;
+
     return <div style={{
         display: "flex", flexDirection: "column", alignItems: "stretch", gap: "1rem",
         justifySelf: "center", width: "100%", maxWidth: "min(1000px, 95vw)", boxSizing: "border-box"
@@ -234,7 +244,10 @@ export default function SiteCustomizationPage() {
         <div className="sub-text">
             Settings are saved locally on your device and persist even when logged in.
             <br /> <br />
-            More customization options will be added over time. Suggestions can be submitted via the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.</div>
+            More customization options will be added over time. Suggestions can be submitted via the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.
+        </div>
+
+
 
         <SettingContainer
             name={"Favorite Links"}
@@ -358,9 +371,9 @@ export default function SiteCustomizationPage() {
             <span className="sub-text">When set, E.G.O gifts will have their triggers and effects displayed on their modals when expanded.</span>
 
             <div style={{ alignSelf: "center" }}>
-                <Gift 
-                    id={9003} 
-                    forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} 
+                <Gift
+                    id={9003}
+                    forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips}
                     forceTriggersEffects={data.giftTriggersEffectsDisplay ?? customizationDefaults.giftTriggersEffectsDisplay}
                 />
             </div>
@@ -377,6 +390,41 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Show ids on tooltips</span>
             </label>
+        </SettingContainer>
+
+        <SettingContainer
+            name={"Chat"}
+            desc={""}
+        >
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.hideChat ?? customizationDefaults.hideChat}
+                    onChange={e => setData(p => ({ ...p, hideChat: e.target.checked }))}
+                />
+                <span>Hide Chat</span>
+            </label>
+            <span className="sub-text">Hide the chat widget. This prevents you from joining chat rooms.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.autoConnectGlobalChat ?? customizationDefaults.autoConnectGlobalChat}
+                    onChange={e => setData(p => ({ ...p, autoConnectGlobalChat: e.target.checked }))}
+                />
+                <span>Automatically join Global Chat</span>
+            </label>
+            <span className="sub-text">Automatically join Global Chat when the site loads. Uses the stored display name.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.autoConnectChat ?? customizationDefaults.autoConnectChat}
+                    onChange={e => setData(p => ({ ...p, autoConnectChat: e.target.checked }))}
+                />
+                <span>Automatically join Chat Rooms</span>
+            </label>
+            <span className="sub-text">Automatically join Chat Rooms when using related features. Uses the stored display name.</span>
+            <span />
+
+            <span className="sub-text">Display names are stored locally and default to your username if logged in or &quot;Guest&quot; otherwise.</span>
         </SettingContainer>
 
         <SettingContainer
@@ -486,8 +534,8 @@ export default function SiteCustomizationPage() {
         </SettingContainer>
 
         <SettingContainer
-            name={"Show Ads"}
-            desc={"This toggles ads on the site. Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, this doesn't do anything at the moment, but you can set it in advance if you don't want to see ads if I eventually decide to include them."}
+            name={"Ads"}
+            desc={"Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, these settings don't do anything at the moment, but you can set them in advance."}
         >
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <input type="checkbox"
@@ -496,6 +544,19 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Show Ads</span>
             </label>
+            <span className="sub-text">This toggles ads on the site if you don&apos;t want to see them. If you decide to disable them, consider checking out the <NoPrefetchLink className="text-link" href={"/support"}>Support</NoPrefetchLink> page if you&apos;d like to support the site in other ways.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <span>In-Content Ads</span>
+                <button 
+                    onClick={() => setData(p => ({ ...p, inContentAds: inContentAdsOptions[inContentAds].next }))} 
+                    style={{padding: "4px"}}
+                >
+                    {inContentAdsOptions[inContentAds].label}
+                </button>
+            </label>
+            <span className="sub-text">Including in-content ads lets you support the site even more than the default ads on the site. There are currently no plans to include them, but I am including the option here for future proofing.</span>
+
         </SettingContainer>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>

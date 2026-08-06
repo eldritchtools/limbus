@@ -55,7 +55,7 @@ export default async function Page() {
             Browse through all available Identities using search and a comprehensive set of filters.
         </p>
         <p className="sub-text" style={{ margin: 0 }}>
-            Use Compare Mode to view multiple Identities side by side. Basic compares the complete details of selected Identities, while Advanced compares specific sections across all filtered Identities, such as Support Passives.
+            Use Compare Mode to view multiple Identities side by side. Basic compares the complete details of selected Identities, while Advanced compares specific sections across all filtered Identities, such as Support Passives, and provides more comprehensive filters and sorting.
         </p>
         <IdentitiesPage initIdentities={minifiedIdentities} />
     </div>;

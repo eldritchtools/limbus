@@ -1,0 +1,241 @@
+.button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    width: 240px;
+    height: 30px;
+
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px var(--secondary-border-color) solid;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    transition: 0.2s ease all;
+    cursor: pointer;
+    
+    z-index: 1500;
+}
+
+.button:hover {
+    background: var(--bg-hover);
+}
+
+.connectedDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+}
+
+.widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    width: min(360px, 90%);
+    height: 500px;
+
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px var(--secondary-border-color) solid;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    z-index: 1500;
+}
+
+@media (max-width:768px) {
+    .widget {
+        bottom: 10px;
+        right: 10px;
+
+        width: min(360px, 80%);
+        height: min(400px, 70%);
+    }
+}
+
+.entries {
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin; 
+    scrollbar-color: var(--secondary-border-color) var(--bg-primary);
+}
+
+.entriesContainer {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+.jumpButton {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.headerButton {
+    border: transparent;
+    background: transparent;
+    padding: 4px;
+    margin: 0px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.roomButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    border: transparent;
+    background: transparent;
+}
+
+.roomArrow {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.roomIndicator {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ef4444;
+}
+
+.roomIndicator.entry {
+    top: 4px;
+    left: 2px;
+}
+
+.roomIndicator.button {
+    top: 6px;
+    left: unset;
+    right: 6px;
+}
+
+.roomName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.roomList {
+    display: flex;
+    flex-direction: column;
+}
+
+.roomEntry {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s ease all;
+    border: transparent;
+    background: transparent;
+}
+
+.roomEntry:hover {
+    background: var(--bg-hover);
+}
+
+.unreadBadge {
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    background: var(--tertiary-border-color);
+    color: var(--primary-text-color);
+}
+
+.authorEntry {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.authorName {
+    font-weight: bold;
+}
+
+.authorTime {
+    font-size: 0.75rem;
+    opacity: .6;
+}
+
+.messageEntry {
+    margin-left: 0.25rem;
+}
+
+.systemEntry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 8px 0;
+
+    font-size: 0.75rem;
+    opacity: .7;
+}
+
+.systemEntry::before,
+.systemEntry::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--secondary-border-color);
+}
+
+.newMessagesDivider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+    color: var(--secondary-border-color);
+    font-size: 0.8rem;
+}
+
+.line {
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+}

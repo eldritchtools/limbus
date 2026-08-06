@@ -15,14 +15,16 @@ const allOptionTypes = {
 
 const bothOptionTypes = {
     "season": "Season Filter",
-    "strict": "Strict Filtering"
+    "strict": "Strict Filtering",
+    "company": "Company Filter"
 }
 
 const advancedOptionTypes = {
     "sort": "Sort",
     "filter": "Filter",
     "season": "Season Filter",
-    "strict": "Strict Filtering"
+    "strict": "Strict Filtering",
+    "company": "Company Filter"
     // "passive": "Show Passives"
 }
 
@@ -147,12 +149,16 @@ const optionsMapping = {
     "none": allOptionTypes
 }
 
-function AdvancedOption({ mode, type, param, affinity, order, cond, value, faction, season, setOptionParam, removeOption }) {
+function AdvancedOption({ mode, type, param, affinity, order, cond, value, faction, season, setOptionParam, removeOption, noCompany }) {
     const options = optionsMapping[mode];
+
+    const finalOptions = noCompany ? 
+        Object.fromEntries(Object.entries(options).filter(([x]) => x !== "company")) :
+        options
 
     const typeDropdown = <DropdownButton
         value={type} setValue={x => setOptionParam("type", x)}
-        options={options} defaultDisplay={"Choose an option"}
+        options={finalOptions} defaultDisplay={"Choose an option"}
         styleOverride={dropdownStyle}
     />
 
@@ -228,7 +234,7 @@ function AdvancedOption({ mode, type, param, affinity, order, cond, value, facti
     </div>;
 }
 
-export default function AdvancedOptionsSelector({ mode, options, setOptions }) {
+export default function AdvancedOptionsSelector({ mode, options, setOptions, noCompany }) {
     const addAdvancedOption = () => {
         setOptions(p => [...p, { type: null }])
     }
@@ -243,6 +249,7 @@ export default function AdvancedOptionsSelector({ mode, options, setOptions }) {
             <AdvancedOption key={i} mode={mode} {...x}
                 setOptionParam={(k, v) => setOptionParam(i, k, v)}
                 removeOption={() => setOptions(p => p.filter((y, ind) => ind !== i))}
+                noCompany={noCompany}
             />
         )}
     </div>
@@ -259,6 +266,7 @@ export function getFilterSortAdvancedOptionsData(mode, advancedOptions) {
     }
 
     const strict = advancedOptions.some(opt => opt.type === "strict");
+    const company = advancedOptions.some(opt => opt.type === "company")
 
     const addedFilters = advancedOptions.reduce((f, opt) => {
         if (opt.type === "faction" && opt.faction !== undefined && opt.faction !== null) f.push(["tag", opt.faction]);
@@ -304,7 +312,7 @@ export function getFilterSortAdvancedOptionsData(mode, advancedOptions) {
         });
     })
 
-    return { strict, addedFilters, filterFunction, sortFunctions };
+    return { strict, addedFilters, filterFunction, sortFunctions, companyFilter: company };
 }
 
 export function AdvancedOptionsLabels({ mode, advancedOptions, data }) {

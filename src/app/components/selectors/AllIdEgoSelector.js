@@ -12,30 +12,65 @@ import IdentityIcon from "../icons/IdentityIcon";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
+import { useAuth } from "@/app/database/authProvider";
+import { getCompany } from "@/app/database/companies";
+import { getLocalStore } from "@/app/database/localDB";
+import { bitsetFunctions } from "@/app/lib/bitset";
 import { egoRankMapping } from "@/app/lib/constants";
 import { buildSearchStrings, checkFilterMatch, filterByFilters } from "@/app/lib/filter";
 
 
 export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, includeSelectedFirst = false }) {
+    const { user } = useAuth();
     const [altNames, altNamesLoading] = useData("alt_names");
     const [mode, setMode] = useState(identityOptions ? "id" : "ego");
     const [searchString, setSearchString] = useState("");
     const [filters, setFilters] = useState([]);
     const [identityAdvOpts, setIdentityAdvOpts] = useState([]);
     const [egoAdvOpts, setEgoAdvOpts] = useState([]);
+    const [company, setCompany] = useState(null);
 
     const list = useMemo(() => {
         let result = [];
         const sortFunctions = [];
 
+        const fetchCompany = async () => {
+            if (company) return;
+
+            const handleCompany = company => {
+                if (!company) return;
+                const newValue = new Set();
+                const idMasks = company.identities.map(mask => bitsetFunctions.fromString(mask));
+                Object.entries(identityOptions).forEach(([id, identity]) => {
+                    if (bitsetFunctions.hasFlag(idMasks[identity.sinnerId - 1], Number(id.slice(-2)) - 1))
+                        newValue.add(id);
+                });
+                const egoMasks = company.egos.map(mask => bitsetFunctions.fromString(mask));
+                Object.entries(egoOptions).forEach(([id, ego]) => {
+                    if (bitsetFunctions.hasFlag(egoMasks[ego.sinnerId - 1], Number(id.slice(-2)) - 1))
+                        newValue.add(id);
+                });
+                setCompany(newValue);
+            }
+
+            if (user) {
+                getCompany(user).then(handleCompany);
+            } else {
+                getLocalStore("companies").get("main").then(handleCompany);
+            }
+        }
+
         if (mode === "id") {
-            const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs } = getFilterSortAdvancedOptionsData(mode, identityAdvOpts);
+            const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs, companyFilter } = getFilterSortAdvancedOptionsData(mode, identityAdvOpts);
             sortFunctions.push(...sortFuncs);
+
+            if(companyFilter) fetchCompany();
 
             const prefiltered = Object.entries(identityOptions).filter(([id]) => !identityIds.includes(id)).map(([, data]) => data);
             result = filterByFilters("identity", prefiltered, [...filters, ...addedFilters],
                 data => {
                     if (data.upcoming) return false;
+                    if (companyFilter && company && !company.has(data.id)) return false;
                     if (searchString.length !== 0 && !checkFilterMatch(searchString, buildSearchStrings(data, altNamesLoading ? null : altNames))) return false;
                     if (!filterFunction(data)) return false;
                     return true;
@@ -43,13 +78,16 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
                 strict
             );
         } else {
-            const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs } = getFilterSortAdvancedOptionsData(mode, egoAdvOpts);
+            const { strict, addedFilters, filterFunction, sortFunctions: sortFuncs, companyFilter } = getFilterSortAdvancedOptionsData(mode, egoAdvOpts);
             sortFunctions.push(...sortFuncs);
+
+            if(companyFilter) fetchCompany();
 
             const prefiltered = Object.entries(egoOptions).filter(([id]) => !egoIds.some(list => list.includes(id))).map(([, data]) => data);
             result = filterByFilters("ego", prefiltered, [...filters, ...addedFilters],
                 data => {
                     if (data.upcoming) return false;
+                    if (companyFilter && company && !company.has(data.id)) return false;
                     if (searchString.length !== 0 && !checkFilterMatch(searchString, buildSearchStrings(data, altNamesLoading ? null : altNames))) return false;
                     if (!filterFunction(data)) return false;
                     return true;
@@ -99,7 +137,11 @@ export default function AllIdEgoSelector({ identityIds, egoIds, setIdentityId, s
                 </div>
             )
         }
-    }, [mode, identityIds, egoIds, setIdentityId, setEgoId, identityOptions, egoOptions, searchString, filters, includeSelectedFirst, altNames, altNamesLoading, identityAdvOpts, egoAdvOpts]);
+    }, [
+        mode, identityIds, egoIds, setIdentityId, setEgoId,
+        identityOptions, egoOptions, searchString, filters, includeSelectedFirst,
+        user, company, altNames, altNamesLoading, identityAdvOpts, egoAdvOpts
+    ]);
 
     return <div className="panel-container" style={{ gap: "0.5rem", width: "100%" }}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", paddingLeft: "1rem" }}>

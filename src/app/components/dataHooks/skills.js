@@ -44,7 +44,7 @@ function compileEgoPassives(skillData, threadspin) {
 }
 
 export function useSkillData(type, ids, tiers) {
-    const list = useMemo(() => Array.isArray(ids) ? ids : [ids], [ids]);
+    const list = useMemo(() => (Array.isArray(ids) ? ids : [ids]).filter(id => id), [ids]);
     const [skillData, skillDataLoading] = useDataMultiple(list.map(id => getPath(type, id)));
     const [identities, identitiesLoading] = useData("identities");
 

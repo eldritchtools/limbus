@@ -454,7 +454,7 @@ async function tokenCompletionSource(context) {
 
         const getApplyString = (token) => {
             if (type === "skill") return `${token}|`;
-            if (multi) return token;
+            if (multi) return `${token}:`;
             return `${token}}`
         }
 
@@ -488,7 +488,7 @@ async function tokenCompletionSource(context) {
                         }
                     });
 
-                    if (type === "skill") startCompletion(view);
+                    if (type === "skill" || type === "gifticons") startCompletion(view);
                 },
                 info: () => {
                     if (type === "giftname" || type === "gifticons") {

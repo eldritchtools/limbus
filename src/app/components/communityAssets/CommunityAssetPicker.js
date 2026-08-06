@@ -1,6 +1,5 @@
 "use client";
 
-import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./CommunityAssetPicker.module.css";
@@ -19,7 +18,6 @@ export default function CommunityAssetPicker({ type, onClick }) {
     const [first, setFirst] = useState(true);
     const fetchTimeout = useRef(null);
     const { user } = useAuth();
-    const { isMobile } = useBreakpoint();
     const size = type === "emote" ? 48 : 128;
     const gridStyle = { display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${size}px, 1fr))`, gap: "0.2rem" };
 
@@ -63,13 +61,9 @@ export default function CommunityAssetPicker({ type, onClick }) {
         if (onClick) onClick(id);
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", maxWidth: isMobile ? "85vw" : "800px" }}>
+    return <div className={styles.picker}>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." />
-        <div style={{
-            height: isMobile ? "200px" : "300px", overflowY: "auto", overflowX: "hidden", width: "min(85vw, 600px)",
-            display: "flex", flexDirection: "column",
-            scrollbarWidth: "thin", scrollbarColor: "var(--secondary-border-color) var(--bg-primary)"
-        }}>
+        <div className={styles.pickerBody}>
             {mode === "default" ? <>
                 {recent.length > 0 && <>
                     <span className="sub-text">Recent</span>

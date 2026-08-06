@@ -273,6 +273,10 @@ function Guesser({ mode, setMode }) {
         }
 }
 
+function MultiplayerGuesser({}){
+
+}
+
 export default function ArtworkGuesserPage() {
     const [mode, setMode] = useState(null);
 
@@ -291,6 +295,8 @@ export default function ArtworkGuesserPage() {
                 <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
                 <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => setMode("daily")}>Daily</span>
                 <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at Normal difficulty, 3 chances, and uptie art only.</span>
+                {/* <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => setMode("multi")}>Multiplayer</span>
+                <span className="sub-text">Play against others to see who can get the highest score.</span> */}
             </div>
         </div>;
 
