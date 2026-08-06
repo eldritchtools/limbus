@@ -57,14 +57,14 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
 }
 
 export default function ChatWidget({ username }) {
-    const { chat } = useRealtime();
+    const { status, chat } = useRealtime();
     const { getCustomizationValue } = useSiteCustomization();
     const [view, setView] = useState(CHAT_WIDGET_VIEWS.CHAT);
     const [expanded, setExpanded] = useState(false);
     const [activeRoomId, setActiveRoomId] = useState(GLOBAL_CHAT_ID);
     const [displayName, setDisplayName] = useLocalState("chatDisplayName", username ?? "Guest");
     const clientId = useRealtimeClientId();
-    
+
     const viewRef = useRef(view);
     const expandedRef = useRef(expanded);
     const activeRoomIdRef = useRef(activeRoomId);
@@ -115,7 +115,9 @@ export default function ChatWidget({ username }) {
     }
 
     useEffect(() => {
-        if(getCustomizationValue("autoConnectGlobalChat")) {
+        if (status !== "connected") return;
+
+        if (getCustomizationValue("autoConnectGlobalChat")) {
             joinChat(GLOBAL_CHAT_ID);
         }
 
@@ -136,7 +138,7 @@ export default function ChatWidget({ username }) {
 
         return () => clearInterval(id);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [status]);
 
     async function joinChat(roomId) {
         let subscriberId;
@@ -233,6 +235,11 @@ export default function ChatWidget({ username }) {
     }
 
     const activeRoom = rooms[activeRoomId];
+
+    if (status !== "connected")
+        return <div className={styles.button}>
+            Temporarily Unavailable
+        </div>
 
     if (!expanded)
         return <ChatButton

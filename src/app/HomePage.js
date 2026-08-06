@@ -73,7 +73,7 @@ export default async function HomePage() {
                 <HomepageTimers />
             </Suspense>
             <CommunityPoll initPoll={poll} />
-            <RandomTips />
+            {/* <RandomTips /> */}
             <RecentAdditions />
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.2rem", width: "100%" }}>
                 <div className={styles.panelContainer} style={{ alignItems: "start", gap: "0.5rem" }}>

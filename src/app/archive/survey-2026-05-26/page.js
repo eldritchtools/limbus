@@ -3,7 +3,7 @@ import AnswerSection from "./AnswerSection";
 const submissions = 153;
 
 function ConcernSection({ title, response }) {
-    return <div style={{ borderTop: "1px solid var(--secondary-border-color", padding: "0.5rem" }}>
+    return <div style={{ borderTop: "1px solid var(--secondary-border-color)", padding: "0.5rem" }}>
         <h3 style={{ margin: 0 }}>{title}</h3>
         <span>{response} </span>
     </div>

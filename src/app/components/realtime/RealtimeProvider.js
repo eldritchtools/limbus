@@ -1,5 +1,5 @@
 import { Socket } from "phoenix";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { createContext, useContext } from "react";
 
 import useRealtimeChatApi from "./useRealtimeChatApi";
@@ -7,19 +7,44 @@ import useRealtimeChatApi from "./useRealtimeChatApi";
 const RealtimeContext = createContext();
 
 export default function RealtimeProvider({ children }) {
+    const [status, setStatus] = useState("connecting");
     const socketRef = useRef(null);
     const roomsRef = useRef(new Map());
+    const connectPromiseRef = useRef(null);
 
     const getSocket = useCallback(async () => {
-        if (!socketRef.current) {
-            socketRef.current = new Socket(`${process.env.NEXT_PUBLIC_REALTIME_URL}/socket`);
-            socketRef.current.connect();
-        }
+        if (socketRef.current) return socketRef.current;
+        const socket = new Socket(`${process.env.NEXT_PUBLIC_REALTIME_URL}/socket`);
 
-        return socketRef.current;
+        connectPromiseRef.current = new Promise((resolve, reject) => {
+            socket.onOpen(() => {
+                setStatus("connected");
+                resolve(socket);
+            });
+
+            socket.onError(() => {
+                setStatus("disconnected");
+                reject(new Error("realtime_unavailable"));
+            });
+
+            socket.onClose(() => {
+                setStatus("disconnected");
+                connectPromiseRef.current = null;
+                socketRef.current = null;
+            });
+
+            socket.connect();
+        });
+
+        socketRef.current = socket;
+        return connectPromiseRef.current;
     }, []);
 
     const getRoom = useCallback(async roomId => {
+        if (status !== "connected") {
+            throw new Error("realtime_unavailable");
+        }
+
         let room = roomsRef.current.get(roomId);
         if (room) return room;
 
@@ -41,7 +66,7 @@ export default function RealtimeProvider({ children }) {
 
         roomsRef.current.set(roomId, room);
         return room;
-    }, [getSocket]);
+    }, [status, getSocket]);
 
     const leaveRoom = useCallback(roomId => {
         const room = roomsRef.current.get(roomId);
@@ -71,13 +96,14 @@ export default function RealtimeProvider({ children }) {
     const chat = useRealtimeChatApi({ getRoom, checkLeaveRoom });
 
     const value = useMemo(() => ({
+        status,
         room: {
             join: getRoom,
             leave: leaveRoom
         },
         chat
     }),
-        [getRoom, leaveRoom, chat]
+        [status, getRoom, leaveRoom, chat]
     );
 
     return <RealtimeContext.Provider value={value}>

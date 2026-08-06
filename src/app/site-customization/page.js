@@ -77,6 +77,13 @@ const fontOptions = {
     "'JetBrains Mono', monospace": "Monospace"
 };
 
+const inContentAdsOptions = {
+    "none": { next: "min", label: "None" },
+    "min": { next: "avg", label: "Minimal" },
+    "avg": { next: "high", label: "Average" },
+    "high": { next: "none", label: "High" },
+}
+
 export default function SiteCustomizationPage() {
     const [identities, identitiesLoading] = useData("identities");
     const { customizationData, setCustomization, createPreviewContainer } = useSiteCustomization();
@@ -226,6 +233,8 @@ export default function SiteCustomizationPage() {
     if (data.favoriteLinks) for (let i = 0; i < data.favoriteLinks.length; i += 5) chunked.push(data.favoriteLinks.slice(i, i + 5));
     const favoritesSectionWidth = isMobile ? "160px" : "200px";
 
+    const inContentAds = data.inContentAds ?? customizationDefaults.inContentAds;
+
     return <div style={{
         display: "flex", flexDirection: "column", alignItems: "stretch", gap: "1rem",
         justifySelf: "center", width: "100%", maxWidth: "min(1000px, 95vw)", boxSizing: "border-box"
@@ -362,9 +371,9 @@ export default function SiteCustomizationPage() {
             <span className="sub-text">When set, E.G.O gifts will have their triggers and effects displayed on their modals when expanded.</span>
 
             <div style={{ alignSelf: "center" }}>
-                <Gift 
-                    id={9003} 
-                    forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips} 
+                <Gift
+                    id={9003}
+                    forceTagStrips={data.giftTagStrips ?? customizationDefaults.giftTagStrips}
                     forceTriggersEffects={data.giftTriggersEffectsDisplay ?? customizationDefaults.giftTriggersEffectsDisplay}
                 />
             </div>
@@ -392,9 +401,9 @@ export default function SiteCustomizationPage() {
                     checked={data.hideChat ?? customizationDefaults.hideChat}
                     onChange={e => setData(p => ({ ...p, hideChat: e.target.checked }))}
                 />
-                <span>Hide Chat When Disconnected</span>
+                <span>Hide Chat</span>
             </label>
-            <span className="sub-text">Hide the chat widget when not connected to any chat room.</span>
+            <span className="sub-text">Hide the chat widget. This prevents you from joining chat rooms.</span>
 
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <input type="checkbox"
@@ -525,8 +534,8 @@ export default function SiteCustomizationPage() {
         </SettingContainer>
 
         <SettingContainer
-            name={"Show Ads"}
-            desc={"This toggles ads on the site. Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, this doesn't do anything at the moment, but you can set it in advance if you don't want to see ads if I eventually decide to include them."}
+            name={"Ads"}
+            desc={"Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, these settings don't do anything at the moment, but you can set them in advance."}
         >
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <input type="checkbox"
@@ -535,6 +544,19 @@ export default function SiteCustomizationPage() {
                 />
                 <span>Show Ads</span>
             </label>
+            <span className="sub-text">This toggles ads on the site if you don&apos;t want to see them. If you decide to disable them, consider checking out the <NoPrefetchLink className="text-link" href={"/support"}>Support</NoPrefetchLink> page if you&apos;d like to support the site in other ways.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <span>In-Content Ads</span>
+                <button 
+                    onClick={() => setData(p => ({ ...p, inContentAds: inContentAdsOptions[inContentAds].next }))} 
+                    style={{padding: "4px"}}
+                >
+                    {inContentAdsOptions[inContentAds].label}
+                </button>
+            </label>
+            <span className="sub-text">Including in-content ads lets you support the site even more than the default ads on the site. There are currently no plans to include them, but I am including the option here for future proofing.</span>
+
         </SettingContainer>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
