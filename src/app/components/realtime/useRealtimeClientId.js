@@ -12,7 +12,10 @@ export default function useRealtimeClientId() {
         if(user) setClientId(user.id);
         else {
             const stored = localStorage.getItem("realtimeClientId");
-            if (stored) setClientId(stored);
+            if (stored) {
+                setClientId(stored);
+                return;
+            }
 
             const id = crypto.randomUUID();
             localStorage.setItem("realtimeClientId", id);
