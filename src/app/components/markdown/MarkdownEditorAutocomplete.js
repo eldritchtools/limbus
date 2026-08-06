@@ -454,7 +454,7 @@ async function tokenCompletionSource(context) {
 
         const getApplyString = (token) => {
             if (type === "skill") return `${token}|`;
-            if (multi) return `${token}:`;
+            if (multi) return `${token}}`;
             return `${token}}`
         }
 

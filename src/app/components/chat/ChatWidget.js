@@ -41,17 +41,17 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
 
     if (type === "system") {
         if (newEntry.type === "joined") {
-            entries.push({
-                type: "system",
-                id: nextEntryIdRef.current++,
-                text: `${newEntry.participant.display_name} joined chat`
-            })
+            // entries.push({
+            //     type: "system",
+            //     id: nextEntryIdRef.current++,
+            //     text: `${newEntry.participant.display_name} joined chat`
+            // })
         } else if (newEntry.type === "left") {
-            entries.push({
-                type: "system",
-                id: nextEntryIdRef.current++,
-                text: `${newEntry.participant.display_name} left chat`
-            })
+            // entries.push({
+            //     type: "system",
+            //     id: nextEntryIdRef.current++,
+            //     text: `${newEntry.participant.display_name} left chat`
+            // })
         }
     }
 }
