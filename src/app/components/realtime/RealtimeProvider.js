@@ -23,6 +23,8 @@ export default function RealtimeProvider({ children }) {
             });
 
             socket.onError(() => {
+                socket.disconnect();
+                socketRef.current = null;
                 setStatus("disconnected");
                 reject(new Error("realtime_unavailable"));
             });
@@ -41,22 +43,24 @@ export default function RealtimeProvider({ children }) {
     }, []);
 
     const getRoom = useCallback(async roomId => {
-        if (status !== "connected") {
-            throw new Error("realtime_unavailable");
-        }
-
         let room = roomsRef.current.get(roomId);
         if (room) return room;
 
         const socket = await getSocket();
         const roomChannel = socket.channel(`room:${roomId}`);
 
-        await new Promise((resolve, reject) => {
-            roomChannel
-                .join()
-                .receive("ok", resolve)
-                .receive("error", reject);
-        });
+        try {
+            await new Promise((resolve, reject) => {
+                roomChannel
+                    .join()
+                    .receive("ok", resolve)
+                    .receive("error", reject)
+                    .receive("timeout", () => reject(new Error("timeout")));
+            });
+        } catch (err) {
+            roomChannel.leave();
+            throw err;
+        }
 
         room = {
             socket: roomChannel.socket,
@@ -66,7 +70,7 @@ export default function RealtimeProvider({ children }) {
 
         roomsRef.current.set(roomId, room);
         return room;
-    }, [status, getSocket]);
+    }, [getSocket]);
 
     const leaveRoom = useCallback(roomId => {
         const room = roomsRef.current.get(roomId);

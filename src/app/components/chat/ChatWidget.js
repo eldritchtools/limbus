@@ -57,12 +57,13 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
 }
 
 export default function ChatWidget({ username }) {
-    const { status, chat } = useRealtime();
+    const { chat } = useRealtime();
     const { getCustomizationValue } = useSiteCustomization();
     const [view, setView] = useState(CHAT_WIDGET_VIEWS.CHAT);
     const [expanded, setExpanded] = useState(false);
     const [activeRoomId, setActiveRoomId] = useState(GLOBAL_CHAT_ID);
     const [displayName, setDisplayName] = useLocalState("chatDisplayName", username ?? "Guest");
+    const [unavailable, setUnavailable] = useState(false);
     const clientId = useRealtimeClientId();
 
     const viewRef = useRef(view);
@@ -115,7 +116,7 @@ export default function ChatWidget({ username }) {
     }
 
     useEffect(() => {
-        if (status !== "connected") return;
+        if (unavailable) return;
 
         if (getCustomizationValue("autoConnectGlobalChat")) {
             joinChat(GLOBAL_CHAT_ID);
@@ -124,13 +125,18 @@ export default function ChatWidget({ username }) {
         const fetchCount = async () => {
             if (rooms[GLOBAL_CHAT_ID].status !== "disconnected") return;
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_API_URL}/api/presence`);
-            const json = await res.json();
-            if (json.error) return;
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_API_URL}/api/presence`);
+                if (!res.ok) return;
+                const json = await res.json();
+                if (json.error) return;
 
-            updateRoom(GLOBAL_CHAT_ID, room => {
-                room.userCount = json.rooms[GLOBAL_CHAT_ID]
-            });
+                updateRoom(GLOBAL_CHAT_ID, room => {
+                    room.userCount = json.rooms[GLOBAL_CHAT_ID]
+                });
+            } catch (err) {
+                setUnavailable(true);
+            }
         }
 
         fetchCount();
@@ -138,58 +144,71 @@ export default function ChatWidget({ username }) {
 
         return () => clearInterval(id);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [status]);
+    }, []);
 
     async function joinChat(roomId) {
         let subscriberId;
 
         if (displayName.trim().length === 0) return;
 
-        subscriberId = await chat.mount(roomId, {
-            displayName,
-            clientId,
-            handlers: {
-                history: payload => {
-                    updateRoom(roomId, room => {
-                        room.entries = [];
-                        payload.history.forEach(x => appendEntry("message", room.entries, x));
-                        room.userCount = payload.user_count;
-                    });
-                },
+        updateRoom(roomId, room => {
+            room.status = "connecting";
+        })
 
-                message: message => {
-                    updateRoom(roomId, room => {
-                        room.entries = [...room.entries];
-                        appendEntry("message", room.entries, message);
+        try {
+            subscriberId = await chat.mount(roomId, {
+                displayName,
+                clientId,
+                handlers: {
+                    history: payload => {
+                        updateRoom(roomId, room => {
+                            room.entries = [];
+                            payload.history.forEach(x => appendEntry("message", room.entries, x));
+                            room.userCount = payload.user_count;
+                        });
+                    },
 
-                        if (!expandedRef.current || activeRoomIdRef.current !== roomId || viewRef.current !== "chat")
-                            room.unread++;
-                    });
-                },
+                    message: message => {
+                        updateRoom(roomId, room => {
+                            room.entries = [...room.entries];
+                            appendEntry("message", room.entries, message);
 
-                system: message => {
-                    updateRoom(roomId, room => {
-                        room.entries = [...room.entries];
-                        appendEntry("system", room.entries, message, nextEntryIdRef);
+                            if (!expandedRef.current || activeRoomIdRef.current !== roomId || viewRef.current !== "chat")
+                                room.unread++;
+                        });
+                    },
 
-                        if (message.type === "joined" || message.type === "left")
-                            room.userCount = message.user_count;
-                    });
-                },
+                    system: message => {
+                        updateRoom(roomId, room => {
+                            room.entries = [...room.entries];
+                            appendEntry("system", room.entries, message, nextEntryIdRef);
 
-                connected: () => {
-                    updateRoom(roomId, room => {
-                        room.status = "connected";
-                    })
-                },
+                            if (message.type === "joined" || message.type === "left")
+                                room.userCount = message.user_count;
+                        });
+                    },
 
-                disconnected: () => {
-                    updateRoom(roomId, room => {
-                        room.status = "disconnected";
-                    })
+                    connected: () => {
+                        updateRoom(roomId, room => {
+                            room.status = "connected";
+                        });
+                        setUnavailable(false);
+                    },
+
+                    disconnected: () => {
+                        updateRoom(roomId, room => {
+                            room.status = "disconnected";
+                        })
+                    }
                 }
-            }
-        });
+            });
+        } catch (err) {
+            updateRoom(roomId, room => {
+                room.status = "disconnected";
+            })
+
+            setUnavailable(true);
+        }
 
         updateRoom(roomId, room => {
             room.subscriberId = subscriberId;
@@ -236,11 +255,6 @@ export default function ChatWidget({ username }) {
 
     const activeRoom = rooms[activeRoomId];
 
-    if (status !== "connected")
-        return <div className={styles.button}>
-            Temporarily Unavailable
-        </div>
-
     if (!expanded)
         return <ChatButton
             onExpand={() => {
@@ -250,6 +264,7 @@ export default function ChatWidget({ username }) {
             }}
             rooms={rooms}
             activeRoom={activeRoom}
+            unavailable={unavailable}
         />
 
     return <div className={styles.widget}>
@@ -270,7 +285,7 @@ export default function ChatWidget({ username }) {
                         sendMessage={async text => await chat.sendMessage(activeRoomId, text)}
                     />
                 </> :
-                <WelcomeView displayName={displayName} setDisplayName={setDisplayName} roomId={activeRoomId} room={activeRoom} joinChat={joinChat} />
+                <WelcomeView displayName={displayName} setDisplayName={setDisplayName} roomId={activeRoomId} room={activeRoom} joinChat={joinChat} unavailable={unavailable} />
         )}
 
         {view === CHAT_WIDGET_VIEWS.ROOMS && (
@@ -279,7 +294,7 @@ export default function ChatWidget({ username }) {
     </div>
 }
 
-function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat }) {
+function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unavailable }) {
     return <>
         {roomId === GLOBAL_CHAT_ID ? <>
             <p style={{ margin: 0, textAlign: "center" }}>Welcome to Global Chat!</p>
@@ -317,11 +332,18 @@ function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat }) {
                 onChange={e => setDisplayName(e.target.value)}
                 placeholder="Display name"
                 onKeyDown={e => {
-                    if (e.key === 'Enter' && displayName.trim().length > 0) joinChat(roomId)
+                    if (room.status === "disconnected" && e.key === 'Enter' && displayName.trim().length > 0) joinChat(roomId)
                 }}
             />
         </div>
 
-        <button onClick={() => joinChat(roomId)} disabled={displayName.trim().length === 0} >Join Chat</button>
+        <button onClick={() => joinChat(roomId)} disabled={displayName.trim().length === 0 || room.status === "connecting"} >
+            {room.status === "connecting" ?
+                "Connecting..." :
+                "Join Chat"
+            }
+        </button>
+
+        {unavailable && <span style={{textAlign: "center"}}>Chat is temporarily unavailable.<br/>Please try again later.</span>}
     </>;
 }

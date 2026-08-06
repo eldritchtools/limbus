@@ -10,7 +10,14 @@ export default function useRealtimeComponentApi({ component, getRoom, checkLeave
     }, []);
 
     const mountComponent = useCallback(async (roomId, { channel, params, events, handlers }) => {
-        const room = await getRoom(roomId);
+        let room;
+        try {
+            room = await getRoom(roomId);
+        } catch (err) {
+            handlers.disconnected?.();
+            throw err;
+        }
+        
         let componentState = room.components[component];
 
         if (componentState) return registerConsumer(componentState, handlers);
