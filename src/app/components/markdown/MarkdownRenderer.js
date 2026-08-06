@@ -212,6 +212,7 @@ function GiftIconsItem({ vals, context }) {
     } else {
         return <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
             {vals.map((val, i) => {
+                if(val.length === 0) return;
                 const split = val.split("|");
                 const id = split[0];
                 const enhanceRank = split.length > 1 ? Number(split[1]) : 0;
