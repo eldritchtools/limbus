@@ -425,6 +425,15 @@ export default function SiteCustomizationPage() {
             <span />
 
             <span className="sub-text">Display names are stored locally and default to your username if logged in or &quot;Guest&quot; otherwise.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={data.showPresenceNotifications ?? customizationDefaults.showPresenceNotifications}
+                    onChange={e => setData(p => ({ ...p, showPresenceNotifications: e.target.checked }))}
+                />
+                <span>Show Presence Notifications</span>
+            </label>
+            <span className="sub-text">Show &quot;User Joined/Left&quot; notifications in chat.</span>
         </SettingContainer>
 
         <SettingContainer

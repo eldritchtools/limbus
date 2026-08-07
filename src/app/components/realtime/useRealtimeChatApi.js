@@ -10,7 +10,7 @@ export default function useRealtimeChatApi({ getRoom, checkLeaveRoom }) {
         return await mountComponent(roomId, {
             channel: `chat:${roomId}`,
             params: { display_name: displayName, client_id: clientId },
-            events: ["history", "message", "system"],
+            events: ["history", "message", "presence", "system"],
             handlers
         })
     }, [mountComponent]);

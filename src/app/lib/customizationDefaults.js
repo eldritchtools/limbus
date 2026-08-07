@@ -16,5 +16,6 @@ export const customizationDefaults = {
     inContentAds: "none",
     hideChat: false,
     autoConnectGlobalChat: false,
-    autoConnectChat: false
+    autoConnectChat: false,
+    showPresenceNotifications: true
 }
