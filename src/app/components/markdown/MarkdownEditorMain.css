@@ -1,3 +1,12 @@
+.cm-editor {
+  background: transparent;
+  color: var(--primary-text-color);
+}
+
+.cm-editor .cm-line.cm-activeLine {
+  background-color: var(--bg-input);
+}
+
 .cm-bold {
   font-weight: bold;
 }

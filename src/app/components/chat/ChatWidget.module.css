@@ -39,7 +39,7 @@
     right: 20px;
 
     width: min(360px, 90%);
-    height: 500px;
+    height: min(500px, 50%);
 
     background: var(--bg-secondary);
     border-radius: 12px;
@@ -78,8 +78,11 @@
 
 .jumpButton {
     position: absolute;
-    bottom: 12px;
+    bottom: 4px;
     left: 50%;
+    padding: 4px;
+    margin: 0px;
+    border-radius: 20px;
     transform: translateX(-50%);
 }
 
@@ -238,4 +241,29 @@
     flex: 1;
     height: 1px;
     background: currentColor;
+}
+
+.presenceNotifications {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.presenceNotification {
+    position: absolute;
+    right: 6px;
+    bottom: 2px;
+    animation: floatFade 1.5s ease-out forwards;
+}
+
+@keyframes floatFade {
+    from {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(5, -25);
+    }
 }

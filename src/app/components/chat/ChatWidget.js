@@ -9,6 +9,7 @@ import styles from "./ChatWidget.module.css";
 import { useRealtime } from "../realtime/RealtimeProvider";
 import useRealtimeClientId from "../realtime/useRealtimeClientId";
 import { useSiteCustomization } from "../SiteCustomizationProvider";
+import ChatSettings from "./ChatSettings";
 
 import useLocalState from "@/app/lib/useLocalState";
 
@@ -16,7 +17,8 @@ const GLOBAL_CHAT_ID = "global:lobby";
 
 export const CHAT_WIDGET_VIEWS = {
     CHAT: "chat",
-    ROOMS: "rooms"
+    ROOMS: "rooms",
+    SETTINGS: "settings"
 }
 
 function appendEntry(type, entries, newEntry, nextEntryIdRef) {
@@ -40,19 +42,6 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
     }
 
     if (type === "system") {
-        if (newEntry.type === "joined") {
-            entries.push({
-                type: "system",
-                id: nextEntryIdRef.current++,
-                text: `${newEntry.participant.display_name} joined chat`
-            })
-        } else if (newEntry.type === "left") {
-            entries.push({
-                type: "system",
-                id: nextEntryIdRef.current++,
-                text: `${newEntry.participant.display_name} left chat`
-            })
-        }
     }
 }
 
@@ -113,6 +102,21 @@ export default function ChatWidget({ username }) {
 
             return { ...previous, [roomId]: room };
         });
+    }
+
+    const [presenceNotifs, setPresenceNotifs] = useState([]);
+
+    function addPresenceNotification(displayName, type) {
+        const id = nextEntryIdRef.current++;
+
+        setPresenceNotifs(list => [
+            ...list,
+            { id, text: `${displayName} ${type}` }
+        ]);
+
+        setTimeout(() => {
+            setPresenceNotifs(list => list.filter(n => n.id !== id));
+        }, 1500);
     }
 
     useEffect(() => {
@@ -178,13 +182,19 @@ export default function ChatWidget({ username }) {
                         });
                     },
 
+                    presence: message => {
+                        updateRoom(roomId, room => {
+                            room.userCount = message.user_count;
+                        });
+
+                        if (roomId !== activeRoomId) return;
+                        addPresenceNotification(message.display_name, message.type);
+                    },
+
                     system: message => {
                         updateRoom(roomId, room => {
                             room.entries = [...room.entries];
                             appendEntry("system", room.entries, message, nextEntryIdRef);
-
-                            if (message.type === "joined" || message.type === "left")
-                                room.userCount = message.user_count;
                         });
                     },
 
@@ -272,6 +282,7 @@ export default function ChatWidget({ username }) {
             view={view} rooms={rooms} activeRoom={activeRoom}
             onShowRooms={() => setView(CHAT_WIDGET_VIEWS.ROOMS)}
             onShowChat={() => { setView(CHAT_WIDGET_VIEWS.CHAT); resetRoomUnread(activeRoomId); }}
+            onShowSettings={() => setView(CHAT_WIDGET_VIEWS.SETTINGS)}
             onCollapse={() => setExpanded(false)}
             onLeaveChat={() => leaveChat(activeRoomId)}
         />
@@ -279,7 +290,10 @@ export default function ChatWidget({ username }) {
         {view === CHAT_WIDGET_VIEWS.CHAT && (
             activeRoom.status === "connected" ?
                 <>
-                    <ChatEntries entries={rooms[activeRoomId].entries} />
+                    <ChatEntries
+                        entries={rooms[activeRoomId].entries}
+                        presenceNotifications={presenceNotifs}
+                    />
                     <ChatInput
                         disabled={activeRoom.status !== "connected"}
                         sendMessage={async text => await chat.sendMessage(activeRoomId, text)}
@@ -290,6 +304,10 @@ export default function ChatWidget({ username }) {
 
         {view === CHAT_WIDGET_VIEWS.ROOMS && (
             <ChatRooms rooms={rooms} activeRoomId={activeRoomId} onSelect={roomId => { switchRoom(roomId); setView(CHAT_WIDGET_VIEWS.CHAT); }} />
+        )}
+
+        {view === CHAT_WIDGET_VIEWS.SETTINGS && (
+            <ChatSettings />
         )}
     </div>
 }
@@ -304,7 +322,7 @@ function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unav
             </p>
 
             <p style={{ margin: 0 }}>
-                This is an opt-in feature, which means you will not be connected to the chat room unless you allow it. Settings like auto-connecting or hiding the chat widget can be found in Site Customization.
+                This is an opt-in feature, which means you will not be connected to the chat room unless you allow it.
             </p>
 
             <p style={{ margin: 0 }}>
@@ -344,6 +362,6 @@ function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unav
             }
         </button>
 
-        {unavailable && <span style={{textAlign: "center"}}>Chat is temporarily unavailable.<br/>Please try again later.</span>}
+        {unavailable && <span style={{ textAlign: "center" }}>Chat is temporarily unavailable.<br />Please try again later.</span>}
     </>;
 }

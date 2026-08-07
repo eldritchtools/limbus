@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef, useState } from "react";
 
 import styles from "./ChatWidget.module.css";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
+import { useSiteCustomization } from "../SiteCustomizationProvider";
 
 function formatTime(date) {
     return new Intl.DateTimeFormat([], {
@@ -43,7 +44,8 @@ function NewMessagesDivider() {
     );
 }
 
-export default function ChatEntries({ entries }) {
+export default function ChatEntries({ entries, presenceNotifications }) {
+    const { getCustomizationValue } = useSiteCustomization();
     const entriesRef = useRef(null);
     const [nearBottom, setNearBottom] = useState(true);
     const [missedMessages, setMissedMessages] = useState(0);
@@ -104,5 +106,15 @@ export default function ChatEntries({ entries }) {
                 {missedMessages > 0 && ` ${missedMessages} new`}
             </button>
         )}
+
+        {getCustomizationValue("showPresenceNotifications") &&
+            <div className={styles.presenceNotifications}>
+                {presenceNotifications.map(notification =>
+                    <span key={notification.id} className={styles.presenceNotification}>
+                        {notification.text}
+                    </span>
+                )}
+            </div>
+        }
     </div>
 }

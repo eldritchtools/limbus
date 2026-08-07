@@ -4,7 +4,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { EditorSelection, EditorState, Prec } from '@codemirror/state';
 import { Transaction } from "@codemirror/state";
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorView, keymap, placeholder as cmPlaceholder } from '@codemirror/view';
+import { EditorView, keymap, placeholder as cmPlaceholder, highlightActiveLine } from '@codemirror/view';
 import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -346,6 +346,7 @@ export default function MarkdownEditorMain({
                     ...historyKeymap
                 ]),
                 oneDark,
+                highlightActiveLine(),
                 EditorView.lineWrapping,
                 markdownStyling,
                 backspaceTriggersCompletion,
@@ -441,11 +442,10 @@ export default function MarkdownEditorMain({
                 style={{
                     '--placeholder': `"${placeholder} (Type { to start a token)"`,
                     borderTop: '1px solid var(--secondary-border-color)',
-                    // borderRadius: 4,
-                    minHeight: short ? 100 : 200,
+                    minHeight: short ? 50 : 200,
                     height: 'auto',
                     fontFamily: "'Fira Code', monospace",
-                    fontSize: 16,
+                    fontSize: short ? "0.9rem" : "1rem",
                     overflow: 'visible',
                     cursor: 'text'
                 }}
