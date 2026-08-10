@@ -88,8 +88,7 @@ export default function RealtimeProvider({ children }) {
     const leaveRoom = useCallback(roomId => {
         const room = roomsRef.current.get(roomId);
         if (!room) return;
-
-        console.log(room);
+        
         roomsRef.current.delete(roomId);
         setRoomIds(p => p.filter(x => x !== roomId));
 

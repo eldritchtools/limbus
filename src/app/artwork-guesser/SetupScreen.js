@@ -13,7 +13,7 @@ export const difficulties = [
     { value: "distort", label: <DistortedText>DISTORT</DistortedText> },
 ]
 
-export default function SetupScreen({ mode, settings, setSettings, onStart, onReset, isHost, roomId, participants }) {
+export default function SetupScreen({ mode, settings, setSettings, leaveRoom, onStart, onReset, isHost, roomId, participants }) {
     const handleSetSettings = (key, value) => {
         setSettings(p => ({ ...p, [key]: value }))
     }
@@ -129,6 +129,9 @@ export default function SetupScreen({ mode, settings, setSettings, onStart, onRe
             <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                 <button onClick={() => onReset()} disabled={mode === "multi" && !isHost}>Reset to Default</button>
                 <div style={{ display: "flex" }}>
+                    <button onClick={() => leaveRoom()}>
+                        Leave Room
+                    </button>
                     <button onClick={() => onStart()} style={{ background: "#1e7e34" }} disabled={mode === "multi" && !isHost}>
                         Begin!
                     </button>
@@ -136,9 +139,17 @@ export default function SetupScreen({ mode, settings, setSettings, onStart, onRe
             </div>
         }
 
-        {mode === "multi" && 
-            <div style={{display: "flex", flexDirection: "column"}}>
-                <span style={{fontSize: "1.2rem", fontWeight: "bold"}}>Participants: {participants.length}</span>
+        {mode === "multi" && !isHost &&
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                <button onClick={() => leaveRoom()}>
+                    Leave Room
+                </button>
+            </div>
+        }
+
+        {mode === "multi" &&
+            <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
+                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Participants: {participants.length}</span>
                 {participants.map((x, i) => <span key={`${x}-${i}`}>{x}</span>)}
             </div>
         }

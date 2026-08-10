@@ -232,6 +232,13 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
                 await getLocalStore("guessers").save({ id: GUESSER_ID, ...newSettings });
                 realtimeQuiz.changeSettings(roomId, newSettings);
             }}
+            leaveRoom={() => {
+                if (roomIdRef.current) {
+                    room.leave(roomIdRef.current);
+                    roomIdRef.current = null;
+                    setRoomId(null);
+                }
+            }}
             onStart={() => {
                 if (isHost) {
                     quiz.registerGenerator(constructArtworkQuizGenerator(settings, identities));
