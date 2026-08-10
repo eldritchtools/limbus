@@ -29,7 +29,8 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
                 type: "author",
                 id: `author:${newEntry.id}`,
                 displayName: newEntry.display_name,
-                timestamp: newEntry.sent_at
+                timestamp: newEntry.sent_at,
+                isDeveloper: newEntry.is_developer
             })
         }
 
