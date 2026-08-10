@@ -4,7 +4,7 @@
     align-items: center;
     text-align: center;
     gap: 0.25rem;
-    max-width: min(90%, 1200px);
+    max-width: min(100%, 1200px);
 }
 
 @media (max-width: 768px) {

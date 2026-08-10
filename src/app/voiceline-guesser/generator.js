@@ -1,5 +1,3 @@
-import { useData } from "../components/DataProvider";
-
 const DIFFICULTY = {
     easy: {
         start: "start",
@@ -89,10 +87,10 @@ const MODIFIERS = {
     normal: [{ type: "none" }],
     hard: [{ type: "none" }],
     distort: [
-        { type: "speed up" },
-        { type: "slow down" },
-        { type: "muffle" },
-        { type: "telephone" }
+        { type: "speed up", label: "Sped Up" },
+        { type: "slow down", label: "Slowed Down" },
+        { type: "muffle", label: "Muffled" },
+        { type: "telephone", label: "Telephone" }
     ],
 };
 
@@ -103,8 +101,20 @@ export function generateModifier(difficulty) {
     return { ...modifier };
 }
 
+function shuffle(array) {
+    const result = [...array];
+
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    return result;
+}
+
 export function generateVoicelineQuiz(egoVoicelines, settings) {
-    const answers = [...Object.keys(egoVoicelines)].sort(() => 0.5 - Math.random()).slice(0, settings.rounds);
+    const answers = shuffle(Object.keys(egoVoicelines)).slice(0, settings.rounds);
     const problems = answers.map(answer => {
         const voicelineId = pickRandom([...Object.keys(egoVoicelines[answer])]);
 
@@ -123,9 +133,7 @@ export function generateVoicelineQuiz(egoVoicelines, settings) {
     };
 }
 
-export function useVoicelineQuizGenerator(settings) {
-    const [egoVoicelines, egoVoicelinesLoading] = useData("ego_voicelines");
-
+export function constructVoicelineQuizGenerator(settings, egoVoicelines) {
     if (settings.mode === "daily") {
         return async () => {
             const response = await fetch("/api/dailies/voiceline");
@@ -134,8 +142,6 @@ export function useVoicelineQuizGenerator(settings) {
     }
 
     if (settings.mode === "standard") {
-        if (egoVoicelinesLoading) return null;
-
         return () => generateVoicelineQuiz(egoVoicelines, settings);
     }
 

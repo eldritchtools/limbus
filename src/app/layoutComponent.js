@@ -111,7 +111,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 2;
+const ANNOUNCEMENT_NUMBER = 3;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -126,13 +126,9 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Sorry for the long announcement, but there are a few things I want to mention with this latest update.
+                        I received feedback that the randomizers used for the Guessers seemed to be biased towards the earlier sinner numbers, so they have been rewritten to hopefully become more uniformly random. I&apos;ve also added multiplayer support to the Artwork Guesser. Once I&apos;ve confirmed that it works properly, I&apos;ll add it to the Voiceline Guesser as well.
                         <br/><br/>
-                        A real-time server component has been added to the site. This allows me to add features where users can interact with each other live. The first is a chat widget in the bottom-right corner of the site. Currently it only has a Global Chat where anyone can talk or ask for help with the site, but I&apos;m also working on other real-time features, like multiplayer support for the Guessers and collaborative editing for Builds and MD Plans, which will also have their own chat rooms. These are opt-in features so they won&apos;t affect site performance or use extra data unless you use them. I&apos;m still figuring things out so you may run into some issues and the chat may briefly disconnect when I&apos;m deploying updates.
-                        <br/><br/>
-                        Last month, the site came very close to reaching the point where I&apos;d need to upgrade my hosting plan. Because of that, I need to start thinking more seriously about the financial side of the site. Based on the results of the previous <NoPrefetchLink className="text-link" href={"/archive/survey-2026-05-26"}>site survey</NoPrefetchLink>, I plan to introduce ads some time later this month. I&apos;ll keep them minimal and unobtrusive, so they won&apos;t affect the site experience, but if you&apos;d rather not see them, you can disable them in <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink>.
-                        <br/><br/>
-                        Scissors Don has been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. As always, you can edit your answers if you want to change your votes.
+                        As mentioned in the previous announcement, I&apos;m going to start looking into introducing ads soon because the site is getting close to reaching the point where I&apos;d need to upgrade hosting plans. I&apos;ll keep them minimal and unobtrusive, so they won&apos;t affect the site experience, but if you&apos;d rather not see them, you can disable them in <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink>.
                     </span>
                 </div>
 

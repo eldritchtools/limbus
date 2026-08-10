@@ -1,5 +1,3 @@
-import { useData } from "../components/DataProvider";
-
 const WIDTH = 1920;
 const HEIGHT = 1080;
 
@@ -65,11 +63,11 @@ const MODIFIERS = {
     normal: [{ type: "none" }],
     hard: [{ type: "none" }],
     distort: [
-        { type: "grayscale" },
-        { type: "invert" },
-        { type: "blur" },
-        { type: "pixelate" },
-        { type: "quad" },
+        { type: "grayscale", label: "Grayscale" },
+        { type: "invert", label: "Inverted" },
+        { type: "blur", label: "Blurred" },
+        { type: "pixelate", label: "Pixelated" },
+        { type: "quad", label: "4 Squares" },
     ],
 };
 
@@ -80,21 +78,34 @@ export function generateModifier(difficulty) {
     if (modifier.type === "blur")
         return {
             type: "blur",
+            label: modifier.label,
             amount: 5 + Math.random() * 10
         }
 
     if (modifier.type === "quad")
         return {
             type: "quad",
+            label: modifier.label,
             crops: Array.from({ length: 4 }, () => generateCrop("quad"))
         }
 
     return { ...modifier };
 }
 
+function shuffle(array) {
+    const result = [...array];
+
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    return result;
+}
 
 export function generateArtworkQuiz(identities, settings) {
-    const answers = [...Object.keys(identities)].sort(() => 0.5 - Math.random()).slice(0, settings.rounds);
+    const answers = shuffle(Object.keys(identities)).slice(0, settings.rounds);
     const problems = answers.map(answer => {
         const uptie =
             settings.includeUptie && settings.includePreuptie ?
@@ -115,9 +126,7 @@ export function generateArtworkQuiz(identities, settings) {
     };
 }
 
-export function useArtworkQuizGenerator(settings) {
-    const [identities, identitiesLoading] = useData("identities_mini");
-
+export function constructArtworkQuizGenerator(settings, identities) {
     if (settings.mode === "daily") {
         return async () => {
             const response = await fetch("/api/dailies/artwork");
@@ -126,8 +135,6 @@ export function useArtworkQuizGenerator(settings) {
     }
 
     if (settings.mode === "standard") {
-        if (identitiesLoading) return null;
-
         return () => generateArtworkQuiz(identities, settings);
     }
 

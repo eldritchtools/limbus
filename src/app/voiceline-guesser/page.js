@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { useVoicelineQuizGenerator } from "./generator";
+import { constructVoicelineQuizGenerator } from "./generator";
 import { dailySettings, defaultSettings } from "./settings";
 import SetupScreen, { difficulties } from "./SetupScreen";
 import VoiceProblem from "./VoiceProblem";
@@ -18,30 +18,7 @@ import { selectStyleVariable } from "../styles/selectStyle";
 
 const GUESSER_ID = "voiceline";
 
-function Guesser({ mode, setMode }) {
-    const [egos, egosLoading] = useData("egos_mini");
-    const [settings, setSettings] = useState(mode === "standard" ? defaultSettings : dailySettings);
-    const generator = useVoicelineQuizGenerator(settings);
-    const quiz = useQuiz(GUESSER_ID, generator);
-    const [initialized, setInitialized] = useState(false);
-
-    useEffect(() => {
-        if (!initialized && mode !== "daily") {
-            const initialize = async () => {
-                const saved = await getLocalStore("guessers").get(GUESSER_ID);
-                if (saved) setSettings(saved);
-                setInitialized(true);
-            }
-
-            initialize();
-            return;
-        }
-
-        if (mode === "daily" && quiz.phase === "setup") quiz.start(settings);
-    }, [initialized, mode, quiz, settings]);
-
-    if (!generator || egosLoading) return <LoadingContentPageTemplate />;
-
+function Guesser({ mode, setMode, settings, setSettings, quiz, egos, egoVoicelines }) {
     if (quiz.phase === "setup") {
         if (mode === "standard") {
             const handleSetSettings = async (valueOrFn) => {
@@ -53,7 +30,10 @@ function Guesser({ mode, setMode }) {
             return <SetupScreen
                 settings={settings}
                 setSettings={handleSetSettings}
-                onStart={() => quiz.start(settings)}
+                onStart={() => {
+                    quiz.registerGenerator(constructVoicelineQuizGenerator(settings, egoVoicelines))
+                    quiz.start(settings)
+                }}
                 onReset={() => handleSetSettings(defaultSettings)}
             />
         } else
@@ -74,7 +54,7 @@ function Guesser({ mode, setMode }) {
             }
 
             <VoiceProblem key={quiz.problem.answer} problem={quiz.problem} />
-            {quiz.problem.modifier.type !== "none" && <span>Modifier: {quiz.problem.modifier.type}</span>}
+            {quiz.problem.modifier.type !== "none" && <span>Modifier: {quiz.problem.modifier.label}</span>}
 
             <span>Guesses:</span>
             {(quiz.answers ?? []).map(x =>
@@ -206,6 +186,24 @@ function Guesser({ mode, setMode }) {
 
 export default function VoicelineGuesserPage() {
     const [mode, setMode] = useState(null);
+    const [egos, egosLoading] = useData("egos_mini");
+    const [egoVoicelines, egoVoicelinesLoading] = useData("ego_voicelines");
+    const [settings, setSettings] = useState(null);
+    const quiz = useQuiz(GUESSER_ID);
+    const loading = egosLoading || egoVoicelinesLoading;
+
+    const handleSetMode = async mode => {
+        if (mode === "standard" || mode === "multi") {
+            const saved = await getLocalStore("guessers").get(GUESSER_ID);
+            if (saved) setSettings(saved);
+            else setSettings(defaultSettings);
+            quiz.returnToSetup();
+        } else if (mode === "daily") {
+            quiz.registerGenerator(constructVoicelineQuizGenerator(dailySettings, egoVoicelines));
+            quiz.start(dailySettings);
+        }
+        setMode(mode);
+    }
 
     if (!mode)
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
@@ -218,14 +216,15 @@ export default function VoicelineGuesserPage() {
                     <br /> <br />
                     Choose a mode to begin.
                 </span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => setMode("standard")}>Standard</span>
+                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={loading}>Standard</span>
                 <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => setMode("daily")}>Daily</span>
+                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={loading}>Daily</span>
                 <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at normal difficulty and 3 chances.</span>
             </div>
         </div>;
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <Guesser mode={mode} setMode={setMode} />
+        <Guesser mode={mode} setMode={setMode} settings={settings} setSettings={setSettings} quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}/>
     </div>
 }
+

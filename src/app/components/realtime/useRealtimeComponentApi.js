@@ -17,7 +17,7 @@ export default function useRealtimeComponentApi({ component, getRoom, checkLeave
             handlers.disconnected?.();
             throw err;
         }
-        
+
         let componentState = room.components[component];
 
         if (componentState) return registerConsumer(componentState, handlers);
@@ -103,7 +103,7 @@ export default function useRealtimeComponentApi({ component, getRoom, checkLeave
                 })
                 .receive("timeout", () => reject(new Error("timeout")));
         });
-    }, [component, getRoom])
+    }, [component, getRoom]);
 
     return useMemo(() =>
         ({ mountComponent, unmountComponent, push }),

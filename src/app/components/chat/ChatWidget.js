@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import ChatButton from "./ChatButton";
 import ChatEntries from "./ChatEntries";
@@ -46,7 +46,7 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
 }
 
 export default function ChatWidget({ username }) {
-    const { chat } = useRealtime();
+    const { room, chat } = useRealtime();
     const { getCustomizationValue } = useSiteCustomization();
     const [view, setView] = useState(CHAT_WIDGET_VIEWS.CHAT);
     const [expanded, setExpanded] = useState(false);
@@ -120,10 +120,10 @@ export default function ChatWidget({ username }) {
     }
 
     useEffect(() => {
-        if (unavailable) return;
+        if (unavailable || !clientId) return;
 
         if (getCustomizationValue("autoConnectGlobalChat")) {
-            joinChat(GLOBAL_CHAT_ID);
+            joinChat(GLOBAL_CHAT_ID, { displayName });
         }
 
         const fetchCount = async () => {
@@ -148,15 +148,16 @@ export default function ChatWidget({ username }) {
 
         return () => clearInterval(id);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [clientId]);
 
-    async function joinChat(roomId) {
+    const joinChat = useCallback(async (roomId, { name, displayName }) => {
         let subscriberId;
 
         if (displayName.trim().length === 0) return;
 
         updateRoom(roomId, room => {
             room.status = "connecting";
+            if (name) room.name = name;
         })
 
         try {
@@ -187,7 +188,7 @@ export default function ChatWidget({ username }) {
                             room.userCount = message.user_count;
                         });
 
-                        if (roomId !== activeRoomId) return;
+                        if (roomId !== activeRoomIdRef.current) return;
                         addPresenceNotification(message.display_name, message.type);
                     },
 
@@ -226,31 +227,60 @@ export default function ChatWidget({ username }) {
         });
 
         setActiveRoomId(roomId);
-    }
+    }, [chat, clientId]);
 
-    async function leaveChat(roomId) {
+    const leaveChat = useCallback(async roomId => {
         const room = rooms[roomId];
         if (room?.status !== "connected") return;
 
         await chat.unmount(roomId, room.subscriberId);
 
-        if (roomId === GLOBAL_CHAT_ID) {
-            updateRoom(roomId, room => {
-                room.status = "disconnected";
-                room.subscriberId = null;
-                room.unread = 0;
-                room.entries = [];
-                room.userCount = room.userCount - 1;
-            });
-        } else {
+        updateRoom(roomId, room => {
+            room.status = "disconnected";
+            room.subscriberId = null;
+            room.unread = 0;
+            room.entries = [];
+            room.userCount = room.userCount - 1;
+        });
+    }, [rooms, chat]);
+
+    useEffect(() => {
+        const handleNewRoom = async roomId => {
+            const newRoom = room.getRoomData(roomId);
+
+            if (newRoom.autoJoinChat) {
+                await joinChat(roomId, { name: newRoom.name, displayName: newRoom.displayName ?? displayName });
+                setExpanded(true);
+            } else {
+                updateRoom(roomId, room => {
+                    room.name = newRoom.name;
+                    room.status = "disconnected";
+                    room.unread = 0;
+                });
+            }
+        }
+
+        const handleRemovedRoom = async roomId => {
+            await leaveChat(roomId);
+
             setRooms(previous => {
                 const { [roomId]: room, ...rest } = previous;
                 return rest;
             });
 
-            setActiveRoomId(Object.keys(rooms).at(-1));
+            if(activeRoomId === roomId) setActiveRoomId(Object.keys(rooms).filter(x => x !== roomId).at(-1))
         }
-    }
+
+        const newRoomId = room.roomIds.find(x => !(x in rooms));
+        if (newRoomId) {
+            handleNewRoom(newRoomId);
+        } else {
+            const removedRoomId = Object.keys(rooms).find(x => !room.roomIds.includes(x) && x !== GLOBAL_CHAT_ID)
+            if (removedRoomId) {
+                handleRemovedRoom(removedRoomId);
+            }
+        }
+    }, [room, rooms, joinChat, leaveChat, displayName, activeRoomId]);
 
     function resetRoomUnread(roomId) {
         updateRoom(roomId, room => {
@@ -350,12 +380,12 @@ function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unav
                 onChange={e => setDisplayName(e.target.value)}
                 placeholder="Display name"
                 onKeyDown={e => {
-                    if (room.status === "disconnected" && e.key === 'Enter' && displayName.trim().length > 0) joinChat(roomId)
+                    if (room.status === "disconnected" && e.key === 'Enter' && displayName.trim().length > 0) joinChat(roomId, { displayName })
                 }}
             />
         </div>
 
-        <button onClick={() => joinChat(roomId)} disabled={displayName.trim().length === 0 || room.status === "connecting"} >
+        <button onClick={() => joinChat(roomId, { displayName })} disabled={displayName.trim().length === 0 || room.status === "connecting"} >
             {room.status === "connecting" ?
                 "Connecting..." :
                 "Join Chat"
