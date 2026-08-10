@@ -89,13 +89,15 @@ export default function RealtimeProvider({ children }) {
         const room = roomsRef.current.get(roomId);
         if (!room) return;
 
+        console.log(room);
+        roomsRef.current.delete(roomId);
+        setRoomIds(p => p.filter(x => x !== roomId));
+
         Object.values(room.components).forEach(component => {
             component.channel.leave();
         });
 
         room.roomChannel?.leave();
-        roomsRef.current.delete(roomId);
-        setRoomIds(p => p.filter(x => x !== roomId));
     },
         [roomsRef]
     );
