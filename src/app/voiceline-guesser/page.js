@@ -74,7 +74,7 @@ function Guesser({ mode, setMode }) {
             }
 
             <VoiceProblem key={quiz.problem.answer} problem={quiz.problem} />
-            {quiz.problem.modifier.type !== "none" && <span>Modifier: {quiz.problem.modifier.type}</span>}
+            {quiz.problem.modifier.type !== "none" && <span>Modifier: {quiz.problem.modifier.label}</span>}
 
             <span>Guesses:</span>
             {(quiz.answers ?? []).map(x =>

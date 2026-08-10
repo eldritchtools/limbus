@@ -36,7 +36,7 @@ export function rankingsFilter({
     if (type === "identity" || type === "both") {
         const newList = filterByFilters("identity",
             Object.values(identities),
-            filters,
+            filters.filter(x => !["zayin", "teth", "he", "waw", "aleph"].includes(x)),
             identity => {
                 if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(identity, altNames))) return false;
                 return true;
@@ -74,7 +74,7 @@ export function rankingsFilter({
     if (type === "ego" || type === "both") {
         const newList = filterByFilters("ego",
             Object.values(egos),
-            filters,
+            filters.filter(x => !["0", "00", "000"].includes(x)),
             ego => {
                 if (searchString.length > 0 && !checkFilterMatch(searchString, buildSearchStrings(ego, altNames))) return false;
                 return true;

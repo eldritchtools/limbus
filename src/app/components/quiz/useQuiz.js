@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useAuth } from "@/app/database/authProvider";
 import { constructDefaultDailyStats, getDailyQuizStats, updateDailyQuizStats } from "@/app/database/dailyQuizzes";
@@ -17,13 +17,17 @@ export function useQuiz(id, generateQuiz) {
     const [results, setResults] = useState(null);
     const [settings, setSettings] = useState(null);
     const [dailyStats, setDailyStats] = useState(null);
-    const problem = quiz?.problems[settings?.infinite ? 0 : round];
+    const [problem, setProblem] = useState(null);
+    const [currentAnswer, setCurrentAnswer] = useState(null);
+    const generateQuizRef = useRef(generateQuiz);
 
     async function start(startSettings) {
         setPhase("loading");
         setSettings(startSettings);
-        const generated = await generateQuiz(startSettings);
+        const generated = await generateQuizRef.current(startSettings);
         setQuiz(generated);
+        setProblem(generated.problems[0]);
+        setCurrentAnswer(generated.problems[0].answer);
 
         if (startSettings.mode === "standard") {
             setRound(0);
@@ -80,7 +84,7 @@ export function useQuiz(id, generateQuiz) {
     async function submitGuess(answer) {
         const newAnswers = [...answers, answer];
         setAnswers(newAnswers);
-        if (answer === problem.answer) {
+        if (answer === currentAnswer) {
             setScore(s => s + 1);
             setResults(p => [...p, true]);
             if (settings.mode === "daily") updateDailyStats(true);
@@ -94,9 +98,12 @@ export function useQuiz(id, generateQuiz) {
 
     function next() {
         if (settings.infinite) {
+            const newQuiz = generateQuizRef.current(settings)
             setRound(r => r + 1);
             setAnswers([]);
-            setQuiz(generateQuiz(settings));
+            setQuiz(newQuiz);
+            setProblem(newQuiz.problems[0]);
+            setCurrentAnswer(newQuiz.problems[0].answer);
             setPhase("guessing");
             return;
         }
@@ -108,6 +115,8 @@ export function useQuiz(id, generateQuiz) {
 
         setRound(r => r + 1);
         setAnswers([]);
+        setProblem(quiz.problems[round + 1]);
+        setCurrentAnswer(quiz.problems[round + 1].answer);
         setPhase("guessing");
     }
 
@@ -120,8 +129,25 @@ export function useQuiz(id, generateQuiz) {
         setPhase("setup");
     }
 
+    function registerGenerator(generator) {
+        generateQuizRef.current = generator;
+    }
+
+    function setFields(fields) {
+        if ("phase" in fields) setPhase(fields.phase);
+        if ("round" in fields) setRound(fields.round);
+        if ("score" in fields) setScore(fields.score);
+        if ("problem" in fields) setProblem(fields.problem);
+        if ("currentAnswer" in fields) setCurrentAnswer(fields.currentAnswer);
+        if ("answers" in fields) setAnswers(fields.answers);
+    }
+
+    function generateProblem() {
+        return generateQuizRef.current(settings).problems[0];
+    }
+
     return {
-        phase, quiz, problem, round, score, answers, results, settings, dailyStats,
-        start, submitGuess, skip, next, returnToSetup
+        phase, quiz, problem, currentAnswer, round, score, answers, results, settings, dailyStats,
+        start, submitGuess, skip, next, returnToSetup, registerGenerator, setFields, generateProblem
     };
 }

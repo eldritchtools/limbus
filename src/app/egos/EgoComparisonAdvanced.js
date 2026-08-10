@@ -354,43 +354,43 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
                     break;
                 case "base power":
                     sorted = list.sort(([a, as], [b, bs]) => {
-                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.data.baseValue, 0);
-                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.data.baseValue, 0);
+                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.baseValue, 0);
+                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.baseValue, 0);
                         return at - bt;
                     })
                     break;
                 case "coin power":
                     sorted = list.sort(([a, as], [b, bs]) => {
-                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.data.coinValue, 0);
-                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.data.coinValue, 0);
+                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.coinValue, 0);
+                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.coinValue, 0);
                         return at - bt;
                     })
                     break;
                 case "coins":
                     sorted = list.sort(([a, as], [b, bs]) => {
-                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.data.coins.length, 0);
-                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.data.coins.length, 0);
+                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.coins.length, 0);
+                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.coins.length, 0);
                         return at - bt;
                     })
                     break;
                 case "level offset":
                     sorted = list.sort(([a, as], [b, bs]) => {
-                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.data.levelCorrection, 0);
-                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.data.levelCorrection, 0);
+                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.levelCorrection, 0);
+                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.levelCorrection, 0);
                         return at - bt;
                     })
                     break;
                 case "sp cost":
                     sorted = list.sort(([a, as], [b, bs]) => {
-                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.data.spCost, 0);
-                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.data.spCost, 0);
+                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.spCost, 0);
+                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.spCost, 0);
                         return at - bt;
                     })
                     break;
                 case "atk weight":
                     sorted = list.sort(([a, as], [b, bs]) => {
-                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.data.atkWeight, 0);
-                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.data.atkWeight, 0);
+                        const at = as.reduce((acc, [t, sk, i]) => acc + sk.data.atkWeight, 0);
+                        const bt = bs.reduce((acc, [t, sk, i]) => acc + sk.data.atkWeight, 0);
                         return at - bt;
                     })
                     break;

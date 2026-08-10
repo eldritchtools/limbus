@@ -22,7 +22,6 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     const [egos, egosLoading] = useEgosWithUpcoming();
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
     const [dataConverted, setDataConverted] = useState(false);
-    // const [additionalToggle, setAdditionalToggle] = useState(false);
 
     const identitiesConverted = useMemo(() => {
         if (identitiesLoading) return null;
@@ -38,8 +37,17 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         return newEgoIds;
     }, [egos, egosLoading, egoIds]);
 
-    const [optsConverted, additionalToggle, changed] = useMemo(() => {
-        let addToggle = false;
+    const additionalToggle = useMemo(() => {
+        return extraOpts.identityUpties !== undefined ||
+            extraOpts.identityLevels !== undefined ||
+            extraOpts.egoThreadspins !== undefined ||
+            extraOpts.iconSwaps !== undefined ||
+            extraOpts.sinnerNotes !== undefined ||
+            extraOpts.skillReplaces !== undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const [optsConverted, changed] = useMemo(() => {
         let changed = false;
 
         const newExtraOpts = { ...extraOpts };
@@ -48,38 +56,44 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             newExtraOpts.deploymentOrder = [];
             changed = true;
         }
+
         if (newExtraOpts.activeSinners === undefined) {
             newExtraOpts.activeSinners = 7;
             changed = true;
         }
+
         if (newExtraOpts.identityUpties === undefined) {
             newExtraOpts.identityUpties = Array.from({ length: 12 }, () => "");
             changed = true;
-        } else addToggle = true;
+        }
+
         if (newExtraOpts.identityLevels === undefined) {
             newExtraOpts.identityLevels = Array.from({ length: 12 }, () => "");
             changed = true;
-        } else addToggle = true;
+        }
+        
         if (newExtraOpts.egoThreadspins === undefined) {
             newExtraOpts.egoThreadspins = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
             changed = true;
-        } else addToggle = true;
+        }
+        
         if (newExtraOpts.iconSwaps === undefined) {
             newExtraOpts.iconSwaps = [];
             changed = true;
-        } else addToggle = true;
+        }
+        
         if (newExtraOpts.sinnerNotes === undefined) {
             newExtraOpts.sinnerNotes = Array.from({ length: 12 }, () => "");
             changed = true;
-        } else addToggle = true;
+        }
+
         if (newExtraOpts.skillReplaces === undefined) {
             newExtraOpts.skillReplaces = {};
             changed = true;
-        } else addToggle = true;
-
-        return [newExtraOpts, addToggle, changed];
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        }
+        
+        return [newExtraOpts, changed];
+    }, [extraOpts]);
 
     const teamCode = useMemo(
         // additional guard in case react resets the data
