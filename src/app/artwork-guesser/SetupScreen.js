@@ -129,9 +129,11 @@ export default function SetupScreen({ mode, settings, setSettings, leaveRoom, on
             <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                 <button onClick={() => onReset()} disabled={mode === "multi" && !isHost}>Reset to Default</button>
                 <div style={{ display: "flex" }}>
-                    <button onClick={() => leaveRoom()}>
-                        Leave Room
-                    </button>
+                    {mode === "multi" &&
+                        <button onClick={() => leaveRoom()}>
+                            Leave Room
+                        </button>
+                    }
                     <button onClick={() => onStart()} style={{ background: "#1e7e34" }} disabled={mode === "multi" && !isHost}>
                         Begin!
                     </button>

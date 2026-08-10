@@ -134,7 +134,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
                         if (Object.keys(quizFields).length > 0) quiz.setFields(quizFields);
                     },
 
-                    joined: ({ display_name }) => { 
+                    joined: ({ display_name }) => {
                         setParticipants(p => ([...p, display_name]));
                         participantCountRef.current = participantCountRef.current + 1;
                     },
@@ -319,7 +319,7 @@ export default function ArtworkGuesserPage() {
             else setSettings(defaultSettings);
             quiz.returnToSetup();
         } else if (mode === "daily") {
-            quiz.registerGenerator(constructArtworkQuizGenerator(dailySettings));
+            quiz.registerGenerator(constructArtworkQuizGenerator(dailySettings, identities));
             quiz.start(dailySettings);
         }
         setMode(mode);
@@ -336,17 +336,14 @@ export default function ArtworkGuesserPage() {
                     <br /> <br />
                     Choose a mode to begin.
                 </span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")}>Standard</span>
+                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={identitiesLoading}>Standard</span>
                 <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")}>Daily</span>
+                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={identitiesLoading}>Daily</span>
                 <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at Normal difficulty, 3 chances, and uptie art only.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")}>Multiplayer</span>
+                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={identitiesLoading}>Multiplayer</span>
                 <span className="sub-text">Play against others to see who can get the highest score.</span>
             </div>
         </div>;
-
-    if (identitiesLoading)
-        return <LoadingContentPageTemplate />
 
     if (mode === "multi") {
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>

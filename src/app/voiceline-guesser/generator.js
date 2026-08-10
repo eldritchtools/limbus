@@ -1,5 +1,3 @@
-import { useData } from "../components/DataProvider";
-
 const DIFFICULTY = {
     easy: {
         start: "start",
@@ -135,9 +133,7 @@ export function generateVoicelineQuiz(egoVoicelines, settings) {
     };
 }
 
-export function useVoicelineQuizGenerator(settings) {
-    const [egoVoicelines, egoVoicelinesLoading] = useData("ego_voicelines");
-
+export function constructVoicelineQuizGenerator(settings, egoVoicelines) {
     if (settings.mode === "daily") {
         return async () => {
             const response = await fetch("/api/dailies/voiceline");
@@ -146,8 +142,6 @@ export function useVoicelineQuizGenerator(settings) {
     }
 
     if (settings.mode === "standard") {
-        if (egoVoicelinesLoading) return null;
-
         return () => generateVoicelineQuiz(egoVoicelines, settings);
     }
 
