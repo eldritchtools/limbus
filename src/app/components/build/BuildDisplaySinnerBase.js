@@ -105,7 +105,7 @@ export default function BuildDisplaySinnerBase({
                 swapIcon={swapIcon}
                 disableLinks={disableLinks}
             />
-            <div style={{ display: "flex", alignItems: "stretch", height: "100%", boxSizing: "border-box" }}>
+            <div style={{ display: "flex", alignItems: "stretch", minHeight: "32px", height: "100%", boxSizing: "border-box" }}>
                 {altOptions.length > 0 &&
                     <div 
                         style={{
