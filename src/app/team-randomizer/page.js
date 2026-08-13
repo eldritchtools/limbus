@@ -50,7 +50,7 @@ export default function TeamRandomizerPage() {
                 setEgoIds(data.fixedEgoIds);
             }
 
-            if(data.wbState) {
+            if (data.wbState) {
                 wbState.updateState(data.wbState);
             } else {
                 const tempWbState = {};
@@ -94,32 +94,33 @@ export default function TeamRandomizerPage() {
         }, 1000);
 
         return () => clearTimeout(saveTimeout.current);
-    }, [initializing, fixedIdentityIds, fixedEgoIds, wbState, wbListOpen, 
+    }, [initializing, fixedIdentityIds, fixedEgoIds, wbState, wbListOpen,
         randomizeIdentities, randomizeEgos, emptyEgoProb]);
 
-    const handleSetFixedIdentityIds = newIdsFunc => {
-        const newIds = newIdsFunc(identityIds);
-        const di = newIds.findIndex((v, i) => v !== identityIds[i]);
-        setFixedIdentityIds(p => p.map((v, i) => i === di ? newIds[di] : v));
-        setIdentityIds(newIds);
-    }
+    const teamCode = useMemo(() =>
+        constructTeamCode(identityIds, egoIds, []),
+        [identityIds, egoIds]
+    );
 
-    const handleSetFixedEgoIds = newIdsFunc => {
-        const newIds = newIdsFunc(egoIds);
-        let di = -1, dj = -1;
-        for (let i = 0; i < 12; i++) {
-            for (let j = 0; j < 5; j++) {
-                if (newIds[i][j] !== egoIds[i][j]) {
-                    di = i;
-                    dj = j;
-                    break;
-                }
-            }
-            if (di !== -1) break;
-        }
-        setFixedEgoIds(pi => pi.map((vi, i) => i === di ? vi.map((v, j) => j === dj ? newIds[di][dj] : v) : vi))
-        setEgoIds(newIds);
-    }
+    const handleSetFixedIdentityIdAt = (index, id) => {
+        setFixedIdentityIds(p => p.map((v, i) => i === index ? id : v));
+        setIdentityIds(p => p.map((v, i) => i === index ? id : v));
+    };
+
+    const handleSetFixedEgoIdAt = (index, rank, id) => {
+        setFixedEgoIds(pi => pi.map((vi, i) => i === index ? vi.map((v, j) => j === rank ? id : v) : vi));
+        setEgoIds(pi => pi.map((vi, i) => i === index ? vi.map((v, j) => j === rank ? id : v) : vi));
+    };
+
+    const handleSetFixedIdentityId = id => {
+        const index = identities[id].sinnerId - 1;
+        handleSetFixedIdentityIdAt(index, id);
+    };
+
+    const handleSetFixedEgoId = id => {
+        const ego = egos[id];
+        handleSetFixedEgoIdAt(ego.sinnerId - 1, egoRankMapping[ego.rank], id);
+    };
 
     const replacementComponents = useMemo(() => Array.from({ length: 12 }).map((_, i) => {
         const pieces = [];
@@ -246,8 +247,15 @@ export default function TeamRandomizerPage() {
                 <>
                     <div style={{ width: "100%" }}>
                         <BuildEditingComponent
-                            identityIds={identityIds} setIdentityIds={handleSetFixedIdentityIds}
-                            egoIds={egoIds} setEgoIds={handleSetFixedEgoIds}
+                            build={{
+                                identityIds: identityIds,
+                                setIdentityIdAt: handleSetFixedIdentityIdAt,
+                                setIdentityId: handleSetFixedIdentityId,
+                                egoIds: egoIds,
+                                setEgoIdAt: handleSetFixedEgoIdAt,
+                                setEgoId: handleSetFixedEgoId,
+                                teamCode: teamCode
+                            }}
                             minimalEditor={true} replaceDeployment={replacementComponents}
                             insertPanel={[settingsPanel, buttonsPanel]}
                         />

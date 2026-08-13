@@ -11,7 +11,7 @@ import { affinities, keywords } from "@/app/lib/constants";
 import { validateModifier } from "@/app/lib/keywordModifiers";
 import useLocalState from "@/app/lib/useLocalState";
 
-export default function Distribution({ identityIds, identityUpties, egoIds, deploymentOrder, activeSinners }) {
+export default function Distribution({ build }) {
     const [mode, setMode] = useLocalState("buildDistributionType", "kw");
     const [auto, setAuto] = useLocalState("buildDistributionAuto", false);
     const [identities, identitiesLoading] = useData("identities");
@@ -59,16 +59,16 @@ export default function Distribution({ identityIds, identityUpties, egoIds, depl
                 }
 
         let count = 0;
-        identityIds.forEach((id, i) => {
+        build.identityIds.forEach((id, i) => {
             const identity = identities[id];
             if (!identity) return;
             // count++;
 
-            const deploymentIndex = deploymentOrder.findIndex(x => x === i + 1);
+            const deploymentIndex = build.deploymentOrder.findIndex(x => x === i + 1);
             if (deploymentIndex === -1) return;
             count++;
 
-            const deploymentTypeIndex = deploymentIndex === -1 ? 2 : (deploymentIndex < activeSinners ? 0 : 1);
+            const deploymentTypeIndex = deploymentIndex === -1 ? 2 : (deploymentIndex < build.activeSinners ? 0 : 1);
 
             if (finalMode === "kw") {
                 identity.skillKeywordList?.forEach(keyword => {
@@ -76,7 +76,7 @@ export default function Distribution({ identityIds, identityUpties, egoIds, depl
                 });
                 if (id in keywordModifiers) {
                     keywordModifiers[id].forEach(mod => {
-                        if (validateModifier(mod, { egoIds: egoIds[i] })) {
+                        if (validateModifier(mod, { egoIds: build.egoIds[i] })) {
                             result[mod.keyword][deploymentTypeIndex] += 1
                         }
                     });
@@ -84,13 +84,13 @@ export default function Distribution({ identityIds, identityUpties, egoIds, depl
             } else if (finalMode === "sin") {
                 identity.skillTypes.forEach(skill => {
                     if (!skill.num) return;
-                    if (identityUpties?.[i] && identityUpties[i] < 3 && skill.type.tier === 3) return;
+                    if (build.identityUpties?.[i] && build.identityUpties[i] < 3 && skill.type.tier === 3) return;
                     result[skill.type.affinity][deploymentTypeIndex] += skill.num;
                 });
             } else if (finalMode === "skill") {
                 identity.skillTypes.forEach(skill => {
                     if (!skill.num) return;
-                    if (identityUpties?.[i] && identityUpties[i] < 3 && skill.type.tier === 3) return;
+                    if (build.identityUpties?.[i] && build.identityUpties[i] < 3 && skill.type.tier === 3) return;
                     result[skill.type.type][deploymentTypeIndex] += skill.num;
                 });
 
@@ -129,7 +129,7 @@ export default function Distribution({ identityIds, identityUpties, egoIds, depl
     }, [
         finalMode, identities, identitiesLoading,
         keywordModifiers, keywordModifiersLoading,
-        identityIds, identityUpties, egoIds, deploymentOrder, activeSinners
+        build
     ]);
 
     if (identitiesLoading) return null;

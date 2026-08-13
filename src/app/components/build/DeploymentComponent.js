@@ -11,7 +11,8 @@ const deploymentComponentStyle = {
     padding: 0,
     margin: 0,
     width: "100%",
-    aspectRatio: "4/1",
+    height: "100%",
+    // aspectRatio: "4/1",
     containerType: "size",
     borderRadius: "0.5rem"
 }

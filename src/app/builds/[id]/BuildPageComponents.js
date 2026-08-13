@@ -33,27 +33,11 @@ export function BuildPageLocalWrapper({ id }) {
     return <BuildPage id={id} build={build} />
 }
 
-export function BuildDisplaySection({
-    identityIds, egoIds,
-    identityLevels, identityUpties, egoThreadspins,
-    deploymentOrder, activeSinners,
-    sinnerNotes, iconSwaps, teamCode
-}) {
+export function BuildDisplaySection({ build, teamCode }) {
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
 
     return <>
-        <BuildDisplay
-            identityIds={identityIds}
-            egoIds={egoIds}
-            identityUpties={identityUpties}
-            identityLevels={identityLevels}
-            egoThreadspins={egoThreadspins}
-            sinnerNotes={sinnerNotes}
-            iconSwaps={iconSwaps}
-            deploymentOrder={deploymentOrder}
-            activeSinners={activeSinners}
-            displayType={displayType}
-        />
+        <BuildDisplay build={build} displayType={displayType} />
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
                 <BuildDisplayMenuCard width={240}>
@@ -64,13 +48,7 @@ export function BuildDisplaySection({
                     </span>
                     <TeamCodeComponent teamCode={teamCode} />
                 </BuildDisplayMenuCard>
-                <Distribution
-                    identityIds={identityIds}
-                    identityUpties={identityUpties}
-                    egoIds={egoIds}
-                    deploymentOrder={deploymentOrder}
-                    activeSinners={activeSinners}
-                />
+                <Distribution build={build} />
             </div>
         </DragContainer>
     </>

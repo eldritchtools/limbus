@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { createContext, Suspense, useContext, useEffect, useState } from "react";
 
+import { AlternativeOptionsModalContent, AlternativeOptionsModalEditableContent } from "./AlternativeOptionsModalContent";
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
 import CommunityAssetModalContent from "./CommunityAssetModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
@@ -40,7 +40,9 @@ const MODAL_COMPONENTS = {
     "imageCarousel": ImageCarouselModalContent,
     "image": ImageModalContent,
     "communityAsset": CommunityAssetModalContent,
-    "pollResult": PollResultModalContent
+    "pollResult": PollResultModalContent,
+    "altOptions": AlternativeOptionsModalContent,
+    "altOptionsEditable": AlternativeOptionsModalEditableContent
 };
 
 export function ModalProvider({ children }) {
@@ -131,6 +133,11 @@ export function ModalProvider({ children }) {
         openModal("pollResult", { title, result, iconFn, transform });
     }
 
+    const openAltOptionsModal = ({ altOptions, sinnerId, buildRef, index, editable }) => {
+        if (editable) openModal("altOptionsEditable", { buildRef, index, editable });
+        else openModal("altOptions", { altOptions, sinnerId });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -142,7 +149,7 @@ export function ModalProvider({ children }) {
     };
 
     const canNavigateAway = async () => {
-        if(stack.length === 0) return true;
+        if (stack.length === 0) return true;
         const topModal = stack[stack.length - 1];
         if (!topModal?.beforeClose) return true;
         return await topModal.beforeClose();
@@ -173,6 +180,7 @@ export function ModalProvider({ children }) {
         openImageModal,
         openCommunityAssetModal,
         openPollResultModal,
+        openAltOptionsModal,
         setModalBeforeClose,
         canNavigateAway,
         closeModal,

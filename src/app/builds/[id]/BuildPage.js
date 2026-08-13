@@ -10,23 +10,25 @@ import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 
 export default function BuildPage({ id, build }) {
-    if (!build) return <LoadingContentPageTemplate />
+    if (!build) return <LoadingContentPageTemplate />;
 
-    const { addedIcons, identityLevels, identityUpties, egoThreadspins, sinnerNotes, iconSwaps } = decodeBuildExtraOpts(build.extra_opts);
+    const buildData = {
+        identityIds: build.identity_ids,
+        egoIds: build.ego_ids,
+        deploymentOrder: build.deployment_order,
+        activeSinners: build.active_sinners,
+        ...decodeBuildExtraOpts(build.extra_opts)
+    }
+
     const teamCode = constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order);
 
     return <ContentPageTemplate
         targetType={"build"} targetId={id} content={build}
         keywordIcons={build.keyword_ids}
-        addedIcons={addedIcons ?? []}
+        addedIcons={buildData.addedIcons ?? []}
         actions={["like", "save", "share", "edit", "delete"]}
     >
-        <BuildDisplaySection
-            identityIds={build.identity_ids} egoIds={build.ego_ids}
-            identityLevels={identityLevels} identityUpties={identityUpties} egoThreadspins={egoThreadspins}
-            deploymentOrder={build.deployment_order} activeSinners={build.active_sinners}
-            sinnerNotes={sinnerNotes} iconSwaps={iconSwaps} teamCode={teamCode}
-        />
+        <BuildDisplaySection build={buildData} teamCode={teamCode} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {build?.body?.length > 0 && <>

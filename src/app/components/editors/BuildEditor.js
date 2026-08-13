@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import Select from "react-select";
 
 import BuildEditingComponent from "./BuildEditingComponent";
+import useBuildState from "../dataHooks/useBuildState";
 import { useData } from "../DataProvider";
 import KeywordIcon from "../icons/KeywordIcon";
 import StatusIcon from "../icons/StatusIcon";
@@ -20,7 +21,6 @@ import { getBuild, insertBuild, updateBuild } from "@/app/database/builds";
 import { keywordIdMapping, keywordToIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
 import { handleCreateTag } from "@/app/database/tags";
-import { decodeBuildExtraOpts, encodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
 import { uiColors } from "@/app/lib/colors";
 import { contentConfig } from "@/app/lib/contentConfig";
 import { getEncounterCategoryOptions, getEncounterOptions } from "@/app/lib/encounters";
@@ -36,26 +36,16 @@ import { selectStyle } from "@/app/styles/selectStyle";
 export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityIds, initTag }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
-    const [identityIds, setIdentityIds] = useState(initIdentityIds ?? Array.from({ length: 12 }, () => null));
-    const [egoIds, setEgoIds] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => null)));
+    const build = useBuildState();
     const [keywordIds, setKeywordIds] = useState([]);
-    const [deploymentOrder, setDeploymentOrder] = useState([]);
-    const [activeSinners, setActiveSinners] = useState(7);
     const [youtubeVideo, setYoutubeVideo] = useState('');
     const [tags, setTags] = useState([]);
     const [imageIds, setImageIds] = useState([]);
     const [draftImages, setDraftImages] = useState({});
-    const [identityUpties, setIdentityUpties] = useState(Array.from({ length: 12 }, () => ""));
-    const [identityLevels, setIdentityLevels] = useState(Array.from({ length: 12 }, () => ""));
-    const [egoThreadspins, setEgoThreadspins] = useState(Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => "")));
-    const [sinnerNotes, setSinnerNotes] = useState(Array.from({ length: 12 }, () => ""));
     const [additionalToggle, setAdditionalToggle] = useState(false);
-    const [addedIcons, setAddedIcons] = useState([]);
-    const [iconSwaps, setIconSwaps] = useState([]);
     const [isPublished, setIsPublished] = useState(false);
     const [otherSettings, setOtherSettings] = useState(false);
     const [blockDiscovery, setBlockDiscovery] = useState(false);
-    const [loading, setLoading] = useState(mode === "edit");
     const [message, setMessage] = useState("");
     const [saving, setSaving] = useState(false);
     const [createdAt, setCreatedAt] = useState(null);
@@ -77,43 +67,33 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         [encountersLoading, encounters, category]
     );
 
+    const [initializing, setInitializing] = useState(true);
+
     useEffect(() => {
-        if (!loading || authLoading) return;
+        if (authLoading || !initializing) return;
+        
         if (mode === "edit") {
-            const handleBuild = build => {
-                if (!build || (build.user_id && build.user_id !== user.id)) {
+            const handleBuild = buildData => {
+                if (!buildData || (buildData.user_id && buildData.user_id !== user.id)) {
                     router.back();
                     return;
                 }
 
-                if (build.username || isLocalId(buildId)) {
-                    setTitle(build.title);
-                    setBody(build.body);
-                    setIdentityIds(build.identity_ids);
-                    setEgoIds(build.ego_ids);
-                    setKeywordIds(build.keyword_ids.map(kw => keywordIdMapping[kw]));
-                    setDeploymentOrder(build.deployment_order);
-                    setActiveSinners(build.active_sinners);
-                    // setTeamCode(build.team_code);
-                    setYoutubeVideo(build.youtube_video_id ?? '');
-                    setTags(build.tags.map(t => tagToTagSelectorOption(t)));
-                    setImageIds(build.image_ids);
-                    setIsPublished(build.is_published);
-                    setBlockDiscovery(build.block_discovery ?? false);
-                    setLoading(false);
+                if (buildData.username || isLocalId(buildId)) {
+                    build.setBuildState(buildData);
 
-                    if (build.extra_opts) {
-                        const extraOpts = decodeBuildExtraOpts(build.extra_opts);
-                        if (Object.keys(extraOpts).length > 0) setAdditionalToggle(true);
-                        if ("identityLevels" in extraOpts) setIdentityLevels(extraOpts.identityLevels);
-                        if ("identityUpties" in extraOpts) setIdentityUpties(extraOpts.identityUpties);
-                        if ("egoThreadspins" in extraOpts) setEgoThreadspins(extraOpts.egoThreadspins);
-                        if ("sinnerNotes" in extraOpts) setSinnerNotes(extraOpts.sinnerNotes);
-                        if ("addedIcons" in extraOpts) setAddedIcons(extraOpts.addedIcons);
-                        if ("iconSwaps" in extraOpts) setIconSwaps(extraOpts.iconSwaps);
-                    }
+                    setTitle(buildData.title);
+                    setBody(buildData.body);
+                    setKeywordIds(buildData.keyword_ids.map(kw => keywordIdMapping[kw]));                    
+                    setYoutubeVideo(buildData.youtube_video_id ?? '');
+                    setTags(buildData.tags.map(t => tagToTagSelectorOption(t)));
+                    setImageIds(buildData.image_ids);
+                    setIsPublished(buildData.is_published);
+                    setBlockDiscovery(buildData.block_discovery ?? false);
 
-                    if (build.created_at) setCreatedAt(build.created_at);
+                    if (buildData.extra_opts && buildData.extra_opts.length > 0) setAdditionalToggle(true);
+                    if (buildData.created_at) setCreatedAt(buildData.created_at);
+                    setInitializing(false);
                 }
             }
 
@@ -125,33 +105,36 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 contentConfig.builds.local.get(Number(buildId)).then(handleBuild).catch(_err => {
                     router.push(`/builds/${buildId}`);
                 });
-        }
-    }, [mode, buildId, loading, authLoading, router, user]);
+        } else {
+            if (initIdentityIds) build.setIdentityIds(initIdentityIds);
 
-    useEffect(() => {
-        if (!initTeamCode) return;
-        const parseResult = parseTeamCode(initTeamCode);
-        if (!parseResult) return;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setDeploymentOrder([...parseResult.deploymentOrder]);
-        setIdentityIds([...parseResult.identities]);
-        setEgoIds(parseResult.egos.map(egos => [...egos]));
-    }, [initTeamCode]);
-
-    useEffect(() => {
-        if (!initTag) return;
-
-        const handleInitTag = async () => {
-            const { valid, value } = validateTag(initTag);
-            if (valid) {
-                const dbTag = await handleCreateTag(value);
-                setTags([tagToTagSelectorOption(dbTag)]);
+            if (initTeamCode) {
+                const parseResult = parseTeamCode(initTeamCode);
+                if (!parseResult) return;
+                build.setBuildState({
+                    identityIds: [...parseResult.identities],
+                    egoIds: parseResult.egos.map(egos => [...egos]),
+                    deploymentOrder: [...parseResult.deploymentOrder]
+                });
             }
+
+            if (initTag) {
+                const handleInitTag = async () => {
+                    const { valid, value } = validateTag(initTag);
+                    if (valid) {
+                        const dbTag = await handleCreateTag(value);
+                        setTags([tagToTagSelectorOption(dbTag)]);
+                    }
+                }
+
+                handleInitTag();
+            }
+
+             
+            setInitializing(false);
         }
-
-        handleInitTag();
-    }, [initTag]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode, buildId, initializing, initIdentityIds, initTeamCode, initTag, authLoading, router, user]);
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -179,7 +162,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         setAddEncounterTagLoading(false);
     }
 
-    const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : identityIds.reduce((acc, id) => {
+    const keywordOptions = useMemo(() => identitiesMiniLoading ? {} : build.identityIds.reduce((acc, id) => {
         if (id && id in identitiesMini) {
             [...identitiesMini[id].types, ...identitiesMini[id].affinities, ...(identitiesMini[id].skillKeywordList ?? [])].forEach(x => {
                 if (x in acc)
@@ -189,7 +172,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             })
         }
         return acc;
-    }, {}), [identityIds, identitiesMini, identitiesMiniLoading]);
+    }, {}), [build.identityIds, identitiesMini, identitiesMiniLoading]);
 
     const handleSave = async (isPublished) => {
         if (title === "") {
@@ -210,32 +193,34 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             setMessage("Invalid YouTube video id.");
             return;
         }
-        
+
         setSaving(true);
         let finalizedImageIds;
         try {
             finalizedImageIds = await finalizeImageIds(imageIds, draftImages);
-        } catch(err) {
+        } catch (err) {
             setMessage("Failed to upload images");
             setSaving(false);
             return;
         }
 
-        const extraOpts = encodeBuildExtraOpts({ identityUpties, identityLevels, egoThreadspins, sinnerNotes, addedIcons, iconSwaps });
-
         if (user) {
             const buildData = {
                 userId: user.id,
-                title, body, identityIds, egoIds,
+                title, body, 
+                identityIds: build.identityIds, 
+                egoIds: build.egoIds,
                 keywordIds: keywordsConverted,
-                deploymentOrder, activeSinners,
+                deploymentOrder: build.deploymentOrder, 
+                activeSinners: build.activeSinners,
                 teamCode: "",
                 youtubeVideoId,
                 tags: tagsConverted,
                 imageIds: finalizedImageIds,
-                extraOpts, blockDiscovery,
+                extraOpts: build.buildExtraOpts(), 
+                blockDiscovery,
                 published: isPublished,
-                indexable: isPublished && checkBuildIndexable(body, sinnerNotes)
+                indexable: isPublished && checkBuildIndexable(body, build.sinnerNotes)
             }
 
             if (mode === "edit") {
@@ -251,11 +236,11 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
             const buildData = {
                 title: title,
                 body: body,
-                identity_ids: identityIds,
-                ego_ids: egoIds,
+                identity_ids: build.identityIds,
+                ego_ids: build.egoIds,
                 keyword_ids: keywordsConverted,
-                deployment_order: deploymentOrder,
-                active_sinners: activeSinners,
+                deployment_order: build.deploymentOrder,
+                active_sinners: build.activeSinners,
                 team_code: "",
                 youtube_video_id: youtubeVideoId,
                 like_count: 0,
@@ -266,7 +251,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 is_published: false,
                 created_at: createdAt ?? Date.now(),
                 updated_at: Date.now(),
-                extra_opts: extraOpts
+                extra_opts: build.buildExtraOpts()
             }
 
             if (mode === "edit") buildData.id = Number(buildId);
@@ -277,7 +262,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         }
     }
 
-    if (loading) return <LoadingContentPageTemplate />
+    if (initializing) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
         <h2 style={{ fontSize: "1.2rem", margin: 0 }}>
@@ -291,18 +276,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
         <span style={{ fontSize: "1.2rem" }}>Title</span>
         <input type="text" value={title} style={{ width: "clamp(20ch, 80%, 100ch)" }} onChange={e => setTitle(e.target.value)} />
         <span style={{ fontSize: "1.2rem" }}>Team Build</span>
-        <BuildEditingComponent
-            identityIds={identityIds} setIdentityIds={setIdentityIds}
-            egoIds={egoIds} setEgoIds={setEgoIds}
-            deploymentOrder={deploymentOrder} setDeploymentOrder={setDeploymentOrder}
-            activeSinners={activeSinners} setActiveSinners={setActiveSinners}
-            identityLevels={identityLevels} setIdentityLevels={setIdentityLevels}
-            identityUpties={identityUpties} setIdentityUpties={setIdentityUpties}
-            egoThreadspins={egoThreadspins} setEgoThreadspins={setEgoThreadspins}
-            iconSwaps={iconSwaps} setIconSwaps={setIconSwaps}
-            sinnerNotes={sinnerNotes} setSinnerNotes={setSinnerNotes}
-            defaultAdditionalToggle={additionalToggle}
-        />
+        <BuildEditingComponent build={build} defaultAdditionalToggle={additionalToggle} />
         <span style={{ fontSize: "1.2rem" }}>Description</span>
         <div className={{ maxWidth: "48rem", marginLeft: "auto", marginRight: "auto" }}>
             <MarkdownEditorWrapper value={body} onChange={setBody} placeholder={"Describe your build here..."} />
@@ -310,11 +284,11 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
 
         {user && <React.Fragment>
             <span style={{ fontSize: "1.2rem" }}>Images</span>
-            <span className="sub-text" style={{whiteSpace: "pre-wrap"}}>{uiStrings.postImages}</span>
-            <ImageCarousel 
-                imageIds={imageIds} 
-                onAddImages={ids => setImageIds(p => [...p, ...ids].slice(0, 4))} 
-                onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))} 
+            <span className="sub-text" style={{ whiteSpace: "pre-wrap" }}>{uiStrings.postImages}</span>
+            <ImageCarousel
+                imageIds={imageIds}
+                onAddImages={ids => setImageIds(p => [...p, ...ids].slice(0, 4))}
+                onRemoveImage={id => setImageIds(p => p.filter(x => x !== id))}
                 draftImages={draftImages}
                 setDraftImages={setDraftImages}
                 editable={true}
@@ -327,7 +301,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 <span
                     {...getGeneralTooltipProps("Selected keywords and icons that will be shown on the build. Keywords will always be shown before additional icons.")}
                     className="hover-text" style={{ marginRight: "0.2rem" }}>
-                        Selected:
+                    Selected:
                 </span>
                 <div style={{ display: "flex", flexWrap: "wrap", padding: "0.25rem", border: "1px var(--primary-border-color) solid", borderRadius: "1rem" }}>
                     {keywordIds.map(x =>
@@ -337,11 +311,11 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                             <KeywordIcon id={x} size={32} />
                         </button>
                     )}
-                    {addedIcons.map(x =>
+                    {build.addedIcons.map(x =>
                         <button key={x}
-                            onClick={() => setAddedIcons(p => p.filter(k => k !== x))}
+                            onClick={() => build.setAddedIcons(p => p.filter(k => k !== x))}
                             style={{ background: "none", border: "none", padding: 0, margin: 0 }}>
-                            <StatusIcon id={x} style={{width: "32px", height: "32px"}} />
+                            <StatusIcon id={x} style={{ width: "32px", height: "32px" }} />
                         </button>
                     )}
                 </div>
@@ -350,7 +324,7 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 <span
                     {...getGeneralTooltipProps("Recommended keywords to tag the build with. These can be used with filters when searching builds.")}
                     className="hover-text" style={{ marginRight: "0.2rem" }}>
-                        Recommended:
+                    Recommended:
                 </span>
                 <div style={{ display: "flex", flexWrap: "wrap", padding: "0.25rem", border: "1px var(--primary-border-color) solid", borderRadius: "1rem" }}>
                     {Object.entries(keywordOptions)
@@ -371,9 +345,9 @@ export default function BuildEditor({ mode, buildId, initTeamCode, initIdentityI
                 <span
                     {...getGeneralTooltipProps("Additional icons to display. These are purely cosmetic and do not have a filter involved.")}
                     className="hover-text" style={{ marginRight: "0.2rem" }}>
-                        Additional:
+                    Additional:
                 </span>
-                <StatusDropdownSelector selected={null} setSelected={x => setAddedIcons(p => p.includes(x) ? p : [...p, x])} />
+                <StatusDropdownSelector selected={null} setSelected={x => build.setAddedIcons(p => p.includes(x) ? p : [...p, x])} />
             </div>
         </div>
         <div>
