@@ -7,18 +7,18 @@ import DropdownButton from "../objects/DropdownButton";
 import { affinities } from "@/app/lib/constants";
 import useLocalState from "@/app/lib/useLocalState";
 
-export default function EventRolls({ identityIds, identityUpties, deploymentOrder }) {
+export default function EventRolls({ build }) {
     const [mode, setMode] = useLocalState("eventRollsMode", "all");
     const [identities, identitiesLoading] = useData("identities");
     const skillData = useSkillData(
         "identity", 
-        identityIds.filter(x => x && x !== ""), 
-        identityUpties ? identityUpties.map(x => x === "" ? 4 : x) : 4
+        build.identityIds.filter(x => x && x !== ""), 
+        build.identityUpties ? build.identityUpties.map(x => x === "" ? 4 : x) : 4
     );
 
     if (identitiesLoading) return null;
 
-    const values = identityIds.reduce((acc, id, i) => {
+    const values = build.identityIds.reduce((acc, id, i) => {
         if (!id) return acc;
         const identity = identities[id];
         if(!identity || !(id in skillData) || skillData[id].skills.length === 0) return acc;
@@ -36,7 +36,7 @@ export default function EventRolls({ identityIds, identityUpties, deploymentOrde
         if (mode === "all") {
             addToAcc();
         } else if (mode === "act") {
-            const index = deploymentOrder.findIndex(x => x === i + 1);
+            const index = build.deploymentOrder.findIndex(x => x === i + 1);
             if (index === -1) return acc;
             addToAcc();
         }

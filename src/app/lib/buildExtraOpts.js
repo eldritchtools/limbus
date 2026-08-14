@@ -1,4 +1,9 @@
-export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityUpties, identityLevels, egoThreadspins, sinnerNotes, skillReplaces, addedIcons, iconSwaps }) {
+export function encodeBuildExtraOpts({
+    deploymentOrder, activeSinners,
+    identityUpties, identityLevels, egoThreadspins,
+    sinnerNotes, altOptions, skillReplaces,
+    addedIcons, iconSwaps
+}) {
     let encoded = [];
     if (deploymentOrder) {
         const deo = deploymentOrder.join(",");
@@ -41,6 +46,17 @@ export function encodeBuildExtraOpts({ deploymentOrder, activeSinners, identityU
             return acc;
         }, []).join(",");
         if (sn.length > 0) encoded.push(`sn:${sn}`);
+    }
+
+    if (altOptions) {
+        const ao = altOptions.reduce((acc, options, index) => {
+            if (options.length > 0) {
+                acc.push(`${index}=${encodeURIComponent(JSON.stringify(options))}`);
+            }
+            return acc;
+        }, []).join(",");
+
+        if (ao.length > 0) encoded.push(`ao:${ao}`);
     }
 
     if (skillReplaces) {
@@ -95,6 +111,16 @@ export function decodeBuildExtraOpts(string, parts = null) {
         }, {});
     }
 
+    const decodePart4 = (part, size) => {
+        return part.split(",").reduce((acc, val) => {
+            const idx = val.indexOf("=");
+            const i = Number(val.slice(0, idx));
+            const n = val.slice(idx + 1);
+            acc[i] = JSON.parse(decodeURIComponent(n));
+            return acc;
+        }, Array.from({ length: size }, () => []));
+    }
+
     return string.split("|").reduce((acc, part) => {
         const [type, vals] = part.split(":");
         if (parts && !parts.includes(type)) return acc;
@@ -116,6 +142,9 @@ export function decodeBuildExtraOpts(string, parts = null) {
                 return acc;
             case "sn":
                 acc.sinnerNotes = decodePart(vals, 12, true);
+                return acc;
+            case "ao":
+                acc.altOptions = decodePart4(vals, 12);
                 return acc;
             case "sr":
                 acc.skillReplaces = decodePart3(vals);

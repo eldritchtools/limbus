@@ -134,7 +134,7 @@ function EgoStatsOverlay({ egos, displayType }) {
 
 export default function BuildDisplaySinnerContainer({ 
     displayType, sinnerId, identityId, egoIds, 
-    identityLevel, egoThreadspins, identityUptie, deploymentOrder, swapIcon,
+    identityLevel, egoThreadspins, identityUptie, deploymentOrder, swapIcon, altOptions,
     activeSinners, otherOpts, disableLinks
 }) {
     const [iData, identitiesLoading] = useIdentitiesWithUpcoming();
@@ -154,6 +154,7 @@ export default function BuildDisplaySinnerContainer({
         level={identityLevel}
         threadspins={egoThreadspins}
         swapIcon={swapIcon}
+        altOptions={altOptions}
         deploymentOrder={deploymentOrder}
         activeSinners={activeSinners}
         disableLinks={disableLinks}

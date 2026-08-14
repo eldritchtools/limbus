@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import BuildDisplay from "../build/BuildDisplay";
 import styles from "../build/BuildDisplay.module.css";
@@ -25,34 +25,134 @@ import UptieSelector from "../selectors/UptieSelector";
 import SkillReplace from "../skill/SkillReplace";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
-import { deploymentColors } from "@/app/lib/colors";
+import { deploymentColors, uiColors } from "@/app/lib/colors";
 import { egoRankMapping, egoRanks, LEVEL_CAP } from "@/app/lib/constants";
 import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
-import { constructTeamCode, parseTeamCode } from "@/app/lib/teamCodeEncoding";
+
+function SinnerEditableComponent({
+    build, buildRef, index,
+    identities, identityOptions, egos, egoOptions,
+    additionalToggle, minimalEditor, replaceDeployment
+}) {
+    const { openAltOptionsModal } = useModal();
+    const [depType, depIndex] = getDeploymentPosition(build.deploymentOrder, build.activeSinners, index + 1);
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", minWidth: 0 }}>
+        <div style={{
+            display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)",
+            width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid`, borderRadius: "0.5rem"
+        }}>
+            <div style={{ gridColumn: "1", gridRow: "1 / 5" }}>
+                <IdentityMenuSelector
+                    value={identities[build.identityIds[index]] || null}
+                    setValue={v => build.setIdentityIdAt(index, v)}
+                    options={identityOptions[index + 1]} num={index + 1}
+                    uptie={(!build.identityUpties || build.identityUpties?.[index] === "") ? 4 : build.identityUpties[index]}
+                    swapIcon={build.iconSwaps?.includes(index + 1)}
+                />
+            </div>
+            <div style={{ gridColumn: "1", gridRow: "5", alignItems: "stretch", justifyContent: "stretch" }}>
+                {!minimalEditor ?
+                    <div style={{ display: "flex", alignItems: "stretch", height: "100%", boxSizing: "border-box" }}>
+                        <button
+                            style={{ position: "relative", margin: 0, padding: "0 6px", borderRadius: "0.5rem" }}
+                            {...getGeneralTooltipProps("Add alternative options for this sinner.")}
+                            onClick={() => openAltOptionsModal({ buildRef, index, editable: true })}
+                        >
+                            <span>+</span>
+                            {build.altOptions[index].length > 0 &&
+                                <span style={{
+                                    position: "absolute", "top": "-5px", right: "-5px",
+                                    background: uiColors.red, color: "#ddd", fontWeight: "bold",
+                                    borderRadius: "50%", fontSize: ".75rem", padding: "2px 5px"
+                                }}>
+                                    {build.altOptions[index].length}
+                                </span>
+                            }
+                        </button>
+                        <DeploymentComponent
+                            depType={depType} depIndex={depIndex}
+                            setOrder={build.setDeploymentOrder} sinnerId={index + 1}
+                        />
+                    </div> :
+                    replaceDeployment?.[index]
+                }
+            </div>
+            {Array.from({ length: 5 }, (_, rank) =>
+                <div key={rank} style={{ gridColumn: "2", gridRow: rank + 1 }}>
+                    <EgoMenuSelector
+                        value={egos[build.egoIds[index][rank]] || null}
+                        setValue={v => build.setEgoIdAt(index, rank, v)}
+                        options={egoOptions[index + 1][rank]} rank={rank}
+                    />
+                </div>
+            )}
+        </div>
+        {additionalToggle ? <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)" }}>
+                <div style={{ gridColumn: "span 3", display: "flex", justifyContent: "center" }}>
+                    <NumberInputWithButtons
+                        value={build.identityLevels[index]} setValue={v => build.setIdentityLevel(index, v)}
+                        max={LEVEL_CAP} allowEmpty={true} inputStyle={{ padding: "4px" }}
+                    />
+                </div>
+                <UptieSelector
+                    value={build.identityUpties[index]}
+                    setValue={v => build.setIdentityUptie(index, v)}
+                    allowEmpty={true}
+                />
+                <button {...getGeneralTooltipProps("Swap identity icon used")}
+                    onClick={() => build.toggleIconSwap(index + 1)}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+                >
+                    <ArrowPathIcon style={{ width: "1.25rem", height: "1.25rem", transform: "rotate(90deg)" }} />
+                </button>
+                {Array.from({ length: 5 }, (_, rank) =>
+                    <UptieSelector
+                        key={rank}
+                        value={build.egoThreadspins[index][rank]}
+                        setValue={v => build.setEgoThreadspin(index, rank, v)}
+                        allowEmpty={true}
+                        emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
+                        maxUptie={egos[build.egoIds[index][rank]]?.maxThreadspin ?? 4}
+                    />)}
+            </div>
+            {build.skillReplaces[index + 1] ?
+                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                    Skills: <SkillReplace
+                        counts={build.skillReplaces[index + 1] ?? "321"}
+                        setCounts={x => build.setSkillReplace(index + 1, x)}
+                        editable={true}
+                    />
+                </div> :
+                null
+            }
+            <div style={{ width: "100%" }}>
+                <MarkdownEditorWrapper
+                    value={build.sinnerNotes[index]}
+                    onChange={v => build.setSinnerNote(index, v)}
+                    placeholder={"Additional notes for this sinner..."}
+                    mini={true} short={true}
+                />
+            </div>
+        </> : null}
+    </div>
+}
 
 export default function BuildEditingComponent({
-    identityIds, setIdentityIds,
-    egoIds, setEgoIds,
-    deploymentOrder, setDeploymentOrder,
-    activeSinners, setActiveSinners,
-    identityLevels, setIdentityLevels,
-    identityUpties, setIdentityUpties,
-    egoThreadspins, setEgoThreadspins,
-    iconSwaps, setIconSwaps,
-    sinnerNotes, setSinnerNotes,
-    skillReplaces, setSkillReplaces,
-    minimalEditor = false, replaceDeployment, insertPanel,
+    build, minimalEditor = false, replaceDeployment, insertPanel,
     defaultAdditionalToggle = false, includeEventRolls = false
 }) {
     const { openSelectDeploymentModal } = useModal();
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
 
-    const [teamCode, setTeamCode] = useState('');
     const [additionalToggle, setAdditionalToggle] = useState(defaultAdditionalToggle);
     const [allIdEgoToggle, setAllIdEgoToggle] = useState(false);
     const [passiveSearchToggle, setPassiveSearchToggle] = useState(false);
     const [displayType, setDisplayType] = useState("edit");
+
+    const buildRef = useRef(build);
+    useEffect(() => { buildRef.current = build }, [build]);
 
     const identityOptions = useMemo(() => {
         if (identitiesLoading) return [];
@@ -60,11 +160,6 @@ export default function BuildEditingComponent({
             acc[identity.sinnerId].push(identity); return acc;
         }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, []])));
     }, [identities, identitiesLoading]);
-
-    const setIdentityId = (identityId, index) => {
-        const finalIndex = index === undefined ? identities[identityId].sinnerId - 1 : index;
-        setIdentityIds(prev => prev.map((x, i) => i === finalIndex ? identityId : x));
-    }
 
     const egoOptions = useMemo(() => {
         if (egosLoading) return [];
@@ -74,134 +169,40 @@ export default function BuildEditingComponent({
         }, Object.fromEntries(Array.from({ length: 12 }, (_, index) => [index + 1, Array.from({ length: 5 }, () => [])])));
     }, [egos, egosLoading]);
 
-    const setEgoId = (egoId, index, rank) => {
-        const finalIndex = index === undefined ? egos[egoId].sinnerId - 1 : index;
-        const finalRank = rank === undefined ? egoRankMapping[egos[egoId].rank] : rank;
-        setEgoIds(prev => prev.map((x, i) => i === finalIndex ? x.map((y, r) => r === finalRank ? egoId : y) : x));
-    }
-
-    const setIdentityLevel = (level, index) => setIdentityLevels(prev => prev.map((x, i) => i === index ? level : x));
-    const setIdentityUptie = (uptie, index) => setIdentityUpties(prev => prev.map((x, i) => i === index ? uptie : x));
-    const setEgoThreadspin = (uptie, index, rank) => setEgoThreadspins(prev => prev.map((x, i) => i === index ? x.map((y, r) => r === rank ? uptie : y) : x));
-    const setSinnerNote = (note, index) => setSinnerNotes(prev => prev.map((x, i) => i === index ? note : x));
-    const toggleIconSwap = index => setIconSwaps(prev => prev.includes(index) ? prev.filter(x => x !== index) : [...prev, index]);
-    const setSkillReplace = (rep, index) => setSkillReplaces(prev => ({ ...prev, [index]: rep }));
-
-    useEffect(() => {
-        const teamCode = constructTeamCode(identityIds, egoIds, deploymentOrder);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTeamCode(teamCode);
-    }, [identityIds, egoIds, deploymentOrder]);
-
-    const handleSetTeamCode = (v) => {
-        setTeamCode(v);
-        const parseResult = parseTeamCode(v);
-        if (!parseResult) return;
-        setDeploymentOrder([...parseResult.deploymentOrder]);
-        setIdentityIds([...parseResult.identities]);
-        setEgoIds(parseResult.egos.map(egos => [...egos]));
-    }
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {identitiesLoading || egosLoading ? null :
             (
                 displayType === "edit" ?
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                         <div className={styles.buildDisplay} style={{ alignSelf: "center" }}>
-                            {Array.from({ length: 12 }, (_, index) => {
-                                const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, index + 1);
-                                return <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", minWidth: 0 }}>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)", width: "100%", boxSizing: "border-box", border: `1px ${deploymentColors[depType]} solid`, borderRadius: "0.5rem" }}>
-                                        <div style={{ gridColumn: "1", gridRow: "1 / 5" }}>
-                                            <IdentityMenuSelector
-                                                value={identities[identityIds[index]] || null} setValue={v => setIdentityId(v, index)}
-                                                options={identityOptions[index + 1]} num={index + 1}
-                                                uptie={identityUpties?.[index] === "" ? 4 : identityUpties?.[index]} swapIcon={iconSwaps?.includes(index + 1)}
-                                            />
-                                        </div>
-                                        <div style={{ gridColumn: "1", gridRow: "5", alignItems: "stretch", justifyContent: "stretch" }}>
-                                            {!minimalEditor ?
-                                                <DeploymentComponent depType={depType} depIndex={depIndex} setOrder={setDeploymentOrder} sinnerId={index + 1} /> :
-                                                replaceDeployment?.[index]
-                                            }
-                                        </div>
-                                        {Array.from({ length: 5 }, (_, rank) =>
-                                            <div key={rank} style={{ gridColumn: "2", gridRow: rank + 1 }}>
-                                                <EgoMenuSelector value={egos[egoIds?.[index]?.[rank]] || null} setValue={v => setEgoId(v, index, rank)} options={egoOptions[index + 1][rank]} rank={rank} />
-                                            </div>
-                                        )}
-                                    </div>
-                                    {additionalToggle ? <>
-                                        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)" }}>
-                                            <div style={{ gridColumn: "span 3", display: "flex", justifyContent: "center" }}>
-                                                <NumberInputWithButtons
-                                                    value={identityLevels[index]} setValue={v => setIdentityLevel(v, index)}
-                                                    max={LEVEL_CAP} allowEmpty={true} inputStyle={{ padding: "4px" }}
-                                                />
-                                            </div>
-                                            <UptieSelector value={identityUpties[index]} setValue={v => setIdentityUptie(v, index)} allowEmpty={true} />
-                                            <button {...getGeneralTooltipProps("Swap identity icon used")}
-                                                onClick={() => toggleIconSwap(index + 1)}
-                                                style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
-                                            >
-                                                <ArrowPathIcon style={{ width: "1.25rem", height: "1.25rem", transform: "rotate(90deg)" }} />
-                                            </button>
-                                            {Array.from({ length: 5 }, (_, rank) =>
-                                                <UptieSelector
-                                                    key={rank}
-                                                    value={egoThreadspins?.[index]?.[rank] ?? ''}
-                                                    setValue={v => setEgoThreadspin(v, index, rank)}
-                                                    allowEmpty={true}
-                                                    emptyIcon={<RarityIcon rarity={egoRanks[rank]} alt={true} style={{ width: "100%", height: "auto" }} />}
-                                                    maxUptie={egos[egoIds?.[index]?.[rank]]?.maxThreadspin ?? 4}
-                                                />)}
-                                        </div>
-                                        {skillReplaces ?
-                                            <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                                                Skills: <SkillReplace counts={skillReplaces[index + 1] ?? "321"} setCounts={x => setSkillReplace(x, index + 1)} editable={true} />
-                                            </div> :
-                                            null
-                                        }
-                                        <div style={{ width: "100%" }}>
-                                            <MarkdownEditorWrapper
-                                                value={sinnerNotes[index]}
-                                                onChange={v => setSinnerNote(v, index)}
-                                                placeholder={"Additional notes for this sinner..."}
-                                                mini={true} short={true}
-                                            />
-                                        </div>
-                                    </> : null}
-                                </div>
-                            })}
+                            {Array.from({ length: 12 }, (_, index) =>
+                                <SinnerEditableComponent
+                                    key={index}
+                                    build={build} buildRef={buildRef} index={index}
+                                    identities={identities} egos={egos}
+                                    identityOptions={identityOptions} egoOptions={egoOptions}
+                                    additionalToggle={additionalToggle}
+                                    minimalEditor={minimalEditor} replaceDeployment={replaceDeployment}
+                                />
+                            )}
                         </div>
                         {
                             allIdEgoToggle &&
                             <AllIdEgoSelector
-                                identityIds={identityIds}
-                                egoIds={egoIds}
-                                setIdentityId={setIdentityId}
-                                setEgoId={setEgoId}
+                                identityIds={build.identityIds}
+                                egoIds={build.egoIds}
+                                setIdentityId={build.setIdentityId}
+                                setEgoId={build.setEgoId}
                                 identityOptions={identities}
                                 egoOptions={egos}
                             />
                         }
                         {
                             passiveSearchToggle &&
-                            <PassiveSearch setIdentityId={setIdentityId} setEgoId={setEgoId} />
+                            <PassiveSearch setIdentityId={build.setIdentityId} setEgoId={build.setEgoId} />
                         }
                     </div> :
-                    <BuildDisplay
-                        identityIds={identityIds}
-                        egoIds={egoIds}
-                        identityUpties={identityUpties}
-                        identityLevels={identityLevels}
-                        egoThreadspins={egoThreadspins}
-                        sinnerNotes={sinnerNotes}
-                        iconSwaps={iconSwaps}
-                        deploymentOrder={deploymentOrder}
-                        activeSinners={activeSinners}
-                        displayType={displayType}
-                    />
+                    <BuildDisplay build={build} displayType={displayType} />
             )
         }
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
@@ -211,8 +212,10 @@ export default function BuildEditingComponent({
                     <BuildDisplayMenuCard width={240}>
                         <div>Display Type</div>
                         <DisplayTypeButton value={displayType} setValue={setDisplayType} includeEdit={true} />
-                        <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
-                        <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} editable={true} />
+                        <span className="sub-text" style={{ textAlign: "center" }}>
+                            Quickly view various details of selected identities and E.G.Os or change how the team is displayed.
+                        </span>
+                        <TeamCodeComponent teamCode={build.teamCode} setTeamCode={build.setTeamCode} editable={true} />
                     </BuildDisplayMenuCard> :
                     null
                 }
@@ -239,48 +242,42 @@ export default function BuildEditingComponent({
                     >
                         Toggle All Ids & E.G.Os Menu
                     </button>
-                    {!minimalEditor ?
+                    {!minimalEditor &&
                         <button
                             className={`toggle-button ${passiveSearchToggle ? "active" : ""}`}
                             onClick={() => { setPassiveSearchToggle(p => !p); setAllIdEgoToggle(false); }}
                             style={{ fontSize: "0.95rem" }}
                         >
                             Toggle Passive Search
-                        </button> :
-                        null
+                        </button>
                     }
-                    {!minimalEditor ? <>
+                    {!minimalEditor && <>
                         <span style={{ marginTop: "0.5rem" }}>Deployment</span>
                         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                             <span style={{ textAlign: "center" }}>Active<br />Sinners</span>
-                            <NumberInputWithButtons value={activeSinners} setValue={setActiveSinners} min={1} max={12} />
+                            <NumberInputWithButtons value={build.activeSinners} setValue={build.setActiveSinners} min={1} max={12} />
                         </div>
                         <div>
                             <button onClick={() => setDeploymentOrder(_ => [])}>Reset Order</button>
                             <button onClick={
                                 () => openSelectDeploymentModal({
-                                    initialActive: deploymentOrder, identityIds, activeSinners, onSave: setDeploymentOrder
+                                    initialActive: build.deploymentOrder,
+                                    identityIds: build.identityIds,
+                                    activeSinners: build.activeSinners,
+                                    onSave: build.setDeploymentOrder
                                 })
                             }>
                                 Easy Menu
                             </button>
                         </div>
-                    </> : null
-                    }
+                    </>}
                 </BuildDisplayMenuCard>
-                {!minimalEditor ?
-                    <Distribution identityIds={identityIds} identityUpties={identityUpties} egoIds={egoIds} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
-                    null
-                }
-                {includeEventRolls ?
-                    <EventRolls identityIds={identityIds} identityUpties={identityUpties} deploymentOrder={deploymentOrder} activeSinners={activeSinners} /> :
-                    null
-                }
-                {minimalEditor ?
+                {!minimalEditor && <Distribution build={build} />}
+                {includeEventRolls && <EventRolls build={build} />}
+                {minimalEditor &&
                     <BuildDisplayMenuCard>
-                        <TeamCodeComponent teamCode={teamCode} setTeamCode={handleSetTeamCode} />
-                    </BuildDisplayMenuCard> :
-                    null
+                        <TeamCodeComponent teamCode={build.teamCode} setTeamCode={build.setTeamCode} />
+                    </BuildDisplayMenuCard>
                 }
             </div>
         </DragContainer>

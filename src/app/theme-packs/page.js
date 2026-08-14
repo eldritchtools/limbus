@@ -133,6 +133,32 @@ function FloorSelector({ selected, setSelected, floors }) {
     />;
 }
 
+function TagSelector({ selected, setSelected, tags }) {
+    const [options, toOption] = useMemo(() => {
+        const list = [];
+        const reverse = {};
+
+        tags.forEach(tag => {
+            const obj = { value: tag, label: tag, name: tag };
+            list.push(obj);
+            reverse[tag] = obj;
+        })
+
+        return [list, reverse];
+    }, [tags]);
+
+    return <Select
+        isMulti={true}
+        isClearable={true}
+        options={options}
+        value={selected.map(id => toOption[id])}
+        onChange={v => setSelected(v.map(x => x.value))}
+        placeholder={"Select tags..."}
+        filterOption={(candidate, input) => checkFilterMatch(input, candidate.data.name)}
+        styles={selectStyle}
+    />;
+}
+
 export default function ThemePacksPage() {
     const [themePacksData, themePacksLoading] = useData("md_theme_packs");
     const [floorPacksData, floorPacksLoading] = useData("md_floor_packs");
@@ -143,6 +169,7 @@ export default function ThemePacksPage() {
     const [includeGifts, setIncludeGifts] = useLocalState("themePacksIncludeGifts", true);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedFloors, setSelectedFloors] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
 
     const [forceOpen, setForceOpen] = useLocalState("themePacksForceOpen", false);
 
@@ -156,14 +183,21 @@ export default function ThemePacksPage() {
         }, {});
     }, [themePacksData, themePacksLoading, giftsData, giftsLoading]);
 
-    const categories = useMemo(() =>
-        Object.values(themePacksLoading ? {} : themePacksData).reduce((acc, themePack) => {
-            if (!(themePack.category[0] in acc))
-                acc[themePack.category[0]] = []
-            if (themePack.category.length === 2 && !acc[themePack.category[0]].includes(themePack.category[1]))
-                acc[themePack.category[0]].push(themePack.category[1])
-            return acc;
-        }, {}),
+    const [categories, tags] = useMemo(() => {
+        const [cats, tags] =
+            Object.values(themePacksLoading ? {} : themePacksData).reduce(([accM, accS], themePack) => {
+                if (!(themePack.category[0] in accM))
+                    accM[themePack.category[0]] = []
+                if (themePack.category.length === 2 && !accM[themePack.category[0]].includes(themePack.category[1]))
+                    accM[themePack.category[0]].push(themePack.category[1])
+
+                themePack.tags.forEach(x => accS.add(x));
+
+                return [accM, accS];
+            }, [{}, new Set()]);
+
+        return [cats, [...tags]];
+    },
         [themePacksData, themePacksLoading]
     );
 
@@ -178,10 +212,11 @@ export default function ThemePacksPage() {
             Object.entries(themePacksData).filter(([id, themePack]) => {
                 if (selectedCategories.length !== 0 && !selectedCategories.some(selectedCategory => themePack.category.includes(selectedCategory))) return false;
                 if (selectedFloors.length !== 0 && !selectedFloors.some(selectedFloor => checkFloorMatch(selectedFloor, id))) return false;
+                if (selectedTags.length !== 0 && !selectedTags.some(selectedTag => themePack.tags.includes(selectedTag))) return false;
                 if (searchString.length !== 0 && !checkFilterMatch(searchString, includeGifts ? filterStrings[id] : themePack.name)) return false;
                 return true;
             }).map(([id, themePack]) => <ThemePack key={id} id={id} themePack={themePack} isSmall={!isDesktop} openOverride={forceOpen} />)
-        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
+        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, selectedTags, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Theme Packs</h1>
@@ -204,7 +239,12 @@ export default function ThemePacksPage() {
                     </span>
                 </label>
             </div>
-            <span style={{ textAlign: "end" }}>Filter Categories:</span>
+            <span 
+                className="hover-text" style={{ textAlign: "end" }}
+                {...getGeneralTooltipProps("Strict hierarchical categorization of Theme Packs based on how the game organizes them. Use Tags for a broader style of filtering.")}
+            >
+                    Filter Categories:
+            </span>
             <CategorySelector
                 selected={selectedCategories}
                 setSelected={setSelectedCategories}
@@ -215,6 +255,12 @@ export default function ThemePacksPage() {
                 selected={selectedFloors}
                 setSelected={setSelectedFloors}
                 floors={floorPacksLoading ? {} : floorPacksData}
+            />
+            <span style={{ textAlign: "end" }}>Filter Tags:</span>
+            <TagSelector
+                selected={selectedTags}
+                setSelected={setSelectedTags}
+                tags={tags}
             />
             <div />
             <label>

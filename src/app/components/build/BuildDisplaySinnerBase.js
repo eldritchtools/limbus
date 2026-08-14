@@ -6,10 +6,12 @@ import IdentityIcon from "../icons/IdentityIcon";
 import RarityIcon from "../icons/RarityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
+import { useModal } from "../modals/ModalProvider";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
+import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 
-import { deploymentColors } from "@/app/lib/colors";
+import { deploymentColors, uiColors } from "@/app/lib/colors";
 import { egoRanks } from "@/app/lib/constants";
 import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
 
@@ -86,10 +88,11 @@ function Ego({ ego, displayType, rank, threadspin, disableLinks }) {
 
 export default function BuildDisplaySinnerBase({
     displayType, sinnerId, identity, egos,
-    uptie, level, threadspins, swapIcon,
+    uptie, level, threadspins, swapIcon, altOptions,
     deploymentOrder, activeSinners, disableLinks
 }) {
     const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
+    const { openAltOptionsModal } = useModal();
 
     if (displayType === "ids")
         return <div style={{ display: "flex", flexDirection: "column", width: "100%", border: `1px ${deploymentColors[depType]} solid`, borderRadius: ".5rem" }}>
@@ -102,7 +105,28 @@ export default function BuildDisplaySinnerBase({
                 swapIcon={swapIcon}
                 disableLinks={disableLinks}
             />
-            <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
+            <div style={{ display: "flex", alignItems: "stretch", minHeight: "32px", height: "100%", boxSizing: "border-box" }}>
+                {altOptions.length > 0 &&
+                    <div 
+                        style={{
+                            position: "relative", display: "flex", alignItems: "center", margin: 0, cursor: "pointer",
+                            padding: "0 6px", border: "1px var(--secondary-border-color) solid", borderRadius: ".5rem"
+                        }}
+                        {...getGeneralTooltipProps("View alternative options for this sinner.")}
+                        onClick={() => openAltOptionsModal({altOptions, sinnerId, editable: false})}
+                    >
+                        <span>+</span>
+                        <span style={{
+                            position: "absolute", "top": "-5px", right: "-5px",
+                            background: uiColors.red, color: "#ddd", fontWeight: "bold",
+                            borderRadius: "50%", fontSize: ".75rem", padding: "2px 5px"
+                        }}>
+                            {altOptions.length}
+                        </span>
+                    </div>
+                }
+                <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
+            </div>
         </div>
 
     const columns = displayType === "ego-comp" ? "4fr 1fr" : "1fr 1fr";
@@ -118,7 +142,29 @@ export default function BuildDisplaySinnerBase({
                 swapIcon={swapIcon}
                 disableLinks={disableLinks}
             />
-            <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
+
+            <div style={{ display: "flex", alignItems: "stretch", height: "100%", boxSizing: "border-box" }}>
+                {altOptions.length > 0 &&
+                    <div 
+                        style={{
+                            position: "relative", display: "flex", alignItems: "center", margin: 0, cursor: "pointer",
+                            padding: "0 6px", border: "1px var(--secondary-border-color) solid", borderRadius: ".5rem"
+                        }}
+                        {...getGeneralTooltipProps("View alternative options for this sinner.")}
+                        onClick={() => openAltOptionsModal({altOptions, sinnerId, editable: false})}
+                    >
+                        <span>+</span>
+                        <span style={{
+                            position: "absolute", "top": "-5px", right: "-5px",
+                            background: uiColors.red, color: "#ddd", fontWeight: "bold",
+                            borderRadius: "50%", fontSize: ".75rem", padding: "2px 5px"
+                        }}>
+                            {altOptions.length}
+                        </span>
+                    </div>
+                }
+                <DeploymentComponent depType={depType} depIndex={depIndex} sinnerId={sinnerId} />
+            </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
             {Array.from({ length: 5 }, (_, rank) =>

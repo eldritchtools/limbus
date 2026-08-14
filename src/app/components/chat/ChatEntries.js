@@ -19,8 +19,19 @@ function ChatEntry({ entry }) {
 
     if (entry.type === "author")
         return <div className={styles.authorEntry}>
-            <span className={styles.authorName}>
-                {entry.displayName}
+            <span style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <span className={styles.authorName}>
+                    {entry.displayName}
+                </span>
+                {entry.isDeveloper > 0 &&
+                    <div style={{
+                        height: "1rem", padding: "0 6px", borderRadius: "999px",
+                        fontSize: "0.8rem", fontWeight: "bold",
+                        background: "rgba(105, 159, 123, 0.75)", color: "var(--primary-text-color)"
+                    }}>
+                        dev
+                    </div>
+                }
             </span>
 
             <span className={styles.authorTime}>

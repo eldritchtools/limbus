@@ -4,41 +4,41 @@ import BuildDisplaySinnerContainer from "./BuildDisplaySinnerContainer";
 import MarkdownRenderer from "../markdown/MarkdownRenderer";
 import SkillReplace from "../skill/SkillReplace";
 
-export function BuildDisplayMain({
-    identityIds, egoIds, identityUpties, identityLevels, egoThreadspins,
-    sinnerNotes, iconSwaps, deploymentOrder, skillReplaces, activeSinners, displayType, disableLinks,
-    otherOpts
-}) {
-    const upties = identityUpties ? identityUpties.map(x => x === "" ? null : x) : null;
-    const levels = identityLevels ? identityLevels.map(x => x === "" ? null : x) : null;
-    const threadspins = egoThreadspins ? egoThreadspins.map(x => x.map(y => y === "" ? null : y)) : null;
-    const notes = sinnerNotes ? sinnerNotes.map(x => x === "" ? null : x) : null;
+export function BuildDisplayMain({ build, displayType, disableLinks, otherOpts }) {
+    const upties = build.identityUpties?.map(x => x === "" ? null : x);
+    const levels = build.identityLevels?.map(x => x === "" ? null : x);
+    const threadspins = build.egoThreadspins?.map(x => x.map(y => y === "" ? null : y));
+    const notes = build.sinnerNotes?.map(x => x === "" ? null : x);
 
-    return <div className={`${styles.buildDisplay} ${displayType === "ids" || displayType === "ego-comp" ? styles.idsOnly : null}`} style={{ alignSelf: "center", transform: "translateZ(0)" }}>
+    return <div
+        className={`${styles.buildDisplay} ${displayType === "ids" || displayType === "ego-comp" ? styles.idsOnly : null}`}
+        style={{ alignSelf: "center", transform: "translateZ(0)" }}
+    >
         {Array.from({ length: 12 }, (_, index) => {
             let egosDisplay = Array.from({ length: 5 }, () => null);
-            if (egoIds && Array.isArray(egoIds) && egoIds[index] && Array.isArray(egoIds[index])) {
-                egosDisplay = egoIds[index].map(id => id || null);
+            if (build.egoIds && Array.isArray(build.egoIds) && build.egoIds[index] && Array.isArray(build.egoIds[index])) {
+                egosDisplay = build.egoIds[index].map(id => id || null);
             }
 
             return <div key={index} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                 <BuildDisplaySinnerContainer
                     displayType={displayType}
                     sinnerId={index + 1}
-                    identityId={identityIds[index] || null}
+                    identityId={build.identityIds[index] || null}
                     egoIds={egosDisplay}
-                    identityUptie={upties ? upties[index] : null}
-                    identityLevel={levels ? levels[index] : null}
-                    egoThreadspins={threadspins ? threadspins[index] : null}
-                    deploymentOrder={deploymentOrder}
-                    activeSinners={activeSinners}
-                    swapIcon={iconSwaps?.includes(index + 1)}
+                    identityUptie={upties?.[index]}
+                    identityLevel={levels?.[index]}
+                    egoThreadspins={threadspins?.[index]}
+                    deploymentOrder={build.deploymentOrder}
+                    activeSinners={build.activeSinners}
+                    swapIcon={build.iconSwaps?.includes(index + 1)}
+                    altOptions={build.altOptions?.[index] ?? []}
                     otherOpts={otherOpts}
                     disableLinks={disableLinks}
                 />
-                {skillReplaces?.[index + 1] ?
+                {build.skillReplaces?.[index + 1] ?
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", alignSelf: "center" }}>
-                        Skills: <SkillReplace counts={skillReplaces[index + 1] ?? "321"} />
+                        Skills: <SkillReplace counts={build.skillReplaces[index + 1] ?? "321"} />
                     </div> : null}
                 {notes && notes[index] ?
                     <div style={{ margin: "0 0.5rem" }}>

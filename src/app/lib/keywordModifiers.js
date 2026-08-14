@@ -1,6 +1,6 @@
 function validateCondition(cond, data) {
     if(cond.type === "ego") {
-        return data.egoIds?.includes(cond.id);
+        return data.egoIds?.includes(Number(cond.id)) || data.egoIds?.includes(cond.id);
     }
     return false;
 }

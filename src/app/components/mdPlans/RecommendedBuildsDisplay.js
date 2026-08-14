@@ -10,14 +10,13 @@ import DisplayTypeButton from "../build/DisplayTypeButton";
 import Distribution from "../build/Distribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
 import TeamBuild from "../contentCards/TeamBuild";
+import useBuildState from "../dataHooks/useBuildState";
 import KeywordIcon from "../icons/KeywordIcon";
 import { useModal } from "../modals/ModalProvider";
 import DragContainer from "../objects/DragContainer";
 import UsernameWithTime from "../user/UsernameWithTime";
 
 import { keywordIdMapping } from "@/app/database/keywordIds";
-import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
-import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import useLocalState from "@/app/lib/useLocalState";
 
 export default function RecommendedBuildsDisplay({ builds, setBuilds, editable = false }) {
@@ -25,51 +24,42 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
     const { openSelectBuildModal } = useModal();
     const router = useRouter();
-    const [build, extraOpts] = useMemo(
-        () => builds.length > 0 && index !== null ?
-            [builds[index], decodeBuildExtraOpts(builds[index].extra_opts)] :
-            [null, null],
-        [builds, index]
-    );
-    const teamCode = useMemo(() => build ? constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order) : build, [build]);
 
     const buildsRef = useRef(builds);
     useEffect(() => { buildsRef.current = builds }, [builds]);
-
-    const handleSelectBuild = build => {
-        const index = buildsRef.current.findIndex(x => x.id === build.id);
+    const build = useBuildState();
+    const buildData = useMemo(() => builds[index], [builds, index]);
+    
+    const handleSelectBuild = selectedBuild => {
+        const index = buildsRef.current.findIndex(x => x.id === selectedBuild.id);
         if (index === -1) {
-            setBuilds(p => [...p, build]);
+            setBuilds(p => [...p, selectedBuild]);
             setIndex(buildsRef.current.length);
         } else {
             setIndex(index);
         }
     }
 
+    useEffect(() => {
+        const newBuild = builds[index];
+        if(newBuild) build.setBuildState(newBuild);
+        else build.setBuildState({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [builds, index]);
+
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-        {build ? <>
+        {buildData ? <>
             <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
                 <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap" }}>
                     <div style={{ display: "flex", gap: "0.2rem" }}>
-                        {build.keyword_ids.map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
+                        {buildData.keyword_ids.map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
                     </div>
-                    {build.title}
+                    {buildData.title}
                 </h2>
-                <UsernameWithTime data={build} scale={.9} avatarId={build.user_avatar_id} />
+                <UsernameWithTime data={buildData} scale={.9} avatarId={buildData.user_avatar_id} />
             </div>
 
-            <BuildDisplay
-                identityIds={build.identity_ids}
-                egoIds={build.ego_ids}
-                identityUpties={extraOpts.identityUpties}
-                identityLevels={extraOpts.identityLevels}
-                egoThreadspins={extraOpts.egoThreadspins}
-                sinnerNotes={extraOpts.sinnerNotes}
-                iconSwaps={extraOpts.iconSwaps}
-                deploymentOrder={build.deployment_order}
-                activeSinners={build.active_sinners}
-                displayType={displayType}
-            />
+            <BuildDisplay build={build} displayType={displayType} />
 
             <div style={{ display: "flex", gap: "0.2rem", alignSelf: builds.length > 0 ? "center" : "start", justifyContent: "center", flexWrap: "wrap" }}>
                 {builds.length > 0 ? <>
@@ -101,21 +91,10 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                         <DisplayTypeButton value={displayType} setValue={setDisplayType} />
                         <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
 
-                        <TeamCodeComponent teamCode={teamCode} />
+                        <TeamCodeComponent teamCode={build.teamCode} />
                     </BuildDisplayMenuCard>
-                    <Distribution
-                        identityIds={build.identity_ids}
-                        identityUpties={extraOpts.identityUpties}
-                        egoIds={build.ego_ids}
-                        deploymentOrder={build.deployment_order}
-                        activeSinners={build.active_sinners}
-                    />
-                    <EventRolls
-                        identityIds={build.identity_ids}
-                        identityUpties={extraOpts.identityUpties}
-                        deploymentOrder={build.deployment_order}
-                        activeSinners={build.active_sinners}
-                    />
+                    <Distribution build={build} />
+                    <EventRolls build={build} />
                 </div>
             </DragContainer>
         </> :

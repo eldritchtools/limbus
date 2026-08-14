@@ -16,6 +16,7 @@ import useRealtimeClientId from "../components/realtime/useRealtimeClientId";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import { useAuth } from "../database/authProvider";
 import { getLocalStore } from "../database/localDB";
+import { triggerGameCompleteGAEvent, triggerGameStartGAEvent } from "../lib/gaEvents";
 import useLocalState from "../lib/useLocalState";
 
 const GUESSER_ID = "artwork";
@@ -241,6 +242,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
             }}
             onStart={() => {
                 if (isHost) {
+                    triggerGameStartGAEvent(GUESSER_ID, mode);
                     quiz.registerGenerator(constructArtworkQuizGenerator(settings, identities));
                     const problem = quiz.generateProblem();
                     realtimeQuiz.startGame(roomId, problem, problem.answer);
@@ -278,7 +280,10 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
                 if (isHost) realtimeQuiz.nextRound(roomId, problem, problem.answer);
             }}
             endGame={() => {
-                if (isHost) realtimeQuiz.endGame(roomId);
+                if (isHost) {
+                    triggerGameCompleteGAEvent(GUESSER_ID, mode);
+                    realtimeQuiz.endGame(roomId);
+                }
             }}
             isHost={isHost}
             correctParticipants={correctParticipants}

@@ -20,6 +20,8 @@ The project aims to provide a comprehensive set of tools and resources for the L
 - Community ratings and other features
 - Community polls
 - Miscellaneous tools
+- Minigames
+- Realtime chat
 
 ## Tech Stack
 
@@ -29,8 +31,14 @@ The project aims to provide a comprehensive set of tools and resources for the L
 - Cloudflare (DNS/CDN)
 - Cloudflare R2
 - Netlify
+- Gigalixir
 
 ## Related Projects
+
+These projects are used alongside this repository:
+
+- [Limbus Assets](https://github.com/eldritchtools/limbus-assets)
+- [Limbus Realtime](https://github.com/eldritchtools/limbus-realtime)
 
 These projects were eventually merged into this repository:
 

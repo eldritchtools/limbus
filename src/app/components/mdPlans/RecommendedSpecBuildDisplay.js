@@ -9,11 +9,11 @@ import DisplayTypeButton from "../build/DisplayTypeButton";
 import Distribution from "../build/Distribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
+import useBuildState from "../dataHooks/useBuildState";
 import BuildEditingComponent from "../editors/BuildEditingComponent";
 import DragContainer from "../objects/DragContainer";
 
 import { egoRankMapping } from "@/app/lib/constants";
-import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import useLocalState from "@/app/lib/useLocalState";
 
 
@@ -23,19 +23,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
     const [dataConverted, setDataConverted] = useState(false);
 
-    const identitiesConverted = useMemo(() => {
-        if (identitiesLoading) return null;
-        const newIdentityIds = Array.from({ length: 12 }, () => "");
-        identityIds.forEach(id => { newIdentityIds[identities[id].sinnerId - 1] = id; });
-        return newIdentityIds;
-    }, [identities, identitiesLoading, identityIds]);
-
-    const egosConverted = useMemo(() => {
-        if (egosLoading) return null;
-        const newEgoIds = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
-        egoIds.forEach(id => { newEgoIds[egos[id].sinnerId - 1][egoRankMapping[egos[id].rank]] = id; })
-        return newEgoIds;
-    }, [egos, egosLoading, egoIds]);
+    const build = useBuildState();
 
     const additionalToggle = useMemo(() => {
         return extraOpts.identityUpties !== undefined ||
@@ -43,133 +31,92 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             extraOpts.egoThreadspins !== undefined ||
             extraOpts.iconSwaps !== undefined ||
             extraOpts.sinnerNotes !== undefined ||
+            extraOpts.altOptions !== undefined ||
             extraOpts.skillReplaces !== undefined
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const [optsConverted, changed] = useMemo(() => {
-        let changed = false;
-
-        const newExtraOpts = { ...extraOpts };
-
-        if (newExtraOpts.deploymentOrder === undefined) {
-            newExtraOpts.deploymentOrder = [];
-            changed = true;
-        }
-
-        if (newExtraOpts.activeSinners === undefined) {
-            newExtraOpts.activeSinners = 7;
-            changed = true;
-        }
-
-        if (newExtraOpts.identityUpties === undefined) {
-            newExtraOpts.identityUpties = Array.from({ length: 12 }, () => "");
-            changed = true;
-        }
-
-        if (newExtraOpts.identityLevels === undefined) {
-            newExtraOpts.identityLevels = Array.from({ length: 12 }, () => "");
-            changed = true;
-        }
-        
-        if (newExtraOpts.egoThreadspins === undefined) {
-            newExtraOpts.egoThreadspins = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
-            changed = true;
-        }
-        
-        if (newExtraOpts.iconSwaps === undefined) {
-            newExtraOpts.iconSwaps = [];
-            changed = true;
-        }
-        
-        if (newExtraOpts.sinnerNotes === undefined) {
-            newExtraOpts.sinnerNotes = Array.from({ length: 12 }, () => "");
-            changed = true;
-        }
-
-        if (newExtraOpts.skillReplaces === undefined) {
-            newExtraOpts.skillReplaces = {};
-            changed = true;
-        }
-        
-        return [newExtraOpts, changed];
-    }, [extraOpts]);
-
-    const teamCode = useMemo(
-        // additional guard in case react resets the data
-        () => identitiesConverted && identitiesConverted.length === 12 ?
-            constructTeamCode(identitiesConverted, egosConverted, optsConverted.deploymentOrder ?? []) :
-            null,
-        [identitiesConverted, egosConverted, optsConverted]
-    );
-
     useEffect(() => {
-        if (!changed || !editable) return;
+        if(dataConverted || identitiesLoading || egosLoading) return;
 
-        if (changed && setExtraOpts) setExtraOpts(optsConverted);
+        const newIdentityIds = Array.from({ length: 12 }, () => "");
+        identityIds.forEach(id => { newIdentityIds[identities[id].sinnerId - 1] = id; });
+
+        const newEgoIds = Array.from({ length: 12 }, () => Array.from({ length: 5 }, () => ""));
+        egoIds.forEach(id => { newEgoIds[egos[id].sinnerId - 1][egoRankMapping[egos[id].rank]] = id; });
+
+        build.setBuildState({
+            identityIds: newIdentityIds,
+            egoIds: newEgoIds,
+            deploymentOrder: extraOpts.deploymentOrder,
+            activeSinners: extraOpts.activeSinners,
+            decodedExtraOpts: extraOpts
+        });
 
         setDataConverted(true);
-    }, [changed, optsConverted, setExtraOpts, dataConverted, editable]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [identitiesLoading, egosLoading, dataConverted]);
 
-    if (!identitiesConverted || !egosConverted) return null;
+    useEffect(() => {
+        if(!dataConverted) return;
+
+        if(setIdentityIds) setIdentityIds(build.identityIds);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [build.identityIds]);
+
+    useEffect(() => {
+        if(!dataConverted) return;
+
+        if(setEgoIds) setEgoIds(build.egoIds);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [build.egoIds]);
+
+    useEffect(() => {
+        if(!dataConverted) return;
+
+        if(setExtraOpts) setExtraOpts({
+            deploymentOrder: build.deploymentOrder,
+            activeSinners: build.activeSinners,
+            identityLevels: build.identityLevels,
+            identityUpties: build.identityUpties,
+            egoThreadspins: build.egoThreadspins,
+            iconSwaps: build.iconSwaps,
+            sinnerNotes: build.sinnerNotes,
+            altOptions: build.altOptions,
+            skillReplaces: build.skillReplaces
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [build.deploymentOrder, build.activeSinners, 
+        build.identityLevels, build.identityUpties, build.egoThreadspins, 
+        build.iconSwaps, build.sinnerNotes, build.altOptions, build.skillReplaces
+    ]);
+
 
     if (editable) {
-        const handleSetIdentityIds = fn => setIdentityIds(fn(identitiesConverted));
-        const handleSetEgoIds = fn => setEgoIds(fn(egosConverted));
-        const handleOptsFunction = (func, key) => setExtraOpts(p => ({ ...p, [key]: func(p[key]) }));
-        const handleOptsValue = (v, key) => setExtraOpts(p => ({ ...p, [key]: v }));
+        if(!dataConverted) return;
 
         return <BuildEditingComponent
-            identityIds={identitiesConverted} setIdentityIds={handleSetIdentityIds}
-            egoIds={egosConverted} setEgoIds={handleSetEgoIds}
-            deploymentOrder={optsConverted.deploymentOrder} setDeploymentOrder={f => handleOptsFunction(f, "deploymentOrder")}
-            activeSinners={optsConverted.activeSinners} setActiveSinners={v => handleOptsValue(v, "activeSinners")}
-            identityLevels={optsConverted.identityLevels} setIdentityLevels={f => handleOptsFunction(f, "identityLevels")}
-            identityUpties={optsConverted.identityUpties} setIdentityUpties={f => handleOptsFunction(f, "identityUpties")}
-            egoThreadspins={optsConverted.egoThreadspins} setEgoThreadspins={f => handleOptsFunction(f, "egoThreadspins")}
-            iconSwaps={optsConverted.iconSwaps} setIconSwaps={f => handleOptsFunction(f, "iconSwaps")}
-            sinnerNotes={optsConverted.sinnerNotes} setSinnerNotes={f => handleOptsFunction(f, "sinnerNotes")}
-            skillReplaces={optsConverted.skillReplaces} setSkillReplaces={f => handleOptsFunction(f, "skillReplaces")}
-            defaultAdditionalToggle={additionalToggle} includeEventRolls={true}
+            build={build}
+            defaultAdditionalToggle={additionalToggle} 
+            includeEventRolls={true}
         />
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <BuildDisplay
-            identityIds={identitiesConverted}
-            egoIds={egosConverted}
-            identityUpties={optsConverted.identityUpties}
-            identityLevels={optsConverted.identityLevels}
-            egoThreadspins={optsConverted.egoThreadspins}
-            iconSwaps={optsConverted.iconSwaps}
-            sinnerNotes={optsConverted.sinnerNotes}
-            skillReplaces={optsConverted.skillReplaces}
-            deploymentOrder={optsConverted.deploymentOrder}
-            activeSinners={optsConverted.activeSinners}
-            displayType={displayType}
-        />
+        <BuildDisplay build={build} displayType={displayType} />
 
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
                 <BuildDisplayMenuCard width={240}>
                     <div>Display Type</div>
                     <DisplayTypeButton value={displayType} setValue={setDisplayType} />
-                    <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
-                    <TeamCodeComponent teamCode={teamCode} />
+                    <span className="sub-text" style={{ textAlign: "center" }}>
+                        Quickly view various details of selected identities and E.G.Os or change how the team is displayed.
+                    </span>
+                    <TeamCodeComponent teamCode={build.teamCode} />
                 </BuildDisplayMenuCard>
-                <Distribution
-                    identityIds={identitiesConverted}
-                    identityUpties={optsConverted.identityUpties}
-                    egoIds={egosConverted}
-                    deploymentOrder={optsConverted.deploymentOrder}
-                    activeSinners={optsConverted.activeSinners}
-                />
-                <EventRolls
-                    identityIds={identitiesConverted}
-                    identityUpties={optsConverted.identityUpties}
-                    deploymentOrder={optsConverted.deploymentOrder}
-                    activeSinners={optsConverted.activeSinners}
-                />
+                <Distribution build={build} />
+                <EventRolls build={build} />
             </div>
         </DragContainer>
     </div>
