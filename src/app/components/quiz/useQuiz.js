@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { useAuth } from "@/app/database/authProvider";
 import { constructDefaultDailyStats, getDailyQuizStats, updateDailyQuizStats } from "@/app/database/dailyQuizzes";
 import { getLocalStore } from "@/app/database/localDB";
+import { triggerGameCompleteGAEvent, triggerGameStartGAEvent } from "@/app/lib/gaEvents";
 
 // phases
 // setup, loading, guessing, reveal, finished
@@ -22,6 +23,7 @@ export function useQuiz(id, generateQuiz) {
     const generateQuizRef = useRef(generateQuiz);
 
     async function start(startSettings) {
+        triggerGameStartGAEvent(id, startSettings.mode);
         setPhase("loading");
         setSettings(startSettings);
         const generated = await generateQuizRef.current(startSettings);
@@ -109,6 +111,7 @@ export function useQuiz(id, generateQuiz) {
         }
 
         if (round + 1 >= quiz.problems.length) {
+            triggerGameCompleteGAEvent(id, settings.mode);
             setPhase("finished");
             return;
         }

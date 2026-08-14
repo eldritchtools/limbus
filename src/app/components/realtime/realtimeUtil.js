@@ -11,3 +11,7 @@ export function trimPrefixes(roomId) {
 
     return roomId;
 }
+
+export function extractRoomPrefix(roomId) {
+    return roomId.split(":")[0];
+}

@@ -10,7 +10,9 @@ import { useRealtime } from "../realtime/RealtimeProvider";
 import useRealtimeClientId from "../realtime/useRealtimeClientId";
 import { useSiteCustomization } from "../SiteCustomizationProvider";
 import ChatSettings from "./ChatSettings";
+import { extractRoomPrefix } from "../realtime/realtimeUtil";
 
+import { triggerChatJoinGAEvent, triggerChatMessageGAEvent } from "@/app/lib/gaEvents";
 import useLocalState from "@/app/lib/useLocalState";
 
 const GLOBAL_CHAT_ID = "global:lobby";
@@ -201,6 +203,7 @@ export default function ChatWidget({ username }) {
                     },
 
                     connected: () => {
+                        triggerChatJoinGAEvent(extractRoomPrefix(roomId));
                         updateRoom(roomId, room => {
                             room.status = "connected";
                         });
@@ -327,7 +330,10 @@ export default function ChatWidget({ username }) {
                     />
                     <ChatInput
                         disabled={activeRoom.status !== "connected"}
-                        sendMessage={async text => await chat.sendMessage(activeRoomId, text)}
+                        sendMessage={async text => {
+                            await chat.sendMessage(activeRoomId, text)
+                            triggerChatMessageGAEvent(extractRoomPrefix(activeRoomId));
+                        }}
                     />
                 </> :
                 <WelcomeView displayName={displayName} setDisplayName={setDisplayName} roomId={activeRoomId} room={activeRoom} joinChat={joinChat} unavailable={unavailable} />

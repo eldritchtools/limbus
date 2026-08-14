@@ -2,9 +2,11 @@ import { Socket } from "phoenix";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { createContext, useContext } from "react";
 
-import { trimPrefixes } from "./realtimeUtil";
+import { extractRoomPrefix, trimPrefixes } from "./realtimeUtil";
 import useRealtimeChatApi from "./useRealtimeChatApi";
 import useRealtimeQuizApi from "./useRealtimeQuizApi";
+
+import { triggerRoomJoinGAEvent } from "@/app/lib/gaEvents";
 
 const RealtimeContext = createContext();
 
@@ -58,6 +60,7 @@ export default function RealtimeProvider({ children }) {
                 roomChannel
                     .join()
                     .receive("ok", ({ room_id }) => {
+                        triggerRoomJoinGAEvent(extractRoomPrefix(room_id));
                         resolve(room_id);
                     })
                     .receive("error", reject)
