@@ -1,6 +1,7 @@
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import SocialsDisplay from "../components/user/SocialsDisplay";
+import { CONTACT_EMAIL, DISCORD_LINK, GITHUB_REPO, KOFI, TWITTER, YOUTUBE_CHANNEL } from "../lib/socials";
 
 export default function AboutPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
@@ -18,12 +19,12 @@ export default function AboutPage() {
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 <SocialsDisplay
                     socials={[
-                        { type: "discord-server", value: "https://discord.gg/dukfUJnqTH" },
-                        { type: "github", value: "eldritchtools/limbus" },
-                        { type: "email", "value": "contact@eldritchtools.com" },
-                        { type: "youtube", value: "@EldritchPlays" },
-                        { type: "twitter", value: "EldritchTools" },
-                        { type: "ko-fi", value: "J3J31IBV7N" }
+                        { type: "discord-server", value: DISCORD_LINK },
+                        { type: "github", value: GITHUB_REPO },
+                        { type: "email", value: CONTACT_EMAIL },
+                        { type: "youtube", value: YOUTUBE_CHANNEL },
+                        { type: "twitter", value: TWITTER },
+                        { type: "ko-fi", value: KOFI }
 
                     ]}
                     expandedDefault={true} button={true}

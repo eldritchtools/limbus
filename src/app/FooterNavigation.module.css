@@ -1,0 +1,11 @@
+.footerLinks {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width:768px) {
+    .footerLinks {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

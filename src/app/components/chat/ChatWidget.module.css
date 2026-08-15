@@ -17,6 +17,7 @@
 
     transition: 0.2s ease all;
     cursor: pointer;
+    opacity: 0.75;
     
     z-index: 1500;
 }

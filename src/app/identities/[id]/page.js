@@ -63,10 +63,11 @@ const schema = async id => {
 
 export default async function Page({ params }) {
     const { id } = await params;
-    const [schemaData, identities, individualData] = await Promise.all([
+    const [schemaData, identities, individualData, egos] = await Promise.all([
         schema(id),
         fetchData("identities"),
-        fetchData(`identities/${id}`)
+        fetchData(`identities/${id}`),
+        fetchData("egos_mini")
     ]);
 
     if (!(id in identities))
@@ -84,8 +85,30 @@ export default async function Page({ params }) {
         compareMode={false} serverText={true}
     />
 
+    const sinnerId = identities[id].sinnerId;
+
+    const minifiedIdentities = Object.entries(identities)
+        .map(([id, data]) => {
+            const { name, rank, sinnerId, tags } = data;
+            return [id, { id, name, rank, sinnerId, tags }]
+        })
+        .filter(([, data]) => data.sinnerId === sinnerId)
+        .sort(([aid], [bid]) => bid.localeCompare(aid));
+
+    const minifiedEgos = Object.entries(egos)
+        .map(([id, data]) => {
+            const { name, rank, sinnerId } = data;
+            return [id, { id, name, rank, sinnerId }]
+        })
+        .filter(([, data]) => data.sinnerId === sinnerId)
+        .sort(([aid], [bid]) => bid.localeCompare(aid));
+
     return <>
         <JsonLd data={schemaData} />
-        <IdentityPage id={id} identityData={identities[id]} initSkillData={skillData} notesTab={notesTab} initSkillsTab={initSkillsTab} />
+        <IdentityPage 
+            id={id} identityData={identities[id]} initSkillData={skillData} 
+            notesTab={notesTab} initSkillsTab={initSkillsTab} 
+            minifiedIdentities={minifiedIdentities} minifiedEgos={minifiedEgos}
+        />
     </>;
 }

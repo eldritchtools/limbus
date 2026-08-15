@@ -11,8 +11,6 @@ import "./styles/toggle-text.css";
 import { Layout } from "@eldritchtools/shared-components";
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
-import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
 
 import ChatWrapper from "./components/chat/ChatWrapper";
 import { DataProvider } from "./components/DataProvider";
@@ -24,6 +22,7 @@ import AllTooltips from "./components/tooltips/AllTooltip";
 import UserStatus from "./components/user/UserStatus";
 import { AuthProvider } from "./database/authProvider";
 import { RequestsCacheProvider } from "./database/RequestsCacheProvider";
+import FooterNavigation from "./FooterNavigation";
 import useLocalState from "./lib/useLocalState";
 
 TimeAgo.addDefaultLocale(en);
@@ -160,9 +159,10 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                 githubLink={"https://github.com/eldritchtools/limbus"}
                                 paths={paths}
                                 LinkComponent={NoPrefetchLink}
-                                topComponent={<UserStatus />}
+                                sidebarTopComponent={<UserStatus />}
+                                footerTopComponent={<FooterNavigation />}
                             >
-                                <Announcement />
+                                {/* <Announcement /> */}
                                 {children}
                                 <AllTooltips />
                             </Layout>

@@ -8,12 +8,15 @@ import { SkillsTab } from "./EgoPageComponents";
 
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import { useData, useDataProvider } from "@/app/components/DataProvider";
+import EgoIcon from "@/app/components/icons/EgoIcon";
 import EgoImage from "@/app/components/icons/EgoImage";
+import IdentityIcon from "@/app/components/icons/IdentityIcon";
 import KeywordIcon from "@/app/components/icons/KeywordIcon";
 import RarityIcon from "@/app/components/icons/RarityIcon";
 import SinnerIcon from "@/app/components/icons/SinnerIcon";
 import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapper";
 import { useModal } from "@/app/components/modals/ModalProvider";
+import NoPrefetchLink from "@/app/components/NoPrefetchLink";
 import DragContainer from "@/app/components/objects/DragContainer";
 import RatingComponent from "@/app/components/ratings/RatingComponent";
 import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
@@ -132,7 +135,33 @@ function BuildsTab({ builds }) {
     </DragContainer>
 }
 
-export default function IdentityPage({ id, egoData, initSkillData, notesTab, initSkillsTab }) {
+function BottomLinks({ sinnerId, identities, egos }) {
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "100%", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.2rem", marginTop: "1rem" }}>
+        <h4 style={{ display: "flex", gap: "0.5rem", alignSelf: "center", margin: 0 }}>
+            <SinnerIcon num={sinnerId} style={{ width: "24px", height: "24px" }} /> <span style={{fontSize: "1.2rem"}}>{sinnerIdMapping[sinnerId]}</span>
+        </h4>
+        <DragContainer>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                <div style={{ display: "flex", gap: "0.2rem" }}>
+                    {identities.map(([id, data]) =>
+                        <NoPrefetchLink key={id} href={`/identities/${id}`}>
+                            <IdentityIcon identity={data} displayName={true} displayRarity={true} size={92} style={{ borderRadius: "0.5rem" }} />
+                        </NoPrefetchLink>
+                    )}
+                </div>
+                <div style={{ display: "flex", gap: "0.2rem" }}>
+                    {egos.map(([id, data]) =>
+                        <NoPrefetchLink key={id} href={`/egos/${id}`}>
+                            <EgoIcon ego={data} type={"awaken"} displayName={true} displayRarity={true} size={92} style={{ borderRadius: "0.5rem" }} />
+                        </NoPrefetchLink>
+                    )}
+                </div>
+            </div>
+        </DragContainer>
+    </div>
+}
+
+export default function IdentityPage({ id, egoData, initSkillData, notesTab, initSkillsTab, minifiedIdentities, minifiedEgos }) {
     const { getData } = useDataProvider();
     const [uptie, setUptie] = useState(egoData?.maxThreadspin ?? 4);
     const [preuptie, setPreuptie] = useState(1);
@@ -297,6 +326,8 @@ export default function IdentityPage({ id, egoData, initSkillData, notesTab, ini
                     compareMode={compareMode} preuptie={preuptie}
                 />
             }
+            
+            <BottomLinks sinnerId={egoData.sinnerId} identities={minifiedIdentities} egos={minifiedEgos} />
         </div>
     </>
 }
