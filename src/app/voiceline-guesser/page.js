@@ -1,20 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import FinishedScreen from "./FinishedScreen";
 import { constructVoicelineQuizGenerator } from "./generator";
+import GuessingScreen from "./GuessingScreen";
+import RevealScreen from "./RevealScreen";
 import { dailySettings, defaultSettings } from "./settings";
-import SetupScreen, { difficulties } from "./SetupScreen";
-import VoiceProblem from "./VoiceProblem";
+import SetupScreen from "./SetupScreen";
 import { useData } from "../components/DataProvider";
-import EgoIcon from "../components/icons/EgoIcon";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { useQuiz } from "../components/quiz/useQuiz";
-import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
+import { useRealtime } from "../components/realtime/RealtimeProvider";
+import useRealtimeClientId from "../components/realtime/useRealtimeClientId";
+import { useSiteCustomization } from "../components/SiteCustomizationProvider";
+import { useAuth } from "../database/authProvider";
 import { getLocalStore } from "../database/localDB";
-import { uiColors } from "../lib/colors";
-import { sinnerIdMapping } from "../lib/constants";
-import { selectStyleVariable } from "../styles/selectStyle";
+import { triggerGameCompleteGAEvent, triggerGameStartGAEvent } from "../lib/gaEvents";
+import useLocalState from "../lib/useLocalState";
 
 const GUESSER_ID = "voiceline";
 
@@ -28,6 +31,7 @@ function Guesser({ mode, setMode, settings, setSettings, quiz, egos, egoVoicelin
             }
 
             return <SetupScreen
+                mode={mode}
                 settings={settings}
                 setSettings={handleSetSettings}
                 onStart={() => {
@@ -44,144 +48,268 @@ function Guesser({ mode, setMode, settings, setSettings, quiz, egos, egoVoicelin
         return <LoadingContentPageTemplate />
 
     if (quiz.phase === "guessing")
-        return <>
-            {mode === "standard" ? <>
-                <h2 style={{ margin: 0 }}>Round {quiz.round + 1}{settings.infinite ? "" : `/${settings.rounds}`}</h2>
-                <span>Score: {quiz.score} / {quiz.round}</span>
-                <span>Difficulty: {difficulties.find(x => x.value === settings.difficulty).label}</span>
-            </> :
-                <h2 style={{ margin: 0 }}>Daily Challenge</h2>
-            }
+        return <GuessingScreen
+            mode={mode} settings={settings} quiz={quiz}
+            submitAnswer={quiz.submitGuess} skip={quiz.skip}
+            egos={egos}
+        />
 
-            <VoiceProblem key={quiz.problem.answer} problem={quiz.problem} />
-            {quiz.problem.modifier.type !== "none" && <span>Modifier: {quiz.problem.modifier.label}</span>}
-
-            <span>Guesses:</span>
-            {(quiz.answers ?? []).map(x =>
-                <span key={x} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <div style={{ color: uiColors.red, fontSize: "1.5rem", fontWeight: "bold" }}>
-                        ✕
-                    </div>
-                    [{sinnerIdMapping[egos[x].sinnerId]}] {egos[x].name}
-                </span>
-            )}
-
-
-            <div style={{ width: "min(100%, 1000px)" }}>
-                <EgoDropdownSelector selected={null} setSelected={x => { if (x) quiz.submitGuess(x) }} styles={selectStyleVariable} excludeOptions={quiz.answers ?? []} />
-            </div>
-
-            {mode === "standard" &&
-                <span className="text-link" onClick={quiz.skip}
-                    style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-                >
-                    Skip
-                </span>
-            }
-
-            <div style={{ minHeight: "300px" }} />
-        </>
-
-    if (quiz.phase === "reveal") {
-        const correct = String(quiz.answers[quiz.answers.length - 1]) === String(quiz.problem.answer);
-        return <>
-            {mode === "standard" ? <>
-                <h2 style={{ margin: 0, color: correct ? uiColors.green : uiColors.red }}>
-                    {correct ? "Correct!" : "Incorrect!"}
-                </h2>
-                <span>Score: {quiz.score} / {quiz.round + 1}</span>
-                <span>Difficulty: {difficulties.find(x => x.value === settings.difficulty).label}</span>
-            </> :
-                <h2 style={{ margin: 0 }}>Daily Challenge</h2>
-            }
-
-            <VoiceProblem key={quiz.problem.answer} problem={quiz.problem} showControl={true} />
-
-            <span>
-                Correct answer: [{sinnerIdMapping[egos[quiz.problem.answer].sinnerId]}] {egos[quiz.problem.answer].name}
-            </span>
-
-            <div style={{ position: "relative", display: "inline-block" }}>
-                <EgoIcon id={quiz.problem.answer} type="awaken" size={256} displayName={true} />
-            </div>
-
-            <span className="text-link" onClick={quiz.next}
-                style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-            >
-                Continue
-            </span>
-
-            <span>Guesses:</span>
-            {(quiz.answers ?? []).map(x =>
-                <span key={x} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <div style={{ color: x === quiz.problem.answer ? uiColors.green : uiColors.red, fontSize: "1.5rem", fontWeight: "bold" }}>
-                        {x === quiz.problem.answer ? "✓" : "✕"}
-                    </div>
-                    [{sinnerIdMapping[egos[x].sinnerId]}] {egos[x].name}
-                </span>
-            )}
-        </>;
-    }
+    if (quiz.phase === "reveal")
+        return <RevealScreen
+            mode={mode} settings={settings} quiz={quiz} next={quiz.next} egos={egos}
+        />
 
     if (quiz.phase === "finished")
-        if (mode === "standard") {
-            return <>
-                <h2>Score: {quiz.score} / {quiz.quiz.problems.length}</h2>
-                <span>Difficulty: {difficulties.find(x => x.value === settings.difficulty).label}</span>
+        return <FinishedScreen
+            mode={mode} setMode={setMode} settings={settings} quiz={quiz} egos={egos}
+        />
+}
 
-                <span className="title-text">Results</span>
 
-                {
-                    quiz.quiz.problems.map((p, i) =>
-                        <span key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                            <div style={{ color: quiz.results[i] ? uiColors.green : uiColors.red, fontSize: "1.5rem", fontWeight: "bold" }}>
-                                {quiz.results[i] ? "✓" : "✕"}
-                            </div>
-                            [{sinnerIdMapping[egos[p.answer].sinnerId]}] {egos[p.answer].name}
-                        </span>
-                    )
+function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, egos, egoVoicelines }) {
+    const [roomId, setRoomId] = useState(null);
+    const roomIdRef = useRef(null);
+    const { profile } = useAuth();
+    const { getCustomizationValue, setCustomizationValue } = useSiteCustomization();
+    const [displayName, setDisplayName] = useLocalState("chatDisplayName", profile?.username ?? "Guest");
+    const { room, quiz: realtimeQuiz } = useRealtime();
+    const [roomInput, setRoomInput] = useState("");
+    const [joinMessage, setJoinMessage] = useState(null);
+    const [isHost, setIsHost] = useState(false);
+    const [participants, setParticipants] = useState([]);
+    const [correctParticipants, setCorrectParticipants] = useState(null);
+    const [scoreboard, setScoreboard] = useState(null);
+    const [countStr, setCountStr] = useState("");
+    const clientId = useRealtimeClientId();
+    const participantCountRef = useRef(0);
+
+    const joinRoom = async isHost => {
+        const roomCode = `quiz:${isHost ? "new" : roomInput}`;
+
+        try {
+            let roomObj = await room.join(roomCode, {
+                nameFn: id => `Voiceline Guesser ${id}`,
+                autoJoinChat: getCustomizationValue("autoConnectChat"),
+                displayName: displayName
+            });
+
+            await realtimeQuiz.mount(roomObj.id, {
+                displayName,
+                clientId,
+                settings: isHost ? settings : null,
+                handlers: {
+                    connected: () => {
+                        setRoomId(roomObj.id);
+                        roomIdRef.current = roomObj.id;
+                        setIsHost(isHost);
+                    },
+
+                    disconnected: () => {
+                        setRoomId(null);
+                        roomIdRef.current = null;
+                        setIsHost(false);
+                        room.leave(roomObj.id);
+                    },
+
+                    state: payload => {
+                        if (payload.settings) setSettings(payload.settings);
+                        if (payload.is_host) setIsHost(payload.is_host);
+                        if (payload.is_host && payload.settings)
+                            quiz.registerGenerator(constructVoicelineQuizGenerator(settings, egoVoicelines));
+
+                        if (payload.participants) setParticipants(payload.participants);
+                        if (payload.participant_count) {
+                            setCountStr(`${payload.answer_count}/${payload.participant_count}`);
+                            participantCountRef.current = payload.participant_count;
+                        }
+                        if (payload.correct_participants) setCorrectParticipants(payload.correct_participants);
+                        if (payload.scoreboard) setScoreboard(payload.scoreboard);
+
+                        const quizFields = {};
+                        if (payload.phase) quizFields.phase = payload.phase;
+                        if (payload.current_question) quizFields.problem = payload.current_question;
+                        if (payload.current_answer) quizFields.currentAnswer = payload.current_answer;
+                        if (payload.question_number) quizFields.round = payload.question_number - 1;
+                        if ("score" in payload) quizFields.score = payload.score;
+                        if (payload.submission) quizFields.answers = [payload.submission];
+
+                        if (Object.keys(quizFields).length > 0) quiz.setFields(quizFields);
+                    },
+
+                    joined: ({ display_name }) => {
+                        setParticipants(p => ([...p, display_name]));
+                        participantCountRef.current = participantCountRef.current + 1;
+                    },
+
+                    left: ({ display_name }) => {
+                        setParticipants(p => {
+                            const index = p.indexOf(display_name);
+                            if (index !== -1) return [...p].toSpliced(index, 1);
+                            else return p;
+                        })
+                        participantCountRef.current = participantCountRef.current - 1;
+                    },
+
+                    settings: ({ settings }) => {
+                        setSettings(settings);
+                    },
+
+                    question: ({ current_question, question_number }) => {
+                        quiz.setFields({
+                            phase: "guessing",
+                            problem: current_question,
+                            round: question_number - 1,
+                            answers: [],
+                        });
+
+                        setCountStr(`0/${participantCountRef.current}`);
+                    },
+
+                    answer_count: ({ answer_count, participant_count }) => {
+                        setCountStr(`${answer_count}/${participant_count}`);
+                        participantCountRef.current = participant_count;
+                    },
+
+                    submission: ({ submission }) => {
+                        quiz.setFields({ answers: [submission] });
+                    }
                 }
-
-                <div style={{ display: "flex", gap: "1rem" }}>
-                    <span className="text-link" onClick={() => quiz.start(settings)}
-                        style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-                    >
-                        Play Again
-                    </span>
-                    <span className="text-link" onClick={() => quiz.returnToSetup()}
-                        style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-                    >
-                        Return to Setup
-                    </span>
-                </div>
-            </>
-        } else if (mode === "daily") {
-            return <>
-                <h2>Overall Score: {quiz.dailyStats.quizzes_correct} / {quiz.dailyStats.quizzes_played}</h2>
-
-                <span className="title-text">Today&apos;s Result</span>
-                <h2 style={{ margin: 0, color: quiz.dailyStats.last_completed_correct ? uiColors.green : uiColors.red }}>
-                    {quiz.dailyStats.last_completed_correct ? "Correct!" : "Incorrect!"}
-                </h2>
-
-                <VoiceProblem key={quiz?.problem.answer} problem={quiz?.problem} showControl={true} />
-                <span>
-                    Correct answer: [{sinnerIdMapping[egos[quiz.problem.answer].sinnerId]}] {egos[quiz.problem.answer].name}
-                </span>
-
-                <div style={{ position: "relative", display: "inline-block" }}>
-                    <EgoIcon id={quiz.problem.answer} type="awaken" size={256} displayName={true} />
-                </div>
-
-                <div style={{ display: "flex", gap: "1rem" }}>
-                    <span className="text-link" onClick={() => setMode(null)}
-                        style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-                    >
-                        Return to Start
-                    </span>
-                </div>
-            </>
+            });
+        } catch (err) {
+            if (isHost) setJoinMessage("Unable to create room.");
+            else setJoinMessage("Unable to join room.")
         }
+    }
+
+    useEffect(() => {
+        return () => {
+            if (roomIdRef.current) room.leave(roomIdRef.current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    if (!roomId) {
+        return <>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Voiceline Guesser</h1>
+            <h2>Join Settings</h2>
+
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ textAlign: "end" }}>Display Name:</span>
+                <input
+                    value={displayName}
+                    onChange={e => setDisplayName(e.target.value)}
+                    placeholder="Display name"
+                />
+                <span style={{ textAlign: "end" }}>Room Code:</span>
+                <input
+                    value={roomInput}
+                    onChange={e => setRoomInput(e.target.value)}
+                />
+            </div>
+            <span className="sub-text">Code used to join a hosted room. Ignored when hosting a new room.</span>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                <input type="checkbox"
+                    checked={getCustomizationValue("autoConnectChat")}
+                    onChange={e => setCustomizationValue("autoConnectChat", e.target.checked)}
+                />
+                <span>Automatically join chat room</span>
+            </label>
+
+            <h2>Choose an option</h2>
+            <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => joinRoom(true)}>Host Room</span>
+            <span className="sub-text">Host a room. Hosts choose the guesser&apos;s settings and decide when to move to the next round.</span>
+            <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => joinRoom(false)}>Join Room</span>
+            <span className="sub-text">Join a room hosted by someone else.</span>
+            {joinMessage && <span>{joinMessage}</span>}
+        </>
+    }
+
+    if (quiz.phase === "setup")
+        return <SetupScreen
+            mode={mode} settings={settings}
+            setSettings={async valueOrFn => {
+                if (!isHost) return;
+                const newSettings = typeof valueOrFn === "function" ? valueOrFn(settings) : valueOrFn;
+                await getLocalStore("guessers").save({ id: GUESSER_ID, ...newSettings });
+                realtimeQuiz.changeSettings(roomId, newSettings);
+            }}
+            leaveRoom={() => {
+                if (roomIdRef.current) {
+                    room.leave(roomIdRef.current);
+                    roomIdRef.current = null;
+                    setRoomId(null);
+                }
+            }}
+            onStart={() => {
+                if (isHost) {
+                    triggerGameStartGAEvent(GUESSER_ID, mode);
+                    quiz.registerGenerator(constructVoicelineQuizGenerator(settings, egoVoicelines));
+                    const problem = quiz.generateProblem();
+                    realtimeQuiz.startGame(roomId, problem, problem.answer);
+                }
+            }}
+            onReset={async () => {
+                if (!isHost) return;
+                const newSettings = defaultSettings
+                await getLocalStore("guessers").save({ id: GUESSER_ID, ...newSettings });
+                realtimeQuiz.changeSettings(roomId, newSettings);
+            }}
+            isHost={isHost} roomId={roomId} participants={participants}
+        />
+
+    if (quiz.phase === "guessing")
+        return <GuessingScreen
+            mode={mode} settings={settings} quiz={quiz}
+            submitAnswer={answer => {
+                quiz.setFields([answer]);
+                realtimeQuiz.submitAnswer(roomId, answer);
+            }}
+            endRound={() => {
+                if (isHost) realtimeQuiz.endRound(roomId);
+            }}
+            egos={egos}
+            isHost={isHost}
+            countStr={countStr}
+        />
+
+    if (quiz.phase === "reveal")
+        return <RevealScreen
+            mode={mode} settings={settings} quiz={quiz} egos={egos}
+            next={() => {
+                const problem = quiz.generateProblem();
+                if (isHost) realtimeQuiz.nextRound(roomId, problem, problem.answer);
+            }}
+            endGame={() => {
+                if (isHost) {
+                    triggerGameCompleteGAEvent(GUESSER_ID, mode);
+                    realtimeQuiz.endGame(roomId);
+                }
+            }}
+            isHost={isHost}
+            correctParticipants={correctParticipants}
+            scoreboard={scoreboard}
+        />
+
+    if (quiz.phase === "finished")
+        return <FinishedScreen
+            mode={mode} setMode={setMode} settings={settings} quiz={quiz} egos={egos}
+            isHost={isHost}
+            returnToSetup={() => {
+                if (isHost) realtimeQuiz.returnToSetup(roomId);
+            }}
+            scoreboard={scoreboard}
+        />
+
+
+    return <Guesser
+        mode={mode} setMode={setMode}
+        settings={settings} setSettings={setSettings}
+        quiz={quiz} egos={egos}
+        roomId={roomId} isHost={isHost}
+        realtimeQuiz={realtimeQuiz} participants={participants} countStr={countStr}
+        correctParticipants={correctParticipants} scoreboard={scoreboard}
+    />
 }
 
 export default function VoicelineGuesserPage() {
@@ -220,11 +348,27 @@ export default function VoicelineGuesserPage() {
                 <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
                 <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={loading}>Daily</span>
                 <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at normal difficulty and 3 chances.</span>
+                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={loading}>Multiplayer</span>
+                <span className="sub-text">Play against others to see who can get the highest score.</span>
             </div>
         </div>;
 
+    if (mode === "multi") {
+        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
+            <MultiplayerGuesser
+                mode={mode} setMode={setMode}
+                settings={settings} setSettings={setSettings}
+                quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}
+            />
+        </div>
+    }
+
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <Guesser mode={mode} setMode={setMode} settings={settings} setSettings={setSettings} quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}/>
+        <Guesser
+            mode={mode} setMode={setMode}
+            settings={settings} setSettings={setSettings}
+            quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}
+        />
     </div>
 }
 
