@@ -43,6 +43,7 @@ function random(min, max) {
 
 async function loadImageData(src) {
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.src = src;
 
     await image.decode();
