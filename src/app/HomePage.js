@@ -13,7 +13,6 @@ import { getHomepagePosts } from "./database/serverSafeDb";
 import styles from "./homepage.module.css";
 import { LinksMenu, UpdatesComponent } from "./HomePageComponents";
 import { mergeUpcoming } from "./lib/upcoming";
-import RandomTips from "./RandomTips";
 import RecentAdditions from "./RecentAdditions";
 import { HomepageTimers } from "./timers/TimersTable";
 

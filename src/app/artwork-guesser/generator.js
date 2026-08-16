@@ -1,10 +1,12 @@
+import { getIdentityImageSrc } from "../components/icons/imgSrc";
+
 const WIDTH = 1920;
 const HEIGHT = 1080;
 
 const REGIONS = {
-    leftColumn: {xMin: 0.00, xMax: 0.33, yMin: 0.00, yMax: 1.00},
-    centerColumn: {xMin: 0.33, xMax: 0.67, yMin: 0.00, yMax: 1.00},
-    rightColumn: {xMin: 0.67, xMax: 1.00, yMin: 0.00, yMax: 1.00},
+    leftColumn: { xMin: 0.00, xMax: 0.33, yMin: 0.00, yMax: 1.00 },
+    centerColumn: { xMin: 0.33, xMax: 0.67, yMin: 0.00, yMax: 1.00 },
+    rightColumn: { xMin: 0.67, xMax: 1.00, yMin: 0.00, yMax: 1.00 },
 
     topLeft: { xMin: 0.00, xMax: 0.33, yMin: 0.00, yMax: 0.4 },
     topRight: { xMin: 0.67, xMax: 1.00, yMin: 0.00, yMax: 0.4 },
@@ -39,23 +41,92 @@ function random(min, max) {
     return min + Math.random() * (max - min);
 }
 
-export function generateCrop(difficulty) {
+async function loadImageData(src) {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = src;
+
+    await image.decode();
+
+    const canvas = document.createElement("canvas");
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+    ctx.drawImage(image, 0, 0, WIDTH, HEIGHT);
+    return ctx.getImageData(0, 0, WIDTH, HEIGHT).data;
+}
+
+function isInterestingCrop(data, crop) {
+    const gridSize = 20;
+    const threshold = 80;
+    const required = 4;
+
+    const pixels = [];
+    const cellWidth = crop.width / gridSize;
+    const cellHeight = crop.height / gridSize;
+
+    for (let gy = 0; gy < gridSize; gy++) {
+        for (let gx = 0; gx < gridSize; gx++) {
+            const px = Math.floor(crop.x + (gx + Math.random()) * cellWidth);
+            const py = Math.floor(crop.y + (gy + Math.random()) * cellHeight);
+            const index = (py * WIDTH + px) * 4;
+            pixels.push([data[index], data[index + 1], data[index + 2]]);
+        }
+    }
+
+    const average = pixels.reduce(
+        (sum, [r, g, b]) => [sum[0] + r, sum[1] + g, sum[2] + b],
+        [0, 0, 0]
+    ).map(value => value / pixels.length);
+
+    let different = 0;
+
+    for (const [r, g, b] of pixels) {
+        const distance = Math.sqrt((r - average[0]) ** 2 + (g - average[1]) ** 2 + (b - average[2]) ** 2);
+
+        if (distance >= threshold) {
+            different++;
+            if (different >= required) return true;
+        }
+    }
+
+    return false;
+}
+
+function createRandomCrop(difficulty) {
     const config = DIFFICULTY[difficulty];
     const regionName = config.regions[Math.floor(Math.random() * config.regions.length)];
     const region = REGIONS[regionName];
-
     const size = config.crop;
-    const x = Math.floor(random(region.xMin * WIDTH, region.xMax * WIDTH - size));
-    const y = Math.floor(random(region.yMin * HEIGHT, region.yMax * HEIGHT - size));
 
     return {
-        x: x / WIDTH,
-        y: y / HEIGHT,
-        width: size / WIDTH,
-        height: size / HEIGHT,
+        x: Math.floor(random(region.xMin * WIDTH, region.xMax * WIDTH - size)),
+        y: Math.floor(random(region.yMin * HEIGHT, region.yMax * HEIGHT - size)),
+        width: size,
+        height: size
+    };
+}
+
+function formatCrop(crop) {
+    return {
+        x: crop.x / WIDTH,
+        y: crop.y / HEIGHT,
+        width: crop.width / WIDTH,
+        height: crop.height / HEIGHT,
         imgWidth: WIDTH,
         imgHeight: HEIGHT
     };
+}
+
+function generateCrop(difficulty, imageData) {
+    for (let i = 0; i < 20; i++) {
+        const crop = createRandomCrop(difficulty);
+        if (isInterestingCrop(imageData, crop)) return formatCrop(crop);
+    }
+
+    return formatCrop(createRandomCrop(difficulty));
 }
 
 const MODIFIERS = {
@@ -71,7 +142,7 @@ const MODIFIERS = {
     ],
 };
 
-export function generateModifier(difficulty) {
+export function generateModifier(difficulty, imageData) {
     const list = MODIFIERS[difficulty];
     const modifier = list[Math.floor(Math.random() * list.length)]
 
@@ -82,12 +153,16 @@ export function generateModifier(difficulty) {
             amount: 5 + Math.random() * 10
         }
 
-    if (modifier.type === "quad")
+    if (modifier.type === "quad") {
         return {
             type: "quad",
             label: modifier.label,
-            crops: Array.from({ length: 4 }, () => generateCrop("quad"))
-        }
+            crops: Array.from(
+                { length: 4 },
+                () => generateCrop("quad", imageData)
+            )
+        };
+    }
 
     return { ...modifier };
 }
@@ -104,29 +179,37 @@ function shuffle(array) {
     return result;
 }
 
-export function generateArtworkQuiz(identities, settings) {
-    const answers = shuffle(Object.keys(identities)).slice(0, settings.rounds);
-    const problems = answers.map(answer => {
-        const uptie =
-            settings.includeUptie && settings.includePreuptie ?
-                (Math.random() < 0.5) :
-                (settings.includeUptie)
+function getRandomAnswer(identities) {
+    const keys = Object.keys(identities);
+    return keys[Math.floor(Math.random() * keys.length)];
+}
 
-        return {
-            answer: answer,
-            uptie: uptie,
-            crop: generateCrop(settings.difficulty),
-            modifier: generateModifier(settings.difficulty)
-        }
-    });
+export async function generateArtworkQuiz(identities, settings, imageLoader) {
+    const answers = (settings.infinite || settings.rounds === 1) ?
+        [getRandomAnswer(identities)] :
+        shuffle(Object.keys(identities)).slice(0, settings.rounds);
+
+    const problems = [];
+
+    for (const answer of answers) {
+        const uptie = settings.includeUptie && settings.includePreuptie ? Math.random() < 0.5 : settings.includeUptie;
+        const imageData = await imageLoader(getIdentityImageSrc({...identities[answer], id: answer}, uptie));
+
+        problems.push({
+            answer,
+            uptie,
+            crop: generateCrop(settings.difficulty, imageData),
+            modifier: generateModifier(settings.difficulty, imageData)
+        });
+    }
 
     return {
         title: "Artwork Guess",
-        problems,
+        problems
     };
 }
 
-export function constructArtworkQuizGenerator(settings, identities) {
+export function constructArtworkQuizGenerator(settings, identities, imageLoaderOverride) {
     if (settings.mode === "daily") {
         return async () => {
             const response = await fetch("/api/dailies/artwork");
@@ -135,7 +218,7 @@ export function constructArtworkQuizGenerator(settings, identities) {
     }
 
     if (settings.mode === "standard") {
-        return () => generateArtworkQuiz(identities, settings);
+        return () => generateArtworkQuiz(identities, settings, imageLoaderOverride ?? loadImageData);
     }
 
     return null;

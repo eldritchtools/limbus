@@ -1,3 +1,5 @@
+import { loadImagePixels } from "./serverArtworkGenerator";
+
 import { generateArtworkQuiz } from "@/app/artwork-guesser/generator";
 import { dailySettings as artworkDailySettings } from "@/app/artwork-guesser/settings";
 import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
@@ -34,18 +36,13 @@ export async function GET(request, { params }) {
     if (!quiz) {
         if (id === "artwork") {
             const data = await fetchDataFile("identities_mini");
-            quiz = generateArtworkQuiz(data, artworkDailySettings);
+            quiz = await generateArtworkQuiz(data, artworkDailySettings, loadImagePixels);
         } else if (id === "voiceline") {
             const data = await fetchDataFile("ego_voicelines");
             quiz = generateVoicelineQuiz(data, voicelineDailySettings);
         }
 
-        if (!quiz) {
-            return Response.json(
-                { error: "Unknown quiz." },
-                { status: 404 }
-            );
-        }
+        if (!quiz) return Response.json({ error: "Unknown quiz." }, { status: 404 });
 
         try {
             await saveDailyQuiz(id, today, quiz);
