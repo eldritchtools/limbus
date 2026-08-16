@@ -1,3 +1,5 @@
+import { loadImagePixels } from "./serverArtworkGenerator";
+
 import { generateArtworkQuiz } from "@/app/artwork-guesser/generator";
 import { dailySettings as artworkDailySettings } from "@/app/artwork-guesser/settings";
 import { getDailyQuiz, saveDailyQuiz } from "@/app/database/dailyQuizzes";
@@ -29,34 +31,30 @@ export async function GET(request, { params }) {
     const { id } = await params;
     const today = getToday();
 
-    let quiz = await getDailyQuiz(id, today);
+    // let quiz = await getDailyQuiz(id, today);
+    let quiz;
 
     if (!quiz) {
         if (id === "artwork") {
             const data = await fetchDataFile("identities_mini");
-            quiz = generateArtworkQuiz(data, artworkDailySettings);
+            quiz = await generateArtworkQuiz(data, artworkDailySettings, loadImagePixels);
         } else if (id === "voiceline") {
             const data = await fetchDataFile("ego_voicelines");
             quiz = generateVoicelineQuiz(data, voicelineDailySettings);
         }
 
-        if (!quiz) {
-            return Response.json(
-                { error: "Unknown quiz." },
-                { status: 404 }
-            );
-        }
+        if (!quiz) return Response.json({ error: "Unknown quiz." }, { status: 404 });
 
-        try {
-            await saveDailyQuiz(id, today, quiz);
-        } catch (e) {
-            // duplicate
-            if (e.code === "23505") {
-                quiz = await getDailyQuiz(id, today);
-            } else {
-                throw e;
-            }
-        }
+        // try {
+        //     await saveDailyQuiz(id, today, quiz);
+        // } catch (e) {
+        //     // duplicate
+        //     if (e.code === "23505") {
+        //         quiz = await getDailyQuiz(id, today);
+        //     } else {
+        //         throw e;
+        //     }
+        // }
     }
 
     return Response.json({...quiz, date: today});

@@ -15,3 +15,10 @@ export function getIdentityArtSrc(identityId, uptie) {
 
     return `${ASSETS_ROOT}/identities/${identityId}_${uptie ? "gacksung" : "normal"}.webp`;
 }
+
+export function getIdentityImageSrc(identity, uptie) {
+    if (identity.tags.includes("Base Identity"))
+        return `${ASSETS_ROOT}/identities/${identity.id}_normal.webp`;
+
+    return `${ASSETS_ROOT}/identities/${identity.id}_${uptie ? "gacksung" : "normal"}.webp`;
+}

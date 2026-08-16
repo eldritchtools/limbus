@@ -1,4 +1,4 @@
-import { getIdentityImageSrc } from "../components/icons/IdentityImage";
+import { getIdentityImageSrc } from "../components/icons/imgSrc";
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
@@ -55,10 +55,10 @@ async function loadImageData(src) {
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
     ctx.drawImage(image, 0, 0, WIDTH, HEIGHT);
-    return ctx.getImageData(0, 0, WIDTH, HEIGHT);
+    return ctx.getImageData(0, 0, WIDTH, HEIGHT).data;
 }
 
-function isInterestingCrop(imageData, crop) {
+function isInterestingCrop(data, crop) {
     const gridSize = 20;
     const threshold = 80;
     const required = 4;
@@ -72,7 +72,7 @@ function isInterestingCrop(imageData, crop) {
             const px = Math.floor(crop.x + (gx + Math.random()) * cellWidth);
             const py = Math.floor(crop.y + (gy + Math.random()) * cellHeight);
             const index = (py * WIDTH + px) * 4;
-            pixels.push([imageData.data[index], imageData.data[index + 1], imageData.data[index + 2]]);
+            pixels.push([data[index], data[index + 1], data[index + 2]]);
         }
     }
 
@@ -184,7 +184,7 @@ function getRandomAnswer(identities) {
     return keys[Math.floor(Math.random() * keys.length)];
 }
 
-export async function generateArtworkQuiz(identities, settings) {
+export async function generateArtworkQuiz(identities, settings, imageLoader) {
     const answers = (settings.infinite || settings.rounds === 1) ?
         [getRandomAnswer(identities)] :
         shuffle(Object.keys(identities)).slice(0, settings.rounds);
@@ -193,7 +193,7 @@ export async function generateArtworkQuiz(identities, settings) {
 
     for (const answer of answers) {
         const uptie = settings.includeUptie && settings.includePreuptie ? Math.random() < 0.5 : settings.includeUptie;
-        const imageData = await loadImageData(getIdentityImageSrc(identities[answer], uptie));
+        const imageData = await imageLoader(getIdentityImageSrc({...identities[answer], id: answer}, uptie));
 
         problems.push({
             answer,
@@ -209,7 +209,7 @@ export async function generateArtworkQuiz(identities, settings) {
     };
 }
 
-export function constructArtworkQuizGenerator(settings, identities) {
+export function constructArtworkQuizGenerator(settings, identities, imageLoaderOverride) {
     if (settings.mode === "daily") {
         return async () => {
             const response = await fetch("/api/dailies/artwork");
@@ -218,7 +218,7 @@ export function constructArtworkQuizGenerator(settings, identities) {
     }
 
     if (settings.mode === "standard") {
-        return () => generateArtworkQuiz(identities, settings);
+        return () => generateArtworkQuiz(identities, settings, imageLoaderOverride ?? loadImageData);
     }
 
     return null;
