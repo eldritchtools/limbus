@@ -113,8 +113,16 @@ function shuffle(array) {
     return result;
 }
 
+function getRandomAnswer(egoVoicelines) {
+    const keys = Object.keys(egoVoicelines);
+    return keys[Math.floor(Math.random() * keys.length)];
+}
+
 export function generateVoicelineQuiz(egoVoicelines, settings) {
-    const answers = shuffle(Object.keys(egoVoicelines)).slice(0, settings.rounds);
+    const answers = (settings.infinite || settings.rounds === 1) ?
+        [getRandomAnswer(egoVoicelines)] :
+        shuffle(Object.keys(egoVoicelines)).slice(0, settings.rounds);
+
     const problems = answers.map(answer => {
         const voicelineId = pickRandom([...Object.keys(egoVoicelines[answer])]);
 

@@ -5,7 +5,7 @@ import { useData } from "../DataProvider";
 
 import { ASSETS_ROOT } from "@/app/paths";
 
-function getSrc(identity, uptie) {
+export function getIdentityImageSrc(identity, uptie) {
     if (identity.tags.includes("Base Identity"))
         return `${ASSETS_ROOT}/identities/${identity.id}_normal.webp`;
 
@@ -15,7 +15,7 @@ function getSrc(identity, uptie) {
 function IdentityImageMain({ identity, className, style, uptie }) {
     return <img
         className={className}
-        src={getSrc(identity, uptie)}
+        src={getIdentityImageSrc(identity, uptie)}
         alt={identity.name} title={identity.name}
         style={{ ...style, objectFit: "cover" }}
         loading="lazy"

@@ -7,7 +7,7 @@ import { selectStyleVariable } from "../styles/selectStyle";
 
 export default function GuessingScreen({ mode, settings, quiz, submitAnswer, endRound, skip, egos, isHost, countStr }) {
     return <>
-        {mode === "standard" || mode === "multi" && <>
+        {(mode === "standard" || mode === "multi") && <>
             <h2 style={{ margin: 0 }}>Round {quiz.round + 1}{settings.infinite ? "" : `/${settings.rounds}`}</h2>
             <span>Score: {quiz.score} / {quiz.round}</span>
             <span>Difficulty: {difficulties.find(x => x.value === settings.difficulty).label}</span>

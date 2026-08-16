@@ -240,11 +240,11 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
                     setRoomId(null);
                 }
             }}
-            onStart={() => {
+            onStart={async () => {
                 if (isHost) {
                     triggerGameStartGAEvent(GUESSER_ID, mode);
-                    quiz.registerGenerator(constructArtworkQuizGenerator(settings, identities));
-                    const problem = quiz.generateProblem();
+                    quiz.registerGenerator(constructArtworkQuizGenerator({...settings, rounds: 1}, identities));
+                    const problem = await quiz.generateProblem();
                     realtimeQuiz.startGame(roomId, problem, problem.answer);
                 }
             }}
@@ -275,8 +275,8 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
     if (quiz.phase === "reveal")
         return <RevealScreen
             mode={mode} settings={settings} quiz={quiz} identities={identities}
-            next={() => {
-                const problem = quiz.generateProblem();
+            next={async () => {
+                const problem = await quiz.generateProblem();
                 if (isHost) realtimeQuiz.nextRound(roomId, problem, problem.answer);
             }}
             endGame={() => {

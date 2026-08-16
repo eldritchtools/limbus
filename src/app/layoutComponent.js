@@ -110,7 +110,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 3;
+const ANNOUNCEMENT_NUMBER = 4;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -125,9 +125,7 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        I received feedback that the randomizers used for the Guessers seemed to be biased towards the earlier sinner numbers, so they have been rewritten to hopefully become more uniformly random. I&apos;ve also added multiplayer support to the Artwork Guesser. Once I&apos;ve confirmed that it works properly, I&apos;ll add it to the Voiceline Guesser as well.
-                        <br/><br/>
-                        As mentioned in the previous announcement, I&apos;m going to start looking into introducing ads soon because the site is getting close to reaching the point where I&apos;d need to upgrade hosting plans. I&apos;ll keep them minimal and unobtrusive, so they won&apos;t affect the site experience, but if you&apos;d rather not see them, you can disable them in <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink>.
+                        Some guards have been added to the problem generator for the Artwork Guesser. Generation may be a bit slower, but it should now attempt to avoid choosing crops that are mostly just a single color. This does not prevent &quot;vague&quot; crops, only those that are basically almost entirely black or some other color. Multiplayer support has also been added to the Voiceline Guesser.
                     </span>
                 </div>
 
@@ -162,7 +160,7 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                 sidebarTopComponent={<UserStatus />}
                                 footerTopComponent={<FooterNavigation />}
                             >
-                                {/* <Announcement /> */}
+                                <Announcement />
                                 {children}
                                 <AllTooltips />
                             </Layout>

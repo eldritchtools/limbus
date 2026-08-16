@@ -98,9 +98,9 @@ export function useQuiz(id, generateQuiz) {
         }
     }
 
-    function next() {
+    async function next() {
         if (settings.infinite) {
-            const newQuiz = generateQuizRef.current(settings)
+            const newQuiz = await generateQuizRef.current(settings);
             setRound(r => r + 1);
             setAnswers([]);
             setQuiz(newQuiz);
@@ -145,8 +145,8 @@ export function useQuiz(id, generateQuiz) {
         if ("answers" in fields) setAnswers(fields.answers);
     }
 
-    function generateProblem() {
-        return generateQuizRef.current(settings).problems[0];
+    async function generateProblem() {
+        return (await generateQuizRef.current(settings)).problems[0];
     }
 
     return {
