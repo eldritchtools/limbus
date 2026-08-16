@@ -31,8 +31,7 @@ export async function GET(request, { params }) {
     const { id } = await params;
     const today = getToday();
 
-    // let quiz = await getDailyQuiz(id, today);
-    let quiz;
+    let quiz = await getDailyQuiz(id, today);
 
     if (!quiz) {
         if (id === "artwork") {
@@ -45,16 +44,16 @@ export async function GET(request, { params }) {
 
         if (!quiz) return Response.json({ error: "Unknown quiz." }, { status: 404 });
 
-        // try {
-        //     await saveDailyQuiz(id, today, quiz);
-        // } catch (e) {
-        //     // duplicate
-        //     if (e.code === "23505") {
-        //         quiz = await getDailyQuiz(id, today);
-        //     } else {
-        //         throw e;
-        //     }
-        // }
+        try {
+            await saveDailyQuiz(id, today, quiz);
+        } catch (e) {
+            // duplicate
+            if (e.code === "23505") {
+                quiz = await getDailyQuiz(id, today);
+            } else {
+                throw e;
+            }
+        }
     }
 
     return Response.json({...quiz, date: today});
