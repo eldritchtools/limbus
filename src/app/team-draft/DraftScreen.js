@@ -69,9 +69,10 @@ export default function DraftScreen({ draft, settings }) {
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>{draft.phase === "finished" ? "Completed" : "Current"} Team</h1>
 
-        <BuildDisplay
-            identityIds={draft.identities}
-            egoIds={draft.egos}
+        <BuildDisplay build={{
+            identityIds: draft.identities,
+            egoIds: draft.egos
+        }}
             displayType={"ego-comp"}
             disableLinks={true}
         />
