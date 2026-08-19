@@ -1,7 +1,7 @@
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 const name = "Creator Directory";
-const desc = "";
+const desc = "Browse a directory of Project Moon content creators with searchable listings and community-sourced content tags.";
 const path = "/creators"
 
 export const metadata = {

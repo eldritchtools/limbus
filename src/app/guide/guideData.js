@@ -120,6 +120,16 @@ export const guideData = [
                     "Feel free to upload commonly used emotes or memes in the community. Just make sure they're publicly available or you have permission to use them.",
                     "Uploaded emotes and stickers will be searchable through the emote/sticker menus on markdown editors."
                 ],
+            },
+            {
+                title: "Creator Directory",
+                description: "Browse a directory of Project Moon content creators with searchable listings and community-sourced content tags.",
+                details: [
+                    "Browse creators that make Project Moon related content. Each creator has links to their platforms and tags that describe the content they make.",
+                    "Creator tags are community-sourced, so if you see incorrect or outdated tags, you can submit your own classification and the tags will automatically adjust based on everyone's submissions.",
+                    "If a creator is missing or has outdated information, you can submit an add/update request in the Request tab. Creators will be updated regularly.",
+                    "Being listed in the directory is not an endorsement or ranking by the site. The directory does not make any judgment about a creator's popularity, reputation, or standing within the community. Any creator who makes Project Moon content is eligible to be included."
+                ]
             }
         ],
     },

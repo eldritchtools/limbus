@@ -38,7 +38,8 @@ const paths = [
             { path: "/collections", title: "Collections" },
             { path: "/collections/new", title: "New Collection" },
             { path: "/rankings", title: "Community Rankings" },
-            { path: "/community-assets", title: "Community Assets" }
+            { path: "/community-assets", title: "Community Assets" },
+            { path: "/creators", title: "Creator Directory" }
         ]
     },
     {
@@ -110,7 +111,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 4;
+const ANNOUNCEMENT_NUMBER = 5;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -125,7 +126,7 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Some guards have been added to the problem generator for the Artwork Guesser. Generation may be a bit slower, but it should now attempt to avoid choosing crops that are mostly just a single color. This does not prevent &quot;vague&quot; crops, only those that are basically almost entirely black or some other color. Multiplayer support has also been added to the Voiceline Guesser.
+                        I added a Creator Directory feature on the site where you can find a listing of content creators for PM games. The initial list mostly contains creators that have popped up for me on Youtube or participated in APR. There&apos;s also a Request tab where you can submit creators for me to add. Check it out if you&apos;re interested!
                     </span>
                 </div>
 
