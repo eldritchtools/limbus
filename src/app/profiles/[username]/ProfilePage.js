@@ -12,7 +12,7 @@ import MarkdownRenderer from "@/app/components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "@/app/components/objects/Dividers";
 import { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import Review from "@/app/components/ratings/Review";
-import SocialsDisplay from "@/app/components/user/SocialsDisplay";
+import SocialsDisplay from "@/app/components/socials/SocialsDisplay";
 import { getUserReviews } from "@/app/database/reviews";
 import { getUserDataFromUsername } from "@/app/database/users";
 import { contentConfig } from "@/app/lib/contentConfig";

@@ -112,7 +112,7 @@ BEGIN
     IF EXISTS (
         SELECT 1
         FROM UNNEST(v_new_tag_ids) AS tag_id
-        WHERE tag_id < 1 OR tag_id > 10
+        WHERE tag_id < 1 OR tag_id > 17
     ) THEN
         RAISE EXCEPTION 'Invalid creator tag';
     END IF;
@@ -237,7 +237,7 @@ AS $$
     FROM public.creators c
 
     LEFT JOIN LATERAL (
-        SELECT ARRAY_AGG(s.tag_id ORDER BY s.tag_id) AS tag_ids
+        SELECT ARRAY_AGG(s.tag_id ORDER BY s.vote_count DESC, s.tag_id) AS tag_ids
         FROM public.creator_tag_stats s
         WHERE s.creator_id = c.id
           AND s.vote_count >= c.voter_count * p_tag_threshold
@@ -273,6 +273,7 @@ TO anon, authenticated;
 
 CREATE TABLE public.creator_requests (
     id SERIAL PRIMARY KEY,
+    request_type TEXT NOT NULL,
     name TEXT NOT NULL,
     links TEXT[] NOT NULL DEFAULT '{}',
     note TEXT,
@@ -287,6 +288,7 @@ ADD CONSTRAINT creator_request_name_length CHECK (char_length(name) BETWEEN 1 AN
 ALTER TABLE public.creator_requests ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION public.submit_creator_request(
+    p_request_type TEXT,
     p_name TEXT,
     p_links TEXT[],
     p_note TEXT DEFAULT NULL
@@ -301,12 +303,8 @@ BEGIN
         RAISE EXCEPTION 'Creator name is required';
     END IF;
 
-    IF p_links IS NULL OR cardinality(p_links) = 0 THEN
-        RAISE EXCEPTION 'At least one link is required';
-    END IF;
-
-    INSERT INTO public.creator_requests (name, links, note)
-    VALUES (trim(p_name), p_links, NULLIF(trim(p_note), ''));
+    INSERT INTO public.creator_requests (request_type, name, links, note)
+    VALUES (p_request_type, trim(p_name), p_links, NULLIF(trim(p_note), ''));
 END;
 $$;
 
@@ -315,3 +313,146 @@ FROM PUBLIC;
 
 GRANT EXECUTE ON FUNCTION public.submit_creator_request(TEXT, TEXT[], TEXT)
 TO anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.create_creator(
+    p_name TEXT,
+    p_avatar_id UUID DEFAULT NULL,
+    p_platforms JSONB DEFAULT '[]'::jsonb,
+    p_is_variety BOOLEAN DEFAULT FALSE
+)
+RETURNS public.creators
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_creator public.creators;
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.users
+        WHERE id = auth.uid() AND is_admin = TRUE
+    ) THEN
+        RAISE EXCEPTION 'Admin access required';
+    END IF;
+
+    IF p_name IS NULL OR char_length(p_name) NOT BETWEEN 1 AND 100 THEN
+        RAISE EXCEPTION 'Invalid creator name';
+    END IF;
+
+    IF jsonb_typeof(p_platforms) <> 'array' THEN
+        RAISE EXCEPTION 'Platforms must be an array';
+    END IF;
+
+    INSERT INTO public.creators (
+        name,
+        avatar_id,
+        platforms,
+        is_variety
+    )
+    VALUES (
+        p_name,
+        p_avatar_id,
+        p_platforms,
+        COALESCE(p_is_variety, FALSE)
+    )
+    RETURNING *
+    INTO v_creator;
+
+    RETURN v_creator;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.create_creator(TEXT, UUID, JSONB, BOOLEAN)
+FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.create_creator(TEXT, UUID, JSONB, BOOLEAN)
+TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.update_creator(
+    p_creator_id INTEGER,
+    p_name TEXT,
+    p_avatar_id UUID DEFAULT NULL,
+    p_platforms JSONB DEFAULT '[]'::jsonb,
+    p_is_variety BOOLEAN DEFAULT FALSE
+)
+RETURNS public.creators
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_creator public.creators;
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.users
+        WHERE id = auth.uid() AND is_admin = TRUE
+    ) THEN
+        RAISE EXCEPTION 'Admin access required';
+    END IF;
+
+    IF p_name IS NULL OR char_length(p_name) NOT BETWEEN 1 AND 100 THEN
+        RAISE EXCEPTION 'Invalid creator name';
+    END IF;
+
+    IF jsonb_typeof(p_platforms) <> 'array' THEN
+        RAISE EXCEPTION 'Platforms must be an array';
+    END IF;
+
+    UPDATE public.creators
+    SET
+        name = p_name,
+        avatar_id = p_avatar_id,
+        platforms = p_platforms,
+        is_variety = COALESCE(p_is_variety, FALSE),
+        updated_at = NOW()
+    WHERE id = p_creator_id
+    RETURNING *
+    INTO v_creator;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Creator not found';
+    END IF;
+
+    RETURN v_creator;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.update_creator(INTEGER, TEXT, UUID, JSONB, BOOLEAN)
+FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.update_creator(INTEGER, TEXT, UUID, JSONB, BOOLEAN)
+TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.delete_creator(
+    p_creator_id INTEGER
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.users
+        WHERE id = auth.uid() AND is_admin = TRUE
+    ) THEN
+        RAISE EXCEPTION 'Admin access required';
+    END IF;
+
+    DELETE FROM public.creators
+    WHERE id = p_creator_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Creator not found';
+    END IF;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.delete_creator(INTEGER)
+FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.delete_creator(INTEGER)
+TO authenticated;

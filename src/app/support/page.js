@@ -1,6 +1,6 @@
 import SupporterIcon from "../components/icons/SupporterIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
-import SocialsDisplay from "../components/user/SocialsDisplay";
+import SocialsDisplay from "../components/socials/SocialsDisplay";
 
 const creators = [
     {
