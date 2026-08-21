@@ -29,7 +29,8 @@ export async function GET() {
         { loc: `${SITE_URL}/support`, lastmod: today },
         { loc: `${SITE_URL}/team-draft`, lastmod: today },
         { loc: `${SITE_URL}/artwork-guesser`, lastmod: today },
-        { loc: `${SITE_URL}/voiceline-guesser`, lastmod: today }
+        { loc: `${SITE_URL}/voiceline-guesser`, lastmod: today },
+        { loc: `${SITE_URL}/creators`, lastmod: today },
     ];
 
     return new Response(buildUrlSet(urls), {
