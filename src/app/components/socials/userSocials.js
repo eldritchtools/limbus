@@ -35,7 +35,7 @@ export const socialsData = {
         validator: /^(https:\/\/)?(www\.)?(discord\.gg|discord\.com\/invite)\/[a-zA-Z0-9]+$/i,
         icon: FaDiscord,
         iconColor: "#5865F2",
-        placeholder: "discord.gg/abc123",
+        placeholder: "https://discord.com/invite/abc123",
         href: value => value,
     },
     "youtube": {

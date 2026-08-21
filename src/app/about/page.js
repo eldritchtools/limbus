@@ -1,6 +1,6 @@
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
-import SocialsDisplay from "../components/user/SocialsDisplay";
+import SocialsDisplay from "../components/socials/SocialsDisplay";
 import { CONTACT_EMAIL, DISCORD_LINK, GITHUB_REPO, KOFI, TWITTER, YOUTUBE_CHANNEL } from "../lib/socials";
 
 export default function AboutPage() {

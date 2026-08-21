@@ -5,6 +5,7 @@ import { createContext, Suspense, useContext, useEffect, useState } from "react"
 import { AlternativeOptionsModalContent, AlternativeOptionsModalEditableContent } from "./AlternativeOptionsModalContent";
 import ChoiceEventModalContent from "./ChoiceEventModalContent";
 import CommunityAssetModalContent from "./CommunityAssetModalContent";
+import CreatorTagVoteModalContent from "./CreatorTagVoteModalContent";
 import DeleteCommentModalContent from "./DeleteCommentModalContent";
 import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
@@ -42,7 +43,8 @@ const MODAL_COMPONENTS = {
     "communityAsset": CommunityAssetModalContent,
     "pollResult": PollResultModalContent,
     "altOptions": AlternativeOptionsModalContent,
-    "altOptionsEditable": AlternativeOptionsModalEditableContent
+    "altOptionsEditable": AlternativeOptionsModalEditableContent,
+    "creatorTagVote": CreatorTagVoteModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -138,6 +140,10 @@ export function ModalProvider({ children }) {
         else openModal("altOptions", { altOptions, sinnerId });
     }
 
+    const openCreatorTagVoteModal = ({ creator, onSubmitted }) => {
+        openModal("creatorTagVote", { creator, onSubmitted });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -181,6 +187,7 @@ export function ModalProvider({ children }) {
         openCommunityAssetModal,
         openPollResultModal,
         openAltOptionsModal,
+        openCreatorTagVoteModal,
         setModalBeforeClose,
         canNavigateAway,
         closeModal,

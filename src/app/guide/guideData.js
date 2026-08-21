@@ -27,11 +27,6 @@ export const guideData = [
                 ],
             },
             {
-                title: "Random Tip",
-                description: "Displays a randomized tip for things you can do on the site.",
-                details: [],
-            },
-            {
                 title: "What's New",
                 description: "Displays the most notable recent additions on the site. Primarily new features or major changes.",
                 details: [],
@@ -125,6 +120,16 @@ export const guideData = [
                     "Feel free to upload commonly used emotes or memes in the community. Just make sure they're publicly available or you have permission to use them.",
                     "Uploaded emotes and stickers will be searchable through the emote/sticker menus on markdown editors."
                 ],
+            },
+            {
+                title: "Creator Directory",
+                description: "Browse a directory of Project Moon content creators with searchable listings and community-sourced content tags.",
+                details: [
+                    "Browse creators that make Project Moon related content. Each creator has links to their platforms and tags that describe the content they make.",
+                    "Creator tags are community-sourced, so if you see incorrect or outdated tags, you can submit your own classification and the tags will automatically adjust based on everyone's submissions.",
+                    "If a creator is missing or has outdated information, you can submit an add/update request in the Request tab. Creators will be updated regularly.",
+                    "Being listed in the directory is not an endorsement or ranking by the site. The directory does not make any judgment about a creator's popularity, reputation, or standing within the community. Any creator who makes Project Moon content is eligible to be included."
+                ]
             }
         ],
     },
@@ -378,7 +383,8 @@ export const guideData = [
                     "The Artwork Guesser is a minigame that shows you cropped sections of identities' full art then asks you to guess which identity it is.",
                     "There's a standard and a daily mode for the guesser. Standard mode lets you play the game normally, allowing you to choose settings like number of rounds and difficulty, while daily mode gives a single problem for everyone and resets every day.",
                     "Higher difficulties make the cropped section smaller and prioritizes sections further from the center of the art. The highest difficulty applies transformations on the image. Try it out to see for yourself.",
-                    "The settings also allow you to choose whether preuptie and/or uptie arts are included in the selection."
+                    "The settings also allow you to choose whether preuptie and/or uptie arts are included in the selection.",
+                    "There's also multiplayer support where you can compete with other players on who makes the most correct guesses. A chat room is provided when creating a multiplayer room. Refer to Chat Widget under Shared Features for more details."
                 ]
             },
             {
@@ -387,7 +393,8 @@ export const guideData = [
                 details: [
                     "The Voiceline Guesser is a minigame that shows you clipped sections of E.G.O voicelines then asks you to guess which E.G.O it is.",
                     "There's a standard and a daily mode for the guesser. Standard mode lets you play the game normally, allowing you to choose settings like number of rounds and difficulty, while daily mode gives a single problem for everyone and resets every day.",
-                    "Higher difficulties make the clipped section shorter and makes them start at random points in the clip. The highest difficulty applies transformations on the clip. Try it out to see for yourself."
+                    "Higher difficulties make the clipped section shorter and makes them start at random points in the clip. The highest difficulty applies transformations on the clip. Try it out to see for yourself.",
+                    "There's also multiplayer support where you can compete with other players on who makes the most correct guesses. A chat room is provided when creating a multiplayer room. Refer to Chat Widget under Shared Features for more details."
                 ]
             },
             {
@@ -484,6 +491,15 @@ export const guideData = [
                 details: [
                     "You can follow other users to get notifications whenever they publish a new build, md plan, or collection. You can follow them by clicking on the bell beside their username on one of their posts or on their profile page.",
                     "You can follow comment threads to get notifications whenever someone leaves a comment. You can follow them by clicking on the bell beside the header of the corresponding comment section."
+                ]
+            },
+            {
+                title: "Chat Widget",
+                description: "Chat with other users currently active on the site",
+                details: [
+                    "A chat widget is available at the bottom right of every page. Users can join Global Chat, or join chat rooms available with certain real-time features of the site.",
+                    "All chat rooms allow the user to input a custom display name and do not require a login. They are also optional and not automatically joined unless the user chooses the turn on the setting to automatically join them.",
+                    "Markdown and Tokens are available in chat."
                 ]
             }
         ],

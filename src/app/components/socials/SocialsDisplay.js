@@ -5,7 +5,7 @@ import { FaEllipsisH } from "react-icons/fa";
 
 import { SocialIcon } from "./userSocials";
 
-export default function SocialsDisplay({ socials, expandDirection = "row", align = "center", button = false, expandedDefault = false }) {
+export default function SocialsDisplay({ socials, expandDirection = "row", align = "center", button = false, expandedDefault = false, expandable = true }) {
     const [expanded, setExpanded] = useState(expandedDefault);
 
     const style = { display: "flex", gap: "0.5rem" };
@@ -31,7 +31,7 @@ export default function SocialsDisplay({ socials, expandDirection = "row", align
                 />
             </div>)
         }
-        {!expanded ?
+        {(expandable && !expanded) ?
             <button onClick={() => setExpanded(true)} style={{ border: "none", background: "none", padding: "0" }}>
                 <FaEllipsisH />
             </button>

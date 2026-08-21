@@ -10,7 +10,8 @@ export const homepageLinks = [
             { href: "/md-plans", title: "MD Plans", newHref: "/md-plans/new", icon: "IndexPrescriptDon_0" },
             { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
             { href: "/rankings", title: "Community Rankings", icon: "EgoAwakenDongrangRadiantDesire" },
-            { href: "/community-assets", title: "Community Assets", icon: "GotACompliment" }
+            { href: "/community-assets", title: "Community Assets", icon: "GotACompliment" },
+            { href: "/creators", title: "Creator Directory", icon: "Inspire"}
         ]
     },
     {

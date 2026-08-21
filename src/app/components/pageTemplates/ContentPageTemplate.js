@@ -16,7 +16,7 @@ import KeywordIcon from "../icons/KeywordIcon";
 import StatusIcon from "../icons/StatusIcon";
 import { HorizontalDivider } from "../objects/Dividers";
 import Tag from "../objects/Tag";
-import SocialsDisplay from "../user/SocialsDisplay";
+import SocialsDisplay from "../socials/SocialsDisplay";
 import UsernameWithTime from "../user/UsernameWithTime";
 
 import { useAuth } from "@/app/database/authProvider";

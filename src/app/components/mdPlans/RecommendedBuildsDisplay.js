@@ -67,7 +67,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                     <button disabled={index === builds.length - 1} onClick={() => setIndex(p => p + 1)}>→</button>
                     <button onClick={() => setIndex(null)}>View all builds</button>
                     {!editable ?
-                        <button onClick={() => router.push(`/builds/${build.id}`)}>Go to build page</button> :
+                        <button onClick={() => router.push(`/builds/${buildData.id}`)}>Go to build page</button> :
                         null
                     }
                 </> :
