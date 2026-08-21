@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 const name = "Creator Directory";
@@ -36,8 +38,8 @@ const schema = {
 };
 
 export default function CreatorsLayout({ children }) {
-    return <>
+    return <Suspense fallback={null}>
         <JsonLd data={schema} />
         {children}
-    </>
+    </Suspense>
 }
