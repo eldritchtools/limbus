@@ -126,7 +126,9 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        I added a Creator Directory feature on the site where you can find a listing of content creators for PM games. The initial list mostly contains creators that have popped up for me on Youtube or participated in APR. There&apos;s also a Request tab where you can submit creators for me to add. Check it out if you&apos;re interested!
+                        I added a <NoPrefetchLink className="text-link" href={"/creators"}>Creator Directory</NoPrefetchLink> feature on the site where you can find a listing of content creators for PM games. The initial list mostly contains creators that have popped up for me on Youtube or participated in APR. There&apos;s also a Request tab where you can submit creators for me to add. Check it out if you&apos;re interested!
+                        <br /><br />
+                        Cinq East Hong Lu has been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. You can edit your answers if you want to change them.
                     </span>
                 </div>
 
