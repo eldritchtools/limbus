@@ -19,7 +19,7 @@ import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
 
-export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, hideIcons = false, excludeOptions = [] }) {
+export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, hideIcons = false, excludeOptions = [], autoFocus }) {
     const [identities, loading] = useData("identities_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
@@ -45,6 +45,7 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
         isMulti={isMulti}
         styles={styles}
         excludeMode={excludeMode}
+        autoFocus={autoFocus}
     />;
 }
 

@@ -7,7 +7,7 @@ function getAudioSrc(id) {
     return `${AUDIO_ROOT}/ego/${id}.wav`;
 }
 
-export default function VoiceProblem({ problem, showControl }) {
+export default function VoiceProblem({ problem, showControl, autoPlay }) {
     const contextRef = useRef();
     const bufferRef = useRef();
     const sourceRef = useRef();
@@ -39,7 +39,7 @@ export default function VoiceProblem({ problem, showControl }) {
         };
     }, [problem.id]);
 
-    async function play() {
+    const play = useCallback(async () => {
         const context = contextRef.current;
         const buffer = bufferRef.current;
 
@@ -100,7 +100,12 @@ export default function VoiceProblem({ problem, showControl }) {
         );
 
         sourceRef.current = source;
-    }
+    }, [problem]);
+
+    useEffect(() => {
+        if (!loading && autoPlay)
+            play();
+    }, [play, loading, autoPlay]);
 
     return (
         <>

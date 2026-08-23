@@ -44,7 +44,9 @@ export default function GuessingScreen({ mode, settings, quiz, submitAnswer, end
             <IdentityDropdownSelector
                 selected={null} setSelected={x => { if (x) submitAnswer(x); }}
                 hideIcons={true} styles={selectStyleVariable}
-                excludeOptions={quiz.answers ?? []} />
+                excludeOptions={quiz.answers ?? []} 
+                autoFocus={true}
+            />
         </div>
 
         {mode === "standard" &&
