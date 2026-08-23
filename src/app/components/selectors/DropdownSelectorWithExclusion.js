@@ -5,7 +5,7 @@
 import { useMemo } from "react";
 import Select from "react-select";
 
-export default function DropdownSelectorWithExclusion({ options, optionsMapped, selected, setSelected, placeholder, filterFunction, isMulti, styles, excludeMode }) {
+export default function DropdownSelectorWithExclusion({ options, optionsMapped, selected, setSelected, placeholder, filterFunction, isMulti, styles, excludeMode, autoFocus }) {
     const mapped = useMemo(() => {
         if (optionsMapped) return optionsMapped;
         return options.reduce((acc, x) => { acc[x.value] = x; return acc }, {});
@@ -45,5 +45,6 @@ export default function DropdownSelectorWithExclusion({ options, optionsMapped, 
         placeholder={placeholder}
         filterOption={filterFunction}
         styles={styles}
+        autoFocus={autoFocus}
     />;
 }

@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 
 import { difficulties } from "./SetupScreen";
 import VoiceProblem from "./VoiceProblem";
@@ -10,6 +12,29 @@ const buttonStyle = { fontSize: "1.2rem", border: "1px var(--secondary-border-co
 
 export default function RevealScreen({ mode, settings, quiz, next, endGame, egos, isHost, correctParticipants, scoreboard }) {
     const correct = String(quiz.answers?.[quiz.answers?.length - 1]) === String(quiz.currentAnswer);
+
+    useEffect(() => {
+        let handleKeyDown;
+
+        const timeout = setTimeout(() => {
+            handleKeyDown = e => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    if (mode === "multi" && isHost && quiz.round >= settings.rounds - 1 && !settings.infinite) endGame();
+                    else next();
+                }
+            };
+
+            window.addEventListener("keydown", handleKeyDown);
+        }, 0);
+
+        return () => {
+            clearTimeout(timeout);
+
+            if (handleKeyDown)
+                window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [next, endGame, mode, isHost, quiz, settings]);
 
     return <>
         {(mode === "standard" || mode === "multi") ? <>
@@ -34,17 +59,22 @@ export default function RevealScreen({ mode, settings, quiz, next, endGame, egos
         </div>
 
         {mode === "multi" ? (
-            isHost ? <div style={{ display: "flex", gap: "0.5rem" }}>
-                <span className="text-link" onClick={next} style={buttonStyle}>
-                    {(settings.infinite || quiz.round < settings.rounds - 1) ? "Continue" : "Continue Past Rounds Set"}
-                </span>
-                <span className="text-link" onClick={endGame} style={buttonStyle}>
-                    {(settings.infinite || quiz.round >= settings.rounds - 1) ? "End Game" : "End Game Early"}
-                </span>
-            </div> :
+            isHost ? <>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <span className="text-link" onClick={next} style={buttonStyle}>
+                        {(settings.infinite || quiz.round < settings.rounds - 1) ? "Continue" : "Continue Past Rounds Set"}
+                    </span>
+                    <span className="text-link" onClick={endGame} style={buttonStyle}>
+                        {(settings.infinite || quiz.round >= settings.rounds - 1) ? "End Game" : "End Game Early"}
+                    </span>
+                </div>
+                <span className="sub-text">Press Enter/Space to continue.</span>
+            </> :
                 <div />
-        ) :
+        ) : <>
             <span className="text-link" onClick={next} style={buttonStyle}>Continue</span>
+            <span className="sub-text">Press Enter/Space to continue.</span>
+        </>
         }
 
         <span>Guesses:</span>

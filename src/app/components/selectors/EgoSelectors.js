@@ -18,7 +18,7 @@ import { egoRanks, keywordStatusMappingReversed, sinnerIdMapping } from "@/app/l
 import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
-export function EgoDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, excludeOptions = [] }) {
+export function EgoDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, excludeOptions = [], autoFocus }) {
     const [egos, loading] = useData("egos_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
@@ -44,6 +44,7 @@ export function EgoDropdownSelector({ selected, setSelected, isMulti = false, st
         isMulti={isMulti}
         styles={styles}
         excludeMode={excludeMode}
+        autoFocus={autoFocus}
     />;
 }
 

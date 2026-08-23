@@ -15,7 +15,7 @@ export default function GuessingScreen({ mode, settings, quiz, submitAnswer, end
 
         {mode === "daily" && <h2 style={{ margin: 0 }}>Daily Challenge</h2>}
 
-        <VoiceProblem key={quiz.problem.answer} problem={quiz.problem} />
+        <VoiceProblem key={quiz.problem.answer} problem={quiz.problem} autoPlay={true} />
         {quiz.problem.modifier.type !== "none" && <span>Modifier: {quiz.problem.modifier.label}</span>}
 
         {(mode === "standard" || mode === "daily") && <>
@@ -44,6 +44,7 @@ export default function GuessingScreen({ mode, settings, quiz, submitAnswer, end
             <EgoDropdownSelector 
                 selected={null} setSelected={x => { if (x) submitAnswer(x) }} 
                 styles={selectStyleVariable} excludeOptions={quiz.answers ?? []} 
+                autoFocus={true}
             />
         </div>
 
