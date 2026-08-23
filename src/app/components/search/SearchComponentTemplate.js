@@ -33,7 +33,7 @@ function SearchFilter({ value, setValue }) {
 function TagFilter({ value, setValue }) {
     return <>
         <span className={styles.searchFilterLabel}>Tags</span>
-        <TagSelector selected={value} onChange={setValue} creatable={false} styles={selectStyleVariable} />
+        <TagSelector selected={value} onChange={setValue} creatable={false} styles={selectStyleVariable} instanceId={"search-tag-selector"}/>
     </>;
 }
 

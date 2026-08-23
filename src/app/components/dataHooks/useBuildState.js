@@ -83,7 +83,6 @@ export default function useBuildState() {
     }, []);
 
     const unpackExtraOpts = useCallback(extraOpts => {
-        console.log(extraOpts);
         if ("identityLevels" in extraOpts) setIdentityLevels(extraOpts.identityLevels);
         else setIdentityLevels(Array.from({ length: 12 }, () => ""));
 
