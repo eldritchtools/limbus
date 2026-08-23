@@ -17,30 +17,29 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
 function useCountdown(target) {
-    const getTimeLeft = () => {
-        const diff = target.getTime() - Date.now();
-
-        if (diff <= 0) {
-            return { d: 0, h: 0, m: 0, s: 0 };
-        }
-
-        const d = Math.floor(diff / DAY);
-        const h = Math.floor((diff / HOUR) % 24);
-        const m = Math.floor((diff / MINUTE) % 60);
-        const s = Math.floor((diff / SECOND) % 60);
-
-        return { d, h, m, s };
-    };
-
-    const [time, setTime] = useState(getTimeLeft);
+    const [time, setTime] = useState(null);
 
     useEffect(() => {
-        const id = setInterval(() => {
-            setTime(getTimeLeft());
-        }, 1000);
+        const getTimeLeft = () => {
+            const diff = target.getTime() - Date.now();
 
+            if (diff <= 0) {
+                return { d: 0, h: 0, m: 0, s: 0 };
+            }
+
+            const d = Math.floor(diff / DAY);
+            const h = Math.floor((diff / HOUR) % 24);
+            const m = Math.floor((diff / MINUTE) % 60);
+            const s = Math.floor((diff / SECOND) % 60);
+
+            return { d, h, m, s };
+        };
+
+        const update = () => setTime(getTimeLeft());
+        update();
+
+        const id = setInterval(update, 1000);
         return () => clearInterval(id);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [target]);
 
     return time;
@@ -51,7 +50,10 @@ function padDigit(num) {
 }
 
 export function TimeString({ date }) {
-    const { d, h, m, s } = useCountdown(date);
+    const time = useCountdown(date);
+    if (!time) return <span>--:--:--:--</span>;
+    
+    const { d, h, m, s } = time;
     return <span>{padDigit(d)}:{padDigit(h)}:{padDigit(m)}:{padDigit(s)}</span>;
 }
 
