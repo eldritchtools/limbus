@@ -60,7 +60,9 @@ function SearchComponent({ type }) {
                         onClick={() => openCommunityAssetModal({ imageId: id })}
                     >
                         <CommunityAsset id={id} type={"sm"} />
-                        <span>{prefix}_{id}</span>
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", width: size }}>
+                            {prefix}_{id}
+                        </span>
                     </div>
                 )}
             </div>
@@ -284,7 +286,9 @@ function ManageComponent({ type }) {
                         onClick={() => fetchAsset(id)}
                     >
                         <CommunityAsset id={id} type={"sm"} />
-                        <span>{prefix}_{id}</span>
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", width: size }}>
+                            {prefix}_{id}
+                        </span>
                     </div>
                 )}
             </div>
@@ -301,14 +305,14 @@ export default function CommunityAssetsPage() {
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>
             Community Assets
         </h1>
-        <p style={{margin: 0}}>
+        <p style={{ margin: 0 }}>
             Upload community emotes and stickers that anyone can use in posts, comments, and other content through the site&apos;s token system.
         </p>
-        <p className="sub-text" style={{margin: 0}}>
+        <p className="sub-text" style={{ margin: 0 }}>
             Uploaded emotes and stickers are searchable through the emote/sticker picker available in every Markdown editor on the site.
-            <br /><br/>
+            <br /><br />
             Please only upload content you have permission to use. Inappropriate content or misuse of the system may result in upload restrictions.
-            <br/><br/>
+            <br /><br />
             Search for existing assets before uploading to help avoid duplicates.
         </p>
 

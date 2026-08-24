@@ -65,12 +65,14 @@
 
 .entries {
     height: 100%;
+    width: 100%;
     overflow-y: auto;
     scrollbar-width: thin; 
     scrollbar-color: var(--secondary-border-color) var(--bg-primary);
 }
 
 .entriesContainer {
+    width: 100%;
     position: relative;
     flex: 1;
     min-height: 0;
@@ -188,19 +190,24 @@
 }
 
 .authorEntry {
-    display: flex;
+    display: block;
     gap: 0.5rem;
     align-items: baseline;
 
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
     margin-bottom: 0.25rem;
 }
 
 .authorName {
+    display: inline;
     font-weight: bold;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
 }
 
 .authorTime {
+    display: inline;
     font-size: 0.75rem;
     opacity: .6;
 }
