@@ -9,7 +9,8 @@ const savedStores = ["savedBuilds", "savedCollections", "savedMdPlans"];
 const singleStores = ["achievements", "companies"];
 const unsyncedStores = [
     "keywordSolver", "teamSolver", "teamRandomizer", "trainingCalc", "siteCustomization", 
-    "mdPlanTracking", "universalTracking", "giftsTracking", "teamDraft", "dailyQuizzes", "guessers"
+    "mdPlanTracking", "universalTracking", "giftsTracking", "teamDraft", "dailyQuizzes", 
+    "guessers", "clashBattle"
 ];
 
 db.version(1).stores(

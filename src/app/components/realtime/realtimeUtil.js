@@ -2,7 +2,7 @@ export function ensureRoomPrefix(prefix, roomId) {
     return roomId.startsWith(`${prefix}:`) ? roomId : `${prefix}:${roomId}`;
 }
 
-const prefixes = ["chat:", "quiz:"];
+const prefixes = ["chat:", "quiz:", "clashBattle:"];
 
 export function trimPrefixes(roomId) {
     for (const str of prefixes)

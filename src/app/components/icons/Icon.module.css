@@ -38,7 +38,7 @@
     position: absolute;
     top: 4px;
     left: 4px;
-    height: 2rem;
+    height: 25%;
     object-fit: contain;
     pointer-events: none;
 }
@@ -47,7 +47,7 @@
     position: absolute;
     top: 4px;
     left: 4px; 
-    height: 1.5rem; 
+    height: 17%;
     object-fit: contain;
     pointer-events: none;
 }
