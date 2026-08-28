@@ -25,13 +25,7 @@ export default function NamePill({ name, affinity = "none" }) {
             }}
         />
 
-        <span
-            style={{
-                position: "relative",
-                zIndex: 1,
-                marginRight: "2.5rem"
-            }}
-        >
+        <span style={{position: "relative", zIndex: 1, marginRight: "2.5rem"}}>
             {name}
         </span>
     </div>

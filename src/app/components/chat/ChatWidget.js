@@ -45,6 +45,10 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
     }
 
     if (type === "system") {
+        entries.push({
+            type: "system",
+            text: newEntry
+        })
     }
 }
 
@@ -171,6 +175,10 @@ export default function ChatWidget({ username }) {
                     history: payload => {
                         updateRoom(roomId, room => {
                             room.entries = [];
+                            if(roomId === GLOBAL_CHAT_ID)
+                                appendEntry("system", room.entries, 
+                                    "End of history. Chat history contains the 50 most recent messages and is cleared when the server restarts for maintenance or updates."
+                                );
                             payload.history.forEach(x => appendEntry("message", room.entries, x));
                             room.userCount = payload.user_count;
                         });
@@ -331,7 +339,7 @@ export default function ChatWidget({ username }) {
                     <ChatInput
                         disabled={activeRoom.status !== "connected"}
                         sendMessage={async text => {
-                            await chat.sendMessage(activeRoomId, text)
+                            await chat.sendMessage(activeRoomIdRef.current, text)
                             triggerChatMessageGAEvent(extractRoomPrefix(activeRoomId));
                         }}
                     />

@@ -1,3 +1,4 @@
+import ClashArenaSkillTooltip from "./ClashArenaSkillTooltip";
 import DistributionTooltip from "./DistributionTooltip";
 import EgoTooltip from "./EgoTooltip";
 import EncounterTooltip from "./EncounterTooltip";
@@ -29,5 +30,6 @@ export default function AllTooltips() {
         <TeamCodeTooltip />
         <SkillTooltip />
         <DistributionTooltip />
+        <ClashArenaSkillTooltip />
     </>;
 }

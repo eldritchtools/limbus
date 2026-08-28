@@ -23,6 +23,12 @@ export function useClashBattle() {
     const [participants, setParticipants] = useState([]);
     const [draftOrder, setDraftOrder] = useState([]);
     const [draftIndex, setDraftIndex] = useState(0);
+    const [skillCounts, setSkillCounts] = useState({});
+    const [round, setRound] = useState(null);
+    const [roundNumber, setRoundNumber] = useState(0);
+    const [chosenCount, setChosenCount] = useState(0);
+    const [results, setResults] = useState(null);
+    const [skillConfirmed, setSkillConfirmed] = useState(false);
 
     const roomIdRef = useRef(null);
 
@@ -65,7 +71,7 @@ export function useClashBattle() {
                     },
 
                     state: payload => {
-                        setFields(payload)
+                        setFields(payload);
                     },
 
                     joined: ({ display_name }) => {
@@ -100,6 +106,40 @@ export function useClashBattle() {
                         )
                         setDraftOrder(draft_order);
                         setDraftIndex(draft_index);
+                    },
+
+                    round: ({round_number, round}) => {
+                        setPhase("roundSelect")
+                        setRoundNumber(round_number);
+                        setRound(round);
+                        setChosenCount(0);
+                        setResults(null);
+                        setSkillConfirmed(false);
+                    },
+
+                    skill_chosen_count: ({chosen_count, player_count}) => {
+                        setChosenCount(chosen_count);
+                    },
+
+                    skill_selected: ({identity_id, skill, chosen_count, player_count}) => {
+                        setSkillCounts(p => ({...p, [identity_id]: 
+                            p[identity_id].map((x, i) => i === skill-1 ? x-1 : x)
+                        }))
+                        setChosenCount(chosen_count);
+                        setSkillConfirmed(true);
+                    },
+
+                    round_reveal: ({round_number, participants, results}) => {
+                        setPhase("roundReveal")
+                        setRoundNumber(round_number);
+                        setParticipants(participants);
+                        setResults(results);
+                    },
+
+                    finished: ({participants}) => {
+                        triggerGameCompleteGAEvent("clashBattle", "multi")
+                        setPhase("finished");
+                        setParticipants(participants);
                     }
                 }
             });
@@ -134,7 +174,27 @@ export function useClashBattle() {
     }
 
     async function pickIdentity(identityId) {
+        if(draftOrder[0] !== playerId) return;
         clashBattle.pickIdentity(roomIdRef.current, identityId)
+    }
+
+    async function startGame() {
+        if (!isHost) return;
+        clashBattle.startGame(roomIdRef.current);
+    }
+
+    async function selectSkill(identityId, skill) {
+        clashBattle.selectSkill(roomIdRef.current, identityId, Number(skill));
+    }
+
+    async function nextRound() {
+        if (!isHost) return;
+        clashBattle.nextRound(roomIdRef.current);
+    }
+
+    async function returnToSetup() {
+        if (!isHost) return;
+        clashBattle.returnToSetup(roomIdRef.current);
     }
 
     function setFields(fields) {
@@ -152,6 +212,13 @@ export function useClashBattle() {
         if ("draft_order" in fields) setDraftOrder(fields.draft_order);
         if ("draftIndex" in fields) setDraftIndex(fields.draftIndex);
         if ("draft_index" in fields) setDraftIndex(fields.draft_index);
+        if ("skillCounts" in fields) setSkillCounts(fields.skillCounts);
+        if ("skill_counts" in fields) setSkillCounts(fields.skill_counts);
+        if ("round" in fields) setRound(fields.round);
+        if ("current_round" in fields) setRound(fields.current_round);
+        if ("round_number" in fields) setRoundNumber(fields.round_number);
+        if ("chosen_count" in fields) setChosenCount(fields.chosen_count);
+        if ("results" in fields) setResults(fields.results);
     }
 
     function getSelectedIdentities() {
@@ -162,8 +229,10 @@ export function useClashBattle() {
 
     return {
         clashingData, loading,
-        phase, roomId, playerId, isHost, settings, participants, draftOrder, draftIndex,
-        setFields, joinRoom, leaveRoom, setSetting, resetSettings, startDraft, pickIdentity,
+        phase, roomId, playerId, isHost, settings, participants, 
+        draftOrder, draftIndex, skillCounts, round, roundNumber, chosenCount, skillConfirmed, results,
+        setFields, joinRoom, leaveRoom, setSetting, resetSettings, 
+        startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup,
         getSelectedIdentities
     };
 }

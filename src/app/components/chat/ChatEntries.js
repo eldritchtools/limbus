@@ -38,7 +38,7 @@ function ChatEntry({ entry }) {
 
     if (entry.type === "system")
         return <div className={styles.systemEntry}>
-            <span>{entry.text}</span>
+            <span style={{maxWidth: "85%"}}>{entry.text}</span>
         </div>
 }
 

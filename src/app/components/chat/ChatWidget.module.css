@@ -225,6 +225,7 @@
 
     font-size: 0.75rem;
     opacity: .7;
+    text-align: center;
 }
 
 .systemEntry::before,

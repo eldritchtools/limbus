@@ -10,7 +10,12 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
         await mountComponent(roomId, {
             channel: `clashBattle:${roomId}`,
             params: { display_name: displayName, client_id: clientId, settings },
-            events: ["state", "joined", "left", "settings", "draft_started", "draft_pick"],
+            events: [
+                "state", "joined", "left", "settings", 
+                "draft_started", "draft_pick", 
+                "round", "skill_chosen_count", "skill_selected", "round_reveal", 
+                "finished"
+            ],
             handlers
         })
     }, [mountComponent]);
@@ -45,14 +50,32 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
         [push]
     );
 
-    // const startGame = useCallback(async (roomId, question, answer) => {
-    //     return push(roomId, "start_game", { question, answer });
-    // },
-    //     [push]
-    // );
+    const startGame = useCallback(async (roomId) => {
+        return push(roomId, "start_game", {});
+    },
+        [push]
+    );
+
+    const selectSkill = useCallback(async (roomId, identityId, skill) => {
+        return push(roomId, "select_skill", {identity_id: identityId, skill: skill});
+    },
+        [push]
+    );
+
+    const nextRound = useCallback(async (roomId) => {
+        return push(roomId, "next_round", {});
+    },
+        [push]
+    );
+
+    const returnToSetup = useCallback(async (roomId) => {
+        return push(roomId, "return_to_setup", {});
+    },
+        [push]
+    );
 
     return useMemo(() =>
-        ({ mount, unmount, changeSetting, changeSettings, startDraft, pickIdentity }),
-        [mount, unmount, changeSetting, changeSettings, startDraft, pickIdentity]
+        ({ mount, unmount, changeSetting, changeSettings, startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup }),
+        [mount, unmount, changeSetting, changeSettings, startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup]
     );
 }

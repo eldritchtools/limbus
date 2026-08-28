@@ -1,0 +1,15 @@
+.skillOption {
+    display: flex; 
+    gap: 0.2rem; 
+    align-items: center;
+    cursor: pointer;
+}
+
+.skillOption:hover {
+    filter: brightness(1.3);
+}
+
+.skillOption.disabled {
+    cursor: default;
+    filter: grayscale(0.5) brightness(0.5);
+}

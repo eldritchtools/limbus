@@ -84,6 +84,7 @@ export default function SetupScreen({ clashBattle }) {
                             min={1} max={10}
                             value={clashBattle.settings.numStatus}
                             onChange={x => clashBattle.setSetting("numStatus", x)}
+                            disabled={!clashBattle.isHost}
                         />
                     </div>
 
@@ -96,6 +97,7 @@ export default function SetupScreen({ clashBattle }) {
                             min={1} max={99}
                             value={clashBattle.settings.statusPotency}
                             onChange={x => clashBattle.setSetting("statusPotency", x)}
+                            disabled={!clashBattle.isHost}
                         />
                     </div>
 
@@ -108,6 +110,7 @@ export default function SetupScreen({ clashBattle }) {
                             min={1} max={99}
                             value={clashBattle.settings.statusCount}
                             onChange={x => clashBattle.setSetting("statusCount", x)}
+                            disabled={!clashBattle.isHost}
                         />
                     </div>
                 </div>
@@ -122,6 +125,7 @@ export default function SetupScreen({ clashBattle }) {
                             min={1} max={100}
                             value={clashBattle.settings.hp}
                             onChange={x => clashBattle.setSetting("hp", x)}
+                            disabled={!clashBattle.isHost}
                         />
                     </div>
 
@@ -134,6 +138,7 @@ export default function SetupScreen({ clashBattle }) {
                             min={1} max={20}
                             value={clashBattle.settings.speed}
                             onChange={x => clashBattle.setSetting("speed", x)}
+                            disabled={!clashBattle.isHost}
                         />
                     </div>
 
@@ -146,6 +151,7 @@ export default function SetupScreen({ clashBattle }) {
                             min={-45} max={45}
                             value={clashBattle.settings.sp}
                             onChange={x => clashBattle.setSetting("sp", x)}
+                            disabled={!clashBattle.isHost}
                         />
                     </div>
                 </div>
