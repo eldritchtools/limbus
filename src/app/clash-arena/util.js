@@ -1,14 +1,11 @@
 import Status from "../components/objects/Status";
-import { keywordStatusMapping } from "../lib/constants";
 
- 
 export const defaultSettings = {
     teamSize: 3,
     rounds: 12,
     draftOrder: "cycle",
     numStatus: [1, 4],
-    statusPotency: [1, 20],
-    statusCount: [1, 20],
+    secondaryStatusChance: 25,
     hp: [1, 100],
     speed: [1, 10],
     sp: [0, 45]
@@ -28,8 +25,7 @@ export function settingsToServer(key) {
         case "teamSize": return "team_size";
         case "draftOrder": return "draft_order";
         case "numStatus": return "num_status";
-        case "statusPotency": return "status_potency";
-        case "statusCount": return "status_count";
+        case "secondaryStatusChance": return "secondary_status_chance";
         default: return key;
     }
 }
@@ -39,8 +35,7 @@ export function settingsToClient(key) {
         case "team_size": return "teamSize";
         case "draft_order": return "draftOrder";
         case "num_status": return "numStatus";
-        case "status_potency": return "statusPotency";
-        case "status_count": return "statusCount";
+        case "secondary_status_chance": return "secondaryStatusChance";
         default: return key;
     }
 }
@@ -115,6 +110,18 @@ function evaluateConditional(conditional, self, target) {
             ];
         }
 
+        case "have-hp": {
+            const side = conditional.owner === "self" ? self : target;
+
+            return [
+                conditional.target,
+                Math.min(
+                    Math.trunc(side.hp / (conditional.per * 100)) * conditional.value,
+                    conditional.max
+                )
+            ];
+        }
+
         case "spd-fixed": {
             const valid = conditional.mode === "higher"
                 ? self.speed > conditional.speed
@@ -150,8 +157,40 @@ function evaluateConditional(conditional, self, target) {
         }
 
         case "rupture-15-3": {
-            const rupture = target.statuses.Rupture;
+            const rupture = target.statuses.Burst;
             const valid = rupture && rupture.potency >= 15 && rupture.count >= 3;
+
+            return [conditional.target, valid ? conditional.value : 0];
+        }
+
+        case "charge-consume-hp": {
+            const chargeCount = self.statuses.Charge?.count ?? 0;
+            const missingCount = Math.max(conditional.targetCount - chargeCount, 0);
+            const requiredHp = missingCount * conditional.hpPerCount;
+            const valid = chargeCount >= conditional.minCount && self.hp >= requiredHp;
+
+            return [conditional.target, valid ? conditional.value : 0];
+        }
+            
+        case "charge-check-potency": {
+            const chargePotency = self.statuses.Charge?.potency ?? 0;
+            const chargeCount = self.statuses.Charge?.count ?? 0;
+
+            const valid =
+                chargeCount >= conditional.targetCount ||
+                (
+                    chargeCount >= conditional.minCount &&
+                    chargePotency >= conditional.minPotency
+                );
+
+            return [conditional.target, valid ? conditional.value : 0];
+        }
+
+        case "sp-fixed": {
+            const valid =
+                conditional.mode === "higher"
+                    ? self.sp > conditional.sp
+                    : self.sp < conditional.sp;
 
             return [conditional.target, valid ? conditional.value : 0];
         }
@@ -159,7 +198,7 @@ function evaluateConditional(conditional, self, target) {
 }
 
 function getExplanation(modifier, conditional, withResult) {
-    const displayStyle = { };
+    const displayStyle = {};
     const [, value] = modifier;
 
     switch (conditional.type) {
@@ -173,8 +212,8 @@ function getExplanation(modifier, conditional, withResult) {
                 }
                 {conditional.status.reduce((acc, status, i) => {
                     const component =
-                        <span key={status.status}>
-                            <Status id={keywordStatusMapping[status.status]} />
+                        <span key={acc.length}>
+                            <Status id={status.status} />
                             {status.type === "Potency" ? " Potency" : " Count"}
                             {status.owner === "self" ? " on self" : " on target"}
                         </span>
@@ -212,6 +251,17 @@ function getExplanation(modifier, conditional, withResult) {
                     conditional.value === conditional.max ?
                         ` at ${conditional.per * 100}%+ missing hp` :
                         ` for every ${conditional.per * 100}% missing hp (max ${conditional.max})`
+                }
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "have-hp":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {
+                    conditional.value === conditional.max ?
+                        ` at ${conditional.per * 100}%+ hp` :
+                        ` for every ${conditional.per * 100}% hp (max ${conditional.max})`
                 }
                 {withResult ? `: +${value}` : null}
             </div>;
@@ -259,6 +309,39 @@ function getExplanation(modifier, conditional, withResult) {
                 {" Potency and 3+ "}
                 <Status id={"Burst"} />
                 {" Count on the target"}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "charge-consume-hp":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {` at ${conditional.targetCount}+ `}
+                <Status id={"Charge"} />
+                {` Count or at ${conditional.minCount}+ `}
+                <Status id={"Charge"} />
+                {` Count spend ${conditional.hpPerCount * 100}% hp per missing Count`}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "charge-check-potency":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {` at ${conditional.targetCount}+ `}
+                <Status id={"Charge"} />
+                {` Count or at ${conditional.minPotency}+ and ${conditional.minCount}+ `}
+                <Status id={"Charge"} />
+                {` Potency and Count`}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "sp-fixed":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {
+                    conditional.mode === "higher" ?
+                        ` at ${conditional.sp + 1}+ sp` :
+                        ` at ${conditional.sp - 1}- sp`
+                }
                 {withResult ? `: +${value}` : null}
             </div>;
     }

@@ -1,5 +1,4 @@
 import StatusIcon from "../components/icons/StatusIcon";
-import { keywordStatusMapping } from "../lib/constants";
 
 export default function ScenarioDisplay({ round }) {
     return <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", gap: "1rem" }}>
@@ -57,7 +56,7 @@ function ScenarioSide({ label, side }) {
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem", minHeight: 42 }}>
             {Object.entries(side.statuses).map(([status, values]) => (
                 <div key={status} style={{ position: "relative", width: 42, height: 42 }}>
-                    <StatusIcon id={keywordStatusMapping[status]} style={{ width: "38px", height: "38px" }} />
+                    <StatusIcon id={status} style={{ width: "38px", height: "38px" }} />
 
                     <span style={{
                         position: "absolute", bottom: -3, left: -2, lineHeight: 1,

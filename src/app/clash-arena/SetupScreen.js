@@ -75,7 +75,11 @@ export default function SetupScreen({ clashBattle }) {
         {advancedOpen &&
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", gap: "0.5rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem" }}>
-                    <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
+                    <div
+                        className="hover-text" 
+                        style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}
+                        {...getGeneralTooltipProps("Number of Primary statuses per round. These are the 7 main archetypes plus Ammo. Most identities benefit from one or two of these.")}
+                    >
                         Number of Statuses:
                     </div>
 
@@ -88,31 +92,23 @@ export default function SetupScreen({ clashBattle }) {
                         />
                     </div>
 
-                    <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
-                        Status Potency Range:
+                    <div
+                        className="hover-text" 
+                        style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}
+                        {...getGeneralTooltipProps("Chance to generate a secondary status. These are general statuses like Haste/Bind that only a small number of identities benefit from.")}
+                    >
+                        Secondary Status Chance:
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <RangeInput
-                            min={1} max={99}
-                            value={clashBattle.settings.statusPotency}
-                            onChange={x => clashBattle.setSetting("statusPotency", x)}
+                            min={0} max={100}
+                            value={clashBattle.settings.secondaryStatusChance}
+                            onChange={x => clashBattle.setSetting("secondaryStatusChance", x)}
                             disabled={!clashBattle.isHost}
                         />
                     </div>
-
-                    <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
-                        Status Count Range:
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <RangeInput
-                            min={1} max={99}
-                            value={clashBattle.settings.statusCount}
-                            onChange={x => clashBattle.setSetting("statusCount", x)}
-                            disabled={!clashBattle.isHost}
-                        />
-                    </div>
+                    
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem" }}>
