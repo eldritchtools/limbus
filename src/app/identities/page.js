@@ -50,7 +50,7 @@ export default async function Page() {
 
     return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
         <JsonLd data={schema} />
-        <h2 style={{ margin: 0 }}>Identities</h2>
+        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Identities</h1>
         <p style={{ margin: 0 }}>
             Browse through all available Identities using search and a comprehensive set of filters.
         </p>

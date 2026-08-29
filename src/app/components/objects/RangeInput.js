@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function RangeInput({ min = 1, max = 99, value, onChange }) {
+export default function RangeInput({ min = 1, max = 99, value, onChange, disabled }) {
     const [localMin, setLocalMin] = useState(value[0].toString());
     const [localMax, setLocalMax] = useState(value[1].toString());
 
@@ -73,6 +73,7 @@ export default function RangeInput({ min = 1, max = 99, value, onChange }) {
                     }
                 }}
                 style={{ width: "3ch", textAlign: "center" }}
+                disabled={disabled}
             />
             <span> - </span>
             <input
@@ -88,6 +89,7 @@ export default function RangeInput({ min = 1, max = 99, value, onChange }) {
                     }
                 }}
                 style={{ width: "3ch", textAlign: "center" }}
+                disabled={disabled}
             />
         </div>
     );

@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 
 import { extractRoomPrefix, trimPrefixes } from "./realtimeUtil";
 import useRealtimeChatApi from "./useRealtimeChatApi";
+import useRealtimeClashBattleApi from "./useRealtimeClashBattleApi";
 import useRealtimeQuizApi from "./useRealtimeQuizApi";
 
 import { triggerRoomJoinGAEvent } from "@/app/lib/gaEvents";
@@ -124,6 +125,7 @@ export default function RealtimeProvider({ children }) {
 
     const chat = useRealtimeChatApi({ getRoom, checkLeaveRoom });
     const quiz = useRealtimeQuizApi({ getRoom, checkLeaveRoom });
+    const clashBattle = useRealtimeClashBattleApi({ getRoom, checkLeaveRoom });
 
     const value = useMemo(() => ({
         status,
@@ -134,9 +136,10 @@ export default function RealtimeProvider({ children }) {
             getRoomData: getRoomData
         },
         chat,
-        quiz
+        quiz,
+        clashBattle
     }),
-        [status, getRoom, leaveRoom, roomIds, getRoomData, chat, quiz]
+        [status, getRoom, leaveRoom, roomIds, getRoomData, chat, quiz, clashBattle]
     );
 
     return <RealtimeContext.Provider value={value}>

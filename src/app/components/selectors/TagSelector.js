@@ -38,7 +38,7 @@ export function validateTag(name) {
     return { valid: true, value: cleaned };
 }
 
-export default function TagSelector({ selected, onChange, creatable = false, styles = selectStyle }) {
+export default function TagSelector({ selected, onChange, creatable = false, styles = selectStyle, instanceId = "tag-selector" }) {
     const loadOptionsFinal = (inputValue) => new Promise((resolve) => debouncedLoadOptions(inputValue, resolve));
 
     const SelectComponent = creatable ? AsyncCreatableSelect : AsyncSelect;
@@ -47,6 +47,7 @@ export default function TagSelector({ selected, onChange, creatable = false, sty
     return (
         <div style={{ display: "flex", flexDirection: "column", width: "auto" }}>
             <SelectComponent
+                instanceId={instanceId}
                 isMulti
                 cacheOptions={false}
                 defaultOptions={[]}
