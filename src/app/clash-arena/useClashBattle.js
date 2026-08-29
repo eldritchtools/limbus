@@ -47,7 +47,7 @@ export function useClashBattle() {
             });
 
             const getInitialSettings = async () => {
-                const init = {...defaultSettings, ...(await getLocalStore("clashBattle").get("main")).settings ?? {}};
+                const init = {...defaultSettings, ...((await getLocalStore("clashBattle").get("main"))?.settings ?? {})};
                 return Object.fromEntries(Object.entries(init).map(([k, v]) => [settingsToServer(k), v]))
             }
 
