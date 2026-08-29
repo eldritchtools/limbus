@@ -5,7 +5,7 @@ export default function DraftCompleteScreen({ clashBattle }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
 
-        <span style={{ fontSize: "1.25rem" }}>Final Draft</span>
+        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Final Draft</span>
         <ParticipantGrid participants={clashBattle.participants}>
             {x => {
                 return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>

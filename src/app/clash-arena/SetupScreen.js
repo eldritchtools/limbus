@@ -73,14 +73,13 @@ export default function SetupScreen({ clashBattle }) {
 
         <button onClick={() => setAdvancedOpen(p => !p)}>{advancedOpen ? "Close" : "Open"} Advanced Settings</button>
         {advancedOpen &&
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "start", gap: "0.5rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem" }}>
                     <div
-                        className="hover-text" 
                         style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}
                         {...getGeneralTooltipProps("Number of Primary statuses per round. These are the 7 main archetypes plus Ammo. Most identities benefit from one or two of these.")}
                     >
-                        Number of Statuses:
+                        <span className="hover-text" >Number of Statuses:</span>
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -93,22 +92,22 @@ export default function SetupScreen({ clashBattle }) {
                     </div>
 
                     <div
-                        className="hover-text" 
                         style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}
                         {...getGeneralTooltipProps("Chance to generate a secondary status. These are general statuses like Haste/Bind that only a small number of identities benefit from.")}
                     >
-                        Secondary Status Chance:
+                        <span className="hover-text" >Secondary Status Chance:</span>
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <RangeInput
+                        <NumberInput
                             min={0} max={100}
                             value={clashBattle.settings.secondaryStatusChance}
                             onChange={x => clashBattle.setSetting("secondaryStatusChance", x)}
                             disabled={!clashBattle.isHost}
+                            style={{width: "5ch"}}
                         />
                     </div>
-                    
+
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem" }}>

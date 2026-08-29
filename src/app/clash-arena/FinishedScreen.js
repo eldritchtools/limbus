@@ -7,6 +7,12 @@ export default function FinishedScreen({ clashBattle }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
 
+        <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
+            The game has ended! Here are the final scores.
+            <br /><br />
+            Congratulations to the winner(s)!
+        </span>
+
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Final Scores</span>
         <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "0.5rem", width: "min(100%, 200px)" }}>
             <span>#</span>

@@ -108,13 +108,17 @@ export default function RoundRevealScreen({ clashBattle }) {
             }}
         </ParticipantGrid>
 
-        {allComplete && clashBattle.isHost &&
+        {allComplete && (
+            clashBattle.isHost ?
             <span className="text-link" onClick={clashBattle.nextRound}
                 style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
             >
-                Next Round
+                {clashBattle.roundNumber === clashBattle.settings.rounds ? "End Game" : "Next Round"}
+            </span> :
+            <span>
+                Waiting for host to continue to the next round...
             </span>
-        }
+        )}
 
 
     </div >
