@@ -169,8 +169,9 @@ export default function SetupScreen({ clashBattle }) {
             </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
+        <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Participants: {clashBattle.participants.length}</span>
+            <span className="sub-text">Max Participants: 8</span>
             {clashBattle.participants.map((x, i) => <span key={`${x}-${i}`}>{x}</span>)}
         </div>
     </div >

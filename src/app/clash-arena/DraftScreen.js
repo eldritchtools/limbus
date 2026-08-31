@@ -21,7 +21,7 @@ export default function DraftScreen({ clashBattle }) {
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
 
         <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
-            Note: Some skills and conditionals have been simplified, modified, or omitted for the simulator. This includes, among other things, mechanics involving unique statuses and resonance. Hover over a skill to see the conditionals currently implemented for it.
+            Note: Some skills and conditionals have been simplified, modified, or omitted for the simulator. This includes, among other things, mechanics involving unique statuses, enhanced skills, and resonance. Hover over a skill to see the conditionals currently implemented for it.
         </span>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Next Drafts</span>

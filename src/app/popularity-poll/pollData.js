@@ -223,7 +223,9 @@ export const questions = [
             "Increased Announcer Limit and Presets",
             "Cursed & Blessed E.G.O Gifts",
             "Automatic Reselection of Revived Identities in MD",
-            "Window BGM and Jukebox"
+            "Window BGM and Jukebox",
+            "Custom Loading Screen CGs",
+            "Clearing Old Audio Files"
         ]
     },
     {

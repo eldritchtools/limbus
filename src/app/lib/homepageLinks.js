@@ -46,10 +46,11 @@ export const homepageLinks = [
         ]
     },
     {
-        category: "Others",
+        category: "Minigames/Others",
         links: [
             { href: "/artwork-guesser", title: "Artwork Guesser", icon: "TakePicture" },
             { href: "/voiceline-guesser", title: "Voiceline Guesser", icon: "Resonate" },
+            { href: "/clash-arena", title: "Clash Arena", icon: "DuelEdge" },
             { href: "/about", title: "About", icon: "KnowledgeExplored" },
             { href: "/support", title: "Support", icon: "MagicalGirlAppear" },
             { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }
