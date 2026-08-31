@@ -51,7 +51,7 @@ export function calculateSkillRange(skill, self, target, withExplanation = false
     const min = base + clash + levelCorrection;
     const max = min + coin * skill.coins;
 
-    const result = { min: Math.min(min, max), max: Math.max(min, max), coin: coin };
+    const result = { min: Math.max(Math.min(min, max), 0), max: Math.max(min, max), base: min, coin: coin };
     if (withExplanation) result.modifiers = modifiers.map((x, i) => [...x, getExplanation(x, skill.conditionals[i], withResult)])
 
     return result;

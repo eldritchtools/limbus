@@ -82,9 +82,14 @@ const paths = [
         ]
     },
     {
-        title: "Other / Site / Contact", subpaths: [
+        title: "Minigames", subpaths: [
             { path: "/artwork-guesser", title: "Artwork Guesser" },
             { path: "/voiceline-guesser", title: "Voiceline Guesser" },
+            { path: "/clash-arena", title: "Clash Arena" },
+        ]
+    },
+    {
+        title: "Other / Site / Contact", subpaths: [
             { path: "/about", title: "About" },
             { path: "/feedback", title: "Feedback / Contact" },
             { path: "/guide", title: "Manager's Guide" },
@@ -126,9 +131,9 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        I added a <NoPrefetchLink className="text-link" href={"/creators"}>Creator Directory</NoPrefetchLink> feature on the site where you can find a listing of content creators for PM games. The initial list mostly contains creators that have popped up for me on Youtube or participated in APR. There&apos;s also a Request tab where you can submit creators for me to add. Check it out if you&apos;re interested!
+                        I added a new minigame <NoPrefetchLink className="text-link" href={"/clash-arena"}>Clash Arena</NoPrefetchLink> where you draft teams against other players and compete against each other to see who can clash the highest against randomly generated scenarios. Invite some friends and try it out!
                         <br /><br />
-                        Cinq East Hong Lu has been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. You can edit your answers if you want to change them.
+                        Custom loading screens and clearing old audio files have been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. Move-in Reg Greg will be added when he&apos;s released. You can edit your answers if you want to change them.
                     </span>
                 </div>
 

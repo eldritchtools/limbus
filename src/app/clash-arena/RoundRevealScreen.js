@@ -128,7 +128,7 @@ function ClashResult({ result, skillData, round, playCoinSound, onComplete }) {
     const [revealed, setRevealed] = useState(0);
     const [value, setValue] = useState(null);
 
-    const { min: baseValue, coin: coinValue } = calculateSkillRange(skillData, round.self, round.target);
+    const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round.self, round.target);
 
     useEffect(() => {
         setValue(baseValue);
@@ -145,7 +145,7 @@ function ClashResult({ result, skillData, round, playCoinSound, onComplete }) {
         const coin = result.coins[revealed - 1];
 
         if (coin) {
-            setValue(value => value + coinValue);
+            setValue(value => Math.max(value + coinValue, 0));
             playCoinSound();
         }
 

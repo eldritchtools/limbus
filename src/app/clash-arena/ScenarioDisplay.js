@@ -1,4 +1,5 @@
 import StatusIcon from "../components/icons/StatusIcon";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 export default function ScenarioDisplay({ round }) {
     return <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", gap: "1rem" }}>
@@ -19,11 +20,21 @@ function ScenarioSide({ label, side }) {
 
     return <div style={{
         flex: 1, width: "200px", border: "1px var(--primary-border-color) solid", borderRadius: "1rem", padding: "0.5rem",
-        display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem"
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", position: "relative"
     }}>
         <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
             {label}
         </span>
+
+        <div style={{
+            position: "absolute", right: "4px", top: "4px",
+            width: "1.25rem", height: "1.25rem", borderRadius: "50%", 
+            background: "var(--bg-hover)", textAlign: "center"
+        }}
+            {...getGeneralTooltipProps("HP and Speed values are simulated for use in some Identities' conditionals and are otherwise unused. SP functions the same way as in-game, affecting coin flip probabilities.")}
+        >
+            ?
+        </div>
 
         <div style={{ display: "flex", gap: "0.5rem", width: "100%", alignItems: "center" }}>
             <div style={{

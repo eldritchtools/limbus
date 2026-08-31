@@ -44,11 +44,11 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>Added the {wrapLink("Clash Arena", "/clash-arena")} minigame.</li>
                     <li>Added the {wrapLink("Creator Directory", "/creators")} page.</li>
                     <li>Added support for alternative options in Builds and MD Plans.</li>
                     <li>Added a real-time component to the site allowing me to add features that involve interacting with other users live. A global chat has been added to the site, along with multiplayer support for the Artwork and Voiceline Guessers.</li>
                     <li>Added a Passive Search menu in the team editing component for Team Builds and MD Plans.</li>
-                    <li>Announcers have been added to the {wrapLink("Company", "/company")} page.</li>
                 </> : null}
             </ul>
         </div>
