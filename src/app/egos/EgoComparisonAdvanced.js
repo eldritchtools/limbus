@@ -1,6 +1,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components"
 import { useState } from "react"
 
+import styles from "./egos.module.css";
 import { useSkillData } from "../components/dataHooks/skills"
 import { useData } from "../components/DataProvider"
 import EgoIcon from "../components/icons/EgoIcon"
@@ -76,7 +77,11 @@ function ComparisonRowBase({ ego, content }) {
 
 function ComparisonCard({ ego, skillList, compareType }) {
     if (compareType === "stats") {
-        const content = <div style={{ display: "grid", gridTemplateColumns: "repeat(8, max-content)", gap: "0.2rem", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+        const content = <div>
+            <div style={{ textAlign: "center" }}>
+                Release Date: {ego.date}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, max-content)", gap: "0.2rem", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
             <div />
             {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
                 <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -93,6 +98,7 @@ function ComparisonCard({ ego, skillList, compareType }) {
             {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
                 <span key={i + 14}><ColoredResistance resist={ego.resists[affinity]} /></span>
             )}
+        </div>
         </div>
 
         return <ComparisonCardBase ego={ego} content={content} />
@@ -117,6 +123,9 @@ function ComparisonCard({ ego, skillList, compareType }) {
 function ComparisonRow({ ego, skillList, compareType }) {
     if (compareType === "stats") {
         const content = [
+            <div key={3} style={{ textAlign: "center" }}>
+                {ego.date}
+            </div>,
             <div key={1} style={{ display: "grid", gridTemplateColumns: "repeat(7, max-content)", gap: "0.5rem", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
                 {affinities.map((affinity, i) =>
                     <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -324,7 +333,9 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
     const sortList = (list) => {
         if (compareType === "stats") {
             let sorted = list;
-            if (otherOpts.sortType === "total cost") {
+            if (otherOpts.sortType === "release date") {
+                sorted = list.sort(([a], [b]) => a.date.localeCompare(b.date));
+            } else if (otherOpts.sortType === "total cost") {
                 sorted = list
                     .map(([x, s]) => [[x, s], Object.values(x.cost).reduce((acc, cost) => acc + cost, 0)])
                     .sort((a, b) => a[1] - b[1])
@@ -416,7 +427,16 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
 
     const sortedList = sortList(filterList(initialList));
 
-    if (displayType === "card") {
+    if (displayType === "icon") {
+        return <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
+            {sortedList.map(([ego]) => <div key={ego.id}><NoPrefetchLink href={`/egos/${ego.id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none" }}>
+                <div className={styles.clickableEgo}>
+                    <EgoIcon ego={ego} type={"awaken"} displayName={true} displayRarity={true} />
+                </div>
+            </NoPrefetchLink></div>)}
+        </div>
+    }
+    else if (displayType === "card") {
         return <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 320px)", width: "100%", gap: "0.2rem", justifyContent: "center" }}>
             {sortedList.map(([ego, skills], i) => <ComparisonCard key={i} ego={ego} skillList={skills} compareType={compareType} />)}
         </div>
@@ -428,6 +448,7 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
                         <thead>
                             <tr style={{ height: "1.25rem" }}>
                                 <th>E.G.O</th>
+                                <th>Release Date</th>
                                 <th>Costs</th>
                                 <th>Resists</th>
                             </tr>
@@ -492,7 +513,7 @@ export default function EgoComparisonAdvanced({ egos, displayType, separateSinne
     const [sortAscending, setSortAscending] = useState(true);
     const [grouped, setGrouped] = useState(true);
 
-    const skillData = useSkillData("ego", egos.map(([id]) => id), egos.map(([,ego]) => ego.maxThreadspin ?? 4))
+    const skillData = useSkillData("ego", egos.map(([id]) => id), egos.map(([, ego]) => ego.maxThreadspin ?? 4))
 
     const egoListToItems = list => list.reduce((acc, [id, ego]) => {
         if (compareType === "stats") {
@@ -536,6 +557,7 @@ export default function EgoComparisonAdvanced({ egos, displayType, separateSinne
         compareType === "stats" ?
             {
                 "default": "default",
+                "release date": "release date",
                 "total cost": "total cost",
                 "wrath cost": "wrath cost",
                 "lust cost": "lust cost",
@@ -577,6 +599,8 @@ export default function EgoComparisonAdvanced({ egos, displayType, separateSinne
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.2rem" }}>
         <span style={{ fontSize: "0.9rem", wordWrap: "wrap", textAlign: "center" }}>
             Use more precise filters and sorting options to compare details across all E.G.Os and their skills.
+            <br />
+            Make sure to switch from the icons only display mode to view additional information.
             <br />
             All descriptions and values here assume max threadspin. Use Basic Comparison or the E.G.O pages to see values for lower threadspins.
             <br />
@@ -689,15 +713,12 @@ export default function EgoComparisonAdvanced({ egos, displayType, separateSinne
             }
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            {displayType === "icon" ?
-                <h2>Icons display type not supported. Please swap to another display type.</h2> :
-                (separateSinners ?
-                    listComponents.map(([sep, list], i) => <>
-                        {sep}
-                        <ComparisonList key={`${i}-2`} items={list} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
-                    </>) :
-                    <ComparisonList items={listComponents} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
-                )
+            {separateSinners ?
+                listComponents.map(([sep, list], i) => <>
+                    {sep}
+                    <ComparisonList key={`${i}-2`} items={list} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
+                </>) :
+                <ComparisonList items={listComponents} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
             }
         </div>
     </div>

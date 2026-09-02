@@ -23,6 +23,7 @@ export function useClashBattle() {
     const [participants, setParticipants] = useState([]);
     const [draftOrder, setDraftOrder] = useState([]);
     const [draftIndex, setDraftIndex] = useState(0);
+    const [draftPoints, setDraftPoints] = useState(0);
     const [skillCounts, setSkillCounts] = useState({});
     const [round, setRound] = useState(null);
     const [roundNumber, setRoundNumber] = useState(0);
@@ -47,7 +48,7 @@ export function useClashBattle() {
             });
 
             const getInitialSettings = async () => {
-                const init = {...defaultSettings, ...((await getLocalStore("clashBattle").get("main"))?.settings ?? {})};
+                const init = { ...defaultSettings, ...((await getLocalStore("clashBattle").get("main"))?.settings ?? {}) };
                 return Object.fromEntries(Object.entries(init).map(([k, v]) => [settingsToServer(k), v]))
             }
 
@@ -91,24 +92,26 @@ export function useClashBattle() {
                         setSettings(p => ({ ...p, ...converted }));
                     },
 
-                    draft_started: ({ player_id, draft_order, participants }) => {
+                    draft_started: ({ player_id, draft_order, draft_points, participants }) => {
                         triggerGameStartGAEvent("clashBattle", "multi")
                         setPhase("draft");
                         setPlayerId(player_id);
                         setDraftOrder(draft_order);
                         setDraftIndex(0);
+                        if(draft_points) setDraftPoints(draft_points);
                         setParticipants(participants);
                     },
 
-                    draft_pick: ({ player_id, identity_id, draft_index, draft_order }) => {
+                    draft_pick: ({ player_id, identity_id, draft_index, draft_order, draft_points }) => {
                         setParticipants(p =>
                             p.map(x => x.player_id === player_id ? { ...x, identities: [...x.identities, identity_id] } : x)
                         )
                         setDraftOrder(draft_order);
                         setDraftIndex(draft_index);
+                        if(draft_points) setDraftPoints(draft_points);
                     },
 
-                    round: ({round_number, round}) => {
+                    round: ({ round_number, round }) => {
                         setPhase("roundSelect")
                         setRoundNumber(round_number);
                         setRound(round);
@@ -117,26 +120,27 @@ export function useClashBattle() {
                         setSkillConfirmed(false);
                     },
 
-                    skill_chosen_count: ({chosen_count, player_count}) => {
+                    skill_chosen_count: ({ chosen_count, player_count }) => {
                         setChosenCount(chosen_count);
                     },
 
-                    skill_selected: ({identity_id, skill, chosen_count, player_count}) => {
-                        setSkillCounts(p => ({...p, [identity_id]: 
-                            p[identity_id].map((x, i) => i === skill-1 ? x-1 : x)
+                    skill_selected: ({ identity_id, skill, chosen_count, player_count }) => {
+                        setSkillCounts(p => ({
+                            ...p, [identity_id]:
+                                p[identity_id].map((x, i) => i === skill - 1 ? x - 1 : x)
                         }))
                         setChosenCount(chosen_count);
                         setSkillConfirmed(true);
                     },
 
-                    round_reveal: ({round_number, participants, results}) => {
+                    round_reveal: ({ round_number, participants, results }) => {
                         setPhase("roundReveal")
                         setRoundNumber(round_number);
                         setParticipants(participants);
                         setResults(results);
                     },
 
-                    finished: ({participants}) => {
+                    finished: ({ participants }) => {
                         triggerGameCompleteGAEvent("clashBattle", "multi")
                         setPhase("finished");
                         setParticipants(participants);
@@ -174,8 +178,11 @@ export function useClashBattle() {
     }
 
     async function pickIdentity(identityId) {
-        if(draftOrder[0] !== playerId) return;
-        clashBattle.pickIdentity(roomIdRef.current, identityId)
+        if (draftOrder[0] !== playerId) return;
+        const cost = clashingData[identityId].points;
+        if (settings.pointsPerDraft !== 0 && cost > draftPoints) return;
+        setDraftPoints(p => p - cost);
+        clashBattle.pickIdentity(roomIdRef.current, identityId);
     }
 
     async function startGame() {
@@ -203,7 +210,7 @@ export function useClashBattle() {
         if ("player_id" in fields) setPlayerId(fields.player_id);
         if ("isHost" in fields) setIsHost(fields.isHost);
         if ("is_host" in fields) setIsHost(fields.is_host);
-        if ("settings" in fields) 
+        if ("settings" in fields)
             setSettings(
                 Object.fromEntries(Object.entries(fields.settings).map(([k, v]) => [settingsToClient(k), v]))
             );
@@ -212,6 +219,8 @@ export function useClashBattle() {
         if ("draft_order" in fields) setDraftOrder(fields.draft_order);
         if ("draftIndex" in fields) setDraftIndex(fields.draftIndex);
         if ("draft_index" in fields) setDraftIndex(fields.draft_index);
+        if ("draftPoints" in fields) setDraftPoints(fields.draftPoints);
+        if ("draft_points" in fields) setDraftPoints(fields.draft_points);
         if ("skillCounts" in fields) setSkillCounts(fields.skillCounts);
         if ("skill_counts" in fields) setSkillCounts(fields.skill_counts);
         if ("round" in fields) setRound(fields.round);
@@ -229,9 +238,9 @@ export function useClashBattle() {
 
     return {
         clashingData, loading,
-        phase, roomId, playerId, isHost, settings, participants, 
-        draftOrder, draftIndex, skillCounts, round, roundNumber, chosenCount, skillConfirmed, results,
-        setFields, joinRoom, leaveRoom, setSetting, resetSettings, 
+        phase, roomId, playerId, isHost, settings, participants,
+        draftOrder, draftIndex, draftPoints, skillCounts, round, roundNumber, chosenCount, skillConfirmed, results,
+        setFields, joinRoom, leaveRoom, setSetting, resetSettings,
         startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup,
         getSelectedIdentities
     };

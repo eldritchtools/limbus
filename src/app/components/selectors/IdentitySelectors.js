@@ -19,7 +19,7 @@ import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
 
-export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, hideIcons = false, excludeOptions = [], autoFocus }) {
+export function IdentityDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, hideIcons = false, excludeOptions = [], autoFocus, nameAppendFunc }) {
     const [identities, loading] = useData("identities_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
@@ -29,12 +29,12 @@ export function IdentityDropdownSelector({ selected, setSelected, isMulti = fals
             value: identity.id,
             label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                 {!hideIcons && <IdentityIcon id={identity.id} uptie={4} displayName={false} scale={0.125} />}
-                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[identity.sinnerId]}] {identity.name}</span>
+                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[identity.sinnerId]}] {identity.name}{nameAppendFunc ? nameAppendFunc(identity) : null}</span>
             </div>,
             searchStrings: buildSearchStrings(identity, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [identities, altNames, options, loading, altNamesLoading, hideIcons, excludeOptions]);
+    }, {}), [identities, altNames, options, loading, altNamesLoading, hideIcons, excludeOptions, nameAppendFunc]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}

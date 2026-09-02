@@ -356,7 +356,7 @@ export default function IdentitiesPage({ initIdentities }) {
                 <span style={{ textAlign: "end" }}>Display Type:</span>
                 <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                     <label>
-                        <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
+                        <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
                         Icons Only
                     </label>
                     <label>
@@ -394,6 +394,7 @@ export default function IdentitiesPage({ initIdentities }) {
                 <div>
                     <DropdownButton value={compareMode} setValue={setCompareMode} options={{ "off": "Compare Mode Disabled", "basic": "Basic Compare Mode", "adv": "Advanced Compare Mode" }} />
                 </div>
+                <div />
             </div>
             <IconsSelector type={"column"} categories={["identityTier", "sinner", "status", "affinity", "skillType"]} values={filters} setValues={setFilters} />
         </div>

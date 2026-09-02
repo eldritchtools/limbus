@@ -116,7 +116,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 5;
+const ANNOUNCEMENT_NUMBER = 6;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -133,7 +133,7 @@ function Announcement() {
                     <span style={{ lineHeight: "1.3" }}>
                         I added a new minigame <NoPrefetchLink className="text-link" href={"/clash-arena"}>Clash Arena</NoPrefetchLink> where you draft teams against other players and compete against each other to see who can clash the highest against randomly generated scenarios. Invite some friends and try it out!
                         <br /><br />
-                        Custom loading screens and clearing old audio files have been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. Move-in Reg Greg will be added when he&apos;s released. You can edit your answers if you want to change them.
+                        Move-in Reg Greg, custom loading screens, and clearing old audio files have been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. You can edit your answers if you want to change them.
                     </span>
                 </div>
 

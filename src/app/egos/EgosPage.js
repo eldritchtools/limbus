@@ -307,8 +307,10 @@ export default function EgosPage({ initEgos }) {
             <p style={{ margin: 0 }}>
                 Browse through all available E.G.O using search and a comprehensive set of filters.
             </p>
-            <p className="sub-text" style={{ margin: 0 }}>
-                Use Compare Mode to view multiple E.G.O side by side. Basic compares the complete details of selected E.G.O, while Advanced compares specific sections across all filtered E.G.O, such as Passives, and provides more comprehensive filters and sorting.
+            <p className="sub-text" style={{ margin: 0, textAlign: "center" }}>
+                Switch on Basic Compare Mode to view the details of multiple E.G.O side by side.
+                <br />
+                Switch on Advanced Compare Mode for additional searching, filtering, and sorting options.
             </p>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
@@ -352,7 +354,7 @@ export default function EgosPage({ initEgos }) {
                     <span style={{ textAlign: "end" }}>Display Type:</span>
                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                         <label>
-                            <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode !== "off"} />
+                            <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
                             Icons Only
                         </label>
                         <label>

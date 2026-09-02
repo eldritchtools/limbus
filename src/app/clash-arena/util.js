@@ -4,6 +4,7 @@ export const defaultSettings = {
     teamSize: 3,
     rounds: 12,
     draftOrder: "cycle",
+    pointsPerDraft: 6,
     numStatus: [1, 4],
     secondaryStatusChance: 25,
     hp: [1, 100],
@@ -26,6 +27,7 @@ export function settingsToServer(key) {
         case "draftOrder": return "draft_order";
         case "numStatus": return "num_status";
         case "secondaryStatusChance": return "secondary_status_chance";
+        case "pointsPerDraft": return "points_per_draft";
         default: return key;
     }
 }
@@ -36,6 +38,7 @@ export function settingsToClient(key) {
         case "draft_order": return "draftOrder";
         case "num_status": return "numStatus";
         case "secondary_status_chance": return "secondaryStatusChance";
+        case "points_per_draft": return "pointsPerDraft";
         default: return key;
     }
 }
