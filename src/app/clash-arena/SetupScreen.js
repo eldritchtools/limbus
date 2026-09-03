@@ -64,7 +64,8 @@ export default function SetupScreen({ clashBattle }) {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                <NumberInput min={1} max={10} value={pointsPerDraft}
+                <NumberInput min={1} max={10} 
+                    value={clashBattle.isHost ? pointsPerDraft : String(clashBattle.settings["pointsPerDraft"])}
                     onChange={x => {
                         clashBattle.setSetting("pointsPerDraft", x);
                         setPointsPerDraft(x);
@@ -75,7 +76,8 @@ export default function SetupScreen({ clashBattle }) {
                 <label
                     {...getGeneralTooltipProps("Disable point limitations, allowing players to choose any identity while drafting.")}
                 >
-                    <input type="checkbox" checked={pointsDisabled}
+                    <input type="checkbox" 
+                        checked={clashBattle.isHost ? pointsDisabled : (clashBattle.settings["pointsPerDraft"] === 0)}
                         onChange={() => {
                             const disabled = !pointsDisabled;
                             setPointsDisabled(disabled);
