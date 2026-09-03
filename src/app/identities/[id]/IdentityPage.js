@@ -19,6 +19,7 @@ import MarkdownEditorWrapper from "@/app/components/markdown/MarkdownEditorWrapp
 import { useModal } from "@/app/components/modals/ModalProvider";
 import NoPrefetchLink from "@/app/components/NoPrefetchLink";
 import DragContainer from "@/app/components/objects/DragContainer";
+import DropdownButton from "@/app/components/objects/DropdownButton";
 import NumberInputWithButtons from "@/app/components/objects/NumberInputWithButtons";
 import RatingComponent from "@/app/components/ratings/RatingComponent";
 import ReviewsComponent from "@/app/components/ratings/ReviewsComponent";
@@ -146,21 +147,45 @@ function BuildsTab({ builds }) {
 }
 
 function BottomLinks({ sinnerId, identities, egos }) {
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "100%", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.2rem", marginTop: "1rem" }}>
-        <h4 style={{ display: "flex", gap: "0.5rem", alignSelf: "center", margin: 0 }}>
-            <SinnerIcon num={sinnerId} style={{ width: "24px", height: "24px" }} /> <span style={{fontSize: "1.2rem"}}>{sinnerIdMapping[sinnerId]}</span>
+    const [id, setId] = useState(sinnerId);
+    const [identitiesData, identitiesDataLoading] = useData("identities_mini");
+    const [egosData, egosDataLoading] = useData("egos_mini");
+
+    const [idList, egoList] = useMemo(() => {
+        if (Number(id) === sinnerId) return [identities, egos];
+        if (identitiesDataLoading || egosDataLoading) return [[], []];
+
+        return [
+            Object.entries(identitiesData).filter(([, data]) => data.sinnerId === Number(id)).reverse(),
+            Object.entries(egosData).filter(([, data]) => data.sinnerId === Number(id)).reverse()
+        ]
+    }, [id, sinnerId, identities, egos, identitiesData, identitiesDataLoading, egosData, egosDataLoading]);
+
+    const options = useMemo(() =>
+        Object.fromEntries(Object.entries(sinnerIdMapping).map(([id, name]) => [
+            id,
+            <h4 key={id} style={{ display: "flex", gap: "0.5rem", alignSelf: "center", margin: 0 }}>
+                <SinnerIcon num={id} style={{ width: "24px", height: "24px" }} />
+                <span style={{ fontSize: "1.2rem" }}>{name}</span>
+            </h4>
+        ])), []);
+
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start", maxWidth: "100%", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.2rem", marginTop: "1rem" }}>
+        <h4 key={id} style={{ display: "flex", gap: "0.2rem", alignItems: "center", alignSelf: "center", margin: 0 }}>
+            Select Sinner:
+            <DropdownButton value={id} setValue={setId} options={options} styleOverride={{border: "none", background: "none", padding: 0}} />
         </h4>
         <DragContainer>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
                 <div style={{ display: "flex", gap: "0.2rem" }}>
-                    {identities.map(([id, data]) =>
+                    {idList.map(([id, data]) =>
                         <NoPrefetchLink key={id} href={`/identities/${id}`}>
                             <IdentityIcon identity={data} displayName={true} displayRarity={true} size={92} style={{ borderRadius: "0.5rem" }} />
                         </NoPrefetchLink>
                     )}
                 </div>
                 <div style={{ display: "flex", gap: "0.2rem" }}>
-                    {egos.map(([id, data]) =>
+                    {egoList.map(([id, data]) =>
                         <NoPrefetchLink key={id} href={`/egos/${id}`}>
                             <EgoIcon ego={data} type={"awaken"} displayName={true} displayRarity={true} size={92} style={{ borderRadius: "0.5rem" }} />
                         </NoPrefetchLink>
