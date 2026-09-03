@@ -84,6 +84,7 @@ export default function SetupScreen({ clashBattle }) {
                                 disabled ? 0 : pointsPerDraft
                             );
                         }}
+                        disabled={!clashBattle.isHost}
                     />
                     <span className="hover-text">
                         Disable points during drafting
