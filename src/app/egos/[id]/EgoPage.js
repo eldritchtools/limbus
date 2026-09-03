@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import styles from "./EgoPage.module.css";
 import { SkillsTab } from "./EgoPageComponents";
