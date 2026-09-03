@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import PointsDisplay from "./PointsDisplay";
 import NumberInput from "../components/objects/NumberInput";
 import RangeInput from "../components/objects/RangeInput";
 import { trimPrefixes } from "../components/realtime/realtimeUtil";
@@ -7,6 +8,8 @@ import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 export default function SetupScreen({ clashBattle }) {
     const [advancedOpen, setAdvancedOpen] = useState(false);
+    const [pointsPerDraft, setPointsPerDraft] = useState(clashBattle.settings.pointsPerDraft === 0 ? 6 : clashBattle.settings.pointsPerDraft);
+    const [pointsDisabled, setPointsDisabled] = useState(clashBattle.settings.pointsPerDraft === 0);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -47,6 +50,46 @@ export default function SetupScreen({ clashBattle }) {
                     style={{ textAlign: "center", width: "5ch" }}
                     disabled={!clashBattle.isHost}
                 />
+            </div>
+
+            <div
+                style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}
+            >
+                <span
+                    className="hover-text"
+                    {...getGeneralTooltipProps("Each time you draft, you get points that you spend to choose an identity. Choosing an identity that costs less points allows you to save points for later picks.")}
+                >
+                    Points per Draft:
+                </span>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                <NumberInput min={1} max={10} value={pointsPerDraft}
+                    onChange={x => {
+                        clashBattle.setSetting("pointsPerDraft", x);
+                        setPointsPerDraft(x);
+                    }}
+                    style={{ textAlign: "center", width: "5ch" }}
+                    disabled={!clashBattle.isHost || pointsDisabled}
+                />
+                <label
+                    {...getGeneralTooltipProps("Disable point limitations, allowing players to choose any identity while drafting.")}
+                >
+                    <input type="checkbox" checked={pointsDisabled}
+                        onChange={() => {
+                            const disabled = !pointsDisabled;
+                            setPointsDisabled(disabled);
+                            clashBattle.setSetting(
+                                "pointsPerDraft",
+                                disabled ? 0 : pointsPerDraft
+                            );
+                        }}
+                        disabled={!clashBattle.isHost}
+                    />
+                    <span className="hover-text">
+                        Disable points during drafting
+                    </span>
+                </label>
             </div>
 
             <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
@@ -104,7 +147,7 @@ export default function SetupScreen({ clashBattle }) {
                             value={clashBattle.settings.secondaryStatusChance}
                             onChange={x => clashBattle.setSetting("secondaryStatusChance", x)}
                             disabled={!clashBattle.isHost}
-                            style={{width: "5ch"}}
+                            style={{ width: "5ch" }}
                         />
                     </div>
 
@@ -170,9 +213,11 @@ export default function SetupScreen({ clashBattle }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Participants: {clashBattle.participants.length}</span>
-            <span className="sub-text">Max Participants: 8</span>
+            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Players: {clashBattle.participants.length}</span>
+            <span className="sub-text">Max Players: 8</span>
             {clashBattle.participants.map((x, i) => <span key={`${x}-${i}`}>{x}</span>)}
         </div>
+
+        <PointsDisplay clashBattle={clashBattle} />
     </div >
 }

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import JsonLd, { getAppSchema } from "../lib/jsonLd";
 
 const name = "Clash Arena";
-const desc = "";
+const desc = "A multiplayer mini-game where you compete with other players on who clashes the highest against random scenarios. Based on Limbus Company's clashing system.";
 const path = "/clash-arena"
 
 export const metadata = {

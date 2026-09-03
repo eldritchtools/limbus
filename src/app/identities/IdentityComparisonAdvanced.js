@@ -1,6 +1,7 @@
 import { useBreakpoint } from "@eldritchtools/shared-components"
 import { useState } from "react"
 
+import styles from "./identities.module.css";
 import { useSkillData } from "../components/dataHooks/skills"
 import { useData } from "../components/DataProvider"
 import Icon from "../components/icons/Icon"
@@ -52,7 +53,7 @@ function ComparisonCardBase({ identity, content }) {
     </div >
 }
 
-const rowStyle = {borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", verticalAlign: "middle"}
+const rowStyle = { borderTop: "1px var(--secondary-border-color) solid", borderBottom: "1px var(--secondary-border-color) solid", verticalAlign: "middle" }
 
 function ComparisonRowBase({ identity, content }) {
     return <>
@@ -81,6 +82,9 @@ function ComparisonRowBase({ identity, content }) {
 function ComparisonCard({ identity, skillList, compareType }) {
     if (compareType === "stats") {
         const content = <div style={{ display: "flex", flexDirection: "column", height: "auto", justifyContent: "center", gap: "0.2rem" }}>
+            <div style={{ textAlign: "center" }}>
+                Release Date: {identity.date}
+            </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem", textAlign: "center" }}>
                     <Icon path={"hp"} style={{ width: "32px", height: "32px" }} />
@@ -140,6 +144,9 @@ function ComparisonCard({ identity, skillList, compareType }) {
 function ComparisonRow({ identity, skillList, compareType }) {
     if (compareType === "stats") {
         const content = [
+            <div key={4} style={{ textAlign: "center" }}>
+                {identity.date}
+            </div>,
             <div key={1} style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
                 <Icon path={"hp"} style={{ width: "32px", height: "32px" }} />
                 {constructHp(identity, LEVEL_CAP)}
@@ -375,6 +382,9 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
         if (compareType === "stats") {
             let sorted = list;
             switch (otherOpts.sortType) {
+                case "release date":
+                    sorted = list.sort(([a], [b]) => a.date.localeCompare(b.date));
+                    break;
                 case "max hp":
                     sorted = list
                         .map(([x, s]) => [[x, s], Math.round(x.hp.base + LEVEL_CAP * x.hp.level)])
@@ -476,7 +486,15 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
 
     const sortedList = sortList(filterList(initialList));
 
-    if (displayType === "card") {
+    if (displayType === "icon") {
+        return <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 92 : 128}px, 1fr))`, width: "100%", gap: "0.5rem" }}>
+            {sortedList.map(([identity]) => <div key={identity.id}><NoPrefetchLink href={`/identities/${identity.id}`} style={{ color: "var(--primary-text-color)", textDecoration: "none" }} >
+                <div className={styles.clickableId}>
+                    <IdentityIcon identity={identity} uptie={4} displayName={true} displayRarity={true} />
+                </div>
+            </NoPrefetchLink></div>)}
+        </div>
+    } else if (displayType === "card") {
         return <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 320px)", width: "100%", gap: "0.2rem", justifyContent: "center" }}>
             {sortedList.map(([identity, skills], i) => <ComparisonCard key={i} identity={identity} skillList={skills} compareType={compareType} />)}
         </div>
@@ -488,6 +506,7 @@ function ComparisonList({ items, compareType, displayType, otherOpts }) {
                         <thead>
                             <tr style={{ height: "1.25rem" }}>
                                 <th>Identity</th>
+                                <th>Release Date</th>
                                 <th>Hp, Speed, Defense Level</th>
                                 <th>Resists</th>
                                 <th>Keywords</th>
@@ -618,6 +637,7 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
         compareType === "stats" ?
             {
                 "default": "default",
+                "release date": "release date",
                 "max hp": "max hp",
                 "max speed": "max speed",
                 "min speed": "min speed",
@@ -650,6 +670,8 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.2rem" }}>
         <span style={{ fontSize: "0.9rem", wordWrap: "wrap", textAlign: "center" }}>
             Use more precise filters and sorting options to compare details across all identities and their skills.
+            <br />
+            Make sure to switch from the icons only display mode to view additional information.
             <br />
             All descriptions and values here assume max uptie. Use Basic Comparison or the identity pages to see values for lower upties.
             <br />
@@ -792,15 +814,12 @@ export default function IdentityComparisonAdvanced({ identities, displayType, se
             }
         </div>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            {displayType === "icon" ?
-                <h2>Icons display type not supported. Please swap to another display type.</h2> :
-                (separateSinners ?
-                    listComponents.map(([sep, list], i) => <>
-                        {sep}
-                        <ComparisonList key={`${i}-2`} items={list} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
-                    </>) :
-                    <ComparisonList items={listComponents} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
-                )
+            {separateSinners ?
+                listComponents.map(([sep, list], i) => <>
+                    {sep}
+                    <ComparisonList key={`${i}-2`} items={list} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
+                </>) :
+                <ComparisonList items={listComponents} compareType={compareType} displayType={displayType} otherOpts={otherOpts} />
             }
         </div>
     </div>

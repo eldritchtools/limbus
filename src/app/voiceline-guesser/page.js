@@ -349,7 +349,7 @@ export default function VoicelineGuesserPage() {
                 <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={loading}>Daily</span>
                 <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at normal difficulty and 3 chances.</span>
                 <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={loading}>Multiplayer</span>
-                <span className="sub-text">Play against others to see who can get the highest score.</span>
+                <span className="sub-text">Play against others to see who can get the highest score. May occasionally be interrupted by server updates.</span>
             </div>
         </div>;
 

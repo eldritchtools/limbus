@@ -71,7 +71,7 @@ function Banner({ banner, identities, egos, announcers, isMobile, selected, setS
                         if(obj.eventReward) return;
                         items[obj.rank].push(id);
                     } else {
-                        if (egos[id].extractable) items["ego"].push(id);
+                        if (egos[id].extractable || (obj.sinnerId === v && egos[id].eventExtractable)) items["ego"].push(id);
                     }
                 }
                 Object.entries(identities).forEach(([id, obj]) => insertItem(true, id, obj));

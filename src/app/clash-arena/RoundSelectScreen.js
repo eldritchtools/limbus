@@ -98,7 +98,7 @@ export default function RoundSelectScreen({ clashBattle }) {
             </React.Fragment>)}
         </div>
 
-        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Participants</span>
+        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Players</span>
         <ParticipantGrid participants={clashBattle.participants}>
             {x => {
                 return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>

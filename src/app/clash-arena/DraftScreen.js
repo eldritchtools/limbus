@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import ParticipantGrid from "./ParticipantsDisplay";
+import PointsDisplay from "./PointsDisplay";
 import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
 import SkillIcon from "../components/icons/SkillIcon";
@@ -16,6 +17,8 @@ export default function DraftScreen({ clashBattle }) {
         clashBattle.pickIdentity(identityId);
         setIdentityId(null);
     }, [clashBattle, identityId]);
+
+    const pointsDisabled = clashBattle.settings["pointsPerDraft"] === 0;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -36,13 +39,23 @@ export default function DraftScreen({ clashBattle }) {
         {
             clashBattle.draftOrder[0] === clashBattle.playerId ?
                 <>
+                    {!pointsDisabled &&
+                        <span>You currently have <span style={{ fontWeight: "bold" }}>{clashBattle.draftPoints}</span> points.</span>
+                    }
                     <span>Choose an identity:</span>
                     <div style={{ width: "min(100%, 1000px)" }}>
                         <IdentityDropdownSelector
                             selected={identityId} setSelected={x => setIdentityId(x)} styles={selectStyleVariable}
-                            options={Object.keys(clashBattle.clashingData)}
+                            options={
+                                Object.keys(clashBattle.clashingData)
+                                    .filter(id => pointsDisabled || clashBattle.clashingData[id].points <= clashBattle.draftPoints)
+                            }
                             excludeOptions={clashBattle.getSelectedIdentities()}
                             autoFocus={true}
+                            nameAppendFunc={identity =>
+                                pointsDisabled ? null :
+                                    ` (${clashBattle.clashingData[identity.id].points} points)`
+                            }
                         />
                     </div>
                     {identityId &&
@@ -76,6 +89,12 @@ export default function DraftScreen({ clashBattle }) {
                         </div>
                     }
                     {identityId && <>
+                        {
+                            !pointsDisabled &&
+                            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                                Cost: {clashBattle.clashingData[identityId].points} Points
+                            </span>
+                        }
                         <span className="text-link" onClick={handleConfirm}
                             style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
                         >
@@ -102,5 +121,7 @@ export default function DraftScreen({ clashBattle }) {
                 </div>
             }}
         </ParticipantGrid>
+
+        {!pointsDisabled && <PointsDisplay clashBattle={clashBattle} />}
     </div >
 }

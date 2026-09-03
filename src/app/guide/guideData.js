@@ -373,8 +373,8 @@ export const guideData = [
         ],
     },
     {
-        id: "site-contact",
-        title: "Others / Site / Contact",
+        id: "minigames",
+        title: "Minigames",
         items: [
             {
                 title: "Artwork Guesser",
@@ -397,6 +397,21 @@ export const guideData = [
                     "There's also multiplayer support where you can compete with other players on who makes the most correct guesses. A chat room is provided when creating a multiplayer room. Refer to Chat Widget under Shared Features for more details."
                 ]
             },
+            {
+                title: "Clash Arena",
+                description: "A multiplayer mini-game where you compete with other players on who clashes the highest against random scenarios. Based on Limbus Company's clashing system.",
+                details: [
+                    "Clash Arena is a minigame where players draft teams to compete with each other on who can win the most rounds of clashing against randomly generated scenarios.",
+                    "Players draft identities one at a time until they form a team. Identities chosen by a player cannot be chosen by another player. Players are given points on each round and choosing identities costs points depending on their clashing values. Save points by choosing weaker identities so you can pick stronger ones later on.",
+                    "After drafting, players are faced with multiple rounds of randomly generated scenarios where they choose a skill from their team to use. The player whose skill clashes the highest gets a point. The player with the most points at the end wins."
+                ]
+            }
+        ]
+    },
+    {
+        id: "site-contact",
+        title: "Others / Site / Contact",
+        items: [
             {
                 title: "About",
                 description: "Standard about page",

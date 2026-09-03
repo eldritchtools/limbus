@@ -17,7 +17,7 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
             <br /><br />
             Clash Arena uses a simplified simulation of Limbus Company clashing. Some skills and conditionals have been simplified, modified, or omitted due to limitations of the simulator. This is still an early version of the game, so some of the omitted conditionals may be introduced later on, along with additional mechanics, balance changes, or fixes for inaccurate conditionals. You can submit any issues or suggestions on the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback page</NoPrefetchLink> or in our Discord.
             <br /><br />
-            This minigame is a work in progress and there are plans to update it with more features and mechanics over time.
+            Please note that games may occasionally be interrupted by server restarts for updates or maintenance. I try to minimize these interruptions, but unfortunately they can&apos;t be avoided entirely.
         </span>
 
         <h2>Join Settings</h2>
