@@ -97,6 +97,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                         </div>
 
                         <ClashResult
+                            clashBattle={clashBattle}
                             result={result}
                             skillData={skillData}
                             round={clashBattle.round}
@@ -124,11 +125,11 @@ export default function RoundRevealScreen({ clashBattle }) {
     </div >
 }
 
-function ClashResult({ result, skillData, round, playCoinSound, onComplete }) {
+function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onComplete }) {
     const [revealed, setRevealed] = useState(0);
     const [value, setValue] = useState(null);
 
-    const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round.self, round.target);
+    const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round, clashBattle.clashingData[result.identity_id].statuses ?? []);
 
     useEffect(() => {
         setValue(baseValue);

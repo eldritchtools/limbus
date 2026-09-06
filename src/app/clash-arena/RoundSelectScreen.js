@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import styles from "./clashArena.module.css";
 import ParticipantGrid from "./ParticipantsDisplay";
 import ScenarioDisplay from "./ScenarioDisplay";
+import StatusDisplay from "./StatusDisplay";
 import { calculateSkillRange } from "./util";
 import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
@@ -17,7 +18,7 @@ export default function RoundSelectScreen({ clashBattle }) {
     const [skillData, skillRange] = useMemo(() => {
         if (!identityId || !skill) return [null, null];
         const skillData = clashBattle.clashingData[identityId][String(skill)]
-        const range = calculateSkillRange(skillData, clashBattle.round.self, clashBattle.round.target);
+        const range = calculateSkillRange(skillData, clashBattle.round, clashBattle.clashingData[identityId].statuses ?? []);
         return [skillData, range];
     }, [identityId, skill, clashBattle]);
 
@@ -67,12 +68,24 @@ export default function RoundSelectScreen({ clashBattle }) {
         <span>Choose a skill to use:</span>
         <div style={{ display: "grid", gridTemplateColumns: "128px auto", gap: "0.5rem", alignItems: "center" }}>
             {Object.entries(clashBattle.skillCounts).map(([id, counts]) => <React.Fragment key={id}>
-                <IdentityIcon id={id} displayName={true} displayRarity={true} />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <IdentityIcon id={id} displayName={true} displayRarity={true} />
+                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                        {
+                            (clashBattle.clashingData[id].statuses ?? [])
+                                .map(({ id, values }) => [id, values[clashBattle.round.unique_statuses_tier]])
+                                .filter(([, value]) => value > 0)
+                                .map(([id, value]) =>
+                                    <StatusDisplay key={id} id={id} potency={value} />
+                                )
+                        }
+                    </div>
+                </div>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                     {
                         [1, 2, 3].map(skill => {
                             const skillData = clashBattle.clashingData[id][String(skill)]
-                            const range = calculateSkillRange(skillData, clashBattle.round.self, clashBattle.round.target);
+                            const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
                             return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
                                 <div
                                     className={`${styles.skillOption} ${counts[skill - 1] <= 0 ? styles.disabled : null}`}

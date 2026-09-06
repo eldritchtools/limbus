@@ -122,7 +122,7 @@ export default function ProfilePage({ params, sp_tab, sp_page }) {
     }
 
     const contentDisplay = () => {
-        if (tab === "company") return <CompanyDisplay username={username} />;
+        if (tab === "company") return <CompanyDisplay username={decodeURI(username)} />;
         if (tab === "reviews") {
             if (!reviews || identitiesLoading || egosLoading) return <LoadingContentPageTemplate />;
 

@@ -75,10 +75,11 @@ export default function DraftScreen({ clashBattle }) {
                                         <div style={{ maxWidth: "200px", margin: "0 1.5rem", alignSelf: "start" }}>
                                             <NamePill name={skillData.name} affinity={skillData.affinity} />
                                         </div>
-                                        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                                        <div style={{ display: "flex", alignItems: "center" }}>
                                             <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
                                                 {skillData.base} {skillData.coin > 0 ? "+" : ""}{skillData.coin}
                                             </span>
+                                            &nbsp;
                                             {Array.from({ length: skillData.coins }, (v, i) =>
                                                 <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
                                             )}

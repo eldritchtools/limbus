@@ -43,13 +43,14 @@ export function settingsToClient(key) {
     }
 }
 
-export function calculateSkillRange(skill, self, target, withExplanation = false, withResult = true) {
-    const modifiers = (skill.conditionals ?? []).map(x => evaluateConditional(x, self, target, withExplanation, withResult));
+export function calculateSkillRange(skill, round, statusData, withExplanation = false, withResult = true) {
+    const uniqueStatuses = Object.fromEntries(statusData.map(({ id, values }) => [id, values[round?.unique_statuses_tier ?? 0]]));
+    const modifiers = (skill.conditionals ?? []).map(x => evaluateConditional(x, round.self, round.target, uniqueStatuses));
 
     const base = skill.base + modifierSum(modifiers, "base");
     const coin = skill.coin + modifierSum(modifiers, "coin");
     const clash = modifierSum(modifiers, "clash");
-    const levelCorrection = Math.trunc(skill.levelCorrection / 3);
+    const levelCorrection = Math.trunc((skill.levelCorrection + modifierSum(modifiers, "offense-level")) / 3);
 
     const min = base + clash + levelCorrection;
     const max = min + coin * skill.coins;
@@ -66,13 +67,60 @@ function modifierSum(modifiers, target) {
         .reduce((sum, [, value]) => sum + value, 0);
 }
 
-function evaluateConditional(conditional, self, target) {
+function evaluateConditional(conditional, self, target, uniqueStatuses) {
     switch (conditional.type) {
         case "status": {
             const total = conditional.status.reduce((sum, status) => {
-                const side = status.owner === "self" ? self : target;
-                return sum + (side.statuses[status.status]?.[status.type.toLowerCase()] ?? 0);
+                if (status.owner === "unique") {
+                    return sum + uniqueStatuses[status.status] ?? 0;
+                } else {
+                    const side = status.owner === "self" ? self : target;
+                    return sum + (side.statuses[status.status]?.[status.type.toLowerCase()] ?? 0);
+                }
             }, 0);
+
+            return [
+                conditional.target,
+                Math.min(
+                    Math.floor(total / conditional.per) * conditional.value,
+                    conditional.max
+                )
+            ];
+        }
+        case "status-individual": {
+            const total = conditional.status.reduce((sum, status) => {
+                if (status.owner === "unique") {
+                    return sum + Math.floor((uniqueStatuses[status.status] ?? 0) / status.per);
+                } else {
+                    const side = status.owner === "self" ? self : target;
+                    return sum + Math.floor((side.statuses[status.status]?.[status.type.toLowerCase()] ?? 0) / status.per);
+                }
+            }, 0);
+
+            return [
+                conditional.target,
+                Math.min(total * conditional.value, conditional.max)
+            ];
+        }
+        case "status-optional-condition": {
+            const total = conditional.status.reduce((sum, status) => {
+                if (status.owner === "unique") {
+                    return sum + uniqueStatuses[status.status] ?? 0;
+                } else {
+                    const side = status.owner === "self" ? self : target;
+                    return sum + (side.statuses[status.status]?.[status.type.toLowerCase()] ?? 0);
+                }
+            }, 0);
+
+            if ((uniqueStatuses[conditional.statusCond] ?? 0) > 0) {
+                return [
+                    conditional.target,
+                    Math.min(
+                        Math.floor(total / conditional.perCond) * conditional.valueCond,
+                        conditional.maxCond
+                    )
+                ];
+            }
 
             return [
                 conditional.target,
@@ -149,12 +197,14 @@ function evaluateConditional(conditional, self, target) {
             ];
         }
 
-        case "spd-fixed-or-diff": {
+        case "spd-fixed-or-diff-or-status": {
             const valid = conditional.mode === "higher"
                 ? self.speed > conditional.speed ||
-                self.speed - target.speed > conditional.per
+                self.speed - target.speed > conditional.per ||
+                (uniqueStatuses[conditional.status] ?? 0) > 0
                 : self.speed < conditional.speed ||
-                target.speed - self.speed > conditional.per;
+                target.speed - self.speed > conditional.per ||
+                (uniqueStatuses[conditional.status] ?? 0) > 0;
 
             return [conditional.target, valid ? conditional.value : 0];
         }
@@ -174,7 +224,7 @@ function evaluateConditional(conditional, self, target) {
 
             return [conditional.target, valid ? conditional.value : 0];
         }
-            
+
         case "charge-check-potency": {
             const chargePotency = self.statuses.Charge?.potency ?? 0;
             const chargeCount = self.statuses.Charge?.count ?? 0;
@@ -190,10 +240,12 @@ function evaluateConditional(conditional, self, target) {
         }
 
         case "sp-fixed": {
+            const side = conditional.owner === "self" ? self : target;
+
             const valid =
                 conditional.mode === "higher"
-                    ? self.sp > conditional.sp
-                    : self.sp < conditional.sp;
+                    ? side.sp > conditional.sp
+                    : side.sp < conditional.sp;
 
             return [conditional.target, valid ? conditional.value : 0];
         }
@@ -217,8 +269,13 @@ function getExplanation(modifier, conditional, withResult) {
                     const component =
                         <span key={acc.length}>
                             <Status id={status.status} />
-                            {status.type === "Potency" ? " Potency" : " Count"}
-                            {status.owner === "self" ? " on self" : " on target"}
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
                         </span>
 
                     if (acc.length > 0) acc.push(<span key={`${i}-space`}> + </span>)
@@ -226,6 +283,88 @@ function getExplanation(modifier, conditional, withResult) {
                     return acc;
                 }, [])}
                 {conditional.value !== conditional.max && ` (max ${conditional.max})`}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "status-individual":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {" for every "}
+                {conditional.status.reduce((acc, status, i) => {
+                    const component =
+                        <span key={acc.length}>
+                            <span>{status.per} </span>
+                            <Status id={status.status} />
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
+                        </span>
+
+                    if (acc.length > 0) acc.push(<span key={`${i}-space`}> or </span>)
+                    acc.push(component);
+                    return acc;
+                }, [])}
+                {conditional.value !== conditional.max && ` (max ${conditional.max})`}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "status-optional-condition":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {
+                    conditional.value === conditional.max ?
+                        ` at ${conditional.per}+ ` :
+                        ` for every ${conditional.per} `
+                }
+                {conditional.status.reduce((acc, status, i) => {
+                    const component =
+                        <span key={acc.length}>
+                            <Status id={status.status} />
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
+                        </span>
+
+                    if (acc.length > 0) acc.push(<span key={`${i}-space`}> + </span>)
+                    acc.push(component);
+                    return acc;
+                }, [])}
+                {conditional.value !== conditional.max && ` (max ${conditional.max})`}
+                {" or with "}
+                <Status id={conditional.statusCond} />
+                &nbsp;
+                {formatTarget(conditional)}
+                {
+                    conditional.valueCond === conditional.maxCond ?
+                        ` at ${conditional.perCond}+ ` :
+                        ` for every ${conditional.perCond} `
+                }
+                {conditional.status.reduce((acc, status, i) => {
+                    const component =
+                        <span key={acc.length}>
+                            <Status id={status.status} />
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
+                        </span>
+
+                    if (acc.length > 0) acc.push(<span key={`${i}-space`}> + </span>)
+                    acc.push(component);
+                    return acc;
+                }, [])}
+                {conditional.valueCond !== conditional.maxCond && ` (max ${conditional.maxCond})`}
                 {withResult ? `: +${value}` : null}
             </div>;
 
@@ -293,14 +432,15 @@ function getExplanation(modifier, conditional, withResult) {
                 {withResult ? `: +${value}` : null}
             </div>
 
-        case "spd-fixed-or-diff":
+        case "spd-fixed-or-diff-or-status":
             return <div style={displayStyle}>
                 {formatTarget(conditional)}
                 {
                     conditional.mode === "higher" ?
-                        ` at ${conditional.speed + 1}+ speed or ${conditional.per} speed faster than the target` :
-                        ` at ${conditional.speed - 1}- speed or ${conditional.per} speed slower than the target`
+                        ` at ${conditional.speed + 1}+ speed or ${conditional.per} speed faster than the target or with ` :
+                        ` at ${conditional.speed - 1}- speed or ${conditional.per} speed slower than the target or with `
                 }
+                <Status id={conditional.status} />
                 {withResult ? `: +${value}` : null}
             </div>
 
@@ -345,6 +485,7 @@ function getExplanation(modifier, conditional, withResult) {
                         ` at ${conditional.sp + 1}+ sp` :
                         ` at ${conditional.sp - 1}- sp`
                 }
+                {conditional.owner === "self" ? " on self" : " on target"}
                 {withResult ? `: +${value}` : null}
             </div>;
     }
@@ -355,6 +496,7 @@ function formatTarget(conditional) {
         case "base": return `Base/Final Power +${conditional.value}`;
         case "coin": return `Coin Power +${conditional.value}`;
         case "clash": return `Clash Power +${conditional.value}`;
+        case "offense-level": return `Offense Level +${conditional.value}`
         default: return "";
     }
 }

@@ -9,6 +9,7 @@ const tagMap = {
     s: ({ children, key }) => <span key={key} style={{ textDecoration: "line-through" }}>{children}</span>,
     // 
     Bloodfiend: ({children, key}) => <span key={key}>{`<Bloodfiend>`}{children}</span>,
+    Bloodbag: ({children, key}) => <span key={key}>{`<Bloodbag>`}{children}</span>,
     "La Manchaland[TabExplain]": ({children, key}) => <span key={key}>{`<La Manchaland>`}{children}</span>,
     "Lake Entity": ({children, key}) => <span key={key}>{`<Lake Entity>`}{children}</span>,
     "District 8 Sweepers": ({children, key}) => <span key={key}>{`<District 8 Sweepers>`}{children}</span>,
