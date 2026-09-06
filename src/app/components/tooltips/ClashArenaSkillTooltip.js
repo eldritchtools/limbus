@@ -13,9 +13,10 @@ function ClashArenaSkillTooltipContent({ identityId, skill, round }) {
     if (clashingDataLoading) return null;
 
     const skillData = clashingData[identityId][skill];
+    const statusData = clashingData[identityId].statuses ?? [];
     if (round) {
-        const data = calculateSkillRange(skillData, round.self, round.target, true, true);
-        if(data.modifiers.length === 0)
+        const data = calculateSkillRange(skillData, round, statusData, true, true);
+        if (data.modifiers.length === 0)
             return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", gap: "0.2rem" }}>
                 No Conditionals
             </div>
@@ -29,12 +30,12 @@ function ClashArenaSkillTooltipContent({ identityId, skill, round }) {
         </div>
     } else {
         const emptySide = { statuses: [], hp: 100, sp: 0, speed: 1 };
-        const data = calculateSkillRange(skillData, emptySide, emptySide, true, false);
-        if(data.modifiers.length === 0)
+        const data = calculateSkillRange(skillData, { self: emptySide, target: emptySide, unique_statuses: 0 }, statusData, true, false);
+        if (data.modifiers.length === 0)
             return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", gap: "0.2rem" }}>
                 No Conditionals
             </div>
-            
+
         return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", gap: "0.2rem" }}>
             {data.modifiers.map((modifier, i) => <span key={i}>{modifier[2]}</span>)}
         </div>

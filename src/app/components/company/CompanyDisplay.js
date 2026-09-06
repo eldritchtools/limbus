@@ -372,7 +372,7 @@ function CompanyDisplayMain({
     const handleLinkCopy = async () => {
         if(!username) return;
         try {
-            await navigator.clipboard.writeText(`${SITE_ROOT}/profiles/${username}?tab=company`);
+            await navigator.clipboard.writeText(encodeURI(`${SITE_ROOT}/profiles/${username}?tab=company`));
             setHintText('Copied!');
             setTimeout(() => setHintText(null), 1500);
         } catch (err) {

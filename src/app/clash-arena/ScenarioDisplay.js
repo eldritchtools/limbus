@@ -1,11 +1,21 @@
-import StatusIcon from "../components/icons/StatusIcon";
+import StatusDisplay from "./StatusDisplay";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+
+const statusTiers = ["None", "Low", "Medium", "High"]
 
 export default function ScenarioDisplay({ round }) {
     return <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", gap: "1rem" }}>
         <ScenarioSide label={"You"} side={round.self} />
         <span style={{ alignSelf: "center", fontSize: "2rem", fontWeight: "bold" }}> - </span>
         <ScenarioSide label={"Enemy"} side={round.target} />
+        <span style={{gridColumn: "1 / span 3", textAlign: "center"}}>
+            <span
+                className="hover-text"
+                {...getGeneralTooltipProps("Many identities have statuses unique to them or shared with a small number of other identities. For the sake of fairness, these statuses have been assigned values across four tiers: none, low, medium, high. A single tier is randomized for all such statuses at the start of each round.\n\nThis means that two identities with different unique statuses will always be assigned the same tier in a given round, even if one status normally ranges from 1-5 and the other ranges from 1-30.")}
+            >
+                Unique Statuses: {statusTiers[round.unique_statuses_tier]}
+            </span>
+        </span>
     </div>
 }
 
@@ -65,26 +75,9 @@ function ScenarioSide({ label, side }) {
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem", minHeight: 42 }}>
-            {Object.entries(side.statuses).map(([status, values]) => (
-                <div key={status} style={{ position: "relative", width: 42, height: 42 }}>
-                    <StatusIcon id={status} style={{ width: "38px", height: "38px" }} />
-
-                    <span style={{
-                        position: "absolute", bottom: -3, left: -2, lineHeight: 1,
-                        fontSize: 18, fontWeight: "bold", color: "#ddd", textShadow: "0 1px 3px black"
-                    }}>
-                        {values.potency}
-                    </span>
-
-                    <span style={{
-                        position: "absolute", bottom: -3, right: -2, lineHeight: 1,
-                        fontSize: 18, fontWeight: "bold", color: "#ddd", textShadow: "0 1px 3px black"
-                    }}>
-                        {values.count}
-                    </span>
-
-                </div>
-            ))}
+            {Object.entries(side.statuses).map(([status, values]) => 
+                <StatusDisplay key={status} id={status} potency={values.potency} count={values.count} />
+            )}
         </div>
     </div>
 }
