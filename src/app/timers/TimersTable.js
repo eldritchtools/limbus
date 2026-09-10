@@ -189,7 +189,7 @@ export function HomepageTimers() {
         </div>
         {!timersLoading && timers?.events ?
             (
-                timers.events.main.showSeason ?
+                timers.events.showSeason ?
                     <TimerRow title={timers.season.name} src={timers.season.src} endDate={timers.season.endDate} column={true} tooltip={"events"} /> :
                     <TimerRow title={timers.events.main.name} src={timers.events.main.src} startDate={timers.events.main.startDate} endDate={timers.events.main.endDate} column={true} tooltip={"events"} catenc={timers.events.main.catenc} />
             ) :

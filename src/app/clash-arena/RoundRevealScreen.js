@@ -73,7 +73,7 @@ export default function RoundRevealScreen({ clashBattle }) {
             {x => {
                 const roundScore = clashBattle.results[x.player_id].points;
                 const result = clashBattle.results[x.player_id];
-                const skillData = clashBattle.clashingData[result.identity_id][result.skill];
+                const skillData = clashBattle.clashingData[result.identity_id][result.resolved_skill];
                 return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                     <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
                         {x.display_name}
@@ -89,7 +89,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                     }
                     <div key={`${x.player_id}-skill`}
                         style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}
-                        {...getClashArenaSkillTooltipProps(result.identity_id, result.skill, clashBattle.round)}
+                        {...getClashArenaSkillTooltipProps(result.identity_id, result.resolved_skill, clashBattle.round)}
                     >
                         <SkillIcon skillData={skillData} />
                         <div style={{ alignSelf: "start", maxWidth: "85%", paddingRight: "2rem", boxSizing: "border-box" }}>
@@ -161,9 +161,9 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onC
     }, [revealed]);
 
     return <>
-        <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{revealed === result.coins.length ? result.clash_value : value}</div>
+        <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{Math.max(revealed === result.coins.length ? result.clash_value : value, 0)}</div>
 
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             {result.coins.map((heads, i) =>
                 <Icon key={i} path="coin"
                     style={{ width: 24, height: 24, filter: i < revealed ? (heads ? "brightness(1.5)" : "brightness(0.5)") : "brightness(1)" }}
