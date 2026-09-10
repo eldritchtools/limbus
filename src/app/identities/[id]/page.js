@@ -10,42 +10,42 @@ import { compileSkillData } from "@/app/lib/skill";
 
 export const revalidate = 86400;
 
-export async function generateMetadata({ params }) {
-    const { id } = await params;
-    const identity = await getIdentityMetadata(id);
+// export async function generateMetadata({ params }) {
+//     const { id } = await params;
+//     const identity = await getIdentityMetadata(id);
 
-    if (!identity) {
-        return { title: "Identity not found" };
-    }
+//     if (!identity) {
+//         return { title: "Identity not found" };
+//     }
 
-    const fullName = `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${identity}`;
-    const desc = `Identity details for ${fullName} in Limbus Company, including stats, effects, notes, and usage information.`;
-    const path = `/identities/${id}`;
-    const img = getIdentityArtSrc(id, true);
+//     const fullName = `[${sinnerIdMapping[Number(id.slice(1, 3))]}] ${identity}`;
+//     const desc = `Identity details for ${fullName} in Limbus Company, including stats, effects, notes, and usage information.`;
+//     const path = `/identities/${id}`;
+//     const img = getIdentityArtSrc(id, true);
 
-    return {
-        title: fullName,
-        description: desc,
-        alternates: {
-            canonical: path
-        },
+//     return {
+//         title: fullName,
+//         description: desc,
+//         alternates: {
+//             canonical: path
+//         },
 
-        openGraph: {
-            title: fullName,
-            description: desc,
-            url: path,
-            type: "website",
-            images: [{url: img, alt: fullName}]
-        },
+//         openGraph: {
+//             title: fullName,
+//             description: desc,
+//             url: path,
+//             type: "website",
+//             images: [{url: img, alt: fullName}]
+//         },
 
-        twitter: {
-            card: "summary_large_image",
-            title: fullName,
-            description: desc,
-            images: [img]
-        }
-    };
-}
+//         twitter: {
+//             card: "summary_large_image",
+//             title: fullName,
+//             description: desc,
+//             images: [img]
+//         }
+//     };
+// }
 
 const schema = async id => {
     const name = await getIdentityMetadata(id);
