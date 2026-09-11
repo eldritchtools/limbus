@@ -8,7 +8,8 @@ import JsonLd from "@/app/lib/jsonLd";
 import { getEgoMetadata } from "@/app/lib/metadataHelper";
 import { compileSkillData } from "@/app/lib/skill";
 
-export const revalidate = 86400;
+export const dynamic = "force-static";
+export const revalidate = 2592000; // 30 days
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
