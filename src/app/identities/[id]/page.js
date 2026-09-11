@@ -8,6 +8,9 @@ import JsonLd from "@/app/lib/jsonLd";
 import { getIdentityMetadata } from "@/app/lib/metadataHelper";
 import { compileSkillData } from "@/app/lib/skill";
 
+export const dynamic = "force-static";
+export const revalidate = 2592000; // 30 days
+
 export async function generateMetadata({ params }) {
     const { id } = await params;
     const identity = await getIdentityMetadata(id);
@@ -63,6 +66,7 @@ const schema = async id => {
 
 export default async function Page({ params }) {
     const { id } = await params;
+    // return <div>Identity {id}</div>
     const [schemaData, identities, individualData, egos] = await Promise.all([
         schema(id),
         fetchData("identities"),

@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 
 import styles from "./clashArena.module.css";
+import { resolveSkills } from "./modifiers";
 import ParticipantGrid from "./ParticipantsDisplay";
 import ScenarioDisplay from "./ScenarioDisplay";
 import StatusDisplay from "./StatusDisplay";
@@ -10,9 +11,11 @@ import IdentityIcon from "../components/icons/IdentityIcon"
 import SkillIcon from "../components/icons/SkillIcon";
 import NamePill from "../components/objects/NamePill";
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
+import { getGeneralMarkdownTooltipProps } from "../components/tooltips/GeneralMarkdownTooltip";
 
 export default function RoundSelectScreen({ clashBattle }) {
     const [identityId, setIdentityId] = useState(null);
+    const [skillSlot, setSkillSlot] = useState(null);
     const [skill, setSkill] = useState(null);
 
     const [skillData, skillRange] = useMemo(() => {
@@ -23,8 +26,8 @@ export default function RoundSelectScreen({ clashBattle }) {
     }, [identityId, skill, clashBattle]);
 
     const handleConfirm = useCallback(() => {
-        clashBattle.selectSkill(identityId, skill);
-    }, [clashBattle, identityId, skill]);
+        clashBattle.selectSkill(identityId, skillSlot);
+    }, [clashBattle, identityId, skillSlot]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -69,7 +72,9 @@ export default function RoundSelectScreen({ clashBattle }) {
         <div style={{ display: "grid", gridTemplateColumns: "128px auto", gap: "0.5rem", alignItems: "center" }}>
             {Object.entries(clashBattle.skillCounts).map(([id, counts]) => <React.Fragment key={id}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div {...(clashBattle.clashingData[id].modifierDesc ? getGeneralMarkdownTooltipProps(clashBattle.clashingData[id].modifierDesc) : {})}>
                     <IdentityIcon id={id} displayName={true} displayRarity={true} />
+                    </div>
                     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
                         {
                             (clashBattle.clashingData[id].statuses ?? [])
@@ -83,29 +88,32 @@ export default function RoundSelectScreen({ clashBattle }) {
                 </div>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                     {
-                        [1, 2, 3].map(skill => {
-                            const skillData = clashBattle.clashingData[id][String(skill)]
-                            const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
-                            return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
-                                <div
-                                    className={`${styles.skillOption} ${counts[skill - 1] <= 0 ? styles.disabled : null}`}
-                                    {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round)}
-                                    onClick={() => {
-                                        if (counts[skill - 1] === 0) return;
-                                        setIdentityId(id);
-                                        setSkill(String(skill));
-                                    }}
-                                >
-                                    <SkillIcon skillData={skillData} />
-                                    <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>
-                                        x{counts[skill - 1]}
+                        resolveSkills(clashBattle.clashingData[id], [1, 2, 3, 4], clashBattle.round)
+                            .map((skill, index) => {
+                                if (index === 3 && counts[index] === 0) return;
+                                const skillData = clashBattle.clashingData[id][String(skill)]
+                                const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
+                                return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
+                                    <div
+                                        className={`${styles.skillOption} ${counts[index] <= 0 ? styles.disabled : null}`}
+                                        {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round)}
+                                        onClick={() => {
+                                            if (counts[index] === 0) return;
+                                            setIdentityId(id);
+                                            setSkill(String(skill));
+                                            setSkillSlot(String(index + 1));
+                                        }}
+                                    >
+                                        <SkillIcon skillData={skillData} />
+                                        <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>
+                                            x{counts[index]}
+                                        </span>
+                                    </div>
+                                    <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                        {range.min} - {range.max}
                                     </span>
                                 </div>
-                                <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                                    {range.min} - {range.max}
-                                </span>
-                            </div>
-                        })
+                            })
                     }
                 </div>
             </React.Fragment>)}

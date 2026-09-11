@@ -5,6 +5,7 @@ import PointsDisplay from "./PointsDisplay";
 import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
 import SkillIcon from "../components/icons/SkillIcon";
+import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import NamePill from "../components/objects/NamePill";
 import { IdentityDropdownSelector } from "../components/selectors/IdentitySelectors"
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
@@ -24,7 +25,7 @@ export default function DraftScreen({ clashBattle }) {
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
 
         <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
-            Note: Some skills and conditionals have been simplified, modified, or omitted for the simulator. This includes, among other things, mechanics involving unique statuses, enhanced skills, and resonance. Hover over a skill to see the conditionals currently implemented for it.
+            Note: Some skills and conditionals have been simplified or modified to better fit the mechanics and limitations of Clash Arena. Certain mechanics like resonance or deploying specific identities have been omitted entirely. Hover over a skill to see the conditionals currently implemented for it.
         </span>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Next Drafts</span>
@@ -58,7 +59,10 @@ export default function DraftScreen({ clashBattle }) {
                             }
                         />
                     </div>
-                    {identityId &&
+                    {identityId && <>
+                        {clashBattle.clashingData[identityId].modifierDesc &&
+                            <MarkdownRenderer content={clashBattle.clashingData[identityId].modifierDesc}/>
+                        }
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
                             {
                                 [1, 2, 3].map(skill => {
@@ -88,6 +92,7 @@ export default function DraftScreen({ clashBattle }) {
                                 })
                             }
                         </div>
+                        </>
                     }
                     {identityId && <>
                         {

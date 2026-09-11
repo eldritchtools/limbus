@@ -2,6 +2,7 @@ import ClashArenaSkillTooltip from "./ClashArenaSkillTooltip";
 import DistributionTooltip from "./DistributionTooltip";
 import EgoTooltip from "./EgoTooltip";
 import EncounterTooltip from "./EncounterTooltip";
+import GeneralMarkdownTooltip from "./GeneralMarkdownTooltip";
 import GeneralTooltip from "./GeneralTooltip";
 import GiftTooltip from "./GiftTooltip";
 import IdentityTooltip from "./IdentityTooltip";
@@ -21,6 +22,7 @@ export default function AllTooltips() {
         <IdentityTooltip />
         <EgoTooltip />
         <GeneralTooltip />
+        <GeneralMarkdownTooltip />
         <MarkdownTooltip />
         <ThemePackTooltip />
         <TimerTooltip />

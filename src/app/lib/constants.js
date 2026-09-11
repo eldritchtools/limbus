@@ -41,6 +41,7 @@ export const seasonMapping = {
     5: "5 - Oblivion",
     6: "6 - Zàng Huā Yín",
     7: "7 - Kumo no ito • oti on akA",
+    8: "8 - Punctum",
     8000: "Pilgrimage of Compassion"
 }
 

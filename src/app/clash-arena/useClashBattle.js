@@ -111,13 +111,14 @@ export function useClashBattle() {
                         if(draft_points) setDraftPoints(draft_points);
                     },
 
-                    round: ({ round_number, round }) => {
+                    round: ({ round_number, round, skill_counts }) => {
                         setPhase("roundSelect")
                         setRoundNumber(round_number);
                         setRound(round);
                         setChosenCount(0);
                         setResults(null);
                         setSkillConfirmed(false);
+                        setSkillCounts(skill_counts);
                     },
 
                     skill_chosen_count: ({ chosen_count, player_count }) => {
