@@ -179,14 +179,14 @@ function BottomLinks({ sinnerId, identities, egos }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
                 <div style={{ display: "flex", gap: "0.2rem" }}>
                     {idList.map(([id, data]) =>
-                        <NoPrefetchLink key={id} href={`/identities/${id}`}>
+                        <NoPrefetchLink key={id} href={`/identities/${id}`} scroll>
                             <IdentityIcon identity={data} displayName={true} displayRarity={true} size={92} style={{ borderRadius: "0.5rem" }} />
                         </NoPrefetchLink>
                     )}
                 </div>
                 <div style={{ display: "flex", gap: "0.2rem" }}>
                     {egoList.map(([id, data]) =>
-                        <NoPrefetchLink key={id} href={`/egos/${id}`}>
+                        <NoPrefetchLink key={id} href={`/egos/${id}`} scroll>
                             <EgoIcon ego={data} type={"awaken"} displayName={true} displayRarity={true} size={92} style={{ borderRadius: "0.5rem" }} />
                         </NoPrefetchLink>
                     )}
@@ -212,6 +212,14 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
     const { skills: preSkills, combatPassives: preCombatPassives, supportPassives: preSupportPassives } =
         compareMode ? skillData[preuptie] : { skills: null, combatPassives: null, supportPassives: null }
 
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant",
+        });
+    }, [id]);
+    
     if (!identityData) return <span className="title-text">Identity not found</span>
 
     const handleSetUptie = async (v) => {

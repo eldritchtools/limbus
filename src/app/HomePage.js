@@ -22,7 +22,7 @@ function PopularityPoll() {
         <div className="panel-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
             <BannerIcon path={"season_7"} style={{ width: "80%" }} />
             <span>
-                Since season 7 is coming to an end, I&apos;m running an end-of-season popularity poll. Vote for your favorite identities, E.G.O, NPCs, themes, events, and others from this season! Click here to submit your response or view the current results.
+                To give people ample time to finalize their answers, the end-of-season 7 popularity poll will close a few weeks into season 8, likely after Canto X&apos;s story is fully released. Click here to submit your response or view the current results.
             </span>
         </div>
     </NoPrefetchLink>

@@ -186,7 +186,7 @@ function BottomLinks({ sinnerId, identities, egos }) {
     </div>
 }
 
-export default function IdentityPage({ id, egoData, initSkillData, notesTab, initSkillsTab, minifiedIdentities, minifiedEgos }) {
+export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkillsTab, minifiedIdentities, minifiedEgos }) {
     const { getData } = useDataProvider();
     const [uptie, setUptie] = useState(egoData?.maxThreadspin ?? 4);
     const [preuptie, setPreuptie] = useState(1);
@@ -199,6 +199,14 @@ export default function IdentityPage({ id, egoData, initSkillData, notesTab, ini
     const { awakeningSkills, corrosionSkills, passives } = skillData[uptie];
     const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } =
         compareMode ? skillData[preuptie] : { awakeningSkills: null, corrosionSkills: null, passives: null }
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant",
+        });
+    }, [id]);
 
     if (!egoData) return <span className="title-text">E.G.O not found</span>
 

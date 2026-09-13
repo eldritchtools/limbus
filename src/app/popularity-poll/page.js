@@ -609,9 +609,9 @@ export default function PopularityPollPage() {
         <BannerIcon path={"season_7"} style={{width: "auto", maxWidth: "100%"}}/>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Season 7 Popularity Poll</h1>
         <span style={{ maxWidth: "1000px", textAlign: "start" }}>
-            Vote for your favorites this season! Submit or update your responses at any time while the poll is open. Current results are shown below. Refresh to see the latest results.
+            Vote for your favorites of season 7! Submit or update your responses at any time while the poll is open. Current results are shown below. Refresh to see the latest results.
             <br /> <br />
-            Anything new released in the last few weeks before the season ends will be added to the possible answers. Just edit your response if you want to change anything. Responses will be locked some time after Season 8 starts. The exact date is still to be determined.
+            Responses will be locked some time after Canto X&apos;s story is fully released to give people ample time to finalize their answers.
             <br /> <br />
             If there are any missing answers you&apos;d like to see, feel free to report it through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page. This page will be improved over time as responses come in. If you&apos;d like to suggest improvements, you can do so in the same page. Thank you!
         </span>

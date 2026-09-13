@@ -97,7 +97,7 @@ function AddImageItemButton({ onAddImages, setDraftImages, mini }) {
                 Click Here or <br /> Paste Images
             </button>
 
-            <input ref={inputRef} type="file" hidden accept="image/png,image/jpeg,image/webp,image/bmp"
+            <input ref={inputRef} type="file" hidden accept="image/png,image/jpeg,image/webp,image/bmp,image/gif"
                 onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
@@ -139,7 +139,7 @@ export default function ImageCarousel({ imageIds, onAddImages, onRemoveImage, dr
             const ids = [];
 
             for (const item of items) {
-                if (["image/png", "image/jpeg", "image/bmp", "image/webp"].includes(item.type)) {
+                if (["image/png", "image/jpeg", "image/bmp", "image/webp", "image/gif"].includes(item.type)) {
                     const file = item.getAsFile();
                     if (file) {
                         const id = crypto.randomUUID();

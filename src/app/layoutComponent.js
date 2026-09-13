@@ -12,6 +12,7 @@ import { Layout } from "@eldritchtools/shared-components";
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
 
+import NitroAd from "./components/ads/NitroAd";
 import ChatWrapper from "./components/chat/ChatWrapper";
 import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
@@ -167,6 +168,7 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                 LinkComponent={NoPrefetchLink}
                                 sidebarTopComponent={<UserStatus />}
                                 footerTopComponent={<FooterNavigation />}
+                                // sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ marginTop: "1rem" }} />}
                             >
                                 <Announcement />
                                 {children}

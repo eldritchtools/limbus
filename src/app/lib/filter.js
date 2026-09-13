@@ -84,6 +84,10 @@ const giftFilterMatchFunctions = {
     "effect": (filter, item) => (item.effects ?? []).includes(filter)
 };
 
+const facadeFilterMatchFunctions = {
+    "sinner": (filter, item) => filter === item.sinnerId,
+};
+
 export function filterByFilters(type, items, filters, additionalFilter, strictFiltering = false) {
     const [f, fe] = filters.reduce(([f, fe], filter) => {
         let exc, realFilter, category;
@@ -145,6 +149,9 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
                 }
             } else if (type === "announcer") {
                 return false;
+            } else if (type === "facade") {
+                if (!(filterType in facadeFilterMatchFunctions)) continue;
+                if (!f[filterType].some(x => facadeFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
 
@@ -160,6 +167,8 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
                 if (fe[filterType].some(x => giftFilterMatchFunctions[filterType](x, item))) return false;
             } else if (type === "announcer") {
 
+            } else if (type === "facade") {
+                if (fe[filterType].some(x => facadeFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
         return true;

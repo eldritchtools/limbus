@@ -52,10 +52,15 @@ export default function FooterNavigation() {
             Support the Site
         </NoPrefetchLink>
 
-        <div style={{display: "flex", gap: "0.5rem"}}>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
             <NoPrefetchLink href={"/privacy"} className="text-link">Privacy Policy</NoPrefetchLink>
             •
             <NoPrefetchLink href={"/terms"} className="text-link">Terms of Service</NoPrefetchLink>
+        </div>
+
+        <div>
+            <span data-ccpa-link="1"></span>
+            <div id="ncmp-consent-link"></div>
         </div>
     </div>
 }
