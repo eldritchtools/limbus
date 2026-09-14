@@ -10,6 +10,7 @@ export function NavigationLoadingProvider({ children }) {
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const timerRef = useRef(null);
+    const pathnameRef = useRef(pathname);
 
     const startNavigation = useCallback(() => {
         if (timerRef.current) clearInterval(timerRef.current);
@@ -23,8 +24,10 @@ export function NavigationLoadingProvider({ children }) {
     }, []);
 
     useEffect(() => {
-        if (!loading)
+        if (pathname === pathnameRef.current)
             return;
+
+        pathnameRef.current = pathname;
 
         if (timerRef.current) {
             clearInterval(timerRef.current);
@@ -40,7 +43,7 @@ export function NavigationLoadingProvider({ children }) {
         }, 150);
 
         return () => clearTimeout(timeout);
-    }, [pathname, loading]);
+    }, [pathname]);
 
     useEffect(() => {
         const handleClick = event => {
