@@ -12,9 +12,11 @@ import { Layout } from "@eldritchtools/shared-components";
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
 
+import NitroAd from "./components/ads/NitroAd";
 import ChatWrapper from "./components/chat/ChatWrapper";
 import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
+import { NavigationLoadingProvider } from "./components/NavigationLoadingProvider";
 import NoPrefetchLink from "./components/NoPrefetchLink";
 import RealtimeProvider from "./components/realtime/RealtimeProvider";
 import { SiteCustomizationProvider } from "./components/SiteCustomizationProvider";
@@ -149,34 +151,37 @@ function Announcement() {
 }
 
 export default function LayoutComponent({ lastUpdated, children }) {
-    return <AuthProvider>
-        <RequestsCacheProvider>
-            <SiteCustomizationProvider>
-                <DataProvider>
-                    <ModalProvider>
-                        <RealtimeProvider>
-                            <Layout
-                                title={"Limbus Company Tools"}
-                                lastUpdated={lastUpdated}
-                                // linkSet={"limbus"}
-                                description={description}
-                                gameName={"Limbus Company"}
-                                developerName={"Project Moon"}
-                                githubLink={"https://github.com/eldritchtools/limbus"}
-                                paths={paths}
-                                LinkComponent={NoPrefetchLink}
-                                sidebarTopComponent={<UserStatus />}
-                                footerTopComponent={<FooterNavigation />}
-                            >
-                                <Announcement />
-                                {children}
-                                <AllTooltips />
-                            </Layout>
-                            <ChatWrapper />
-                        </RealtimeProvider>
-                    </ModalProvider>
-                </DataProvider>
-            </SiteCustomizationProvider>
-        </RequestsCacheProvider>
-    </AuthProvider>
+    return <NavigationLoadingProvider>
+        <AuthProvider>
+            <RequestsCacheProvider>
+                <SiteCustomizationProvider>
+                    <DataProvider>
+                        <ModalProvider>
+                            <RealtimeProvider>
+                                <Layout
+                                    title={"Limbus Company Tools"}
+                                    lastUpdated={lastUpdated}
+                                    // linkSet={"limbus"}
+                                    description={description}
+                                    gameName={"Limbus Company"}
+                                    developerName={"Project Moon"}
+                                    githubLink={"https://github.com/eldritchtools/limbus"}
+                                    paths={paths}
+                                    LinkComponent={NoPrefetchLink}
+                                    sidebarTopComponent={<UserStatus />}
+                                    footerTopComponent={<FooterNavigation />}
+                                // sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ marginTop: "1rem" }} />}
+                                >
+                                    <Announcement />
+                                    {children}
+                                    <AllTooltips />
+                                </Layout>
+                                <ChatWrapper />
+                            </RealtimeProvider>
+                        </ModalProvider>
+                    </DataProvider>
+                </SiteCustomizationProvider>
+            </RequestsCacheProvider>
+        </AuthProvider>
+    </NavigationLoadingProvider>
 }

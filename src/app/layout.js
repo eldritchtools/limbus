@@ -2,6 +2,7 @@ import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
+import NitroSetup from "./components/ads/NitroSetup";
 import { fetchMeta } from "./components/DataFetcherServer";
 import LayoutComponent from "./layoutComponent";
 import { gaId } from "./lib/gaEvents";
@@ -37,17 +38,8 @@ export default async function RootLayout({ children }) {
             <head>
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="icon" href="/favicon.ico" />
-                {/* <Script async src="https://www.googletagmanager.com/gtag/js?id=G-HJ0SH2TDC8" />
-                <Script id="google-analytics">
-                    {`
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-
-                    gtag('config', 'G-HJ0SH2TDC8', {page_path: window.location.pathname});
-                    `}
-                </Script> */}
                 <JsonLd data={schema} />
+                <NitroSetup />
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
                 {gaId && <GoogleAnalytics gaId={gaId} />}

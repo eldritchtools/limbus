@@ -146,6 +146,7 @@ const optionsMapping = {
     "announcer": announcerAdvancedOptionTypes,
     "id": {...advancedOptionTypes, ...identityAdvancedOptionTypes},
     "ego": {...advancedOptionTypes, ...{}},
+    "facade": allOptionTypes,
     "none": allOptionTypes
 }
 

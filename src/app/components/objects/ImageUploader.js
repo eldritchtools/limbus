@@ -23,7 +23,7 @@ export function ImageUploader({ onImageUploaded, disabled }) {
             Upload Image
         </button>
 
-        <input ref={inputRef} type="file" hidden accept="image/png,image/jpeg,image/webp"
+        <input ref={inputRef} type="file" hidden accept="image/png,image/jpeg,image/webp,image/gif"
             onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleFile(file);

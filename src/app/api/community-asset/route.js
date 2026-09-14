@@ -14,6 +14,7 @@ const ALLOWED_TYPES = [
     "image/jpeg",
     "image/png",
     "image/webp",
+    "image/gif"
 ];
 
 export async function POST(req) {
@@ -34,7 +35,20 @@ export async function POST(req) {
         if (!file || !type) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
         const buffer = Buffer.from(await file.arrayBuffer());
+
+        const metadata = await sharp(buffer, {
+            limitInputPixels: 100_000_000,
+            animated: true
+        }).metadata();
+
+        if (metadata.width > 4000 || metadata.height / metadata.pages > 4000)
+            return NextResponse.json({ error: "Image dimensions too large" }, { status: 400 });
+
+        if (metadata.pages && metadata.pages > 200)
+            return NextResponse.json({ error: "GIF has too many frames" }, { status: 400 });
+
         let imageId;
+
         while (true) {
             imageId = nanoid();
 
@@ -59,7 +73,7 @@ export async function POST(req) {
                 ];
 
         for (const variant of variants) {
-            const optimized = await sharp(buffer, { limitInputPixels: 4000 * 4000 })
+            const optimized = await sharp(buffer, { limitInputPixels: 100_000_000, animated: true })
                 .resize({
                     width: variant.size,
                     height: variant.size,

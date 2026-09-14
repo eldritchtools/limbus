@@ -216,7 +216,7 @@ function ManageComponent({ type }) {
                         <img src={preview} alt="preview" style={{ width: 128, height: "auto", borderRadius: 8 }} />
                     )}
 
-                    <input ref={inputRef} type="file" hidden accept="image/png,image/jpeg,image/webp" onChange={onFileChange} />
+                    <input ref={inputRef} type="file" hidden accept="image/png,image/jpeg,image/webp,image/gif" onChange={onFileChange} />
 
                     <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.2rem" }}>
                         <div />
