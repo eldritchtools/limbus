@@ -1,4 +1,5 @@
 export default function NitroSetup() {
+    return null;
     if(process.env.NEXT_PUBLIC_ENABLE_NITRO_ADS !== "true") return null;
 
     return <>
