@@ -410,14 +410,14 @@ export default function RankingsPage({ tab, username }) {
         <p style={{ margin: 0 }}>
             View community rankings of Identities and E.G.O based on user ratings and reviews.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Click on an Identity or E.G.O to submit your own rating or leave a review. You can also browse reviews from other users or view your own reviews in the Reviewers tab.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Compare Identities and E.G.O based on ratings submitted by the community. Each one is rated from 0 to 10 across five criteria: clashing, damage, potential impact, utility, and usability. The results show the average ratings across all criteria. The ranking setting allows you to view rankings across specific criterion.
             <br /> <br />
-            Rankings are based on community-submitted ratings and are not the official views of the site. Expect ratings to be subject to personal preferences, trends, memes, and joke ratings.
+            A minimum rating count can be set when viewing the rankings to filter out entries with too few ratings. This is to prevent Identities and E.G.O with a small number of ratings from having an outsized effect on the rankings due to their average rating still being volatile.
             <br /> <br />
-            Rankings are retrieved when the page loads. Refresh to update the displayed rankings.
+            Users can also leave reviews to provide more context behind their ratings. Reviews can be submitted from the rankings or from the corresponding Identity or E.G.O page, and can be upvoted or marked as funny to help surface useful or entertaining reviews.
             <br /> <br />
-            Please remember that everyone experiences the game differently. Your personal experience may not align with the community average. Be respectful when there are disagreements.
+            The rankings represent community opinion rather than the official views of Limbus Company Tools. Ratings are subjective and may be influenced by differences in playstyle, personal preferences, trends, memes, and jokes, so the community average should not be treated as an objective measure of an Identity or E.G.O&apos;s quality.
         </p>
 
         {loading || identitiesLoading || egosLoading ?

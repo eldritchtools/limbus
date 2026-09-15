@@ -402,12 +402,14 @@ export default function AchievementsPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Mirror Dungeon Achievements Tracker</h1>
-        <p style={{margin: 0}}>
-            Browse all Mirror Dungeon achievements and rewards while tracking your achievement progress.
+        <p style={{ margin: 0 }}>
+            Browse all Mirror Dungeon achievements and rewards and track achievement progress.
         </p>
-        <p className="sub-text" style={{margin: 0}}>
-            Expand an achievement to view details and tips. Track completed achievements to automatically calculate your current achievement level.
-            <br/><br/>
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Browse Mirror Dungeon achievements and their rewards while tracking progress towards your achievement levels. 
+            <br /><br />
+            Achievements are grouped by type and show their point value and whether they can be completed in Normal or Hard Mirror Dungeon. Expand an achievement to view its details and tips for completing it. Track completed achievements to automatically calculate your current achievement level. You can also enter additional achievement XP earned from completing runs.
+            <br /><br />
             Progress is automatically saved after a few seconds of inactivity.
         </p>
         {achievementsLoading || dataLoading ?

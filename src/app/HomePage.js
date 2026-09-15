@@ -58,13 +58,15 @@ export default async function HomePage() {
         <div className={styles.mainContainer}>
             <h1 style={{ marginTop: "0.25rem", marginBottom: "0.25rem" }}>Limbus Company Tools</h1>
             <p>
-                Welcome, Manager to your complete Limbus Company hub.
+                Welcome, Manager, to your complete Limbus Company hub.
                 <br /> <br />
-                Share team builds and Mirror Dungeon plans, rate and review Identities and E.G.Os, and showcase your collection. Browse databases for identities, E.G.O, boss encounters, and MD content with advanced search features, keep an eye on event timers, and use gameplay tools like calculators, planners, solvers, and randomizers to optimize or spice up your runs.
+                Limbus Company Tools is a fan-made resource for Limbus Company, bringing together game information, planning tools, and community features in one place. Browse detailed databases for Identities, E.G.O, encounters, and other game content. Use search and filtering tools to help you find what you need. Timers and the game roadmap help you keep track of events and other time-sensitive content.
                 <br /> <br />
-                Use the links below to get started or visit the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to personalize your profile or site experience.
+                Plan and experiment with your gameplay using team builders, Mirror Dungeon planners, calculators, simulators, solvers, and randomizers. You can also track your MD achievements, browse E.G.O Gifts, fusion recipes, theme packs, and choice events, or try one of the site&apos;s minigames.
                 <br /> <br />
-                Curious about everything you can do here? The <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink> goes through every page and feature in more detail.
+                The community features let you share team builds and Mirror Dungeon plans, rate and review Identities and E.G.O, discover creators, and showcase your in-game collection. Visit the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to personalize your profile or site experience.
+                <br /> <br />
+                Use the links below to explore the site. The <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink>&nbsp;also provides a more detailed overview of the site&apos;s pages and features.
             </p>
             <PopularityPoll />
             <LinksMenu />

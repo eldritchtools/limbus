@@ -54,10 +54,12 @@ export default async function Page() {
         <p style={{ margin: 0 }}>
             Browse through all available Identities using search and a comprehensive set of filters.
         </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center" }}>
-            Switch on Basic Compare Mode to view the details of multiple Identities side by side.
-            <br />
-            Switch on Advanced Compare Mode for additional searching, filtering, and sorting options.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Browse through the full list of Identities. Search or filter identities by statuses, factions, tags, or seasons. Display types let you choose how much information is shown for each identity.
+            <br /><br />
+            Compare modes provide more detailed ways to examine multiple Identities at once. <strong>Basic Compare Mode</strong> places the full details of selected Identities side by side, making it easier to compare their stats, skills, passives, and other information.
+            <br /><br />
+            <strong>Advanced Compare Mode</strong> turns the catalogue into a more powerful search and analysis tool. Identities can be filtered and sorted by their stats, like HP, speed, and resistances. Skills and passives can also be searched and filtered based on properties such as power, coin count, damage type, and the text from their descriptions. This makes it possible to find Identities based on specific characteristics rather than only by name or the existing filters.
         </p>
         <IdentitiesPage initIdentities={minifiedIdentities} />
     </div>;

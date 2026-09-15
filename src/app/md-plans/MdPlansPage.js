@@ -63,7 +63,13 @@ export default function MdPlansPage({ activeMdPlans }) {
     return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>MD Plans</h1>
         <p style={{ margin: 0 }}>Browse community-created Mirror Dungeon plans. </p>
-        <p className="sub-text" style={{ margin: 0 }}>Discover recommended teams, gifts, theme packs, floor routes, and other strategies. Discover popular plans, explore new submissions, or share your own optimized routes with the community.</p>
+        <p className="sub-text" style={{ margin: 0, alignSelf: "center", maxWidth: "1280px"}}>
+            Browse Mirror Dungeon plans shared by the community, or create and share your own. Explore popular, recent, and random plans, or search for plans that fit a particular run or strategy.
+            <br /><br />
+            Each plan combines a team setup with a detailed Mirror Dungeon route, including starting buffs, E.G.O Gifts to get, a floor plan, adversities, and so on. The team section provides the Identities, E.G.O, deployment order, and other details needed to use the planned setup. A tracking mode is provided for users to mark Gifts and floors as they progress through a planned run.
+            <br /><br />
+            Plans can be searched and filtered using the available tags to help you find a run that suits what you&apos;re looking for.
+        </p>
         <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>

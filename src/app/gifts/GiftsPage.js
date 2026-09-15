@@ -277,8 +277,12 @@ export default function GiftsPage({ initGifts }) {
         <p style={{ margin: 0 }}>
             Browse all Mirror Dungeon E.G.O Gifts and view detailed information about each gift.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Search gifts by name or description, or use a wide range of tags and filters. Selecting a gift displays its effects, fusion recipes, linked events and Theme Packs, and other related information.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Browse and search E.G.O Gifts by name or description. Gifts can be filtered by tier, keyword, affinity, or the Theme Packs they appear in. Tags, triggers, and effects that categorize the Gifts by their mechanics and uses have also been added as additional filter options to make it easier to find Gifts with specific characteristics.
+            <br /><br />
+            Select a Gift to view its details for its different upgrade tiers. The details also show related information such as fusion recipes, choice events where it can appear, exclusive Theme Packs, and related Gifts for cursed and blessed Gifts.
+            <br /><br />
+            A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run or to help them track their gift compendium.
         </p>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>

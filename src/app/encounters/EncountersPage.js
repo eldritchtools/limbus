@@ -165,10 +165,12 @@ export default function EncountersPage() {
         <p style={{ margin: 0 }}>
             Browse notable encounters in Limbus Company, including boss skills, passives, and other encounter details.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Non-Mirror Dungeon encounters also include community-submitted team builds tagged for their respective encounters.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Browse notable encounters such as bosses and other challenging fights. Each encounter provides information about the fight including skills, passives, and other details to help you understand what you will be facing and plan your team accordingly.
             <br /> <br />
-            Refraction Railway and Reflectrial encounters include clear records and community leaderboards where players can submit successful clears along with details about their runs.
+            For non-Mirror Dungeon encounters, the Builds tab shows team builds specifically tagged for that encounter. These builds provide examples of teams and strategies that other players have used for the fight.
+            <br /> <br />
+            Refraction Railway and Reflectrial encounters also include a Clear Records leaderboard where players can submit their own clears. Submissions can include screenshots, details about the teams or run, and an optional video, allowing players to share how they approached the encounter and compare their results with other submissions.
         </p>
 
         {encountersLoading ?

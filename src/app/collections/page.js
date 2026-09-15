@@ -42,7 +42,11 @@ export default function Page() {
 
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Collections</h1>
         <p style={{ margin: 0 }}>Browse collections organizing related builds and Mirror Dungeon plans. </p>
-        <p className="sub-text" style={{ margin: 0 }}>Some collections accept community submissions, allowing owners to review and curate contributions from other users.</p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Group team builds and Mirror Dungeon plans into collections. Collections can be used to organize related builds and MD plans around a particular strategy, challenge, or other theme.
+            <br /><br />
+            Collection owners can also allow other users to submit their own builds and MD plans for consideration. The owner can review each submission and choose whether to add it to the collection.
+        </p>
         <CollectionsPage />
     </div>;
 }

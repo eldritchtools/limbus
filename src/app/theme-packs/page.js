@@ -223,8 +223,10 @@ export default function ThemePacksPage() {
         <p style={{ margin: 0 }}>
             Browse all Mirror Dungeon Theme Packs.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Search by name or filter Theme Packs. Click a Theme Pack to display its encounters and unique gifts.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Search and filter Theme Packs by category, the floors where they are available, or tags. Categories follow the game&apos;s in-game classifications, while tags are a slightly looser version of this.
+            <br /><br />
+            Expand a Theme Pack to view its exclusive E.G.O Gifts and see its possible boss encounters. You can also expand all Theme Packs currently shown in the catalogue at once.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
@@ -239,11 +241,11 @@ export default function ThemePacksPage() {
                     </span>
                 </label>
             </div>
-            <span 
+            <span
                 className="hover-text" style={{ textAlign: "end" }}
                 {...getGeneralTooltipProps("Strict hierarchical categorization of Theme Packs based on how the game organizes them. Use Tags for a broader style of filtering.")}
             >
-                    Filter Categories:
+                Filter Categories:
             </span>
             <CategorySelector
                 selected={selectedCategories}

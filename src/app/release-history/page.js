@@ -50,7 +50,7 @@ export default function UpdateHistoryPage() {
                 <div key={date} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start" }}>
                     <div>{date}</div>
                     <DragContainer>
-                        <div style={{ display: "flex", gap: "1px" }}>
+                        <div style={{ display: "flex", gap: "1px", width: "max-content" }}>
                             {list.map(obj => obj.id[0] === "1" ?
                                 (obj.upcoming ?
                                     <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
