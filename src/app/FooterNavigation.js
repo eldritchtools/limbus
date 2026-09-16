@@ -60,7 +60,7 @@ export default function FooterNavigation() {
 
         <div>
             <span data-ccpa-link="1"></span>
-            <div id="ncmp-consent-link"></div>
+            <div id="ncmp-consent-link" suppressHydrationWarning></div>
         </div>
     </div>
 }

@@ -544,7 +544,7 @@ export default function SiteCustomizationPage() {
 
         <SettingContainer
             name={"Ads"}
-            desc={"Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, these settings don't do anything at the moment, but you can set them in advance."}
+            desc={"Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, these settings don't do anything at the moment, but you can set them in advance. I will always strive to ensure that ads do not become obstructive or a hindrance to the site experience."}
         >
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <input type="checkbox"
@@ -564,7 +564,7 @@ export default function SiteCustomizationPage() {
                     {inContentAdsOptions[inContentAds].label}
                 </button>
             </label>
-            <span className="sub-text">Including in-content ads lets you support the site even more than the default ads on the site. There are currently no plans to include them, but I am including the option here for future proofing.</span>
+            <span className="sub-text">Including in-content ads lets you support the site even more than the default ads on the site. You can choose how many in-content ads are included on the site.</span>
 
         </SettingContainer>
 

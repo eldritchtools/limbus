@@ -48,7 +48,7 @@ export const seasonMapping = {
 export const egoRanks = ["ZAYIN", "TETH", "HE", "WAW", "ALEPH"];
 export const egoRankMapping = {"ZAYIN": 0, "TETH": 1, "HE": 2, "WAW": 3, "ALEPH": 4}
 
-export const LEVEL_CAP = 60;
+export const LEVEL_CAP = 65;
 
 export function getSeasonString(season) {
     if (season > 9100) return `Walpurgisnacht ${season - 9100}`;
