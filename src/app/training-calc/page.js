@@ -225,8 +225,14 @@ export default function TrainingCalcPage() {
         <p style={{ margin: 0 }}>
             Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of shards from crate rewards.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Calculate the resources and farming runs needed to level and uptie selected Identities and E.G.O. Select the Identities and E.G.O you want to upgrade, then set their current and target levels and uptie or Threadspin levels. The calculator determines the total Tickets, Threads, and Shards required to bring the selected items to their targets.
+            <br /><br />
+            The results also estimate how many modules and farming runs are needed to obtain the required resources. You can choose which farming stages to use for the calculation, allowing you to plan around the stages you have available. This can help you plan the resources and time needed to upgrade multiple Identities and E.G.O.
+            <br /><br />
+            A farming schedule at the bottom of the page shows which resource stages are available on each day of the game&apos;s daily schedule. There are also links to their corresponding encounters for more information.
+            <br /><br />
+            Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of Shard amounts from crate rewards.
         </p>
 
         {identitiesLoading || egosLoading ?

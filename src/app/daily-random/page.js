@@ -136,7 +136,11 @@ export default function DailyRandomizedPage() {
         <p style={{ margin: 0 }}>
             View the daily randomized team for Mirror Dungeon and other content.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            The daily team gives you a different team-building challenge each day based on a set of randomization rules. It can be used as a challenge to play with an unusual team or as a way to experiment with combinations you might not normally consider.
+            <br /><br />
+            The generated team is the same for everyone on a given day, so players can use the daily team as a shared challenge or discuss their results and experiences with the same setup.
+            <br /><br />
             Updates daily at 6AM KST ({kstToLocalTime("6AM")} local) (same schedule as the in-game reset).
         </p>
 
@@ -159,9 +163,9 @@ export default function DailyRandomizedPage() {
         <span style={{ maxWidth: "1000px", textAlign: "start", lineHeight: "1.3" }}>
             The type of random team it generates differs depending on the day of the week. These rules may change at any moment if I think of or if people suggest more interesting ones.
             <ul style={{ margin: 0 }}>
-                <li>Mon, Wed, Fri: All identity Tags/Factions with at least 4 identities are pooled together, then randomly picked one at a time until at least 5 tags/factions have been chosen and it&apos;s possible to generate a team with the selected ones. The team is randomized based on the identities in the chosen Tags/Factions.</li>
-                <li>Tue, Thu, Sat: 1-3 keywords are randomly selected. A team is randomized based on all identities with at least one of those keywords. Identities with other keywords may be selected, as long as they have at least one of the randomized keywords.</li>
-                <li>Sun: A team is randomized from all identities in the game.</li>
+                <li>Monday, Wednesday, Friday: All Identity Tags and Factions with at least 4 identities are pooled together, then randomly picked one at a time until at least 5 Tags/Factions have been chosen and it&apos;s possible to generate a team with the selected ones. The team is randomized based on the identities in the chosen Tags/Factions.</li>
+                <li>Tuesday, Thursday, Saturday: 1-3 keywords are randomly selected. A team is randomized based on all identities with at least one of those keywords. Identities with other keywords may be selected, as long as they have at least one of the randomized keywords.</li>
+                <li>Sunday: A team is randomized from all identities in the game.</li>
             </ul>
             The randomizer uses the date as its random seed, making sure that everyone gets the same team. There is a small caveat that if the data changes, the randomized teams can also change, so be wary of days when new data may be added.
         </span>
