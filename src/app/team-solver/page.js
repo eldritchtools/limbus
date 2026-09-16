@@ -336,8 +336,16 @@ export default function TeamSolverPage() {
         <p style={{ margin: 0 }}>
             Generate teams that satisfy keyword or status requirements while following specified constraints.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            You can fix identities, restrict sinners, or use whitelist and blacklist options to guide the solver. Generated teams can be exported directly into a Team Build.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Generate teams that satisfy specified keyword, status, faction, or tag requirements while following your chosen constraints. The solver searches through available Identities and produces multiple teams that meet the conditions you set. This can be useful for finding teams that satisfy specific requirements without manually testing different combinations or finding alternatives to team configurations you normally use.
+            <br /><br />
+            You can require a minimum number of Identities with particular statuses, keywords, factions, or tags, as well as set a maximum team size. The whitelist and blacklist feature can restrict which Identities are allowed, while individual Identities can be fixed into every generated team or sinners disabled from being selected.
+            <br /><br />
+            Placeholder Identities can also be added for Identities that do not exist in the game yet. This can be useful for planning around upcoming or hypothetical Identities without requiring them to already be available in the database.
+            <br /><br />
+            Generated teams include a team code that can be copied directly into the game. You can also copy the generated team into a Team Build to save or share it.
+            <br /><br />
+            The solver offers Balanced, Faster, and Variety search modes depending on whether you want to balance search time with the variety of results. The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. Only Identities that match at least one of your requirements will be considered.
         </p>
 
         {identitiesLoading || keywordModDataLoading || initializing ?
@@ -490,10 +498,6 @@ export default function TeamSolverPage() {
                 </div>
 
                 {wbListOpen && <WbList wbState={wbState} />}
-
-                <span style={{ maxWidth: "1000px", textAlign: "left" }}>
-                    The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. You can switch between Balanced, Faster, and Variety modes depending on whether you prefer speed or more varied results. Only identities that match at least one of your requirements will be considered.
-                </span>
 
                 <h3 style={{ margin: 0 }}>Results</h3>
 

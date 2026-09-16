@@ -218,10 +218,11 @@ export const guideData = [
             },
             {
                 title: "Company",
-                description: "Manage the Identities, E.G.O, and Announcers you own for use in your profile and filtering in tools.",
+                description: "Manage the Identities, E.G.O, Announcers, and Façades you own for use in your profile and filtering in tools.",
                 details: [
-                    "This page allows you to select all the Identities, E.G.O, and Announcers you own. Any changes are automatically saved after being idle for a while, but there is also a button to manually trigger a save.",
+                    "This page allows you to select all the Identities, E.G.O, Announcers, and Façades you own. Any changes are automatically saved after being idle for a while, but there is also a button to manually trigger a save.",
                     "Once set, your company is viewable in your profile. You can use this to more easily share what you have instead of taking screenshots in-game.",
+                    "A wishlist feature is available to mark things you plan to get in the future.",
                     "You can also use your company to filter out builds with Identities or E.G.Os you don't own when searching in the Team Builds page.",
                     "Some of the tools on the site also allow you to use your company to quickly apply relevant settings like blacklisting.",
                     "Advanced filtering/sorting options are available here. See the Shared Features section for more details on them."

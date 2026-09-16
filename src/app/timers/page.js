@@ -102,6 +102,9 @@ export default function TimersPage() {
         <p style={{ margin: 0 }}>
             Timers for ongoing and upcoming content, the seasonal roadmap, and the number of days since each character&apos;s latest Identity and E.G.O release.
         </p>
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Track ongoing and upcoming content with timers for events and other time-sensitive activities. The page also displays the latest seasonal roadmap released by the developers and shows how long it has been since each sinner or keyword received a new Identity or E.G.O.
+        </p>
 
         {identitiesLoading || egosLoading || timersLoading ?
             <LoadingContentPageTemplate /> : <>

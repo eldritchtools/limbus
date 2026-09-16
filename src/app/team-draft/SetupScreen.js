@@ -16,17 +16,17 @@ export default function SetupScreen({ settings, setSettings, wbState, wbOpen, se
         setSettings(defaultSettings)
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", width: "100%", maxWidth: "1000px", gap: "2rem" }}>
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", width: "100%", maxWidth: "1280px", gap: "2rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Team Draft</h1>
-        <span style={{ maxWidth: "1000px", textAlign: "start" }}>
-            Build a full team one sinner at a time.
+        <p style={{ margin: 0, maxWidth: "1280px", textAlign: "start" }}>
+            Build a full team one Sinner at a time through a randomized drafting game. Each round presents several randomly generated options, with each option consisting of an Identity and a number of E.G.O. Choose one option to add to your team, then continue drafting until all rounds are complete.
             <br /> <br />
-            Over up to 12 rounds, you will be presented with multiple randomly generated options, each consisting of one Identity and a number of E.G.O. You have a limited time to choose one option before moving to the next round. If you fail to choose, one option will be selected at random.
+            The draft can be customized to control how the team is formed and how random the available options are. To limit the available options to Identities and E.G.O you own, you can use your Company data for the whitelist or blacklist. This requires your Company to be set up on the <NoPrefetchLink className="text-link" href="/company">Company</NoPrefetchLink> page.
             <br /> <br />
-            After all rounds are complete, your team can be exported as a team code for use in Mirror Dungeons, Refraction Railways, Reflectrials, or other content.
+            The draft provides a more interactive alternative to simply randomizing a team, giving you choices during the process while still leaving the final composition partly to chance.
             <br /> <br />
-            To limit the available options to Identities and E.G.O you own, use the black/whitelist to apply your Company data. This requires it to be set in the  <NoPrefetchLink className="text-link" href="/company">Company</NoPrefetchLink> page.
-        </span>
+            After all rounds are complete, your team can be exported as a team code for use in Mirror Dungeons, Refraction Railways, Reflectrials, or other content in the game.
+        </p>
 
         <div className={styles.setupLayout}>
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>

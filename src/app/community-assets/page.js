@@ -308,12 +308,12 @@ export default function CommunityAssetsPage() {
         <p style={{ margin: 0 }}>
             Upload community emotes and stickers that anyone can use in posts, comments, and other content through the site&apos;s token system.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Uploaded emotes and stickers are searchable through the emote/sticker picker available in every Markdown editor on the site.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Upload community-created emotes and stickers for use across Limbus Company Tools. Once uploaded, assets can be used in comments, chat, descriptions, and other content through the emote and sticker pickers available in every Markdown editor on the site.
             <br /><br />
             Please only upload content you have permission to use. Inappropriate content or misuse of the system may result in upload restrictions.
             <br /><br />
-            Search for existing assets before uploading to help avoid duplicates.
+            Before uploading, search for existing assets to help avoid duplicates.
         </p>
 
         <div style={{ display: "flex", gap: "1rem" }}>

@@ -157,7 +157,7 @@ function EgoList({
     },
         [
             initState, initEgos, egos, egosLoading,
-            searchString, filters, company, companyFilter, 
+            searchString, filters, company, companyFilter,
             selectedStatuses, selectedSeasons,
             strictFiltering, altNames, altNamesLoading
         ]);
@@ -307,10 +307,12 @@ export default function EgosPage({ initEgos }) {
             <p style={{ margin: 0 }}>
                 Browse through all available E.G.O using search and a comprehensive set of filters.
             </p>
-            <p className="sub-text" style={{ margin: 0, textAlign: "center" }}>
-                Switch on Basic Compare Mode to view the details of multiple E.G.O side by side.
-                <br />
-                Switch on Advanced Compare Mode for additional searching, filtering, and sorting options.
+            <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+                Browse through the full list of E.G.O. Search or filter them by statuses, seasons, or other filters. Display types let you choose how much information is shown for each E.G.O.
+                <br /><br />
+                Compare modes provide more detailed ways to examine multiple E.G.O at once. <strong>Basic Compare Mode</strong> places the full details of selected E.G.O side by side, making it easier to compare their stats, skills, passives, and other information.
+                <br /><br />
+                <strong>Advanced Compare Mode</strong> turns the catalogue into a more powerful search and analysis tool. E.G.O can be filtered and sorted by their costs and resistances. Skills and passives can also be searched and filtered based on properties like power, coin count, damage type, and text from their descriptions. This makes it possible to find E.G.O based on specific characteristics rather than only by name or the existing filters.
             </p>
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>

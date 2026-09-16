@@ -68,7 +68,7 @@ function Banner({ banner, identities, egos, announcers, isMobile, selected, setS
                 const insertItem = (isIdentity, id, obj) => {
                     if (obj.sinnerId !== v || obj.season >= 8000 || obj.upcoming) return;
                     if (isIdentity) {
-                        if(obj.eventReward) return;
+                        if (obj.eventReward) return;
                         items[obj.rank].push(id);
                     } else {
                         if (egos[id].extractable || (obj.sinnerId === v && egos[id].eventExtractable)) items["ego"].push(id);
@@ -300,7 +300,7 @@ export default function ExtractionSimulatorPage() {
             let rnd = Math.random() * 100;
             if (items.announcer.length > 0 || extractableAnnouncers.length > 0) {
                 if (rnd < 1.3) {
-                    if(extractableAnnouncers.length > 0) {
+                    if (extractableAnnouncers.length > 0) {
                         if (items.announcer.length > 0 && Math.random() < 0.5) return ["announcer", pickRandom(items.announcer)];
                         else return ["announcer", pickRandom(extractableAnnouncers)];
                     } else {
@@ -442,8 +442,12 @@ export default function ExtractionSimulatorPage() {
         <p style={{ margin: 0 }}>
             Choose an existing or custom banner to simulate extractions.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Calculate the probability of obtaining featured items over a specified number of pulls.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Simulate extractions using existing, upcoming, or custom banners. Existing and upcoming banners are kept updated with the game&apos;s current extraction pools, while custom banners let you choose which Identities and E.G.O are available.
+            <br /><br />
+            Use Pull 1 or Pull 10 to simulate extractions from the selected banner. You can also choose whether to include Walpurgis items and toggle E.G.O in the extraction pool, allowing you to simulate different extraction scenarios.
+            <br /><br />
+            A probability calculator at the bottom of the page shows the chances of obtaining items from the selected banner over a chosen number of pulls. You can calculate probabilities for all items, Identities, E.G.O, or Announcers and see how the chances change from 1 pull up to your specified number of pulls. The results show the probability of obtaining different numbers of the selected item type, from one item up to all of the available items.
             <br /><br />
             Results may differ slightly from the game due to possible differences in how randomization is implemented.
         </p>

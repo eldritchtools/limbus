@@ -45,7 +45,7 @@ export default function SupportPage() {
                 ]} expandedDefault={true} button={true} />
             </div>
             <span style={{ lineHeight: "1.3" }}>
-                In the future, I may introduce a small number of unobtrusive ads to help cover costs. There is an option in the <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page to disable them, but if you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
+                The site is currently preparing to introduce a small number of unobtrusive ads to help cover the costs of running and maintaining the site. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes an option to disable them, but if you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
             </span>
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Other Support</h2>

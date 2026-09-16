@@ -52,7 +52,13 @@ export default async function Page() {
         <JsonLd data={schema} />
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Builds</h1>
         <p style={{ margin: 0 }}>Browse community-created team builds. </p>
-        <p className="sub-text" style={{ margin: 0 }}>Discover teams for general content, Mirror Dungeon, Railway, Luxcavation, story battles, and specific encounters. Explore popular builds, see the latest submissions, or find strategies for individual boss fights.</p>
+        <p className="sub-text" style={{ margin: 0 }}>
+            Browse team builds shared by the Limbus Company community, or create and share your own. Explore popular, recent, and random builds, or find teams created for specific encounters.
+            <br /><br />
+            Builds can be searched and filtered in a variety of ways, including by text, tags, and keywords. You can also look specifically for teams that include or exclude particular identities or E.G.O.
+            <br /><br />
+            Each build provides the team&apos;s Identities, E.G.O, deployment order, stats, and other information. Builds may also include a description, images, and a linked video.
+        </p>
         <BuildsPage activeBuilds={buildsMinified} />
     </div>;
 }

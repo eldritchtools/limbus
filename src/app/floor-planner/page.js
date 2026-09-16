@@ -238,11 +238,15 @@ export default function FloorPlannerPage() {
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Floor Planner</h1>
-        <p style={{margin: 0}}>
+        <p style={{ margin: 0 }}>
             Plan Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.
         </p>
-        <p className="sub-text" style={{margin: 0}}>
-            Use the Exclusive Gifts Helper to find Theme Packs that contain the gifts you want. Floor Plans can be exported directly into full MD Plans.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Plan Mirror Dungeon floor routes by selecting Theme Packs for each floor. The planner shows the exclusive Gifts available from the Theme Packs you choose, letting you see which Gifts are accessible along your planned route and adjust your choices accordingly. You can use it to plan a run in advance or track the route of an ongoing run to help with decisions on later floors. You can also display the possible boss encounters for each Theme Pack.
+            <br /><br />
+            The Exclusive Gifts Helper lets you select the exclusive Gifts you want to obtain and finds Theme Packs that provide them. It can help identify Theme Packs that contain the most of your desired Gifts when deciding which ones to choose for your route.
+            <br /><br />
+            Floor Plans can be exported directly into a full MD Plan, where you can add the team, starting buffs, and other details before saving or sharing the plan.
         </p>
         <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
             <label>

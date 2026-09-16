@@ -133,9 +133,7 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        I added a new minigame <NoPrefetchLink className="text-link" href={"/clash-arena"}>Clash Arena</NoPrefetchLink> where you draft teams against other players and compete against each other to see who can clash the highest against randomly generated scenarios. Invite some friends and try it out!
-                        <br /><br />
-                        Move-in Reg Greg, custom loading screens, and clearing old audio files have been added to the end-of-season <NoPrefetchLink className="text-link" href={"/popularity-poll"}>popularity poll</NoPrefetchLink>. You can edit your answers if you want to change them.
+                        As mentioned in a previous announcement, I&apos;ve been working on introducing ads to the site to help cover hosting and development costs. There are no ads yet, but things have been progressing in the background. As part of the requirements for this, users from regions with applicable privacy and consent laws may now see consent links and forms relevant to their region.
                     </span>
                 </div>
 

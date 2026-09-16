@@ -238,8 +238,12 @@ export default function TeamRandomizerPage() {
         <p style={{ margin: 0 }}>
             Generate randomized teams using customizable settings like fixed identities, whitelist, and blacklist options.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Generated teams can be exported directly into a Team Build to save or share them.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Generate randomized teams of Identities and E.G.O with customizable settings. You can choose whether to randomize Identities, E.G.O, or both, and control the chance of leaving E.G.O slots empty.
+            <br /><br />
+            Specific Identities and E.G.O can be fixed to particular slots by clicking on their slots below. Whitelist and blacklist options can restrict which ones are eligible for randomization. The generated team can be viewed using different display types to show different amounts of information about its Identities and E.G.O.
+            <br /><br />
+            Generated teams include a team code that can be copied directly into the game. You can also copy the generated team into a Team Build to save or share it.
         </p>
         {
             identitiesLoading || egosLoading || initializing ?

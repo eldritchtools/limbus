@@ -164,8 +164,10 @@ export default function FusionsPage() {
         <p style={{ margin: 0, alignSelf: "center" }}>
             Browse all E.G.O Gift fusion recipes.
         </p>
-        <p className="sub-text" style={{ margin: 0, alignSelf: "center" }}>
-            Search recipes by names or descriptions of relevant gifts or by using filters, and view their requirements.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", alignSelf: "center", maxWidth: "1280px" }}>
+            Search recipes by the name or description of the resulting E.G.O Gift or its ingredients. Recipes can be filtered by keywords and exclusive Theme Packs.
+            <br /><br />
+            Each recipe shows the required Gifts, whether it can be obtained in Normal or Hard Mirror Dungeon, and any Theme Packs you need to visit to obtain its ingredients.
         </p>
 
         {!giftsLoading && <>

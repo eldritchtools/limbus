@@ -171,11 +171,13 @@ export default function UniversalGiftsPage() {
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Universal Gifts & Gift Combos</h1>
         <p style={{ maxWidth: "1000px", textAlign: "left" }}>
-            These are gifts and combos that have benefits for most team compositions in Mirror Dungeons. Gift combos are especially useful for infinity, extreme, or challenge runs.
+            This page lists Gifts and Gift combinations that have benefits for most team compositions in Mirror Dungeons. Universal Gifts provide a benefit without requiring a particular team composition or status archetype, while Gift Combos describe combinations of Gifts that can provide useful effects when used together. Gift combos are especially useful for Infinity, Extreme, or Challenge runs.
             <br /> <br />
             Items are loosely ordered by relevance within each category, but this varies significantly depending on team composition and situation, so the ordering should be taken as a rough guide rather than a strict ranking. Gifts with unreliable conditions are placed lower on the list.
             <br /> <br />
             Some gifts require specific theme packs that may prevent you from obtaining other gifts. Use your discretion when planning routes. Gifts from hidden bosses or theme packs and EX gifts are excluded since they cannot be obtained by normal means.
+            <br /> <br />
+            A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run.
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>

@@ -67,7 +67,7 @@ export function NavigationLoadingProvider({ children }) {
             if (
                 url.pathname === window.location.pathname &&
                 url.search === window.location.search &&
-                url.hash
+                url.hash === window.location.hash
             )
                 return;
 
@@ -77,7 +77,7 @@ export function NavigationLoadingProvider({ children }) {
         document.addEventListener("click", handleClick, true);
 
         return () => {
-            document.addEventListener("click", handleClick, true);
+            document.removeEventListener("click", handleClick, true);
         };
     }, [startNavigation]);
 

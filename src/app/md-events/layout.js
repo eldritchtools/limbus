@@ -43,8 +43,12 @@ export default function MdEventsLayout({ children }) {
         <p style={{ margin: 0 }}>
             Browse all Mirror Dungeon Choice Events.
         </p>
-        <p className="sub-text" style={{ margin: 0 }}>
-            Search by title, gift rewards, or choice text, and view the effects of every available outcome.
+        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+            Browse all Mirror Dungeon choice events and their possible outcomes.
+            <br /><br />
+            Search events by their name, choice text, or possible E.G.O Gift rewards. You can also filter events by the Theme Packs they appear in.
+            <br /><br />
+            Each event shows its possible Gift rewards and any affinities that receive a bonus or handicap when the event includes a check. Expand an event to view its description and all of its choices, including branching options and the details of their checks, requirements, and outcomes.
         </p>
         {children}
     </div>

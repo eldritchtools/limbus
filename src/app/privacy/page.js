@@ -75,6 +75,28 @@ export default function PrivacyPage() {
 
             <p>Google may process this information according to its own policies.</p>
 
+            <h2>Advertising</h2>
+
+            <p>The website displays advertising served through third-party advertising partners. These advertising partners may independently collect and process information about visitors as independent controllers of the data they collect. Their processing is subject to their own privacy policies and applicable privacy choices.</p>
+
+            <p>Advertising partners may use cookies, device identifiers, and similar technologies to serve and measure advertisements. This may include using information for purposes such as frequency capping, advertising measurement, fraud prevention, and personalized advertising. This advertising-related processing is separate from the Google Analytics usage described above.</p>
+
+            <h3>US privacy choices</h3>
+
+            <p>Depending on your location and applicable law, you may have the right to opt out of the sale or sharing of personal information for purposes such as targeted or personalized advertising. The applicable opt-out option is available below and in the footer available on any page on the website.</p>
+
+            <span data-ccpa-link="1"></span>
+
+            <h3>EU and UK consent</h3>
+
+            <p>Visitors in the European Union and United Kingdom can review or change their advertising consent using the Update content preferences link available below and in the footer available on any other page on the website. The consent management system also provides access to the applicable IAB Transparency and Consent Framework (TCF) vendor list, which identifies vendors that may process information through the consent framework.</p>
+            
+            <div id="ncmp-consent-link"></div>
+
+            <h3>Advertising partner data</h3>
+
+            <p>Our existing account and data deletion process applies to information stored by Eldritch Tools and does not necessarily delete information independently held by advertising partners. Advertising-related consent and privacy choices for information processed by those partners can be managed through the relevant consent links.</p>
+
             <h2>Realtime features</h2>
 
             <p>Some features use realtime connections to provide multiplayer rooms, community chat, and other interactive functionality. These features can be used without an account.</p>
@@ -124,7 +146,7 @@ export default function PrivacyPage() {
 
             <h2>Data sharing</h2>
 
-            <p>We do not sell personal data.</p>
+            <p>We do not sell personal data ourselves. However, third-party advertising partners may independently process information for advertising purposes as described in the Advertising section above, including where applicable activities that may be considered a sale or sharing of personal information under certain US state privacy laws.</p>
 
             <p>Information may be provided to the third-party services described in this policy when necessary to operate the website and its features.</p>
 
