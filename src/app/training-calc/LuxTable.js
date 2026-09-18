@@ -52,7 +52,7 @@ export default function LuxTable() {
                 <div className="title-text" style={{ ...cellStyle, gridColumn: "span 7" }}>
                     <CellTitle ids={["blunt"]} title={"BLUNT"} />
                 </div>
-                <div className="title-text" style={cellStyle}>XP (Lvl 48, 53, 58)</div>
+                <div className="title-text" style={cellStyle}>XP (Lvl 48, 53, 58, 63)</div>
                 <div className="title-text" style={{ ...cellStyle }}>
                     <CellTitle ids={["slash", "pierce", "blunt"]} title={"ALL"} />
                 </div>
@@ -97,15 +97,15 @@ export default function LuxTable() {
         }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <CellTitle ids={["slash"]} title={"SLASH"} />
-                <EncountersComponent levels={[8, 33, 48, 53, 58]} type={"slash"} />
+                <EncountersComponent levels={[8, 33, 48, 53, 58, 63]} type={"slash"} />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <CellTitle ids={["pierce"]} title={"PIERCE"} />
-                <EncountersComponent levels={[18, 38, 48, 53, 58]} type={"pierce"} />
+                <EncountersComponent levels={[18, 38, 48, 53, 58, 63]} type={"pierce"} />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <CellTitle ids={["blunt"]} title={"BLUNT"} />
-                <EncountersComponent levels={[28, 43, 48, 53, 58]} type={"blunt"} />
+                <EncountersComponent levels={[28, 43, 48, 53, 58, 63]} type={"blunt"} />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <CellTitle ids={["wrath"]} title={"WRATH"} />
