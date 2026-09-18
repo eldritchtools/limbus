@@ -164,6 +164,9 @@
       "60-pride": "Level 60 - Pride",
       "60-sloth": "Level 60 - Sloth",
       "60-wrath": "Level 60 - Wrath",
+      "63-blunt": "Level 63 - Blunt",
+      "63-pierce": "Level 63 - Pierce",
+      "63-slash": "Level 63 - Slash",
       "8-slash": "Level 8 - Slash"
     },
     "md": {
@@ -260,6 +263,7 @@
     },
     "story": {
       "1-11": "The Outcast Dungeon (1-11)",
+      "10-4": "Grand Magasin Sisyphe (10-4)",
       "2-18": "The Unloving (2-18)",
       "2-19": "The Unloving Dungeon (2-19)",
       "3-13": "The Unconfronting (3-13)",

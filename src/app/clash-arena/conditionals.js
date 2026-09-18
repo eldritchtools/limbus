@@ -35,6 +35,21 @@ export function evaluateConditional(conditional, self, target, uniqueStatuses) {
                 Math.min(total * conditional.value, conditional.max)
             ];
         }
+        case "status-low": {
+            const total = conditional.status.reduce((sum, status) => {
+                if (status.owner === "unique") {
+                    return sum + uniqueStatuses[status.status] ?? 0;
+                } else {
+                    const side = status.owner === "self" ? self : target;
+                    return sum + (side.statuses[status.status]?.[status.type.toLowerCase()] ?? 0);
+                }
+            }, 0);
+
+            return [
+                conditional.target,
+                total <= conditional.limit ? conditional.value : 0
+            ];
+        }
         case "status-optional-condition": {
             const total = conditional.status.reduce((sum, status) => {
                 if (status.owner === "unique") {
@@ -258,6 +273,30 @@ export function getExplanation(modifier, conditional, withResult) {
                     return acc;
                 }, [])}
                 {conditional.value !== conditional.max && ` (max ${conditional.max})`}
+                {withResult ? `: +${value}` : null}
+            </div>;
+            
+        case "status-low":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {` at ${conditional.limit}- `}
+                {conditional.status.reduce((acc, status, i) => {
+                    const component =
+                        <span key={acc.length}>
+                            <Status id={status.status} />
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
+                        </span>
+
+                    if (acc.length > 0) acc.push(<span key={`${i}-space`}> + </span>)
+                    acc.push(component);
+                    return acc;
+                }, [])}
                 {withResult ? `: +${value}` : null}
             </div>;
 
