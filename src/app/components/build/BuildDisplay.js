@@ -51,7 +51,7 @@ export function BuildDisplayMain({ build, displayType, disableLinks, otherOpts }
 
 export default function BuildDisplay({ displayType, ...props }) {
     if (displayType === "calc") {
-        return <BuildDisplayCalc {...props} />
+        return <BuildDisplayCalc displayType={displayType} {...props} />
     } else {
         return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
             <BuildDisplayMain displayType={displayType} {...props} />

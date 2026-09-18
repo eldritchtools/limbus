@@ -5,9 +5,9 @@ const statusTiers = ["None", "Low", "Medium", "High"]
 
 export default function ScenarioDisplay({ round }) {
     return <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", gap: "1rem" }}>
-        <ScenarioSide label={"You"} side={round.self} />
+        <ScenarioSide label={"Player"} side={round.self} />
         <span style={{ alignSelf: "center", fontSize: "2rem", fontWeight: "bold" }}> - </span>
-        <ScenarioSide label={"Enemy"} side={round.target} />
+        <ScenarioSide label={"Target"} side={round.target} />
         <span style={{gridColumn: "1 / span 3", textAlign: "center"}}>
             <span
                 className="hover-text"
