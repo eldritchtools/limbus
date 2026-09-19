@@ -34,7 +34,10 @@ export default function SetupScreen({ clashBattle }) {
 
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                 <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
-                    onChange={x => clashBattle.setSetting("teamSize", x)}
+                    onChange={x => {
+                        clashBattle.setSetting("teamSize", x);
+                        if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
+                    }}
                     style={{ textAlign: "center", width: "5ch" }}
                     disabled={!clashBattle.isHost}
                 />

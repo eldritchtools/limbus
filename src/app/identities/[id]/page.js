@@ -87,6 +87,7 @@ export default async function Page({ params }) {
         skills={skillData.skills}
         combatPassives={skillData.combatPassives} supportPassives={skillData.supportPassives}
         compareMode={false} serverText={true}
+        skillBonuses={true} passiveBonuses={false}
     />
 
     const sinnerId = identities[id].sinnerId;

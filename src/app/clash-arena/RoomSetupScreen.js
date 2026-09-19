@@ -59,6 +59,15 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
             Join Room
         </span>
         <span className="sub-text">Join a room hosted by someone else.</span>
+        {clashBattle.lastRoomId && <>
+            <span
+                className="text-link" style={{ fontSize: "1.2rem" }}
+                onClick={() => clashBattle.joinRoom(false, displayName, clashBattle.lastRoomId, setJoinMessage)}
+            >
+                Rejoin Room {clashBattle.lastRoomId}
+            </span>
+            <span className="sub-text">Rejoin the last joined room {clashBattle.lastRoomId}. Does not work if the room no longer exists.</span>
+        </>}
         {joinMessage && <span>{joinMessage}</span>}
     </div>
 }

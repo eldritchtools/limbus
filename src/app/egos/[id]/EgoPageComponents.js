@@ -28,7 +28,7 @@ export function NotesTab({ notes }) {
     </div>
 }
 
-export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCorrosionSkills, passives, prePassives, compareMode, preuptie, serverText }) {
+export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCorrosionSkills, passives, prePassives, compareMode, preuptie, serverText, skillBonuses }) {
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.25rem" }}>
         <div className="title-text">Skills</div>
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
@@ -39,6 +39,7 @@ export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills
                     pre={compareMode ? preAwakeningSkills[i].data : null}
                     noBorder={true}
                     serverText={serverText}
+                    skillBonuses={skillBonuses} passiveBonuses={false}
                 />
             </div>)}
         </div>
@@ -50,6 +51,7 @@ export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills
                     pre={compareMode ? preCorrosionSkills[i].data : null}
                     noBorder={true}
                     serverText={serverText}
+                    skillBonuses={skillBonuses} passiveBonuses={false}
                 />
             </div>)}
         </div>
