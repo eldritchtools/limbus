@@ -15,11 +15,14 @@ import { getGeneralTooltipProps } from "../tooltips/TooltipProps";
 import { affinityColorMapping } from "@/app/lib/colors";
 import { constructOffDefLevel } from "@/app/lib/skill";
 
-export default function SkillCard({ skill, label = "", count = 0, level, mini = false, pre, includeSkillValues = true, noBorder = false, serverText }) {
+export default function SkillCard({
+    skill, label = "", count = 0, level, mini = false, pre, noBorder = false, serverText,
+    includeSkillValues = true, skillBonuses = true, passiveBonuses = true
+}) {
     const skillValues = useMemo(() => {
         if (!skill || !includeSkillValues) return null;
-        return computeSkillValues(skill);
-    }, [skill, includeSkillValues]);
+        return computeSkillValues(skill, level, skillBonuses, passiveBonuses);
+    }, [skill, includeSkillValues, level, skillBonuses, passiveBonuses]);
 
     if (!skill) return null;
 
@@ -80,7 +83,7 @@ export default function SkillCard({ skill, label = "", count = 0, level, mini = 
                     <Icon className={iconClass} path={"offense level"} /> :
                     <Icon className={iconClass} path={"defense level"} />
                 }
-                {constructOffDefLevel(skill, level)}
+                {(skillBonuses || passiveBonuses) && level ? skillValues.min[2] : constructOffDefLevel(skill, level)}
             </span>
             {includeSkillValues ? <>
                 <span className={styles.pill} {...getGeneralTooltipProps("Assumes all conditionals against a target with defense level equal to the offense level of the skill. Some passives and other effects may not be included.\nUse the calculator in Display Type in a Team Build for a more detailed calculation.")}>

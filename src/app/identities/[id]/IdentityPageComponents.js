@@ -25,7 +25,7 @@ export function NotesTab({ notes }) {
     </div>
 }
 
-export function SkillsTab({ identityData, level, skills, preSkills, combatPassives, supportPassives, passivesPreMapping, compareMode, serverText }) {
+export function SkillsTab({ identityData, level, skills, preSkills, combatPassives, supportPassives, passivesPreMapping, compareMode, serverText, skillBonuses, passiveBonuses }) {
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.25rem" }}>
             <div className="title-text">Skills</div>
@@ -41,6 +41,7 @@ export function SkillsTab({ identityData, level, skills, preSkills, combatPassiv
                             pre={compareMode ? (preSkills[skill.id]?.data ?? {}) : null}
                             noBorder={true}
                             serverText={serverText}
+                            skillBonuses={skillBonuses} passiveBonuses={passiveBonuses}
                         />
                     </div> : null)}
                 </div>
@@ -54,6 +55,7 @@ export function SkillsTab({ identityData, level, skills, preSkills, combatPassiv
                         pre={compareMode ? (preSkills[skill.id]?.data ?? {}) : null}
                         noBorder={true}
                         serverText={serverText}
+                        skillBonuses={skillBonuses} passiveBonuses={passiveBonuses}
                     />
                 </div> : null)}
             </div>

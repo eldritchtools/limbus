@@ -173,7 +173,7 @@ function BottomLinks({ sinnerId, identities, egos }) {
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start", maxWidth: "100%", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.2rem", marginTop: "1rem" }}>
         <h4 key={id} style={{ display: "flex", gap: "0.2rem", alignItems: "center", alignSelf: "center", margin: 0 }}>
             Select Sinner:
-            <DropdownButton value={id} setValue={setId} options={options} styleOverride={{border: "none", background: "none", padding: 0}} />
+            <DropdownButton value={id} setValue={setId} options={options} styleOverride={{ border: "none", background: "none", padding: 0 }} />
         </h4>
         <DragContainer>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
@@ -200,6 +200,8 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
     const { getData } = useDataProvider();
     const [level, setLevel] = useState(LEVEL_CAP);
     const [uptie, setUptie] = useState(4);
+    const [skillBonuses, setSkillBonuses] = useState(true);
+    const [passiveBonuses, setPassiveBonuses] = useState(false);
     const [preuptie, setPreuptie] = useState(1);
     const [activeTab, setActiveTab] = useLocalState("identityActiveTab", "notes");
     const [panelOpen, setPanelOpen] = useLocalState("identityPanelOpen", true);
@@ -219,7 +221,7 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
             behavior: "instant",
         });
     }, [id]);
-    
+
     if (!identityData) return <span className="title-text">Identity not found</span>
 
     const handleSetUptie = async (v) => {
@@ -301,6 +303,24 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                             <UptieSelector value={uptie} setValue={handleSetUptie} bottomOption={"compare mode"} />
                         }
                         Level: <NumberInputWithButtons value={level} setValue={setLevel} min={1} max={LEVEL_CAP} />
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <label {...getGeneralTooltipProps("Whether to include skill conditionals in calculating the offense/defense level, clash, and damage values of skills. Some identities may have some bonuses missing.")}>
+                                <input
+                                    type="checkbox"
+                                    checked={skillBonuses}
+                                    onChange={e => setSkillBonuses(e.target.checked)}
+                                />
+                                <span className="hover-text">Skill Bonuses</span>
+                            </label>
+                            <label {...getGeneralTooltipProps("Whether to include bonuses from statuses and passives in calculating the offense/defense level, clash, and damage values of skills. Some identities may have some bonuses missing.")}>
+                                <input
+                                    type="checkbox"
+                                    checked={passiveBonuses}
+                                    onChange={e => setPassiveBonuses(e.target.checked)}
+                                />
+                                <span className="hover-text">Passive Bonuses</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -413,12 +433,13 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                 </span>
             </div>
 
-            {!compareMode && uptie === 4 ? initSkillsTab :
+            {!compareMode && uptie === 4 && skillBonuses && !passiveBonuses ? initSkillsTab :
                 <SkillsTab
                     identityData={identityData} level={level}
                     skills={skills} preSkills={preSkills}
                     combatPassives={combatPassives} supportPassives={supportPassives}
                     passivesPreMapping={passivesPreMapping} compareMode={compareMode}
+                    skillBonuses={skillBonuses} passiveBonuses={passiveBonuses}
                 />
             }
 

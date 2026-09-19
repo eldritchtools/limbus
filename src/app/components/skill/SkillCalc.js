@@ -355,7 +355,7 @@ function computeSkill(skill, opts) {
     clash = Math.max(clash, 0);
     damage += damageAdder;
 
-    return [formatter.format(clash), skill.atkType ? formatter.format(damage) : "0"];
+    return [formatter.format(clash), skill.atkType ? formatter.format(damage) : "0", offDefLevel];
 }
 
 function CalcCard({ skill, clash, damage }) {
@@ -505,11 +505,12 @@ function extractSkillData(skill, level, rank, applyCrits = false, forceCrits = f
     return skillData;
 }
 
-export function computeSkillValues(skill) {
-    const data = extractSkillData({ data: skill, bonusesEnabled: true }, LEVEL_CAP, null, true, false);
+export function computeSkillValues(skill, level, skillBonuses = true, passiveBonuses = true) {
+    const data = extractSkillData({ data: skill, bonusesEnabled: true }, level ?? LEVEL_CAP, null, true, false);
+    const params = { skillBonuses: skillBonuses, coinBonuses: skillBonuses, passiveBonuses: passiveBonuses, target: { def: data.offDefLevel } }
     return {
-        min: computeSkill(data, { skillBonuses: true, coinBonuses: true, type: "min", target: { def: data.offDefLevel } }),
-        max: computeSkill(data, { skillBonuses: true, coinBonuses: true, passiveBonuses: true, type: "max", target: { def: data.offDefLevel } })
+        min: computeSkill(data, { ...params, type: "min" }),
+        max: computeSkill(data, { ...params, type: "max" })
     }
 }
 

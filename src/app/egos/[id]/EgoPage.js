@@ -163,7 +163,7 @@ function BottomLinks({ sinnerId, identities, egos }) {
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "start", maxWidth: "100%", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.2rem", marginTop: "1rem" }}>
         <h4 key={id} style={{ display: "flex", gap: "0.2rem", alignItems: "center", alignSelf: "center", margin: 0 }}>
             Select Sinner:
-            <DropdownButton value={id} setValue={setId} options={options} styleOverride={{border: "none", background: "none", padding: 0}} />
+            <DropdownButton value={id} setValue={setId} options={options} styleOverride={{ border: "none", background: "none", padding: 0 }} />
         </h4>
         <DragContainer>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
@@ -190,6 +190,7 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
     const { getData } = useDataProvider();
     const [uptie, setUptie] = useState(egoData?.maxThreadspin ?? 4);
     const [preuptie, setPreuptie] = useState(1);
+    const [skillBonuses, setSkillBonuses] = useState(true);
     const [activeTab, setActiveTab] = useLocalState("egoActiveTab", "notes");
     const [panelOpen, setPanelOpen] = useLocalState("egoPanelOpen", true);
     const [builds, setBuilds] = useState(null);
@@ -266,15 +267,25 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
                         </h1>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem", justifyContent: "center", padding: "0.5rem" }}>
-                        Threadspin: {compareMode ?
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <UptieSelector value={preuptie} setValue={handleSetPreuptie} maxUptie={egoData.maxThreadspin ?? 4} />
-                                ➔
-                                <UptieSelector value={uptie} setValue={handleSetUptie} maxUptie={egoData.maxThreadspin ?? 4} />
-                            </div> :
-                            <UptieSelector value={uptie} setValue={handleSetUptie} bottomOption={"compare mode"} maxUptie={egoData.maxThreadspin ?? 4} />
-                        }
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem", justifyContent: "center", padding: "0.5rem" }}>
+                            Threadspin: {compareMode ?
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                    <UptieSelector value={preuptie} setValue={handleSetPreuptie} maxUptie={egoData.maxThreadspin ?? 4} />
+                                    ➔
+                                    <UptieSelector value={uptie} setValue={handleSetUptie} maxUptie={egoData.maxThreadspin ?? 4} />
+                                </div> :
+                                <UptieSelector value={uptie} setValue={handleSetUptie} bottomOption={"compare mode"} maxUptie={egoData.maxThreadspin ?? 4} />
+                            }
+                        </div>
+                        <label {...getGeneralTooltipProps("Whether to include skill conditionals in calculating the offense/defense level, clash, and damage values of skills. Some E.G.O may have some bonuses missing.")}>
+                            <input
+                                type="checkbox"
+                                checked={skillBonuses}
+                                onChange={e => setSkillBonuses(e.target.checked)}
+                            />
+                            <span className="hover-text">Skill Bonuses</span>
+                        </label>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
                         <span style={{ fontWeight: "bold" }}>Release Date</span>
@@ -351,15 +362,16 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
                 </span>
             </div>
 
-            {!compareMode && uptie === (egoData?.maxThreadspin ?? 4) ? initSkillsTab :
+            {!compareMode && uptie === (egoData?.maxThreadspin ?? 4) && skillBonuses ? initSkillsTab :
                 <SkillsTab
                     awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
                     corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
                     passives={passives} prePassives={prePassives}
                     compareMode={compareMode} preuptie={preuptie}
+                    skillBonuses={skillBonuses}
                 />
             }
-            
+
             <BottomLinks sinnerId={egoData.sinnerId} identities={minifiedIdentities} egos={minifiedEgos} />
         </div>
     </>
