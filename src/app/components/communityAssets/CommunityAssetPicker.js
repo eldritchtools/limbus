@@ -33,7 +33,7 @@ export default function CommunityAssetPicker({ type, onClick }) {
                 }
             } else {
                 setMode("search");
-                const fetched = await searchCommunityAssets(search.trim(), type);
+                const fetched = await searchCommunityAssets(search.trim(), type, false);
                 setAssets(fetched.map(({ id, prefix }) => `${prefix}_${id}`));
             }
             setLoading(false);

@@ -32,7 +32,7 @@ function SearchComponent({ type }) {
                 const fetched = await getRecentCommunityAssets(type);
                 setAssets(fetched);
             } else {
-                const fetched = await searchCommunityAssets(search.trim(), type);
+                const fetched = await searchCommunityAssets(search.trim(), type, true);
                 setAssets(fetched);
             }
             setFetching(false);
@@ -54,13 +54,13 @@ function SearchComponent({ type }) {
         {fetching ?
             <p className="title-text">Loading...</p> :
             <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${size}, 1fr))`, gap: "0.5rem", maxWidth: "min(1600px, 100%)" }}>
-                {assets.map(({ id, prefix }) =>
+                {assets.map(({ id, prefix, keywords }) =>
                     <div key={id} className={styles.asset}
                         style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-                        onClick={() => openCommunityAssetModal({ imageId: id })}
+                        onClick={() => openCommunityAssetModal({ imageId: id, keywords })}
                     >
                         <CommunityAsset id={id} type={"sm"} />
-                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", width: size }}>
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", width: size, textAlign: "center" }}>
                             {prefix}_{id}
                         </span>
                     </div>

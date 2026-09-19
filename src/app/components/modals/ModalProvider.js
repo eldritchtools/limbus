@@ -127,8 +127,8 @@ export function ModalProvider({ children }) {
         openModal("image", { type, data, mod });
     }
 
-    const openCommunityAssetModal = ({ imageId }) => {
-        openModal("communityAsset", { imageId });
+    const openCommunityAssetModal = ({ imageId, keywords }) => {
+        openModal("communityAsset", { imageId, keywords });
     }
 
     const openPollResultModal = ({ title, result, iconFn, transform }) => {

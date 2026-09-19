@@ -133,15 +133,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION search_community_assets(
+CREATE OR REPLACE FUNCTION search_community_assets_v2(
   p_query TEXT,
   p_type community_asset_type DEFAULT NULL,
+  p_include_keywords BOOLEAN DEFAULT FALSE,
   p_limit INT DEFAULT 50
 )
 RETURNS TABLE (
   id TEXT,
-  -- type TEXT,
-  prefix TEXT
+  prefix TEXT,
+  keywords TEXT
 ) AS $$
 DECLARE
   q TSQUERY;
@@ -151,8 +152,8 @@ BEGIN
   RETURN QUERY
   SELECT
     a.id,
-    -- a.type,
-    a.prefix
+    a.prefix,
+    CASE WHEN p_include_keywords THEN a.keywords ELSE NULL END
   FROM community_assets a
   WHERE
     a.search_vector @@ q
