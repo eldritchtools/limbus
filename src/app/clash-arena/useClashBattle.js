@@ -3,9 +3,11 @@ import { useMemo, useRef, useState } from "react";
 import { defaultSettings, phaseConvert, settingsToClient, settingsToServer } from "./util";
 import { useData } from "../components/DataProvider";
 import { useRealtime } from "../components/realtime/RealtimeProvider";
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import useRealtimeClientId from "../components/realtime/useRealtimeClientId";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import { getLocalStore } from "../database/localDB";
+import useLocalState from "../lib/useLocalState";
 
 import { triggerGameCompleteGAEvent, triggerGameStartGAEvent } from "@/app/lib/gaEvents";
 
@@ -30,6 +32,8 @@ export function useClashBattle() {
     const [chosenCount, setChosenCount] = useState(0);
     const [results, setResults] = useState(null);
     const [skillConfirmed, setSkillConfirmed] = useState(false);
+
+    const [lastRoomId, setLastRoomId] = useLocalState("clashBattleLastRoom", null);
 
     const roomIdRef = useRef(null);
 
@@ -60,6 +64,7 @@ export function useClashBattle() {
                     connected: () => {
                         setRoomId(roomObj.id);
                         roomIdRef.current = roomObj.id;
+                        setLastRoomId(trimPrefixes(roomObj.id));
                         setIsHost(isHost);
                     },
 
@@ -238,7 +243,7 @@ export function useClashBattle() {
     }
 
     return {
-        clashingData, loading,
+        clashingData, loading, lastRoomId,
         phase, roomId, playerId, isHost, settings, participants,
         draftOrder, draftIndex, draftPoints, skillCounts, round, roundNumber, chosenCount, skillConfirmed, results,
         setFields, joinRoom, leaveRoom, setSetting, resetSettings,

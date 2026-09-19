@@ -12,6 +12,7 @@ import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { useQuiz } from "../components/quiz/useQuiz";
 import { useRealtime } from "../components/realtime/RealtimeProvider";
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import useRealtimeClientId from "../components/realtime/useRealtimeClientId";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import { useAuth } from "../database/authProvider";
@@ -82,9 +83,11 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, egos, 
     const [countStr, setCountStr] = useState("");
     const clientId = useRealtimeClientId();
     const participantCountRef = useRef(0);
+    
+    const [lastRoomId, setLastRoomId] = useLocalState(`voicelineLastRoom`, null);
 
-    const joinRoom = async isHost => {
-        const roomCode = `quiz:${isHost ? "new" : roomInput}`;
+    const joinRoom = async (isHost, roomId) => {
+        const roomCode = `quiz:${isHost ? "new" : roomId}`;
 
         try {
             let roomObj = await room.join(roomCode, {
@@ -101,6 +104,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, egos, 
                     connected: () => {
                         setRoomId(roomObj.id);
                         roomIdRef.current = roomObj.id;
+                        setLastRoomId(trimPrefixes(roomObj.id));
                         setIsHost(isHost);
                     },
 
@@ -219,8 +223,17 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, egos, 
             <h2>Choose an option</h2>
             <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => joinRoom(true)}>Host Room</span>
             <span className="sub-text">Host a room. Hosts choose the guesser&apos;s settings and decide when to move to the next round.</span>
-            <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => joinRoom(false)}>Join Room</span>
+            <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => joinRoom(false, roomInput)}>Join Room</span>
             <span className="sub-text">Join a room hosted by someone else.</span>
+            {lastRoomId && <>
+                <span
+                    className="text-link" style={{ fontSize: "1.2rem" }}
+                    onClick={() => joinRoom(false, lastRoomId)}
+                >
+                    Rejoin Room {lastRoomId}
+                </span>
+                <span className="sub-text">Rejoin the last joined room {lastRoomId}. Does not work if the room no longer exists.</span>
+            </>}
             {joinMessage && <span>{joinMessage}</span>}
         </>
     }
