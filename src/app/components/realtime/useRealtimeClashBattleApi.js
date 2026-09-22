@@ -44,8 +44,8 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
         [push]
     );
 
-    const pickIdentity = useCallback(async (roomId, identityId) => {
-        return push(roomId, "pick_identity", { identity_id: identityId });
+    const pickItem = useCallback(async (roomId, itemId) => {
+        return push(roomId, "pick_item", { item_id: itemId });
     },
         [push]
     );
@@ -56,8 +56,8 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
         [push]
     );
 
-    const selectSkill = useCallback(async (roomId, identityId, skill) => {
-        return push(roomId, "select_skill", {identity_id: identityId, skill: skill});
+    const selectSkill = useCallback(async (roomId, itemId, skill) => {
+        return push(roomId, "select_skill", {item_id: itemId, skill: skill});
     },
         [push]
     );
@@ -75,7 +75,7 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
     );
 
     return useMemo(() =>
-        ({ mount, unmount, changeSetting, changeSettings, startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup }),
-        [mount, unmount, changeSetting, changeSettings, startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup]
+        ({ mount, unmount, changeSetting, changeSettings, startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup }),
+        [mount, unmount, changeSetting, changeSettings, startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup]
     );
 }

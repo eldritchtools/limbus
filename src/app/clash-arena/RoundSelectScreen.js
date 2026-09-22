@@ -6,6 +6,7 @@ import ParticipantGrid from "./ParticipantsDisplay";
 import ScenarioDisplay from "./ScenarioDisplay";
 import StatusDisplay from "./StatusDisplay";
 import { calculateSkillRange } from "./util";
+import EgoIcon from "../components/icons/EgoIcon";
 import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
 import SkillIcon from "../components/icons/SkillIcon";
@@ -14,20 +15,22 @@ import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashAren
 import { getGeneralMarkdownTooltipProps } from "../components/tooltips/GeneralMarkdownTooltip";
 
 export default function RoundSelectScreen({ clashBattle }) {
-    const [identityId, setIdentityId] = useState(null);
+    const [itemId, setItemId] = useState(null);
     const [skillSlot, setSkillSlot] = useState(null);
     const [skill, setSkill] = useState(null);
 
     const [skillData, skillRange] = useMemo(() => {
-        if (!identityId || !skill) return [null, null];
-        const skillData = clashBattle.clashingData[identityId][String(skill)]
-        const range = calculateSkillRange(skillData, clashBattle.round, clashBattle.clashingData[identityId].statuses ?? []);
+        if (!itemId || !skill) return [null, null];
+        const skillData = clashBattle.clashingData[itemId][String(skill)]
+        const range = calculateSkillRange(skillData, clashBattle.round, clashBattle.clashingData[itemId].statuses ?? []);
         return [skillData, range];
-    }, [identityId, skill, clashBattle]);
+    }, [itemId, skill, clashBattle]);
 
     const handleConfirm = useCallback(() => {
-        clashBattle.selectSkill(identityId, skillSlot);
-    }, [clashBattle, identityId, skillSlot]);
+        clashBattle.selectSkill(itemId, skillSlot);
+    }, [clashBattle, itemId, skillSlot]);
+    
+    const playerEgo = clashBattle.getPlayerEgo();
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -73,7 +76,7 @@ export default function RoundSelectScreen({ clashBattle }) {
             {Object.entries(clashBattle.skillCounts).map(([id, counts]) => <React.Fragment key={id}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div {...(clashBattle.clashingData[id].modifierDesc ? getGeneralMarkdownTooltipProps(clashBattle.clashingData[id].modifierDesc) : {})}>
-                    <IdentityIcon id={id} displayName={true} displayRarity={true} />
+                        <IdentityIcon id={id} displayName={true} displayRarity={true} />
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
                         {
@@ -91,7 +94,7 @@ export default function RoundSelectScreen({ clashBattle }) {
                         resolveSkills(clashBattle.clashingData[id], [1, 2, 3, 4], clashBattle.round)
                             .map((skill, index) => {
                                 if (index === 3 && counts[index] === 0) return;
-                                const skillData = clashBattle.clashingData[id][String(skill)]
+                                const skillData = clashBattle.clashingData[id][String(skill)];
                                 const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
                                 return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
                                     <div
@@ -99,9 +102,9 @@ export default function RoundSelectScreen({ clashBattle }) {
                                         {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round)}
                                         onClick={() => {
                                             if (counts[index] === 0) return;
-                                            setIdentityId(id);
+                                            setItemId(id);
                                             setSkill(String(skill));
-                                            setSkillSlot(String(index + 1));
+                                            setSkillSlot(index + 1);
                                         }}
                                     >
                                         <SkillIcon skillData={skillData} />
@@ -117,6 +120,52 @@ export default function RoundSelectScreen({ clashBattle }) {
                     }
                 </div>
             </React.Fragment>)}
+            {
+                playerEgo && <>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <div {...(clashBattle.clashingData[playerEgo].modifierDesc ? getGeneralMarkdownTooltipProps(clashBattle.clashingData[playerEgo].modifierDesc) : {})}>
+                            <EgoIcon id={playerEgo} type="awaken" displayName={true} displayRarity={true} />
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {
+                                (clashBattle.clashingData[playerEgo].statuses ?? [])
+                                    .map(({ id, values }) => [id, values[clashBattle.round.unique_statuses_tier]])
+                                    .filter(([, value]) => value > 0)
+                                    .map(([id, value]) =>
+                                        <StatusDisplay key={id} id={id} potency={value} />
+                                    )
+                            }
+                        </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "2rem", alignItems: "center", justifyContent: "center" }}>
+                        {
+                            resolveSkills(clashBattle.clashingData[playerEgo], ["a", "c"], clashBattle.round)
+                                .map(skill => {
+                                    const skillData = clashBattle.clashingData[playerEgo][skill];
+                                    if(!skillData) return;
+                                    const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[playerEgo]?.statuses ?? []);
+                                    return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
+                                        <div
+                                            className={`${styles.skillOption} ${clashBattle.egoUsed ? styles.disabled : null}`}
+                                            {...getClashArenaSkillTooltipProps(playerEgo, skill, clashBattle.round)}
+                                            onClick={() => {
+                                                if (clashBattle.egoUsed) return;
+                                                setItemId(playerEgo);
+                                                setSkill(skill);
+                                                setSkillSlot(skill);
+                                            }}
+                                        >
+                                            <SkillIcon skillData={skillData} />
+                                        </div>
+                                        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                            {range.min} - {range.max}
+                                        </span>
+                                    </div>
+                                })
+                        }
+                    </div>
+                </>
+            }
         </div>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Players</span>
@@ -132,6 +181,9 @@ export default function RoundSelectScreen({ clashBattle }) {
                     <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
                         {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
                     </div>
+                    {x.ego &&
+                        <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
+                    }
                 </div>
             }}
         </ParticipantGrid>

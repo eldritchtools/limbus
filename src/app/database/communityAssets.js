@@ -15,8 +15,8 @@ export async function updateCommunityAsset(id, prefix, keywords) {
     return result;
 }
 
-export async function searchCommunityAssets(query, type, limit = 50) {
-    return callRPC("search_community_assets", { p_query: query, p_type: type, p_limit: limit });
+export async function searchCommunityAssets(query, type, includeKeywords=false, limit = 50) {
+    return callRPC("search_community_assets_v2", { p_query: query, p_type: type, p_include_keywords: includeKeywords, p_limit: limit });
 }
 
 export async function getCommunityAsset(id) {
@@ -73,7 +73,7 @@ export async function getRecentCommunityAssets(type, limit = 50) {
     return await withRetry(async () => {
         const { data, error } = await getSupabase()
             .from("community_assets")
-            .select("id, prefix, created_at")
+            .select("id, prefix, keywords, created_at")
             .eq("type", type)
             .eq("is_deleted", false)
             .order("created_at", { ascending: false })

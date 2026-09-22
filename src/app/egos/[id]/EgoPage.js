@@ -278,7 +278,10 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
                                 <UptieSelector value={uptie} setValue={handleSetUptie} bottomOption={"compare mode"} maxUptie={egoData.maxThreadspin ?? 4} />
                             }
                         </div>
-                        <label {...getGeneralTooltipProps("Whether to include skill conditionals in calculating the offense/defense level, clash, and damage values of skills. Some E.G.O may have some bonuses missing.")}>
+                        <label
+                            style={{ whiteSpace: "nowrap" }}
+                            {...getGeneralTooltipProps("Whether to include skill conditionals in calculating the offense/defense level, clash, and damage values of skills. Some E.G.O may have some bonuses missing.")}
+                        >
                             <input
                                 type="checkbox"
                                 checked={skillBonuses}

@@ -116,6 +116,8 @@ export default function IdentityLoadingPage() {
                 <div style={{ textAlign: "center" }}>Loading...</div>
                 <div className="title-text">Support Passives</div>
                 <div style={{ textAlign: "center" }}>Loading...</div>
+                <div className="title-text">Sanity</div>
+                <div style={{ textAlign: "center" }}>Loading...</div>
             </div>
         </div>
 

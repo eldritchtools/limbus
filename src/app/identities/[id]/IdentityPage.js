@@ -208,6 +208,7 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
     const [skillData, setSkillData] = useState({ 4: initSkillData });
+    const sanityData = initSkillData.sanity;
 
     const { skills, combatPassives, supportPassives } = skillData[uptie];
 
@@ -304,7 +305,10 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                         }
                         Level: <NumberInputWithButtons value={level} setValue={setLevel} min={1} max={LEVEL_CAP} />
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <label {...getGeneralTooltipProps("Whether to include skill conditionals in calculating the offense/defense level, clash, and damage values of skills. Some identities may have some bonuses missing.")}>
+                            <label
+                                style={{ whiteSpace: "nowrap" }}
+                                {...getGeneralTooltipProps("Whether to include skill conditionals in calculating the offense/defense level, clash, and damage values of skills. Some identities may have some bonuses missing.")}
+                            >
                                 <input
                                     type="checkbox"
                                     checked={skillBonuses}
@@ -312,7 +316,10 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                                 />
                                 <span className="hover-text">Skill Bonuses</span>
                             </label>
-                            <label {...getGeneralTooltipProps("Whether to include bonuses from statuses and passives in calculating the offense/defense level, clash, and damage values of skills. Some identities may have some bonuses missing.")}>
+                            <label
+                                style={{ whiteSpace: "nowrap" }}
+                                {...getGeneralTooltipProps("Whether to include bonuses from statuses and passives in calculating the offense/defense level, clash, and damage values of skills. Some identities may have some bonuses missing.")}
+                            >
                                 <input
                                     type="checkbox"
                                     checked={passiveBonuses}
@@ -440,6 +447,7 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                     combatPassives={combatPassives} supportPassives={supportPassives}
                     passivesPreMapping={passivesPreMapping} compareMode={compareMode}
                     skillBonuses={skillBonuses} passiveBonuses={passiveBonuses}
+                    sanityData={sanityData}
                 />
             }
 

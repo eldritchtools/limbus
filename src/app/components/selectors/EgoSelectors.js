@@ -18,22 +18,26 @@ import { egoRanks, keywordStatusMappingReversed, sinnerIdMapping } from "@/app/l
 import { buildSearchStrings, checkFilterMatch } from "@/app/lib/filter";
 import { selectStyle } from "@/app/styles/selectStyle";
 
-export function EgoDropdownSelector({ selected, setSelected, isMulti = false, styles = selectStyle, options, excludeMode, excludeOptions = [], autoFocus }) {
+export function EgoDropdownSelector({
+    selected, setSelected, isMulti = false, styles = selectStyle,
+    options, excludeMode,
+    excludeOptions = [], autoFocus, nameAppendFunc
+}) {
     const [egos, loading] = useData("egos_mini");
     const [altNames, altNamesLoading] = useData("alt_names");
 
     const optionsMapped = useMemo(() => loading ? [] : Object.entries(egos).reduce((acc, [id, ego]) => {
-        if(options && !options.includes(id) || excludeOptions.includes(id)) return acc;
+        if (options && !options.includes(id) || excludeOptions.includes(id)) return acc;
         acc[id] = {
             value: ego.id,
             label: <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", maxWidth: "65vw" }}>
                 <EgoIcon id={ego.id} type={"awaken"} displayName={false} scale={0.125} />
-                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[ego.sinnerId]}] {ego.name}</span>
+                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[ego.sinnerId]}] {ego.name}{nameAppendFunc ? nameAppendFunc(ego) : null}</span>
             </div>,
             searchStrings: buildSearchStrings(ego, altNamesLoading ? null : altNames)
         };
         return acc;
-    }, {}), [egos, altNames, options, loading, altNamesLoading, excludeOptions]);
+    }, {}), [egos, altNames, options, loading, altNamesLoading, excludeOptions, nameAppendFunc]);
 
     return <DropdownSelectorWithExclusion
         optionsMapped={optionsMapped}

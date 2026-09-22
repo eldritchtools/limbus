@@ -1,4 +1,5 @@
 import ParticipantGrid from "./ParticipantsDisplay"
+import EgoIcon from "../components/icons/EgoIcon"
 import IdentityIcon from "../components/icons/IdentityIcon"
 
 export default function DraftCompleteScreen({ clashBattle }) {
@@ -15,6 +16,9 @@ export default function DraftCompleteScreen({ clashBattle }) {
                     <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
                         {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
                     </div>
+                    {x.ego &&
+                        <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
+                    }
                 </div>
             }}
         </ParticipantGrid>
