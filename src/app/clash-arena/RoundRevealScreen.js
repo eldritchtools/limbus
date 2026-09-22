@@ -73,7 +73,7 @@ export default function RoundRevealScreen({ clashBattle }) {
             {x => {
                 const roundScore = clashBattle.results[x.player_id].points;
                 const result = clashBattle.results[x.player_id];
-                const skillData = clashBattle.clashingData[result.identity_id][result.resolved_skill];
+                const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
                 return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                     <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
                         {x.display_name}
@@ -89,7 +89,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                     }
                     <div key={`${x.player_id}-skill`}
                         style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}
-                        {...getClashArenaSkillTooltipProps(result.identity_id, result.resolved_skill, clashBattle.round)}
+                        {...getClashArenaSkillTooltipProps(result.item_id, result.resolved_skill, clashBattle.round)}
                     >
                         <SkillIcon skillData={skillData} />
                         <div style={{ alignSelf: "start", maxWidth: "85%", paddingRight: "2rem", boxSizing: "border-box" }}>
@@ -129,7 +129,7 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onC
     const [revealed, setRevealed] = useState(0);
     const [value, setValue] = useState(null);
 
-    const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round, clashBattle.clashingData[result.identity_id].statuses ?? []);
+    const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round, clashBattle.clashingData[result.item_id].statuses ?? []);
 
     useEffect(() => {
         setValue(baseValue);

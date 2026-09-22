@@ -32,15 +32,29 @@ export default function SetupScreen({ clashBattle }) {
                 Team Size:
             </div>
 
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
-                    onChange={x => {
-                        clashBattle.setSetting("teamSize", x);
-                        if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
-                    }}
-                    style={{ textAlign: "center", width: "5ch" }}
-                    disabled={!clashBattle.isHost}
-                />
+            <div  style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
+                        onChange={x => {
+                            clashBattle.setSetting("teamSize", x);
+                            if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
+                        }}
+                        style={{ textAlign: "center", width: "5ch" }}
+                        disabled={!clashBattle.isHost}
+                    />
+                </div>
+                <label
+                    {...getGeneralTooltipProps("Whether to include E.G.O in the draft.\nE.G.O will be drafted after all identities are finished being drafted. Players will get half the points they normally get per drafting round (rounded up). E.G.O are single use throughout the entire game. Awakenings and Corrosions share the same single use.")}
+                >
+                    <input type="checkbox"
+                        checked={clashBattle.settings.egoDraft}
+                        onChange={e => clashBattle.setSetting("egoDraft", e.target.checked)}
+                        disabled={!clashBattle.isHost}
+                    />
+                    <span className="hover-text">
+                        Draft E.G.O
+                    </span>
+                </label>
             </div>
 
             <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>

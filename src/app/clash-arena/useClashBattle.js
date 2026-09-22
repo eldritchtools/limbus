@@ -27,6 +27,7 @@ export function useClashBattle() {
     const [draftIndex, setDraftIndex] = useState(0);
     const [draftPoints, setDraftPoints] = useState(0);
     const [skillCounts, setSkillCounts] = useState({});
+    const [egoUsed, setEgoUsed] = useState(false);
     const [round, setRound] = useState(null);
     const [roundNumber, setRoundNumber] = useState(0);
     const [chosenCount, setChosenCount] = useState(0);
@@ -103,20 +104,22 @@ export function useClashBattle() {
                         setPlayerId(player_id);
                         setDraftOrder(draft_order);
                         setDraftIndex(0);
-                        if(draft_points) setDraftPoints(draft_points);
+                        if (draft_points) setDraftPoints(draft_points);
                         setParticipants(participants);
                     },
 
-                    draft_pick: ({ player_id, identity_id, draft_index, draft_order, draft_points }) => {
+                    draft_pick: ({ player_id, type, item_id, draft_index, draft_order, draft_points }) => {
                         setParticipants(p =>
-                            p.map(x => x.player_id === player_id ? { ...x, identities: [...x.identities, identity_id] } : x)
+                            p.map(x => x.player_id === player_id ? (
+                                type === "id" ? { ...x, identities: [...x.identities, item_id] } : { ...x, ego: item_id }
+                            ) : x)
                         )
                         setDraftOrder(draft_order);
                         setDraftIndex(draft_index);
-                        if(draft_points) setDraftPoints(draft_points);
+                        if (draft_points) setDraftPoints(draft_points);
                     },
 
-                    round: ({ round_number, round, skill_counts }) => {
+                    round: ({ round_number, round, skill_counts, ego_used }) => {
                         setPhase("roundSelect")
                         setRoundNumber(round_number);
                         setRound(round);
@@ -124,17 +127,21 @@ export function useClashBattle() {
                         setResults(null);
                         setSkillConfirmed(false);
                         setSkillCounts(skill_counts);
+                        setEgoUsed(ego_used);
                     },
 
                     skill_chosen_count: ({ chosen_count, player_count }) => {
                         setChosenCount(chosen_count);
                     },
 
-                    skill_selected: ({ identity_id, skill, chosen_count, player_count }) => {
-                        setSkillCounts(p => ({
-                            ...p, [identity_id]:
-                                p[identity_id].map((x, i) => i === skill - 1 ? x - 1 : x)
-                        }))
+                    skill_selected: ({ type, item_id, skill, chosen_count, player_count }) => {
+                        if(type === "id")
+                            setSkillCounts(p => ({
+                                ...p, [item_id]:
+                                    p[item_id].map((x, i) => i === skill - 1 ? x - 1 : x)
+                            }))
+                        else 
+                            setEgoUsed(true);
                         setChosenCount(chosen_count);
                         setSkillConfirmed(true);
                     },
@@ -183,12 +190,14 @@ export function useClashBattle() {
         clashBattle.startDraft(roomIdRef.current);
     }
 
-    async function pickIdentity(identityId) {
-        if (draftOrder[0] !== playerId) return;
-        const cost = clashingData[identityId].points;
+    async function pickItem(itemId) {
+        const id = draftOrder[0];
+        const draftId = typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id;
+        if (draftId !== playerId) return;
+        const cost = clashingData[itemId].points;
         if (settings.pointsPerDraft !== 0 && cost > draftPoints) return;
         setDraftPoints(p => p - cost);
-        clashBattle.pickIdentity(roomIdRef.current, identityId);
+        clashBattle.pickItem(roomIdRef.current, itemId);
     }
 
     async function startGame() {
@@ -196,8 +205,8 @@ export function useClashBattle() {
         clashBattle.startGame(roomIdRef.current);
     }
 
-    async function selectSkill(identityId, skill) {
-        clashBattle.selectSkill(roomIdRef.current, identityId, Number(skill));
+    async function selectSkill(itemId, skill) {
+        clashBattle.selectSkill(roomIdRef.current, itemId, skill);
     }
 
     async function nextRound() {
@@ -229,6 +238,8 @@ export function useClashBattle() {
         if ("draft_points" in fields) setDraftPoints(fields.draft_points);
         if ("skillCounts" in fields) setSkillCounts(fields.skillCounts);
         if ("skill_counts" in fields) setSkillCounts(fields.skill_counts);
+        if ("egoUsed" in fields) setEgoUsed(fields.egoUsed);
+        if ("ego_used" in fields) setEgoUsed(fields.ego_used);
         if ("round" in fields) setRound(fields.round);
         if ("current_round" in fields) setRound(fields.current_round);
         if ("round_number" in fields) setRoundNumber(fields.round_number);
@@ -242,12 +253,23 @@ export function useClashBattle() {
         }, []);
     }
 
+    function getSelectedEgo() {
+        return participants.reduce((acc, x) => {
+            if(x.ego) acc.push(x.ego);
+            return acc;
+        }, []);
+    }
+
+    function getPlayerEgo() {
+        return participants.find(x => x.player_id === playerId).ego;
+    }
+
     return {
         clashingData, loading, lastRoomId,
         phase, roomId, playerId, isHost, settings, participants,
-        draftOrder, draftIndex, draftPoints, skillCounts, round, roundNumber, chosenCount, skillConfirmed, results,
+        draftOrder, draftIndex, draftPoints, skillCounts, egoUsed, round, roundNumber, chosenCount, skillConfirmed, results,
         setFields, joinRoom, leaveRoom, setSetting, resetSettings,
-        startDraft, pickIdentity, startGame, selectSkill, nextRound, returnToSetup,
-        getSelectedIdentities
+        startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup,
+        getSelectedIdentities, getSelectedEgo, getPlayerEgo
     };
 }

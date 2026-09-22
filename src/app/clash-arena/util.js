@@ -2,6 +2,7 @@ import { evaluateConditional, getExplanation } from "./conditionals";
 
 export const defaultSettings = {
     teamSize: 3,
+    egoDraft: true,
     rounds: 12,
     draftOrder: "cycle",
     pointsPerDraft: 6,
@@ -24,6 +25,7 @@ export function phaseConvert(phase) {
 export function settingsToServer(key) {
     switch (key) {
         case "teamSize": return "team_size";
+        case "egoDraft": return "ego_draft";
         case "draftOrder": return "draft_order";
         case "numStatus": return "num_status";
         case "secondaryStatusChance": return "secondary_status_chance";
@@ -35,6 +37,7 @@ export function settingsToServer(key) {
 export function settingsToClient(key) {
     switch (key) {
         case "team_size": return "teamSize";
+        case "ego_draft": return "egoDraft";
         case "draft_order": return "draftOrder";
         case "num_status": return "numStatus";
         case "secondary_status_chance": return "secondaryStatusChance";

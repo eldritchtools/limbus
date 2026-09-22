@@ -1,23 +1,32 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import ParticipantGrid from "./ParticipantsDisplay";
 import PointsDisplay from "./PointsDisplay";
+import EgoIcon from "../components/icons/EgoIcon";
 import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
 import SkillIcon from "../components/icons/SkillIcon";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import NamePill from "../components/objects/NamePill";
+import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
 import { IdentityDropdownSelector } from "../components/selectors/IdentitySelectors"
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
 import { selectStyleVariable } from "../styles/selectStyle"
 
 export default function DraftScreen({ clashBattle }) {
-    const [identityId, setIdentityId] = useState(null);
+    const [itemId, setItemId] = useState(null);
+
+    const [isEgo, draftId] = useMemo(() => {
+        const id = clashBattle.draftOrder[0];
+        const isEgo = typeof id === "string" && id.startsWith("e-");
+        const draftId = isEgo ? Number(id.slice(2)) : id;
+        return [isEgo, draftId]
+    }, [clashBattle.draftOrder])
 
     const handleConfirm = useCallback(() => {
-        clashBattle.pickIdentity(identityId);
-        setIdentityId(null);
-    }, [clashBattle, identityId]);
+        clashBattle.pickItem(itemId);
+        setItemId(null);
+    }, [clashBattle, itemId]);
 
     const pointsDisabled = clashBattle.settings["pointsPerDraft"] === 0;
 
@@ -30,47 +39,69 @@ export default function DraftScreen({ clashBattle }) {
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Next Drafts</span>
         <div style={{ display: "flex", gap: "1rem" }}>
-            {clashBattle.draftOrder.map((id, i) =>
-                <span key={`${id}-${i}`}>
-                    {i === 0 ? "▶" : ""} {clashBattle.participants.find(x => x.player_id === id).display_name}
+            {clashBattle.draftOrder.map((id, i) => {
+                const playerId = typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id;
+
+                return <span key={`${id}-${i}`}>
+                    {i === 0 ? "▶" : ""} {clashBattle.participants.find(x => x.player_id === playerId).display_name}
                 </span>
-            )}
+            })}
         </div>
 
         {
-            clashBattle.draftOrder[0] === clashBattle.playerId ?
+            draftId === clashBattle.playerId ?
                 <>
                     {!pointsDisabled &&
                         <span>You currently have <span style={{ fontWeight: "bold" }}>{clashBattle.draftPoints}</span> points.</span>
                     }
-                    <span>Choose an identity:</span>
+                    <span>Choose an {isEgo ? "E.G.O" : "identity"}:</span>
                     <div style={{ width: "min(100%, 1000px)" }}>
-                        <IdentityDropdownSelector
-                            selected={identityId} setSelected={x => setIdentityId(x)} styles={selectStyleVariable}
-                            options={
-                                Object.keys(clashBattle.clashingData)
-                                    .filter(id => pointsDisabled || clashBattle.clashingData[id].points <= clashBattle.draftPoints)
-                            }
-                            excludeOptions={clashBattle.getSelectedIdentities()}
-                            autoFocus={true}
-                            nameAppendFunc={identity =>
-                                pointsDisabled ? null :
-                                    ` (${clashBattle.clashingData[identity.id].points} points)`
-                            }
-                        />
+                        {
+                            isEgo ?
+                                <EgoDropdownSelector
+                                    selected={itemId} setSelected={x => setItemId(x)} styles={selectStyleVariable}
+                                    options={
+                                        Object.entries(clashBattle.clashingData)
+                                            .filter(([id]) => pointsDisabled || clashBattle.clashingData[id].points <= clashBattle.draftPoints)
+                                            .filter(([, data]) => data.type === "ego")
+                                            .map(([id]) => id)
+                                    }
+                                    excludeOptions={clashBattle.getSelectedEgo()}
+                                    autoFocus={true}
+                                    nameAppendFunc={ego =>
+                                        pointsDisabled ? null :
+                                            ` (${clashBattle.clashingData[ego.id].points} points)`
+                                    }
+                                /> :
+                                <IdentityDropdownSelector
+                                    selected={itemId} setSelected={x => setItemId(x)} styles={selectStyleVariable}
+                                    options={
+                                        Object.entries(clashBattle.clashingData)
+                                            .filter(([id]) => pointsDisabled || clashBattle.clashingData[id].points <= clashBattle.draftPoints)
+                                            .filter(([, data]) => data.type === "id")
+                                            .map(([id]) => id)
+                                    }
+                                    excludeOptions={clashBattle.getSelectedIdentities()}
+                                    autoFocus={true}
+                                    nameAppendFunc={identity =>
+                                        pointsDisabled ? null :
+                                            ` (${clashBattle.clashingData[identity.id].points} points)`
+                                    }
+                                />
+                        }
                     </div>
-                    {identityId && <>
-                        {clashBattle.clashingData[identityId].modifierDesc &&
-                            <MarkdownRenderer content={clashBattle.clashingData[identityId].modifierDesc}/>
+                    {!isEgo && itemId && <>
+                        {clashBattle.clashingData[itemId].modifierDesc &&
+                            <MarkdownRenderer content={clashBattle.clashingData[itemId].modifierDesc} />
                         }
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
                             {
                                 [1, 2, 3].map(skill => {
-                                    const skillData = clashBattle.clashingData[identityId][String(skill)]
+                                    const skillData = clashBattle.clashingData[itemId][String(skill)]
 
                                     return <div key={skill}
                                         style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}
-                                        {...getClashArenaSkillTooltipProps(identityId, skill, null)}
+                                        {...getClashArenaSkillTooltipProps(itemId, skill, null)}
                                     >
                                         <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
                                             <SkillIcon skillData={skillData} />
@@ -92,13 +123,48 @@ export default function DraftScreen({ clashBattle }) {
                                 })
                             }
                         </div>
-                        </>
+                    </>
                     }
-                    {identityId && <>
+                    {isEgo && itemId && <>
+                        {clashBattle.clashingData[itemId].modifierDesc &&
+                            <MarkdownRenderer content={clashBattle.clashingData[itemId].modifierDesc} />
+                        }
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.5rem" }}>
+                            {
+                                ["a", "c"].map(skill => {
+                                    const skillData = clashBattle.clashingData[itemId][String(skill)]
+                                    if(!skillData) return null;
+
+                                    return <div key={skill}
+                                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}
+                                        {...getClashArenaSkillTooltipProps(itemId, skill, null)}
+                                    >
+                                        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                                            <SkillIcon skillData={skillData} />
+                                        </div>
+                                        <div style={{ maxWidth: "200px", margin: "0 1.5rem", alignSelf: "start" }}>
+                                            <NamePill name={skillData.name} affinity={skillData.affinity} />
+                                        </div>
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                                {skillData.base} {skillData.coin > 0 ? "+" : ""}{skillData.coin}
+                                            </span>
+                                            &nbsp;
+                                            {Array.from({ length: skillData.coins }, (v, i) =>
+                                                <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
+                                            )}
+                                        </div>
+                                    </div>
+                                })
+                            }
+                        </div>
+                    </>
+                    }
+                    {itemId && <>
                         {
                             !pointsDisabled &&
                             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                                Cost: {clashBattle.clashingData[identityId].points} Points
+                                Cost: {clashBattle.clashingData[itemId].points} Points
                             </span>
                         }
                         <span className="text-link" onClick={handleConfirm}
@@ -110,7 +176,7 @@ export default function DraftScreen({ clashBattle }) {
                     }
                 </> :
                 <span>
-                    {clashBattle.participants.find(x => x.player_id === clashBattle.draftOrder[0]).display_name} is choosing...
+                    {clashBattle.participants.find(x => x.player_id === draftId).display_name} is choosing...
                 </span>
         }
 
@@ -124,6 +190,9 @@ export default function DraftScreen({ clashBattle }) {
                     <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
                         {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
                     </div>
+                    {x.ego &&
+                        <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
+                    }
                 </div>
             }}
         </ParticipantGrid>
