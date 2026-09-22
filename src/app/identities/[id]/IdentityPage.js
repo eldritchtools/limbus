@@ -208,6 +208,7 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
     const [builds, setBuilds] = useState(null);
     const [compareMode, setCompareMode] = useState(false);
     const [skillData, setSkillData] = useState({ 4: initSkillData });
+    const sanityData = initSkillData.sanity;
 
     const { skills, combatPassives, supportPassives } = skillData[uptie];
 
@@ -446,6 +447,7 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                     combatPassives={combatPassives} supportPassives={supportPassives}
                     passivesPreMapping={passivesPreMapping} compareMode={compareMode}
                     skillBonuses={skillBonuses} passiveBonuses={passiveBonuses}
+                    sanityData={sanityData}
                 />
             }
 

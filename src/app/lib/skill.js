@@ -80,6 +80,7 @@ export function compileSkillData(type, ownerData, skillData, tier = 5) {
             ),
             combatPassives: compileCombatPassives(skillData, tier),
             supportPassives: compileSupportPassives(skillData, tier),
+            sanity: skillData?.sanity ?? {},
             notes: skillData?.notes ?? {}
         };
     } else if (type === "ego") {
