@@ -133,7 +133,7 @@ export function SkillsTab({
                     <span style={{ fontWeight: "bold" }}>Panic Type</span>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <PanicIcon id={"public_panic"} style={{ width: "96px" }} />
+                            <PanicIcon id={"Public_Panic"} style={{ width: "96px" }} />
                             <span style={{ fontWeight: "bold" }}>{sanityData.name}</span>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
