@@ -1,7 +1,7 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import EgoIcon from "../icons/EgoIcon";
@@ -102,27 +102,49 @@ export function AlternativeOptionsModalEditableContent({ buildRef, index }) {
     </div>
 }
 
-export function AlternativeOptionsModalContent({ altOptions, sinnerId }) {
+export function AlternativeOptionsModalContent({ altOptions, getSelectedAlts, toggleAlt, sinnerId }) {
     const { isMobile } = useBreakpoint();
+    const [, updateCount] = useState(0);
+
+    const triggerRender = useCallback(() => {
+        updateCount(p => p + 1);
+    }, []);
+
+    const handleToggle = id => {
+        toggleAlt(id);
+
+        setTimeout(() => {
+            triggerRender();
+        }, 0);
+    };
+
+    const selected = getSelectedAlts(sinnerId);
 
     return <div style={{
         display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
         minHeight: "450px", maxHeight: "80vh", minWidth: "300px", maxWidth: "min(800px, 90vw)"
     }}>
         <h2 style={{ fontSize: "1.2rem", margin: 0 }}>Alternative options for {sinnerIdMapping[sinnerId]}</h2>
+        <span>Select an alternative option to replace it in the build.</span>
+        <span className="sub-text">This will update the Team Code, Team Stats,<br/>and other details when using Display Types.</span>
 
         <div style={{
             display: "grid", gridTemplateColumns: isMobile ? "1fr" : "auto 1fr",
             alignItems: "center", gap: "0.2rem", padding: "0.5rem", overflowY: "auto"
         }}>
             {altOptions.map(({ id, desc }) => <React.Fragment key={id}>
-                <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", justifyContent: "center" }}>
+                <label style={{ display: "flex", gap: "0.2rem", alignItems: "center", justifyContent: "center" }}>
+                    <input
+                        type="checkbox"
+                        checked={selected.includes(id)}
+                        onChange={(e) => handleToggle(id)}
+                    />
                     {
                         String(id)[0] === '1' ?
                             <IdentityIcon id={id} displayName={true} displayRarity={true} size={isMobile ? 92 : 128} /> :
                             <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} size={isMobile ? 92 : 128} />
                     }
-                </div>
+                </label>
                 <div style={{ maxWidth: "80vw" }}>
                     <MarkdownRenderer content={desc} />
                 </div>

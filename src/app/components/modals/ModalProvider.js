@@ -135,9 +135,9 @@ export function ModalProvider({ children }) {
         openModal("pollResult", { title, result, iconFn, transform });
     }
 
-    const openAltOptionsModal = ({ altOptions, sinnerId, buildRef, index, editable }) => {
+    const openAltOptionsModal = ({ altOptions, getSelectedAlts, toggleAlt, sinnerId, buildRef, index, editable }) => {
         if (editable) openModal("altOptionsEditable", { buildRef, index, editable });
-        else openModal("altOptions", { altOptions, sinnerId });
+        else openModal("altOptions", { altOptions, getSelectedAlts, toggleAlt, sinnerId });
     }
 
     const openCreatorTagVoteModal = ({ creator, onSubmitted }) => {

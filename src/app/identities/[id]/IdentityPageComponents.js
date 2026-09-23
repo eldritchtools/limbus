@@ -33,7 +33,6 @@ export function SkillsTab({
     compareMode, serverText, skillBonuses, passiveBonuses,
     sanityData
 }) {
-    console.log(sanityData);
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.5rem" }}>
         <div className="title-text">Skills</div>
         {[1, 2, 3, 4].map(tier => {

@@ -135,7 +135,8 @@ function EgoStatsOverlay({ egos, displayType }) {
 export default function BuildDisplaySinnerContainer({ 
     displayType, sinnerId, identityId, egoIds, 
     identityLevel, egoThreadspins, identityUptie, deploymentOrder, swapIcon, altOptions,
-    activeSinners, otherOpts, disableLinks
+    activeSinners, otherOpts, disableLinks,
+    openEditAltOptionsModal
 }) {
     const [iData, identitiesLoading] = useIdentitiesWithUpcoming();
     const [eData, egosLoading] = useEgosWithUpcoming();
@@ -158,6 +159,7 @@ export default function BuildDisplaySinnerContainer({
         deploymentOrder={deploymentOrder}
         activeSinners={activeSinners}
         disableLinks={disableLinks}
+        openEditAltOptionsModal={openEditAltOptionsModal}
     />
 
     if (["names", "icons", "ids", "ego-comp"].includes(displayType)) return baseComponent;

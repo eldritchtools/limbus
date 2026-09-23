@@ -6,7 +6,7 @@ import IdentityIcon from "../icons/IdentityIcon";
 import RarityIcon from "../icons/RarityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
-import { useModal } from "../modals/ModalProvider";
+import { getAltOptionsTooltipProps } from "../tooltips/AltOptionsTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
@@ -89,10 +89,10 @@ function Ego({ ego, displayType, rank, threadspin, disableLinks }) {
 export default function BuildDisplaySinnerBase({
     displayType, sinnerId, identity, egos,
     uptie, level, threadspins, swapIcon, altOptions,
-    deploymentOrder, activeSinners, disableLinks
+    deploymentOrder, activeSinners, disableLinks,
+    openEditAltOptionsModal
 }) {
     const [depType, depIndex] = getDeploymentPosition(deploymentOrder, activeSinners, sinnerId);
-    const { openAltOptionsModal } = useModal();
 
     if (displayType === "ids")
         return <div style={{ display: "flex", flexDirection: "column", width: "100%", border: `1px ${deploymentColors[depType]} solid`, borderRadius: ".5rem" }}>
@@ -113,7 +113,7 @@ export default function BuildDisplaySinnerBase({
                             padding: "0 6px", border: "1px var(--secondary-border-color) solid", borderRadius: ".5rem"
                         }}
                         {...getGeneralTooltipProps("View alternative options for this sinner.")}
-                        onClick={() => openAltOptionsModal({altOptions, sinnerId, editable: false})}
+                        onClick={() => openEditAltOptionsModal(sinnerId)}
                     >
                         <span>+</span>
                         <span style={{
@@ -150,8 +150,8 @@ export default function BuildDisplaySinnerBase({
                             position: "relative", display: "flex", alignItems: "center", margin: 0, cursor: "pointer",
                             padding: "0 6px", border: "1px var(--secondary-border-color) solid", borderRadius: ".5rem"
                         }}
-                        {...getGeneralTooltipProps("View alternative options for this sinner.")}
-                        onClick={() => openAltOptionsModal({altOptions, sinnerId, editable: false})}
+                        {...getAltOptionsTooltipProps(altOptions.map(x => x.id))}
+                        onClick={() => openEditAltOptionsModal()}
                     >
                         <span>+</span>
                         <span style={{

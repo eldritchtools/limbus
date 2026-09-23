@@ -1,3 +1,4 @@
+import AltOptionsTooltip from "./AltOptionsTooltip";
 import ClashArenaSkillTooltip from "./ClashArenaSkillTooltip";
 import DistributionTooltip from "./DistributionTooltip";
 import EgoTooltip from "./EgoTooltip";
@@ -33,5 +34,6 @@ export default function AllTooltips() {
         <SkillTooltip />
         <DistributionTooltip />
         <ClashArenaSkillTooltip />
+        <AltOptionsTooltip />
     </>;
 }

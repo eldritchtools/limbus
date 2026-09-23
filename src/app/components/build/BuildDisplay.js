@@ -35,6 +35,7 @@ export function BuildDisplayMain({ build, displayType, disableLinks, otherOpts }
                     altOptions={build.altOptions?.[index] ?? []}
                     otherOpts={otherOpts}
                     disableLinks={disableLinks}
+                    openEditAltOptionsModal={build.openEditAltOptionsModal ? () => build.openEditAltOptionsModal(index + 1) : null}
                 />
                 {build.skillReplaces?.[index + 1] ?
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", alignSelf: "center" }}>

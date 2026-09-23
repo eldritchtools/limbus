@@ -9,6 +9,7 @@ import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DisplayTypeButton from "../build/DisplayTypeButton";
 import Distribution from "../build/Distribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
+import useBuildWithAlts from "../build/useBuildWithAlts";
 import TeamBuild from "../contentCards/TeamBuild";
 import useBuildState from "../dataHooks/useBuildState";
 import KeywordIcon from "../icons/KeywordIcon";
@@ -40,13 +41,16 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
         }
     }
 
+    const derivedBuild = useBuildWithAlts(build);
+
     useEffect(() => {
         const newBuild = builds[index];
         if(newBuild) build.setBuildState(newBuild);
         else build.setBuildState({});
+        derivedBuild.resetSelectedAlts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [builds, index]);
-
+    
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
         {buildData ? <>
             <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
@@ -59,7 +63,7 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                 <UsernameWithTime data={buildData} scale={.9} avatarId={buildData.user_avatar_id} />
             </div>
 
-            <BuildDisplay build={build} displayType={displayType} />
+            <BuildDisplay build={derivedBuild} displayType={displayType} />
 
             <div style={{ display: "flex", gap: "0.2rem", alignSelf: builds.length > 0 ? "center" : "start", justifyContent: "center", flexWrap: "wrap" }}>
                 {builds.length > 0 ? <>
@@ -91,10 +95,10 @@ export default function RecommendedBuildsDisplay({ builds, setBuilds, editable =
                         <DisplayTypeButton value={displayType} setValue={setDisplayType} />
                         <span className="sub-text" style={{ textAlign: "center" }}>Quickly view various details of selected identities and E.G.Os or change how the team is displayed.</span>
 
-                        <TeamCodeComponent teamCode={build.teamCode} />
+                        <TeamCodeComponent teamCode={derivedBuild.teamCode} />
                     </BuildDisplayMenuCard>
-                    <Distribution build={build} />
-                    <EventRolls build={build} />
+                    <Distribution build={derivedBuild} />
+                    <EventRolls build={derivedBuild} />
                 </div>
             </DragContainer>
         </> :

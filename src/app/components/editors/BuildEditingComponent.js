@@ -11,6 +11,7 @@ import DisplayTypeButton from "../build/DisplayTypeButton";
 import Distribution from "../build/Distribution";
 import PassiveSearch from "../build/PassiveSearch";
 import TeamCodeComponent from "../build/TeamCodeComponent";
+import useBuildWithAlts from "../build/useBuildWithAlts";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import RarityIcon from "../icons/RarityIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
@@ -154,6 +155,13 @@ export default function BuildEditingComponent({
     const buildRef = useRef(build);
     useEffect(() => { buildRef.current = build }, [build]);
 
+    const derivedBuild = useBuildWithAlts(build);
+
+    useEffect(() => {
+        if (displayType === "edit") derivedBuild.resetSelectedAlts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [displayType]);
+
     const identityOptions = useMemo(() => {
         if (identitiesLoading) return [];
         return Object.entries(identities).reverse().reduce((acc, [_, identity]) => {
@@ -202,7 +210,7 @@ export default function BuildEditingComponent({
                             <PassiveSearch setIdentityId={build.setIdentityId} setEgoId={build.setEgoId} />
                         }
                     </div> :
-                    <BuildDisplay build={build} displayType={displayType} />
+                    <BuildDisplay build={derivedBuild} displayType={displayType} />
             )
         }
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
@@ -215,7 +223,7 @@ export default function BuildEditingComponent({
                         <span className="sub-text" style={{ textAlign: "center" }}>
                             Quickly view various details of selected identities and E.G.Os or change how the team is displayed.
                         </span>
-                        <TeamCodeComponent teamCode={build.teamCode} setTeamCode={build.setTeamCode} editable={true} />
+                        <TeamCodeComponent teamCode={derivedBuild.teamCode} setTeamCode={build.setTeamCode} editable={true} />
                     </BuildDisplayMenuCard> :
                     null
                 }
@@ -276,7 +284,7 @@ export default function BuildEditingComponent({
                 {includeEventRolls && <EventRolls build={build} />}
                 {minimalEditor &&
                     <BuildDisplayMenuCard>
-                        <TeamCodeComponent teamCode={build.teamCode} setTeamCode={build.setTeamCode} />
+                        <TeamCodeComponent teamCode={derivedBuild.teamCode} setTeamCode={build.setTeamCode} />
                     </BuildDisplayMenuCard>
                 }
             </div>
