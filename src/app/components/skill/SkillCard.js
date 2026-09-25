@@ -86,9 +86,11 @@ export default function SkillCard({
                 {(skillBonuses || passiveBonuses) && level ? skillValues.min[2] : constructOffDefLevel(skill, level)}
             </span>
             {includeSkillValues ? <>
-                <span className={styles.pill} {...getGeneralTooltipProps("Assumes all conditionals against a target with defense level equal to the offense level of the skill. Some passives and other effects may not be included.\nUse the calculator in Display Type in a Team Build for a more detailed calculation.")}>
-                    Clash: {skillValues.min[0]}-{skillValues.max[0]}
-                </span>
+                {!skill.noClash &&
+                    <span className={styles.pill} {...getGeneralTooltipProps("Assumes all conditionals against a target with defense level equal to the offense level of the skill. Some passives and other effects may not be included.\nUse the calculator in Display Type in a Team Build for a more detailed calculation.")}>
+                        Clash: {skillValues.min[0]}-{skillValues.max[0]}
+                    </span>
+                }
                 <span className={styles.pill} {...getGeneralTooltipProps("Assumes all conditionals against a target with defense level equal to the offense level of the skill. Some passives and other effects may not be included.\nUse the calculator in Display Type in a Team Build for a more detailed calculation.")}>
                     Damage: {skillValues.min[1]}-{skillValues.max[1]}
                 </span>
