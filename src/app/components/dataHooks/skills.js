@@ -60,7 +60,7 @@ export function useSkillData(type, ids, tiers) {
             if (type === "identity") {
                 const path = getPath(type, id);
                 if (skillDataLoading || Object.keys(skillData[path]).length === 0)
-                    acc[id] = { skills: [], combatPassives: [], supportPassives: [] };
+                    acc[id] = { skills: [], combatPassives: [], supportPassives: [], sanity: null };
                 else {
                     const critId = identitiesLoading ? false : identities[id].skillKeywordList?.includes("Poise");
                     acc[id] = {
@@ -81,6 +81,7 @@ export function useSkillData(type, ids, tiers) {
                         ),
                         combatPassives: compileCombatPassives(skillData[path], tier),
                         supportPassives: compileSupportPassives(skillData[path], tier),
+                        sanity: skillData[path]?.sanity ?? null,
                         notes: skillData[path]?.notes ?? {}
                     };
                 }
