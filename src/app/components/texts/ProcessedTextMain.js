@@ -8,12 +8,12 @@ const tagMap = {
     u: ({ children, key }) => <span key={key} style={{ textDecoration: "underline" }}>{children}</span>,
     s: ({ children, key }) => <span key={key} style={{ textDecoration: "line-through" }}>{children}</span>,
     // 
-    Bloodfiend: ({children, key}) => <span key={key}>{`<Bloodfiend>`}{children}</span>,
-    Bloodbag: ({children, key}) => <span key={key}>{`<Bloodbag>`}{children}</span>,
-    "La Manchaland[TabExplain]": ({children, key}) => <span key={key}>{`<La Manchaland>`}{children}</span>,
-    "Lake Entity": ({children, key}) => <span key={key}>{`<Lake Entity>`}{children}</span>,
-    "District 8 Sweepers": ({children, key}) => <span key={key}>{`<District 8 Sweepers>`}{children}</span>,
-    "District 8 Sweepers [Interpreted]": ({children, key}) => <span key={key}>{`<District 8 Sweepers [Interpreted]>`}{children}</span>
+    Bloodfiend: ({ children, key }) => <span key={key}>{`<Bloodfiend>`}{children}</span>,
+    Bloodbag: ({ children, key }) => <span key={key}>{`<Bloodbag>`}{children}</span>,
+    "La Manchaland[TabExplain]": ({ children, key }) => <span key={key}>{`<La Manchaland>`}{children}</span>,
+    "Lake Entity": ({ children, key }) => <span key={key}>{`<Lake Entity>`}{children}</span>,
+    "District 8 Sweepers": ({ children, key }) => <span key={key}>{`<District 8 Sweepers>`}{children}</span>,
+    "District 8 Sweepers [Interpreted]": ({ children, key }) => <span key={key}>{`<District 8 Sweepers [Interpreted]>`}{children}</span>
 };
 
 function parseToTree(input) {
@@ -133,7 +133,7 @@ function renderNodes(nodes, options = {}) {
 
         const children = (node.children || []).map(render);
 
-        if(textOnly) return children.join("");
+        if (textOnly) return children.join("");
 
         const renderer = tagMap[node.name];
 
@@ -161,9 +161,11 @@ function parse(input, options) {
 }
 
 export default function ProcessedTextMain({ statuses, skillTags, text, enableTooltips = true, iconStyleOverride = {}, nameStyleOverride = {}, allowReplacement = true }) {
-    return parse(text, { statuses, skillTags, enableTooltips, iconStyleOverride, nameStyleOverride, allowReplacement });
+    return <span style={{ display: "inline", whiteSpace: "pre-wrap" }}>
+        {parse(text, { statuses, skillTags, enableTooltips, iconStyleOverride, nameStyleOverride, allowReplacement })}
+    </span>;
 }
 
 export function processText(text) {
-    return parse(text, {enableTooltips: false, allowReplacement: false, textOnly: true})[0];
+    return parse(text, { enableTooltips: false, allowReplacement: false, textOnly: true })[0];
 }

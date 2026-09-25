@@ -11,7 +11,9 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import StatusIcon from "../components/icons/StatusIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import PassiveCard from "../components/skill/PassiveCard";
+import SanityCard from "../components/skill/SanityCard";
 import SkillCard from "../components/skill/SkillCard";
+import ProcessedText from "../components/texts/ProcessedText";
 import { ColoredResistance } from "../lib/colors";
 import { affinities } from "../lib/constants";
 
@@ -50,6 +52,14 @@ function TargetComponent({ target }) {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>{target.name}</h3>
             <EnemyIcon id={target.portrait} style={{ width: isMobile ? "250px" : "auto" }} />
+
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", marginTop: "0.2rem" }}>
+                {(target.tags || []).map(x => <span key={x}
+                    style={{ padding: "0.1rem 0.2rem", margin: "0.1rem 0.25rem", background: "var(--bg-hover)", borderRadius: "0.5rem" }}>
+                    <ProcessedText text={x} />
+                </span>
+                )}
+            </div>
 
             {target.parts ?
                 <div style={{ display: "flex", gap: "0.2rem" }}>
@@ -95,6 +105,9 @@ function TargetComponent({ target }) {
             </> : null}
             {(target.skills ?? []).map((skill, i) => <SkillCard key={i} skill={skill} includeSkillValues={false} />)}
             {(target.passives ?? []).map((passive, i) => <PassiveCard key={i} passive={passive} />)}
+            {target.sanity &&
+                <SanityCard sanityData={target.sanity} />
+            }
         </div>
     </div>
 }

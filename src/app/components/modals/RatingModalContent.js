@@ -1,7 +1,6 @@
 "use client";
 
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import TeamBuild from "../contentCards/TeamBuild";
@@ -10,14 +9,13 @@ import { useData } from "../DataProvider";
 import { useModal } from "./ModalProvider";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
-import PanicIcon from "../icons/PanicIcon";
 import MarkdownEditorWrapper from "../markdown/MarkdownEditorWrapper";
 import NoPrefetchLink from "../NoPrefetchLink";
 import RatingComponent from "../ratings/RatingComponent";
 import ReviewsComponent from "../ratings/ReviewsComponent";
 import PassiveCard from "../skill/PassiveCard";
+import SanityCard from "../skill/SanityCard";
 import SkillCard from "../skill/SkillCard";
-import ProcessedText from "../texts/ProcessedText";
 
 import { searchBuilds } from "@/app/database/builds";
 import { ColoredResistance } from "@/app/lib/colors";
@@ -98,37 +96,8 @@ function IdentityDetails({ id }) {
             list.push(<PassiveCard key={list.length} passive={passive} label={constructSkillLabel("support")} />)
         });
 
-
         if (sanity) {
-            list.push(<div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", padding: "0.5rem", gap: "0.2rem", border: "1px #777 solid", borderRadius: "0.5rem" }}>
-                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>
-                    <span style={{ fontWeight: "bold" }}>Panic Type</span>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <PanicIcon id={"Public_Panic"} style={{ width: "96px" }} />
-                            <span style={{ fontWeight: "bold" }}>{sanity.name}</span>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-                            {sanity.lowMoraleDesc.length > 0 && <>
-                                <span>Low Morale</span>
-                                <span>- {sanity.lowMoraleDesc}</span>
-                            </>}
-                            {sanity.panicDesc.length > 0 && <>
-                                <span>Panic</span>
-                                <span>- {sanity.panicDesc}</span>
-                            </>}
-                        </div>
-                    </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>
-                    <span style={{ fontWeight: "bold", color: "#3B82D0" }}>Base Factors Increasing Sanity</span>
-                    {sanity.add.map((x, i) => <ProcessedText key={i} text={`- ${x}`} />)}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>
-                    <span style={{ fontWeight: "bold", color: "#D64545" }}>Base Factors Decreasing Sanity</span>
-                    {sanity.sub.map((x, i) => <ProcessedText key={i} text={`- ${x}`} />)}
-                </div>
-            </div>)
+            list.push(<SanityCard sanityData={sanity} noTitle={true} />)
         }
 
         return list;
