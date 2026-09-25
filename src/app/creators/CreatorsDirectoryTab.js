@@ -15,6 +15,7 @@ export const CREATOR_TAGS = [
     { id: 2, label: "Streams" },
     { id: 3, label: "Guides" },
     { id: 4, label: "Fan Art" },
+    { id: 18, label: "Animation" },
     { id: 5, label: "Music" },
     { id: 6, label: "Gameplay" },
     { id: 7, label: "Game News" },

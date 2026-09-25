@@ -51,7 +51,7 @@ export default function CreatorsPage() {
             <br /><br />
             Creator tags are based on submissions from users and are intended to describe the types of content a creator makes. If you think a creator&apos;s tags are inaccurate or incomplete, you can submit your own set of tags using the + button on their creator card (login required).
             <br /><br />
-            If a creator is missing from the directory, or you notice that their information is outdated, you can submit an Add/Update request through the Request tab. The Request tab is only for adding or updating creators. Suggestions such as new features or more tags can be submitted through Discord or the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback page</NoPrefetchLink>. If you are a creator listed in the directory and would like your listing removed, please contact me directly through Discord or contact@eldritchtools.com. 
+            If a creator is missing from the directory, or you notice that their information is outdated, you can submit an Add/Update request through the Request tab. The Request tab is only for adding or updating creators. Suggestions such as new features or additional tags can be submitted through Discord or the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback page</NoPrefetchLink>. If you are a creator listed in the directory and would like your listing removed, please contact me directly through Discord or contact@eldritchtools.com. 
         </p>
 
         <div style={{ display: "flex", gap: "1rem" }}>

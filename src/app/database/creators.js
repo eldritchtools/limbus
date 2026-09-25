@@ -31,11 +31,12 @@ export async function searchCreators({ search = null, tagIds = null, isVariety =
     });
 };
 
-export async function submitCreatorRequest(requestType, name, links, note) {
-    return callRPC("submit_creator_request", {
+export async function submitCreatorRequest(requestType, name, links, tags, note) {
+    return callRPC("submit_creator_request_v2", {
         p_request_type: requestType,
         p_name: name,
         p_links: links,
+        p_tags: tags,
         p_note: note
     });
 };

@@ -287,10 +287,11 @@ ADD CONSTRAINT creator_request_name_length CHECK (char_length(name) BETWEEN 1 AN
 
 ALTER TABLE public.creator_requests ENABLE ROW LEVEL SECURITY;
 
-CREATE OR REPLACE FUNCTION public.submit_creator_request(
+CREATE OR REPLACE FUNCTION public.submit_creator_request_v2(
     p_request_type TEXT,
     p_name TEXT,
     p_links TEXT[],
+    p_tags TEXT[] DEFAULT '{}',
     p_note TEXT DEFAULT NULL
 )
 RETURNS VOID
@@ -303,8 +304,8 @@ BEGIN
         RAISE EXCEPTION 'Creator name is required';
     END IF;
 
-    INSERT INTO public.creator_requests (request_type, name, links, note)
-    VALUES (p_request_type, trim(p_name), p_links, NULLIF(trim(p_note), ''));
+    INSERT INTO public.creator_requests (request_type, name, links, tags, note)
+    VALUES (p_request_type, trim(p_name), p_links, p_tags, NULLIF(trim(p_note), ''));
 END;
 $$;
 
