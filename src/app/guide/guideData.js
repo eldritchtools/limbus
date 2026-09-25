@@ -71,6 +71,7 @@ export const guideData = [
                     "You can also paste a team code from the game inside the team code text box in order to easily populate the build.",
                     "A separate popup menu is provided for a click and drag version of assigning deployment order if the user prefers it.",
                     "Keyword and sin distribution counts depending on the selected identities are automatically available below the build.",
+                    "Alternate options can be included for Identities and E.G.O. Users can select them to replace those on the Build which also updates the team code and distribution details.",
                     "Display Type allows you to view builds in different formats or show stats and other details about the selected identities and E.G.Os.",
                     "An encounter tag can optionally be included in the build's tags. Builds with these tags show up in the respective Encounter pages for those tags.",
                     "Markdown and Tokens are available for the description and additional notes per sinner. See the Shared Features section for more details on this.",
@@ -142,7 +143,7 @@ export const guideData = [
                 description: "Browse all Identities with advanced search, filters, and comparison tools.",
                 details: [
                     "Search or sort through identities with all the standard filters. Clicking on an identity will bring you to its individual page.",
-                    "The individual pages show the standard info on the identity (stats, skills, passives). It also lets you choose the uptie and level of the identity to view. When choosing an uptie, an optional Compare Mode exists to let you more easily see the differences between two uptie levels.",
+                    "The individual pages show the standard info on the identity (stats, skills, passives, sanity details). It also lets you choose the uptie and level of the identity to view, as well as whether to include skill and passive bonuses to the clashing and damage calculations. When choosing an uptie, an optional Compare Mode exists to let you more easily see the differences between two uptie levels.",
                     "Community ratings/reviews, kit summaries, and popular builds that use the identity are available through different tabs on the page.",
                     "On the search page, there are multiple display types you can use to view the identities. Icons Only is useful if you're looking for a specific identity to view its individual page, while Cards and Full Details are useful for viewing the different details of each identity side by side.",
                     "A compare mode button allows you to activate Basic or Advanced Compare Mode for the page. Basic compare mode lets you choose any number of identities and view their kits side by side. Advanced Compare Mode allows you to sort or filter identities based on their stats (hp/speed/resists) or details on their skills or passives. You can search through skill and passive descriptions to find identities that have specific mechanics. Note that the Icons Only display type does not work with Advanced Compare Mode."
@@ -153,7 +154,7 @@ export const guideData = [
                 description: "Browse all E.G.Os with advanced search, filters, and comparison tools.",
                 details: [
                     "Search or sort through E.G.Os with all the standard filters. Clicking on an E.G.O will bring you to its individual page.",
-                    "The individual pages show the standard info on the E.G.O (sin costs/resists). It also lets you choose the threadspin of the E.G.O to view. When choosing a threadspin, an optional Compare Mode exists to let you more easily see the differences between two threadspin levels.",
+                    "The individual pages show the standard info on the E.G.O (sin costs/resists). It also lets you choose the threadspin of the E.G.O to view, as well as whether to include skill bonuses to the clashing and damage calculations. When choosing a threadspin, an optional Compare Mode exists to let you more easily see the differences between two threadspin levels.",
                     "Community ratings/reviews, notes, and popular builds that use the E.G.O are available through different tabs on the page.",
                     "On the search page, there are multiple display types you can use to view the E.G.Os. Icons Only is useful if you're looking for a specific E.G.O to view its individual page, while Cards and Full Details are useful for viewing the different details of each E.G.O side by side.",
                     "A compare mode button allows you to activate Basic or Advanced Compare Mode for the page. Basic compare mode lets you choose any number of E.G.Os and view their details side by side. Advanced Compare Mode allows you to sort or filter E.G.Os based on their stats (sin costs/resists) or details on their skills or passives. You can search through skill and passive descriptions to find E.G.Os that have specific mechanics. Note that the Icons Only display type does not work with Advanced Compare Mode."
@@ -404,6 +405,7 @@ export const guideData = [
                 details: [
                     "Clash Arena is a minigame where players draft teams to compete with each other on who can win the most rounds of clashing against randomly generated scenarios.",
                     "Players draft identities one at a time until they form a team. Identities chosen by a player cannot be chosen by another player. Players are given points on each round and choosing identities costs points depending on their clashing values. Save points by choosing weaker identities so you can pick stronger ones later on.",
+                    "E.G.O can optionally be included in the draft. If included, they will be drafted after all identities have been drafted. Players get half the usual points per round to draft a single E.G.O. E.G.O have a single use throughout the entire game. Awakenings and Corrosions share the same single use.",
                     "After drafting, players are faced with multiple rounds of randomly generated scenarios where they choose a skill from their team to use. The player whose skill clashes the highest gets a point. The player with the most points at the end wins."
                 ]
             }
