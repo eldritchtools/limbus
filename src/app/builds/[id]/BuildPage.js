@@ -6,7 +6,6 @@ import MarkdownRendererServer from "@/app/components/markdown/MarkdownRendererSe
 import ImageCarousel from "@/app/components/objects/ImageCarousel";
 import ContentPageTemplate, { LoadingContentPageTemplate } from "@/app/components/pageTemplates/ContentPageTemplate";
 import { decodeBuildExtraOpts } from "@/app/lib/buildExtraOpts";
-import { constructTeamCode } from "@/app/lib/teamCodeEncoding";
 import { YouTubeThumbnailEmbed } from "@/app/lib/youtube";
 
 export default function BuildPage({ id, build }) {
@@ -20,15 +19,13 @@ export default function BuildPage({ id, build }) {
         ...decodeBuildExtraOpts(build.extra_opts)
     }
 
-    const teamCode = constructTeamCode(build.identity_ids, build.ego_ids, build.deployment_order);
-
     return <ContentPageTemplate
         targetType={"build"} targetId={id} content={build}
         keywordIcons={build.keyword_ids}
         addedIcons={buildData.addedIcons ?? []}
         actions={["like", "save", "share", "edit", "delete"]}
     >
-        <BuildDisplaySection build={buildData} teamCode={teamCode} />
+        <BuildDisplaySection build={buildData} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {build?.body?.length > 0 && <>

@@ -9,6 +9,7 @@ import BuildDisplayMenuCard from "@/app/components/build/BuildDisplayMenuCard";
 import DisplayTypeButton from "@/app/components/build/DisplayTypeButton";
 import Distribution from "@/app/components/build/Distribution";
 import TeamCodeComponent from "@/app/components/build/TeamCodeComponent";
+import useBuildWithAlts from "@/app/components/build/useBuildWithAlts";
 import DragContainer from "@/app/components/objects/DragContainer";
 import { contentConfig } from "@/app/lib/contentConfig";
 import useLocalState from "@/app/lib/useLocalState";
@@ -33,11 +34,12 @@ export function BuildPageLocalWrapper({ id }) {
     return <BuildPage id={id} build={build} />
 }
 
-export function BuildDisplaySection({ build, teamCode }) {
+export function BuildDisplaySection({ build }) {
     const [displayType, setDisplayType] = useLocalState("buildDisplayType", "names");
+    const derivedBuild = useBuildWithAlts(build);
 
     return <>
-        <BuildDisplay build={build} displayType={displayType} />
+        <BuildDisplay build={derivedBuild} displayType={displayType} />
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
                 <BuildDisplayMenuCard width={240}>
@@ -46,9 +48,9 @@ export function BuildDisplaySection({ build, teamCode }) {
                     <span className="sub-text" style={{ textAlign: "center" }}>
                         Quickly view various details of selected identities and E.G.Os or change how the team is displayed.
                     </span>
-                    <TeamCodeComponent teamCode={teamCode} />
+                    <TeamCodeComponent teamCode={derivedBuild.teamCode} />
                 </BuildDisplayMenuCard>
-                <Distribution build={build} />
+                <Distribution build={derivedBuild} />
             </div>
         </DragContainer>
     </>

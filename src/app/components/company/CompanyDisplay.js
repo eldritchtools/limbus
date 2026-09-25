@@ -365,7 +365,9 @@ function CompanyDisplayMain({
                 [...filters, ...addedFilters],
                 facade => {
                     const offset = facade.facadeOnly ? 12 : 0;
-                    if (searchString.length > 0 && !checkFilterMatch(searchString, [facade.name])) return false;
+                    const searchNames = [facade.name];
+                    if (!altNamesLoading && facade.id in altNames) searchNames.push(...altNames[facade.id]);
+                    if (searchString.length > 0 && !checkFilterMatch(searchString, searchNames)) return false;
                     if (ownedFilter === "yes" && !itemOwned(facadeBitsets, facade, offset)) return false;
                     if (ownedFilter === "no" && itemOwned(facadeBitsets, facade, offset)) return false;
                     if (ownedFilter === "wish" && !wishlist.includes(`f${facade.id}`)) return false;

@@ -8,6 +8,7 @@ import BuildDisplayMenuCard from "../build/BuildDisplayMenuCard";
 import DisplayTypeButton from "../build/DisplayTypeButton";
 import Distribution from "../build/Distribution";
 import TeamCodeComponent from "../build/TeamCodeComponent";
+import useBuildWithAlts from "../build/useBuildWithAlts";
 import { useEgosWithUpcoming, useIdentitiesWithUpcoming } from "../dataHooks/upcoming";
 import useBuildState from "../dataHooks/useBuildState";
 import BuildEditingComponent from "../editors/BuildEditingComponent";
@@ -91,6 +92,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
         build.iconSwaps, build.sinnerNotes, build.altOptions, build.skillReplaces
     ]);
 
+    const derivedBuild = useBuildWithAlts(build);
 
     if (editable) {
         if(!dataConverted) return;
@@ -103,7 +105,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <BuildDisplay build={build} displayType={displayType} />
+        <BuildDisplay build={derivedBuild} displayType={displayType} />
 
         <DragContainer style={{ alignSelf: "center", width: "max-content", maxWidth: "100%" }}>
             <div style={{ display: "flex", gap: ".5rem", width: "max-content" }}>
@@ -113,10 +115,10 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
                     <span className="sub-text" style={{ textAlign: "center" }}>
                         Quickly view various details of selected identities and E.G.Os or change how the team is displayed.
                     </span>
-                    <TeamCodeComponent teamCode={build.teamCode} />
+                    <TeamCodeComponent teamCode={derivedBuild.teamCode} />
                 </BuildDisplayMenuCard>
-                <Distribution build={build} />
-                <EventRolls build={build} />
+                <Distribution build={derivedBuild} />
+                <EventRolls build={derivedBuild} />
             </div>
         </DragContainer>
     </div>
