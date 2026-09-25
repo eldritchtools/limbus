@@ -355,7 +355,7 @@ function computeSkill(skill, opts) {
     clash = Math.max(clash, 0);
     damage += damageAdder;
 
-    return [formatter.format(clash), skill.atkType ? formatter.format(damage) : "0", offDefLevel];
+    return [skill.noClash ? 0 : formatter.format(clash), skill.atkType ? formatter.format(damage) : "0", offDefLevel];
 }
 
 function CalcCard({ skill, clash, damage }) {
@@ -498,7 +498,8 @@ function extractSkillData(skill, level, rank, applyCrits = false, forceCrits = f
         bonusesEnabled: skill.bonusesEnabled,
         bonuses: skill.data.bonuses,
         applyCrits: (applyCrits && skill.data.critSkill) || forceCrits,
-        passiveBonuses: skill.data.passiveBonuses
+        passiveBonuses: skill.data.passiveBonuses,
+        noClash: skill.data.noClash
     };
 
     if ("bonusNotes" in skill) skillData["bonusNotes"] = skill["bonusNotes"];

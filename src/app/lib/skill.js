@@ -71,6 +71,7 @@ export function compileSkillData(type, ownerData, skillData, tier = 5) {
                         });
                     const critSkill = critId || x.critSkill;
                     const data = compileSkill(x.data, tier, passiveBonuses, critSkill, skillData.passiveBonusNotes ?? null);
+                    if (data && x.noClash) data.noClash = x.noClash;
                     return [skillId, {
                         ...x,
                         data: data ? { ...data, type: "identity", rank: x.tier } : null
@@ -86,17 +87,25 @@ export function compileSkillData(type, ownerData, skillData, tier = 5) {
     } else if (type === "ego") {
         return {
             awakeningSkills: skillData.awakeningSkills.map(
-                x => ({ ...x, data: { ...compileSkill(x.data, tier), type: "ego-a", egoId: ownerData.id } })
+                x => {
+                    const data = { ...compileSkill(x.data, tier), type: "ego-a", egoId: ownerData.id };
+                    if (data && x.noClash) data.noClash = x.noClash;
+                    return { ...x, data: data };
+                }
             ),
             corrosionSkills: skillData.corrosionSkills?.map(
-                x => ({ ...x, data: { ...compileSkill(x.data, tier), type: "ego-c", egoId: ownerData.id } })
+                x => {
+                    const data = { ...compileSkill(x.data, tier), type: "ego-c", egoId: ownerData.id };
+                    if (data && x.noClash) data.noClash = x.noClash;
+                    return { ...x, data: data }
+                }
             ) ?? [],
             passives: compileEgoPassives(skillData, tier),
             notes: skillData?.notes ?? {}
         }
     }
 }
-    
+
 export function getSkillName(type, skillData, id, tier = 5) {
     const extractName = data => {
         return data.reduce((acc, dataTier) => dataTier.uptie <= tier && dataTier.name ? dataTier.name : acc, "");
