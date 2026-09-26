@@ -168,7 +168,7 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                     LinkComponent={NoPrefetchLink}
                                     sidebarTopComponent={<UserStatus />}
                                     footerTopComponent={<FooterNavigation />}
-                                // sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ marginTop: "1rem" }} />}
+                                    // sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ margin: ".5rem" }} />}
                                 >
                                     <Announcement />
                                     {children}

@@ -51,7 +51,7 @@ function TargetComponent({ target }) {
     return <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "center" : "start", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>{target.name}</h3>
-            <EnemyIcon id={target.portrait} style={{ width: isMobile ? "250px" : "auto" }} />
+            <EnemyIcon id={target.portrait} style={{ width: isMobile ? "250px" : "auto", maxHeight: "" }} />
 
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", marginTop: "0.2rem" }}>
                 {(target.tags || []).map(x => <span key={x}
@@ -219,7 +219,7 @@ export default function EncounterDetails({ data }) {
                 <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
                     {targets.map((target, i) =>
                         <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => { setTargetIndex(i); setViewingEvents(false); }}>
-                            <EnemyIcon id={target.portrait} style={{ width: "100%", height: "100%" }} />
+                            <EnemyIcon id={target.portrait} style={{ flex: 1, minHeight: 0, width: "100%" }} />
                             {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
                         </div>
                     )}
