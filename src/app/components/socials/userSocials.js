@@ -40,7 +40,7 @@ export const socialsData = {
     },
     "youtube": {
         label: "YouTube",
-        validator: /^@[A-Za-z0-9_-]+$/i,
+        validator: /^@[\p{L}\p{N}._-]{3,30}$/u,
         icon: FaYoutube,
         iconColor: "#FF0000",
         placeholder: "@handle",
