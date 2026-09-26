@@ -133,6 +133,12 @@ export default function ChatWidget({ username }) {
             joinChat(GLOBAL_CHAT_ID, { displayName });
         }
 
+        const MAX_FAILURES = 3;
+        const RETRY_DELAY = 5000;
+
+        let consecutiveFailures = 0;
+        let retryTimeout;
+
         const fetchCount = async () => {
             if (rooms[GLOBAL_CHAT_ID].status !== "disconnected") return;
 
@@ -142,11 +148,20 @@ export default function ChatWidget({ username }) {
                 const json = await res.json();
                 if (json.error) return;
 
+                consecutiveFailures = 0;
+
                 updateRoom(GLOBAL_CHAT_ID, room => {
                     room.userCount = json.rooms[GLOBAL_CHAT_ID]
                 });
             } catch (err) {
-                setUnavailable(true);
+                consecutiveFailures++;
+
+                if (consecutiveFailures >= MAX_FAILURES) {
+                    setUnavailable(true);
+                    return;
+                }
+
+                retryTimeout = setTimeout(fetchCount, RETRY_DELAY);
             }
         }
 
@@ -175,8 +190,8 @@ export default function ChatWidget({ username }) {
                     history: payload => {
                         updateRoom(roomId, room => {
                             room.entries = [];
-                            if(roomId === GLOBAL_CHAT_ID)
-                                appendEntry("system", room.entries, 
+                            if (roomId === GLOBAL_CHAT_ID)
+                                appendEntry("system", room.entries,
                                     "End of history. Chat history contains the 50 most recent messages and is cleared when the server restarts for maintenance or updates."
                                 );
                             payload.history.forEach(x => appendEntry("message", room.entries, x));
@@ -280,7 +295,7 @@ export default function ChatWidget({ username }) {
                 return rest;
             });
 
-            if(activeRoomId === roomId) setActiveRoomId(Object.keys(rooms).filter(x => x !== roomId).at(-1))
+            if (activeRoomId === roomId) setActiveRoomId(Object.keys(rooms).filter(x => x !== roomId).at(-1))
         }
 
         const newRoomId = room.roomIds.find(x => !(x in rooms));
