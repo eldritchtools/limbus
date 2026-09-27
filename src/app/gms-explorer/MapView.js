@@ -1,5 +1,5 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Select from "react-select";
 
 import ItemCard from "./ItemCard";
@@ -18,11 +18,15 @@ function mapSource(path) {
     return `${ASSETS_ROOT}/rpg/maps/${path}.webp`;
 }
 
-function ContentWrapper({ route, floor, datafile, floorData }) {
+function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMarker }) {
     const [data, dataLoading] = useData(`rpg/${datafile}`);
     const [items, itemsLoading] = useData("rpg/items");
-    const [selectedMarker, setSelectedMarker] = useState(null);
     const { isMobile } = useBreakpoint();
+
+    const selectedMarker = useMemo(() =>
+        dataLoading ? null : data[floor]?.markers.find(x => x.id === marker),
+        [dataLoading, data, floor, marker]
+    );
 
     const itemsDisplay = useMemo(() => {
         if (dataLoading) return [];
@@ -49,7 +53,7 @@ function ContentWrapper({ route, floor, datafile, floorData }) {
     }, [data, dataLoading, selectedMarker, floor]);
 
     const findItem = useCallback(item => {
-        const marker = data[floor].markers.find(x => {
+        const newMarker = data[floor].markers.find(x => {
             if (x.type === "shop") {
                 return x.items.some(y => y.itemId === item)
             } else {
@@ -57,14 +61,9 @@ function ContentWrapper({ route, floor, datafile, floorData }) {
             }
         })
 
-        if (selectedMarker && marker.id === selectedMarker.id) setSelectedMarker(null);
-        else if (marker) setSelectedMarker(marker);
-    }, [data, floor, selectedMarker]);
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSelectedMarker(null);
-    }, [route, floor])
+        if (newMarker && newMarker.id === marker) handleSetMarker(null);
+        else if (newMarker) handleSetMarker(newMarker.id);
+    }, [data, floor, marker, handleSetMarker]);
 
     if (dataLoading || itemsLoading) return;
 
@@ -78,13 +77,13 @@ function ContentWrapper({ route, floor, datafile, floorData }) {
                     height={floorData.height}
                     markers={data[floor]?.markers ?? []}
                     selectedMarker={selectedMarker}
-                    setSelectedMarker={setSelectedMarker}
+                    setSelectedMarker={newMarker => handleSetMarker(newMarker?.id ?? null)}
                 />
                 <span>Map Credit: <NoPrefetchLink className="text-link" href={floorData.source}>{floorData.source}</NoPrefetchLink></span>
             </> :
             <>
                 Map Currently Unavailable
-                {selectedMarker && <MarkerPopover marker={selectedMarker} inDiv={true} onClose={() => setSelectedMarker(null)} />}
+                {selectedMarker && <MarkerPopover marker={selectedMarker} inDiv={true} onClose={() => handleSetMarker(null)} />}
             </>
         }
 
@@ -98,16 +97,13 @@ function ContentWrapper({ route, floor, datafile, floorData }) {
     </>
 }
 
-export default function MapView() {
+export default function MapView({
+    route, handleSetRoute,
+    floor, handleSetFloor,
+    marker, handleSetMarker,
+}) {
     const [floors, floorsLoading] = useData("rpg/floors");
-    const [route, setRoute] = useState(null);
-    const [floor, setFloor] = useState(null);
     const { isMobile } = useBreakpoint();
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setFloor(null);
-    }, [route]);
 
     const routeOptions = useMemo(() => {
         if (floorsLoading) return [];
@@ -116,13 +112,13 @@ export default function MapView() {
 
     const floorOptions = useMemo(() => {
         if (floorsLoading || !route) return [];
-        return Object.entries(floors[route.value].floors).map(([id, data]) => ({ value: id, label: data.name }))
+        return Object.entries(floors[route].floors).map(([id, data]) => ({ value: id, label: data.name }))
     }, [floors, floorsLoading, route]);
 
     if (floorsLoading) return <LoadingContentPageTemplate />;
 
-    const routeData = route ? floors[route.value] : null;
-    const floorData = routeData && floor ? routeData.floors[floor.value] : null;
+    const routeData = route ? floors[route] : null;
+    const floorData = routeData && floor ? routeData.floors[floor] : null;
 
     return <>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
@@ -130,8 +126,8 @@ export default function MapView() {
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Route</span>
                 <Select
                     options={routeOptions}
-                    value={route}
-                    onChange={x => setRoute(x)}
+                    value={route ? routeOptions.find(x => x.value === route) : null}
+                    onChange={x => handleSetRoute(x.value)}
                     placeholder={"Choose Route..."}
                     filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
                     styles={selectStyle}
@@ -139,8 +135,8 @@ export default function MapView() {
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Floor</span>
                 <Select
                     options={floorOptions}
-                    value={floor}
-                    onChange={x => setFloor(x)}
+                    value={floor ? floorOptions.find(x => x.value === floor) : null}
+                    onChange={x => handleSetFloor(x.value)}
                     placeholder={"Choose Floor..."}
                     filterOption={(candidate, input) => checkFilterMatch(input, candidate.label)}
                     styles={selectStyle}
@@ -149,7 +145,8 @@ export default function MapView() {
         </div>
         <HorizontalDivider />
         {floorData && <ContentWrapper
-            route={route.value} floor={floor.value} datafile={routeData.datafile} floorData={floorData}
+            route={route} floor={floor} datafile={routeData.datafile} floorData={floorData}
+            marker={marker} handleSetMarker={handleSetMarker}
         />}
     </>
 

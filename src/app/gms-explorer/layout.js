@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import JsonLd, { getWebPageSchema } from "../lib/jsonLd";
 
 const name = "GMS Explorer";
@@ -36,8 +38,8 @@ const schema = {
 };
 
 export default function GMSExplorerLayout({ children }) {
-    return <>
+    return <Suspense fallback={null}>
         <JsonLd data={schema} />
         {children}
-    </>
+    </Suspense>
 }

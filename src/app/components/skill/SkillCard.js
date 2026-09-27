@@ -83,7 +83,7 @@ export default function SkillCard({
                     <Icon className={iconClass} path={"offense level"} /> :
                     <Icon className={iconClass} path={"defense level"} />
                 }
-                {(skillBonuses || passiveBonuses) && level ? skillValues.min[2] : constructOffDefLevel(skill, level)}
+                {(skillBonuses || passiveBonuses) && skillValues && level ? skillValues.min[2] : constructOffDefLevel(skill, level)}
             </span>
             {includeSkillValues ? <>
                 {!skill.noClash &&

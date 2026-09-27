@@ -31,7 +31,8 @@ export async function GET() {
         { loc: `${SITE_URL}/artwork-guesser`, lastmod: today },
         { loc: `${SITE_URL}/voiceline-guesser`, lastmod: today },
         { loc: `${SITE_URL}/creators`, lastmod: today },
-        { loc: `${SITE_URL}/clash-arena`, lastmod: today }
+        { loc: `${SITE_URL}/clash-arena`, lastmod: today },
+        { loc: `${SITE_URL}/gms-explorer`, lastmod: today }
     ];
 
     return new Response(buildUrlSet(urls), {

@@ -21,6 +21,10 @@ export default function CreatorsPage() {
     const tagIds = tagsParam ? tagsParam.split(",").map(Number).filter(Number.isInteger) : [];
     const varietyParam = searchParams.get("variety");
     const isVariety = varietyParam === null ? "all" : varietyParam;
+    const sortByParam = searchParams.get("sortBy");
+    const sortBy = sortByParam === null ? "random" : sortByParam;
+    const pageParam = searchParams.get("page");
+    const page = pageParam === null ? 1 : Number(pageParam);
 
     const setParams = updates => {
         const params = new URLSearchParams(searchParams);
@@ -45,7 +49,7 @@ export default function CreatorsPage() {
             Find creators who make content related to Project Moon games. Search by creator name, creator type, or the kinds of content they make.
         </p>
         <p className="sub-text" style={{ margin: 0, maxWidth: "min(1200px, 100%)" }}>
-            This is a directory of known creators who make content related to Project Moon games. For the purposes of this directory, Project Moon content means content where a Project Moon game is a primary focus. A passing mention or a brief look at a game does not qualify. Any creator who makes Project Moon content is eligible to be included. Search results are randomized to give creators a fair chance of being seen rather than favoring any particular creator.
+            This is a directory of known creators who make content related to Project Moon games. For the purposes of this directory, Project Moon content means content where a Project Moon game is a primary focus. A passing mention or a brief look at a game does not qualify. Any creator who makes Project Moon content is eligible to be included. Search results are randomized by default to give creators a fair chance of being seen rather than favoring any particular creator.
             <br /><br />
             Being listed in this directory is <strong>not an endorsement or ranking</strong> by the site. This directory does not make any judgment about a creator&apos;s popularity, reputation, or standing within the community. The only creators specifically endorsed by the site are those listed on the <NoPrefetchLink className="text-link" href={"/support"}>Support page</NoPrefetchLink>.
             <br /><br />
@@ -73,7 +77,7 @@ export default function CreatorsPage() {
         </div>
 
         {tab === "directory" &&
-            <CreatorsDirectoryTab search={search} tagIds={tagIds} isVariety={isVariety} setParams={setParams} />
+            <CreatorsDirectoryTab search={search} tagIds={tagIds} isVariety={isVariety} sortBy={sortBy} page={page} setParams={setParams} />
         }
 
         {tab === "request" &&

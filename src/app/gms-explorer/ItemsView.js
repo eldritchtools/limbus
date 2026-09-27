@@ -6,7 +6,7 @@ import { itemsTypeMapping } from "./util";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 
-export default function ItemsView() {
+export default function ItemsView({ handleGoToMarker }) {
     const [items, itemsLoading] = useData("rpg/items");
     const { isMobile } = useBreakpoint();
 
@@ -27,7 +27,7 @@ export default function ItemsView() {
                 {label}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 200 : 400}px, 1fr))`, width: "100%", gap: "0.2rem" }}>
-                {itemsMap[key].map(id => <ItemCard key={id} id={id} item={items[id]} />)}
+                {itemsMap[key].map(id => <ItemCard key={id} id={id} item={items[id]} showSources={true} handleGoToMarker={handleGoToMarker} />)}
             </div>
         </React.Fragment>
         )}
