@@ -10,6 +10,7 @@ CREATE TABLE public.creators (
 );
 
 CREATE INDEX idx_creators_name ON public.creators (name);
+CREATE INDEX idx_creators_created_at ON public.creators (created_at);
 
 ALTER TABLE public.creators
 ADD CONSTRAINT creator_name_length CHECK (char_length(name) BETWEEN 1 AND 100);
@@ -202,12 +203,14 @@ FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.submit_creator_tag_votes(INTEGER, INTEGER[])
 TO authenticated;
 
-CREATE OR REPLACE FUNCTION public.search_creators(
+CREATE OR REPLACE FUNCTION public.search_creators_v2(
     p_search TEXT DEFAULT NULL,
     p_tag_ids INTEGER[] DEFAULT NULL,
     p_is_variety BOOLEAN DEFAULT NULL,
     p_tag_threshold NUMERIC DEFAULT 0.30,
-    p_limit INTEGER DEFAULT 24
+    p_limit INTEGER DEFAULT 24,
+    p_offset INTEGER DEFAULT 0,
+    p_sort TEXT DEFAULT 'random'
 )
 RETURNS TABLE (
     id INTEGER,
@@ -260,9 +263,17 @@ AS $$
 
         AND p_tag_threshold BETWEEN 0 AND 1
 
-    ORDER BY RANDOM()
+    ORDER BY
+        CASE WHEN p_sort = 'newest' THEN c.created_at END DESC,
+        CASE WHEN p_sort = 'newest' THEN c.id END DESC,
 
-    LIMIT LEAST(GREATEST(p_limit, 1), 100);
+        CASE WHEN p_sort = 'name' THEN c.name END,
+        CASE WHEN p_sort = 'name' THEN c.id END,
+
+        CASE WHEN p_sort = 'random' THEN RANDOM() END
+
+    LIMIT LEAST(GREATEST(p_limit, 1), 100)
+    OFFSET GREATEST(p_offset, 0);
 $$;
 
 REVOKE ALL ON FUNCTION public.search_creators(TEXT, INTEGER[], BOOLEAN, NUMERIC, INTEGER)

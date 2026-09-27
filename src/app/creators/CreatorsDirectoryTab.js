@@ -70,10 +70,11 @@ function CreatorCard({ creator }) {
     </div>
 }
 
-export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setParams }) {
+export default function CreatorsDirectoryTab({ search, tagIds, isVariety, sortBy, page, setParams }) {
     const [searchInput, setSearchInput] = useState(search ?? "");
     const [selectedTags, setSelectedTags] = useState(tagIds ?? []);
     const [varietyInput, setVarietyInput] = useState(isVariety ?? "all");
+    const [sortByInput, setSortByInput] = useState("random");
     const [showTags, setShowTags] = useState(tagIds.length > 0);
 
     function submitSearch() {
@@ -81,6 +82,8 @@ export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setPar
             search: searchInput.trim() || null,
             tags: selectedTags.length ? selectedTags.join(",") : null,
             variety: varietyInput === null ? null : String(varietyInput),
+            sortBy: sortByInput === null ? null : String(sortByInput),
+            page: 1
         });
     }
 
@@ -88,16 +91,22 @@ export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setPar
         setSearchInput(search ?? "");
         setSelectedTags(tagIds ?? []);
         setVarietyInput(isVariety ?? "all");
-    }, [search, tagIds, isVariety]);
+        setSortByInput(sortBy ?? "random")
+    }, [search, tagIds, isVariety, sortBy]);
 
     function clearFilters() {
         setSearchInput("");
         setSelectedTags([]);
         setVarietyInput("all");
+        setSortByInput("random");
     }
 
     function toggleTag(tagId) {
         setSelectedTags(current => current.includes(tagId) ? current.filter(id => id !== tagId) : [...current, tagId]);
+    }
+
+    function navigatePage(newPage) {
+        setParams({ page: newPage });
     }
 
     const [creators, setCreators] = useState([]);
@@ -113,7 +122,7 @@ export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setPar
 
             try {
                 const variety = isVariety === "all" ? null : (isVariety === "var")
-                const data = await searchCreators({ search: search || null, tagIds, isVariety: variety });
+                const data = await searchCreators({ search: search || null, tagIds, isVariety: variety, sort: sortBy, page });
                 if (!cancelled) setCreators(data);
             } catch (error) {
                 if (!cancelled) setError(error);
@@ -127,7 +136,7 @@ export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setPar
         return () => {
             cancelled = true;
         };
-    }, [search, tagIds, isVariety]);
+    }, [search, tagIds, isVariety, sortBy, page]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", alignItems: "center", width: "min(1200px, 100%)" }}>
@@ -176,6 +185,31 @@ export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setPar
                     </span>
                 </label>
             </div>
+
+            <span style={{ textAlign: "end" }}>Sort by:</span>
+            <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                <label>
+                    <input
+                        type="radio" name="sortBy" value={"random"}
+                        checked={sortByInput === "random"} onChange={e => setSortByInput(e.target.value)}
+                    />
+                    Random
+                </label>
+                <label>
+                    <input
+                        type="radio" name="sortBy" value={"name"}
+                        checked={sortByInput === "name"} onChange={e => setSortByInput(e.target.value)}
+                    />
+                    Name
+                </label>
+                <label>
+                    <input
+                        type="radio" name="sortBy" value={"newest"}
+                        checked={sortByInput === "newest"} onChange={e => setSortByInput(e.target.value)}
+                    />
+                    Newest
+                </label>
+            </div>
         </div>
 
         <button
@@ -212,8 +246,24 @@ export default function CreatorsDirectoryTab({ search, tagIds, isVariety, setPar
 
         {loading ?
             <LoadingContentPageTemplate /> :
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", width: "100%", justifyContent: "center" }}>
-                {creators.map(creator => <CreatorCard key={creator.id} creator={creator} />)}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {creators.length === 0 ?
+                    <p className="title-text" style={{ textAlign: "center" }}>
+                        No more creators
+                    </p> :
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", width: "100%", justifyContent: "center" }}>
+                        {creators.map(creator => <CreatorCard key={creator.id} creator={creator} />)}
+                    </div>
+
+                }
+
+                {sortBy !== "random" &&
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", alignSelf: "end" }}>
+                        <button className="page-button" disabled={page === 1} onClick={() => navigatePage(page - 1)}>Prev</button>
+                        {page}
+                        <button className="page-button" disabled={creators.length < 50} onClick={() => navigatePage(page + 1)}>Next</button>
+                    </div>
+                }
             </div>
         }
     </div>

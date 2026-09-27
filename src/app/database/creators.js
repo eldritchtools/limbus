@@ -1,5 +1,5 @@
 import { getSupabase } from "./connection";
-import { callRPC, withRetry } from "./supabaseTemplates";
+import { callRPC, paginateParams, withRetry } from "./supabaseTemplates";
 
 export async function submitCreatorTagVotes(creatorId, tagIds) {
     return callRPC("submit_creator_tag_votes", {
@@ -21,14 +21,14 @@ export async function getCreatorTagVotes(id) {
     });
 };
 
-export async function searchCreators({ search = null, tagIds = null, isVariety = null, tagThreshold = 0.30, limit = 50 }) {
-    return callRPC("search_creators", {
+export async function searchCreators({ search = null, tagIds = null, isVariety = null, tagThreshold = 0.30, limit = 50, page, sort = "random" }) {
+    return callRPC("search_creators_v2", paginateParams({
         p_search: search,
         p_tag_ids: tagIds,
         p_is_variety: isVariety,
         p_tag_threshold: tagThreshold,
-        p_limit: limit,
-    });
+        p_sort: sort
+    }, page, limit));
 };
 
 export async function submitCreatorRequest(requestType, name, links, tags, note) {
