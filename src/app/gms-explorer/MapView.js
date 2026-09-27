@@ -61,6 +61,11 @@ function ContentWrapper({ route, floor, datafile, floorData }) {
         else if (marker) setSelectedMarker(marker);
     }, [data, floor, selectedMarker]);
 
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSelectedMarker(null);
+    }, [route, floor])
+
     if (dataLoading || itemsLoading) return;
 
     return <>
