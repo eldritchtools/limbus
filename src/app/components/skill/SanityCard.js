@@ -2,8 +2,8 @@ import PanicIcon from "../icons/PanicIcon";
 import ProcessedText from "../texts/ProcessedText";
 
 function prependDash(text) {
-    if(!text) return "";
-    if(text[0] === '-') return text;
+    if (!text) return "";
+    if (text[0] === '-') return text;
     return `- ${text}`;
 }
 
@@ -33,6 +33,11 @@ export default function SanityCard({ sanityData, noTitle = false, noBorder = fal
                             </>}
                         </div>
                     </div>
+                    {sanityData.flavor &&
+                        <div className="sub-text" style={{ marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>
+                            <ProcessedText text={sanityData.flavor} />
+                        </div>
+                    }
                 </div>
                 {sanityData.add.length > 0 &&
                     <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>

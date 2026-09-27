@@ -180,6 +180,14 @@ export const guideData = [
                 ],
             },
             {
+                title: "GMS Explorer",
+                description: "Explore an interactive map and other details of the Grand Magasin Sisyphe.",
+                details: [
+                    "Select a route and floor, and the page will show an interactive map with markers for item locations.",
+                    "A separate items tab shows a list of all the items in the Grand Magasin Sisyphe.",
+                ],
+            },
+            {
                 title: "Release History",
                 description: "View the different identities and E.G.Os by release order.",
                 details: [

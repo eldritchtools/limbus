@@ -44,12 +44,11 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>The {wrapLink("GMS Explorer", "/gms-explorer")} page has been added.</li>
+                    <li>Flavor text has been added to all relevant Statuses, Skills, Passives, and Panic info.</li>
                     <li>Alternative options in Builds and MD Plans can now be selected to replace the corresponding Identities or E.G.O, which updates the team code and other details.</li>
-                    <li>Sanity details have been added to identities.</li>
                     <li>GIFs are now supported when uploading images, emotes, or stickers.</li>
                     <li>Façades and a wishlist feature has been added to profile {wrapLink("Companies", "/company")}.</li>
-                    <li>Added the {wrapLink("Clash Arena", "/clash-arena")} minigame.</li>
-                    <li>Added the {wrapLink("Creator Directory", "/creators")} page.</li>
                 </> : null}
             </ul>
         </div>

@@ -50,6 +50,7 @@ const paths = [
             { path: "/egos", title: "E.G.Os" },
             { path: "/encounters", title: "Encounters" },
             { path: "/timers", title: "Timers and Roadmap" },
+            { path: "/gms-explorer", title: "GMS Explorer"},
             { path: "/release-history", title: "Release History" }
         ]
     },
@@ -133,7 +134,9 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        As mentioned in a previous announcement, I&apos;ve been working on introducing ads to the site to help cover hosting and development costs. There are no ads yet, but things have been progressing in the background. As part of the requirements for this, users from regions with applicable privacy and consent laws may now see consent links and forms relevant to their region.
+                        Flavor text has been added to all relevant statuses, skills, passives, and panic info.
+                        <br/><br/>
+                        I&apos;ve also added the <NoPrefetchLink className="text-link" href="/gms-explorer">GMS Explorer</NoPrefetchLink> page.
                     </span>
                 </div>
 
