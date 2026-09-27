@@ -15,7 +15,7 @@ export default function GMSExplorerPage() {
         if (f === "floor") acc["floor"] = v;
         if (f === "marker") acc["marker"] = v;
         return acc;
-    }, {});
+    }, { tab: "map" });
 
     const handleSetTab = tab => {
         const params = new URLSearchParams();
