@@ -4,7 +4,7 @@ import RPGItemIcon from "../components/icons/RPGItemIcon";
 import ProcessedText from "../components/texts/ProcessedText";
 
 
-export default function ItemCard({ id, item, greyed, clickable }) {
+export default function ItemCard({ id, item, greyed, clickable, showSources = false, handleGoToMarker }) {
     return <div key={id}
         className={`${styles.itemCard} ${clickable ? styles.hover : null}`}
         style={{
@@ -22,5 +22,13 @@ export default function ItemCard({ id, item, greyed, clickable }) {
                 {item.desc && <span className="sub-text">{item.desc}</span>}
             </div>
         </div>
+        {showSources && <div style={{ display: "flex", flexDirection: "column", alignSelf: "start" }}>
+            <span>Sources:</span>
+            {(item.sources ?? []).map(({ route, floor, marker }) =>
+                <span key={`${route}-${floor}-${marker}`} className="text-link" onClick={() => handleGoToMarker(route, floor, marker)}>
+                    Route: {route.toUpperCase()}, Floor: {floor}
+                </span>
+            )}
+        </div>}
     </div>
 }

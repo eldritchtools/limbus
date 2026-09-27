@@ -1,13 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import ItemsView from "./ItemsView";
 import MapView from "./MapView";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 
 export default function GMSExplorerPage() {
-    const [tab, setTab] = useState("map");
+    const router = useRouter();
+
+    const searchParams = useSearchParams().entries().reduce((acc, [f, v]) => {
+        if (f === "tab") acc["tab"] = v;
+        if (f === "route") acc["route"] = v;
+        if (f === "floor") acc["floor"] = v;
+        if (f === "marker") acc["marker"] = v;
+        return acc;
+    }, {});
+
+    const handleSetTab = tab => {
+        const params = new URLSearchParams();
+        params.set("tab", tab);
+        router.replace(`/gms-explorer?${params.toString()}`, { scroll: false });
+    }
+
+    const handleSetRoute = route => {
+        if (searchParams.tab !== "map") return;
+        const params = new URLSearchParams();
+        params.set("tab", searchParams.tab);
+        if (route) params.set("route", route);
+
+        router.replace(`/gms-explorer?${params.toString()}`, { scroll: false });
+    };
+
+    const handleSetFloor = floor => {
+        if (searchParams.tab !== "map" || !searchParams.route) return;
+        const params = new URLSearchParams();
+        params.set("tab", searchParams.tab);
+        params.set("route", searchParams.route);
+        if (floor) params.set("floor", floor);
+
+        router.replace(`/gms-explorer?${params.toString()}`, { scroll: false });
+    };
+
+    const handleSetMarker = marker => {
+        if (searchParams.tab !== "map" || !searchParams.route || !searchParams.floor) return;
+        const params = new URLSearchParams();
+        params.set("tab", searchParams.tab);
+        params.set("route", searchParams.route);
+        params.set("floor", searchParams.floor);
+        if (marker) params.set("marker", marker);
+
+        router.replace(`/gms-explorer?${params.toString()}`, { scroll: false });
+    };
+
+    const handleGoToMarker = (route, floor, marker) => {
+        const params = new URLSearchParams();
+        params.set("tab", "map");
+        params.set("route", route);
+        params.set("floor", floor);
+        params.set("marker", marker);
+
+        router.replace(`/gms-explorer?${params.toString()}`, { scroll: true });
+    };
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Grand Magasin Sisyphe Explorer</h1>
@@ -25,11 +79,17 @@ export default function GMSExplorerPage() {
         </p>
 
         <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${tab === "map" && "active"}`} onClick={() => setTab("map")}>Map</div>
-            <div className={`tab-header ${tab === "items" && "active"}`} onClick={() => setTab("items")}>Items</div>
+            <div className={`tab-header ${searchParams.tab === "map" && "active"}`} onClick={() => handleSetTab("map")}>Map</div>
+            <div className={`tab-header ${searchParams.tab === "items" && "active"}`} onClick={() => handleSetTab("items")}>Items</div>
         </div>
 
-        {tab === "map" && <MapView />}
-        {tab === "items" && <ItemsView />}
+        {searchParams.tab === "map" &&
+            <MapView
+                route={searchParams.route} handleSetRoute={handleSetRoute}
+                floor={searchParams.floor} handleSetFloor={handleSetFloor}
+                marker={searchParams.marker} handleSetMarker={handleSetMarker}
+            />
+        }
+        {searchParams.tab === "items" && <ItemsView handleGoToMarker={handleGoToMarker} />}
     </div>
 }
