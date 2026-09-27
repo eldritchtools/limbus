@@ -60,7 +60,8 @@ export default function GMSExplorerPage() {
         params.set("floor", floor);
         params.set("marker", marker);
 
-        router.replace(`/gms-explorer?${params.toString()}`, { scroll: true });
+        router.replace(`/gms-explorer?${params.toString()}`, { scroll: false });
+        window.scrollTo(0, 0);
     };
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
