@@ -27,6 +27,7 @@ export default function NitroSetup() {
             data-cfasync="false"
             src="https://s.nitropay.com/ads-2607.js"
             data-spa="auto"
+            data-log-level="error"
             strategy="afterInteractive"
         />
     </>

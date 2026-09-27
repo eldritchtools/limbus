@@ -112,7 +112,7 @@ BEGIN
     IF EXISTS (
         SELECT 1
         FROM UNNEST(v_new_tag_ids) AS tag_id
-        WHERE tag_id < 1 OR tag_id > 17
+        WHERE tag_id < 1 OR tag_id > 18
     ) THEN
         RAISE EXCEPTION 'Invalid creator tag';
     END IF;

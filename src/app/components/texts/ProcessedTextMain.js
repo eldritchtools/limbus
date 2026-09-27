@@ -5,6 +5,7 @@ const tagMap = {
     color: ({ value, children, key }) => <span key={key} style={{ color: value }}>{children}</span>,
     mark: ({ value, children, key }) => <span key={key} style={{ backgroundColor: value }}>{children}</span>,
     b: ({ children, key }) => <span key={key} style={{ fontWeight: "bold" }}>{children}</span>,
+    i: ({ children, key }) => <span key={key} style={{ fontStyle: "italic" }}>{children}</span>,
     u: ({ children, key }) => <span key={key} style={{ textDecoration: "underline" }}>{children}</span>,
     s: ({ children, key }) => <span key={key} style={{ textDecoration: "line-through" }}>{children}</span>,
     // 

@@ -20,7 +20,8 @@ export const homepageLinks = [
             { href: "/identities", title: "Identities", icon: "EgoErodeReplica" },
             { href: "/egos", title: "E.G.Os", icon: "ActivatedEgoPassive" },
             { href: "/encounters", title: "Encounters", icon: "HugeIrritationAlly" },
-            { href: "/timers", title: "Timers and Roadmap", icon: "TickTockTickTock" }
+            { href: "/timers", title: "Timers and Roadmap", icon: "TickTockTickTock" },
+            { href: "/gms-explorer", title: "GMS Explorer", icon: "SisyphusDiamond"}
         ]
     },
     {

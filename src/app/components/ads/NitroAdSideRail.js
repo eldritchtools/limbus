@@ -10,7 +10,7 @@ const mediaQueries = {
     tablet: "(min-width: 768px) and (max-width: 1024px)"
 };
 
-export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo = false, style }) {
+export default function NitroAdSideRail({ id, allowDemo = false, forceDemo = false }) {
     const { getCustomizationValue } = useSiteCustomization();
     const initializedRef = useRef(false);
 
@@ -29,25 +29,25 @@ export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo
         initializedRef.current = true;
 
         window.nitroAds.createAd(id, {
-            height,
-            delayLoading: true,
+            format: "rail",
+            rail: "right",
+            railOffsetTop: 0,
+            railOffsetBottom: 0,
+            railCollisionWhitelist: [],
+            railCloseColor: "#666666",
+            railSpacing: 10,
+            railStack: false,
+            railStickyTop: 0,
+            railVerticalAlign: "center",
             demo: (!nitroEnabled || forceDemo) ? "true" : undefined,
             report: {
-                enabled: true,
-                icon: true,
-                wording: "Report Ad",
-                position: "bottom-right",
+                "enabled": true,
+                "icon": true,
+                "wording": "Report Ad",
+                "position": "bottom-right"
             }
         });
-    }, [nitroEnabled, showAds, allowDemo, forceDemo, id, height]);
+    }, [nitroEnabled, showAds, allowDemo, forceDemo, id]);
 
-    if (!nitroEnabled && !allowDemo) {
-        return <div style={{...style, height, display: "flex", alignItems: "center", justifyContent: "center", border: "1px var(--primary-border-color) solid" }}>
-            {id} Ad
-        </div>
-    }
-
-    if (!showAds) return null;
-
-    return <div id={id} style={{ ...style, height }} />;
+    return null;
 }

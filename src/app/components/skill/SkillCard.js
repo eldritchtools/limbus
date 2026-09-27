@@ -155,5 +155,10 @@ export default function SkillCard({
                 </div> : null
             )}
         </div>
+        {skill.flavor &&
+            <div className="sub-text" style={{ marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>
+                <ProcessedText text={skill.flavor} />
+            </div>
+        }
     </div>
 }

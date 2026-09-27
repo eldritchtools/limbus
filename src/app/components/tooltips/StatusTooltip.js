@@ -4,6 +4,7 @@ import { useData } from "../DataProvider";
 import TooltipTemplate from "./TooltipTemplate";
 import StatusIcon from "../icons/StatusIcon";
 import { useSiteCustomization } from "../SiteCustomizationProvider";
+import ProcessedText from "../texts/ProcessedText";
 
 const iconStyle = { display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" };
 const descStyle = { display: "inline-block", fontSize: "1rem", lineHeight: "1.5", maxWidth: "75rem", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" };
@@ -20,6 +21,11 @@ function StatusTooltipContent({ status }) {
         <div style={descStyle}>
             <span>{status.desc}</span>
         </div>
+        {status.flavor &&
+            <div className="sub-text" style={{ marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>
+                <ProcessedText text={status.flavor} />
+            </div>
+        }
     </div>;
 }
 

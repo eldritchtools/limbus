@@ -45,5 +45,10 @@ export default function PassiveCard({ passive, mini = false, label, pre, backgro
                 <ProcessedText text={passive.desc} iconStyleOverride={iconStyleOverride} nameStyleOverride={nameStyleOverride} serverText={serverText} />
             }
         </div>
+        {passive.flavor &&
+            <div className="sub-text" style={{ marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>
+                <ProcessedText text={passive.flavor} />
+            </div>
+        }
     </div>;
 }
