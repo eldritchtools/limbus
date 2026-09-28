@@ -36,7 +36,7 @@ export default function SupportPage() {
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Financial Support</h2>
             <span style={{ lineHeight: "1.3" }}>
-                For financial support, you can directly support hosting and development costs through Patreon. Every contribution helps keep the project alive. Ko-Fi is also available as an alternative for those who prefer it, though it won&apos;t be updated as frequently.
+                You can directly support hosting and development costs through Patreon. Ko-Fi is also available as an alternative for those who prefer it. Patreon supporters may occasionally get content like behind-the-scenes posts when I feel like posting something, but the main purpose of both options is to support development of the site.
             </span>
             <div style={{ alignSelf: "center" }}>
                 <SocialsDisplay socials={[
@@ -45,7 +45,7 @@ export default function SupportPage() {
                 ]} expandedDefault={true} button={true} />
             </div>
             <span style={{ lineHeight: "1.3" }}>
-                The site is currently preparing to introduce a small number of unobtrusive ads to help cover the costs of running and maintaining the site. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes an option to disable them, but if you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
+                The site also uses ads to help cover its running and maintenance costs. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes options to customize or disable them. If you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
             </span>
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Other Support</h2>

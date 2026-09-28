@@ -431,8 +431,8 @@ export const guideData = [
                 ]
             },
             {
-                title: "Supporters",
-                description: "A page to thank people who support the site.",
+                title: "Support",
+                description: "A page that details ways to support the site and thanks people who support it.",
                 details: []
             },
             {

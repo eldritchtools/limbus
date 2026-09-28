@@ -79,6 +79,7 @@ export function SiteCustomizationProvider({ children }) {
         setCustomization,
         getCustomizationValue,
         setCustomizationValue,
+        customizationLoading: data === undefined,
         createPreviewContainer
     }
 

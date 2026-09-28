@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useSiteCustomization } from "../SiteCustomizationProvider";
 
@@ -10,11 +10,25 @@ const mediaQueries = {
     tablet: "(min-width: 768px) and (max-width: 1024px)"
 };
 
-export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo = false, style }) {
-    const { getCustomizationValue } = useSiteCustomization();
+const adLevels = {
+    none: 0,
+    min: 1,
+    avg: 2,
+    high: 3
+}
+
+export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo = false, style, mediaTypes, adLevel }) {
+    const { getCustomizationValue, customizationLoading } = useSiteCustomization();
     const initializedRef = useRef(false);
 
-    const [showAds] = useState(() => getCustomizationValue("showAds"));
+    const showAd = useMemo(() => {
+        if (customizationLoading) return false;
+        if (!getCustomizationValue("showAds")) return false;
+        if (!adLevel) return true;
+        return adLevels[getCustomizationValue("additionalAds")] >= adLevels[adLevel];
+    },
+        [customizationLoading, getCustomizationValue, adLevel]
+    );
     const nitroEnabled = process.env.NEXT_PUBLIC_ENABLE_NITRO_ADS === "true";
 
     useEffect(() => {
@@ -28,7 +42,7 @@ export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo
 
         initializedRef.current = true;
 
-        window.nitroAds.createAd(id, {
+        const params = {
             height,
             delayLoading: true,
             demo: (!nitroEnabled || forceDemo) ? "true" : undefined,
@@ -38,16 +52,23 @@ export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo
                 wording: "Report Ad",
                 position: "bottom-right",
             }
-        });
-    }, [nitroEnabled, showAds, allowDemo, forceDemo, id, height]);
+        };
+
+        if (mediaTypes) {
+            params["mediaQueries"] = mediaTypes.map(x => mediaQueries[x]).join(", ");
+        }
+
+        window.nitroAds.createAd(id, params);
+    }, [nitroEnabled, showAd, allowDemo, forceDemo, id, height, mediaTypes]);
+
+    if (!showAd) return null;
 
     if (!nitroEnabled && !allowDemo) {
-        return <div style={{...style, height, display: "flex", alignItems: "center", justifyContent: "center", border: "1px var(--primary-border-color) solid" }}>
-            {id} Ad
+        return <div style={{ ...style, height, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px var(--primary-border-color) solid" }}>
+            <span>{id}</span>
+            <span>{mediaTypes}</span>
         </div>
     }
-
-    if (!showAds) return null;
 
     return <div id={id} style={{ ...style, height }} />;
 }

@@ -13,7 +13,7 @@ export const customizationDefaults = {
     showIdsOnTooltips: false,
     giftTriggersEffectsDisplay: false,
     showAds: true,
-    inContentAds: "min",
+    additionalAds: "min",
     hideChat: false,
     autoConnectGlobalChat: false,
     autoConnectChat: false,
