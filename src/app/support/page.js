@@ -1,6 +1,7 @@
 import SupporterIcon from "../components/icons/SupporterIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import SocialsDisplay from "../components/socials/SocialsDisplay";
+import { getPatreonSupporters } from "../database/patreon";
 
 const creators = [
     {
@@ -24,7 +25,7 @@ function Creator({ creator }) {
     </div>
 }
 
-export default function SupportPage() {
+export default async function SupportPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "1rem" }}>
             <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Support Limbus Company Tools</h1>
@@ -71,8 +72,11 @@ export default function SupportPage() {
 
             <h3 style={{ margin: 0 }}>Patrons</h3>
             <span className="sub-text">
-                Coming soon!
+                Big thanks to all our amazing supporters over at Patreon! If you&apos;re a supporter, you can link your Patreon account in the <NoPrefetchLink className="text-link" href="/edit-profile">Edit Profile</NoPrefetchLink> page to change how and whether your name is displayed here. If your name doesn&apos;t show up, you can contact me on Discord or the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page.
             </span>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "0.5rem", width: "100%"}}>
+                {(await getPatreonSupporters()).map((x, i) => <span key={i}>{x.display_name}</span>)}
+            </div>
         </div>
     </div>;
 }

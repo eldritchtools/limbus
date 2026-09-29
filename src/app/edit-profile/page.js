@@ -1,13 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import MarkdownEditorWrapper from "../components/markdown/MarkdownEditorWrapper";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import { AvatarUploader } from "../components/socials/AvatarUploader";
 import SocialsEditor from "../components/socials/SocialsEditor";
 import { socialsData } from "../components/socials/userSocials";
 import { useAuth } from "../database/authProvider";
+import { getSupabase } from "../database/connection";
+import { fetchPatreonAccount, setPatreonDisplayPreference, unlinkPatreonAccount } from "../database/patreon";
 import { updateUser, updateUserAvatar } from "../database/users";
 
 export default function EditProfilePage() {
@@ -22,6 +26,8 @@ export default function EditProfilePage() {
     const [profileError, setProfileError] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [message, setMessage] = useState("");
+    const [patreon, setPatreon] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (profile) {
@@ -31,8 +37,15 @@ export default function EditProfilePage() {
             setSocials(profile.socials ?? []);
             setAvatarId(profile.avatar_id);
             setProfileLoading(false);
+
+            const fetchPatreon = async () => {
+                const patreonData = await fetchPatreonAccount(user.id);
+                if (patreonData) setPatreon(patreonData);
+            }
+
+            fetchPatreon();
         }
-    }, [profile]);
+    }, [user, profile]);
 
     if (loading)
         return <div>
@@ -93,6 +106,8 @@ export default function EditProfilePage() {
 
         setUpdating(true);
         await updateUser(user.id, flair.trim(), description, socials);
+        if (patreon)
+            setPatreonDisplayPreference(patreon.display_preference);
         setUpdating(false);
         setMessage("Updated!");
 
@@ -104,6 +119,31 @@ export default function EditProfilePage() {
         refreshProfile();
         setAvatarId(id);
     }
+
+    const connectPatreon = async () => {
+        const { data: { session } } = await getSupabase().auth.getSession();
+        if (!session) return;
+
+        const response = await fetch("/api/patreon/connect", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+
+        if (!response.ok) {
+            console.error("Failed to start Patreon connection");
+            return;
+        }
+
+        const { url } = await response.json();
+        window.location.href = url;
+    };
+
+    const handleUnlinkPatreonAccount = async () => {
+        if (unlinkPatreonAccount()) {
+            setPatreon(null);
+            return true;
+        }
+    };
 
     const headerStyle = { marginTop: "1rem", marginBottom: "0" };
 
@@ -135,6 +175,37 @@ export default function EditProfilePage() {
                     <h4 style={headerStyle}>Links & Socials</h4>
                     <span className="sub-text">Add links if you want people to find you elsewhere. These will be displayed on your profile and your builds.</span>
                     <SocialsEditor socials={socials} setSocials={setSocials} />
+
+                    <h4 style={headerStyle}>Support</h4>
+                    <span className="sub-text">If you support the site on Patreon, you can link your account to control whether and how your name is shown on the Support page. This is optional. By default, Patreon supporters will be shown on the Support page using their Patreon name. Note that linking your account may discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
+                    {patreon ?
+                        <div>
+                            <div>
+                                Patreon connected as {patreon.patreon_name}
+                            </div>
+                            <span>Display Name: </span>
+                            <select
+                                value={patreon.display_preference}
+                                onChange={e => setPatreon(p => ({ ...p, display_preference: e.target.value }))}
+                            >
+                                <option value="patreon">Patreon name</option>
+                                <option value="username">Account username</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                            <div>
+                                <button className="text-link" onClick={handleUnlinkPatreonAccount}>
+                                    Unlink Patreon
+                                </button>
+                            </div>
+                        </div> :
+                        <div>
+                            <button className="text-link" onClick={() => connectPatreon()}>
+                                Link Patreon
+                            </button>
+                        </div>
+                    }
+
+                    <HorizontalDivider />
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <button onClick={handleUpdateProfile} disabled={updating}>Update Profile</button>
                         {profileError}
