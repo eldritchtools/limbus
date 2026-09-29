@@ -50,7 +50,7 @@ const paths = [
             { path: "/egos", title: "E.G.Os" },
             { path: "/encounters", title: "Encounters" },
             { path: "/timers", title: "Timers and Roadmap" },
-            { path: "/gms-explorer", title: "GMS Explorer"},
+            { path: "/gms-explorer", title: "GMS Explorer" },
             { path: "/release-history", title: "Release History" }
         ]
     },
@@ -119,7 +119,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 6;
+const ANNOUNCEMENT_NUMBER = 7;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -134,9 +134,9 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Flavor text has been added to all relevant statuses, skills, passives, and panic info.
-                        <br/><br/>
-                        I&apos;ve also added the <NoPrefetchLink className="text-link" href="/gms-explorer">GMS Explorer</NoPrefetchLink> page.
+                        Hi! I&apos;ve introduced ads to the site to help cover hosting costs and allow me to continue spending time maintaining and improving the site. I&apos;m still figuring out where to place them and how many to have, so this first update only has a few placements. More pages will likely get ads in the future and ad positions may move around while I figure out what works. Ideally, I want the ads to be enough for me to be able to keep the site running long term, while making sure they aren&apos;t obstructive to everyone&apos;s experience.
+                        <br /><br />
+                        Feel free to submit suggestions through the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page if you have ideas or feel certain placements are problematic. There are also settings in the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize or remove the ads. You&apos;re free to turn them off, but keeping them on is a free and easy way to support the site. Thanks!
                     </span>
                 </div>
 
@@ -171,7 +171,10 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                     LinkComponent={NoPrefetchLink}
                                     sidebarTopComponent={<UserStatus />}
                                     footerTopComponent={<FooterNavigation />}
-                                    // sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ margin: ".5rem" }} />}
+                                    sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ margin: ".5rem" }} />}
+                                    footerLeftComponent={<NitroAd id={"footer-left-ad"} height={220} style={{ marginRight: "2rem", boxSizing: "border-box" }} mediaTypes={["desktop"]} adLevel={"high"} />}
+                                    footerRightComponent={<NitroAd id={"footer-right-ad"} height={220} style={{ marginLeft: "2rem", boxSizing: "border-box" }} mediaTypes={["desktop"]} adLevel={"high"} />}
+                                    footerBottomComponent={<NitroAd id={"footer-bottom-ad"} height={90} style={{ marginLeft: "2rem", boxSizing: "border-box" }} />}
                                 >
                                     <Announcement />
                                     {children}

@@ -1,6 +1,7 @@
 import SupporterIcon from "../components/icons/SupporterIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import SocialsDisplay from "../components/socials/SocialsDisplay";
+import { getPatreonSupporters } from "../database/patreon";
 
 const creators = [
     {
@@ -24,7 +25,7 @@ function Creator({ creator }) {
     </div>
 }
 
-export default function SupportPage() {
+export default async function SupportPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "1rem" }}>
             <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Support Limbus Company Tools</h1>
@@ -36,7 +37,7 @@ export default function SupportPage() {
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Financial Support</h2>
             <span style={{ lineHeight: "1.3" }}>
-                For financial support, you can directly support hosting and development costs through Patreon. Every contribution helps keep the project alive. Ko-Fi is also available as an alternative for those who prefer it, though it won&apos;t be updated as frequently.
+                You can directly support hosting and development costs through Patreon. Ko-Fi is also available as an alternative for those who prefer it. Patreon supporters may occasionally get content like behind-the-scenes posts when I feel like posting something, but the main purpose of both options is to support development of the site.
             </span>
             <div style={{ alignSelf: "center" }}>
                 <SocialsDisplay socials={[
@@ -45,7 +46,7 @@ export default function SupportPage() {
                 ]} expandedDefault={true} button={true} />
             </div>
             <span style={{ lineHeight: "1.3" }}>
-                The site is currently preparing to introduce a small number of unobtrusive ads to help cover the costs of running and maintaining the site. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes an option to disable them, but if you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
+                The site also uses ads to help cover its running and maintenance costs. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes options to customize or disable them. If you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
             </span>
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Other Support</h2>
@@ -71,8 +72,11 @@ export default function SupportPage() {
 
             <h3 style={{ margin: 0 }}>Patrons</h3>
             <span className="sub-text">
-                Coming soon!
+                Big thanks to all our amazing supporters over at Patreon! If you&apos;re a supporter, you can link your Patreon account in the <NoPrefetchLink className="text-link" href="/edit-profile">Edit Profile</NoPrefetchLink> page to change how and whether your name is displayed here. If your name doesn&apos;t show up, you can contact me on Discord or the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page.
             </span>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "0.5rem", width: "100%"}}>
+                {(await getPatreonSupporters()).map((x, i) => <span key={i}>{x.display_name}</span>)}
+            </div>
         </div>
     </div>;
 }

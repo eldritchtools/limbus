@@ -19,7 +19,7 @@ export default function ItemCard({ id, item, greyed, clickable, showSources = fa
             <RPGItemIcon id={id} style={{ width: "64px" }} />
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {item.statText && <ProcessedText text={item.statText} />}
-                {item.desc && <span className="sub-text">{item.desc}</span>}
+                {item.desc && <span className="sub-text"><ProcessedText text={item.desc} /></span>}
             </div>
         </div>
         {showSources && <div style={{ display: "flex", flexDirection: "column", alignSelf: "start" }}>

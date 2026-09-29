@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 import CommentSection from "./CommentSection";
+import NitroAd from "../ads/NitroAd";
 import ContributeButton from "../contentActions/ContributeButton";
 import DeleteButton from "../contentActions/DeleteButton";
 import EditButton from "../contentActions/EditButton";
@@ -91,24 +92,29 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
         </div>
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
-        <div>
-            <button onClick={handleBack} className="text-link" style={{ background: "transparent", border: "none", padding: "0" }}>
-                <BackSolid text={"Go Back"} />
-            </button>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <h1 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap", marginTop: 0, marginBottom: "0.5rem" }}>
-                {titleIcons}
-                {(keywordIcons ?? []).map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
-                {(addedIcons ?? []).map(id => <StatusIcon key={id} id={id} style={{ width: "32px" }} />)}
-                {content.title}
-            </h1>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
-                    <UsernameWithTime data={content} scale={0.9} avatarId={content.user_avatar_id} withFollowButton={true} />
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1, containerType: "inline-size" }}>
+                <div>
+                    <button onClick={handleBack} className="text-link" style={{ background: "transparent", border: "none", padding: "0" }}>
+                        <BackSolid text={"Go Back"} />
+                    </button>
                 </div>
-                {sideComponent}
+                <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                    <h1 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", flexWrap: "wrap", marginTop: 0, marginBottom: "0.5rem" }}>
+                        {titleIcons}
+                        {(keywordIcons ?? []).map(id => <KeywordIcon key={id} id={keywordIdMapping[id]} />)}
+                        {(addedIcons ?? []).map(id => <StatusIcon key={id} id={id} style={{ width: "32px" }} />)}
+                        {content.title}
+                    </h1>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "var(--primary-text-color)" }}>
+                            <UsernameWithTime data={content} scale={0.9} avatarId={content.user_avatar_id} withFollowButton={true} />
+                        </div>
+                        {sideComponent}
+                    </div>
+                </div>
             </div>
+            <NitroAd id={"content-page-header-ad"} height={90} style={{ width: "100%", maxWidth: "min(50%, 800px)" }} adLevel={"min"} />
         </div>
 
         {children}
@@ -146,6 +152,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
 
         {content.is_published ?
             <div id="comments" style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
+                <NitroAd id={"comment-section-ad"} height={90} style={{ width: "100%" }} adLevel={"avg"} />
                 <CommentSection targetType={targetType} targetId={targetId} ownerId={content.user_id} commentCount={content.comment_count} pinnedComment={content.pinned_comment} />
             </div> :
             <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>No comments while not published.</p>

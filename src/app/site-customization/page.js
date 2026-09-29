@@ -77,7 +77,7 @@ const fontOptions = {
     "'JetBrains Mono', monospace": "Monospace"
 };
 
-const inContentAdsOptions = {
+const additionalAdsOptions = {
     "none": { next: "min", label: "None" },
     "min": { next: "avg", label: "Minimal" },
     "avg": { next: "high", label: "Average" },
@@ -233,7 +233,7 @@ export default function SiteCustomizationPage() {
     if (data.favoriteLinks) for (let i = 0; i < data.favoriteLinks.length; i += 5) chunked.push(data.favoriteLinks.slice(i, i + 5));
     const favoritesSectionWidth = isMobile ? "160px" : "200px";
 
-    const inContentAds = data.inContentAds ?? customizationDefaults.inContentAds;
+    const additionalAds = data.additionalAds ?? customizationDefaults.additionalAds;
 
     return <div style={{
         display: "flex", flexDirection: "column", alignItems: "stretch", gap: "1rem",
@@ -544,7 +544,7 @@ export default function SiteCustomizationPage() {
 
         <SettingContainer
             name={"Ads"}
-            desc={"Ads are a way to support the site financially without paying anything. Since ads aren't implemented yet, these settings don't do anything at the moment, but you can set them in advance. I will always strive to ensure that ads do not become obstructive or a hindrance to the site experience."}
+            desc={"Ads are a way to support the site financially without paying anything. I will always strive to ensure that ads do not become obstructive or a hindrance to the site experience."}
         >
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <input type="checkbox"
@@ -556,15 +556,15 @@ export default function SiteCustomizationPage() {
             <span className="sub-text">This toggles ads on the site if you don&apos;t want to see them. If you decide to disable them, consider checking out the <NoPrefetchLink className="text-link" href={"/support"}>Support</NoPrefetchLink> page if you&apos;d like to support the site in other ways.</span>
 
             <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                <span>In-Content Ads</span>
+                <span>Additional Ads</span>
                 <button 
-                    onClick={() => setData(p => ({ ...p, inContentAds: inContentAdsOptions[inContentAds].next }))} 
+                    onClick={() => setData(p => ({ ...p, additionalAds: additionalAdsOptions[additionalAds].next }))} 
                     style={{padding: "4px"}}
                 >
-                    {inContentAdsOptions[inContentAds].label}
+                    {additionalAdsOptions[additionalAds].label}
                 </button>
             </label>
-            <span className="sub-text">Including in-content ads lets you support the site even more than the default ads on the site. You can choose how many in-content ads are included on the site.</span>
+            <span className="sub-text">Support the site even more by increasing the number of ad placements. You can choose how many additional ads are included on the site.</span>
 
         </SettingContainer>
 
