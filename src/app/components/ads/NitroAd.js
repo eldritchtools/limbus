@@ -36,7 +36,7 @@ export default function NitroAd({ id, height = 250, allowDemo = false, forceDemo
             return;
         }
 
-        if (!showAds || initializedRef.current || !window.nitroAds) {
+        if (!showAd || initializedRef.current || !window.nitroAds) {
             return;
         }
 
