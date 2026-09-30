@@ -114,9 +114,7 @@ export default function TimersPage() {
                 </DragContainer>
 
                 <h3 style={{ margin: 0 }}>Season Roadmap:</h3>
-                <DragContainer>
-                    <Roadmap />
-                </DragContainer>
+                <Roadmap />
 
                 <h3 style={{ margin: 0 }}>Days Since (12PM KST • {local12} local):</h3>
                 <div>

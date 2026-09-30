@@ -10,11 +10,11 @@ import { LEVEL_CAP } from "../lib/constants";
 import { checkFilterMatch } from "../lib/filter";
 import { getLevelCost, getUptieCost } from "../lib/training";
 
-function UptieSelectorWrapper({id, identities, egos, value, setValue, bottomOption}) {
+function UptieSelectorWrapper({ id, identities, egos, value, setValue, bottomOption }) {
     const data = `${id}`[0] === "1" ? identities[id] : egos[id];
-    if(!data) return null;
+    if (!data) return null;
 
-    return <UptieSelector 
+    return <UptieSelector
         value={Number.isInteger(value) ? Math.min(value, data.maxThreadspin ?? 4) : value}
         setValue={setValue}
         bottomOption={bottomOption}
@@ -41,10 +41,10 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
             const [t, s, sc] = getUptieCost('0'.repeat(identities[id].rank), startUptie, uptie);
 
             return <React.Fragment>
-                <span>XP: {xp}</span>
-                <span>Thread: {t}</span>
-                <span>Shards: {s}</span>
-                {sc > 0 && <span>Spinchains: {sc}</span>}
+                <span style={{ whiteSpace: "nowrap" }}>XP: {xp}</span>
+                <span style={{ whiteSpace: "nowrap" }}>Thread: {t}</span>
+                <span style={{ whiteSpace: "nowrap" }}>Shards: {s}</span>
+                {sc > 0 && <span style={{ whiteSpace: "nowrap" }}>Spinchains: {sc}</span>}
             </React.Fragment>
         } else {
             let startUptie = starts[id].uptie ?? starts.default.uptie;
@@ -54,9 +54,9 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
             const [t, s, sc] = getUptieCost(egos[id].rank, startUptie, uptie);
 
             return <React.Fragment>
-                <span>Thread: {t}</span>
-                <span>Shards: {s}</span>
-                {sc > 0 && <span>Spinchains: {sc}</span>}
+                <span style={{ whiteSpace: "nowrap" }}>Thread: {t}</span>
+                <span style={{ whiteSpace: "nowrap" }}>Shards: {s}</span>
+                {sc > 0 && <span style={{ whiteSpace: "nowrap" }}>Spinchains: {sc}</span>}
             </React.Fragment>
         }
     }
@@ -79,7 +79,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             <NumberInputWithButtons
                                 min={1} max={LEVEL_CAP} value={starts[id].level ?? starts.default.level}
                                 setValue={v => setStarts(p => ({ ...p, [id]: { ...p[id], level: v } }))}
-                                inputStyle={{width: "2ch"}}
+                                inputStyle={{ width: "2ch" }}
                             /> :
                             null
                     }
@@ -98,7 +98,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             <NumberInputWithButtons
                                 min={1} max={LEVEL_CAP} value={targets[id].level ?? targets.default.level}
                                 setValue={v => setTargets(p => ({ ...p, [id]: { ...p[id], level: v } }))}
-                                inputStyle={{width: "2ch"}}
+                                inputStyle={{ width: "2ch" }}
                             /> :
                             null
                     }
@@ -151,7 +151,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
             return checkFilterMatch(searchString, egos[id].name);
     }
 
-    return <div style={{ height: "min(90vh, 600px)", overflowY: "auto", overflowX: "auto", maxWidth: "95vw", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
+    return <div style={{ height: "min(90vh, 600px)", overflowY: "auto", overflowX: "auto", maxWidth: "90vw", border: "1px #aaa solid", borderRadius: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", paddingLeft: "0.5rem" }}>
             Search:
             <input value={searchString} onChange={e => setSearchString(e.target.value)} />
@@ -168,13 +168,13 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
             </thead>
             <tbody>
                 <tr>
-                    <td style={{width: "128px", textAlign: "center"}}>Default<br />Setting</td>
-                    <td style={{width: "128px"}}>
+                    <td style={{ width: "128px", textAlign: "center" }}>Default<br />Setting</td>
+                    <td style={{ width: "128px" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.1rem" }}>
                             <NumberInputWithButtons
                                 min={1} max={LEVEL_CAP} value={starts.default.level}
                                 setValue={v => setStarts(p => ({ ...p, default: { ...p.default, level: v } }))}
-                                inputStyle={{width: "2ch"}}
+                                inputStyle={{ width: "2ch" }}
                             />
                             <UptieSelector
                                 value={starts.default.uptie}
@@ -185,12 +185,12 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             />
                         </div>
                     </td>
-                    <td style={{width: "128px"}}>
+                    <td style={{ width: "128px" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.1rem" }}>
                             <NumberInputWithButtons
                                 min={1} max={LEVEL_CAP} value={targets.default.level}
                                 setValue={v => setTargets(p => ({ ...p, default: { ...p.default, level: v } }))}
-                                inputStyle={{width: "2ch"}}
+                                inputStyle={{ width: "2ch" }}
                             />
                             <UptieSelector
                                 value={targets.default.uptie}
@@ -199,7 +199,7 @@ export default function SelectedTable({ identities, egos, selected, setSelected,
                             />
                         </div>
                     </td>
-                    <td  style={{width: "128px"}}/>
+                    <td style={{ width: "128px" }} />
                     <td />
                 </tr>
                 {selected.filter(filterFunc).map(id => constructRow(id))}

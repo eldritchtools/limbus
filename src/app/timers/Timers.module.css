@@ -15,12 +15,12 @@
 
 @media (max-width: 768px) {
     .timerLabelContainer {
-        width: 170px;
+        width: 150px;
         height: auto;
     }
 
     .timerBannerContainer {
-        width: 170px;
+        width: 150px;
         height: 75px;
     }
 }

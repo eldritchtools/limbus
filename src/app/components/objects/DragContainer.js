@@ -69,7 +69,12 @@ export default function DragContainer({ children, className, style, hintDistance
         checkScrollable();
 
         const ro = new ResizeObserver(checkScrollable);
-        if (ref.current) ro.observe(ref.current);
+        if (ref.current) {
+            ro.observe(ref.current);
+
+            const container = ref.current.firstElementChild;
+            if (container) ro.observe(container);
+        }
 
         return () => ro.disconnect();
     }, []);

@@ -26,20 +26,23 @@ export default function DaysSinceTable({ entries, identities, egos, show00 }) {
     const constructCell = (key, key2) => {
         if (!entries[key][key2]) return null;
         const id = String(entries[key][key2]);
+        const size = isMobile ? 96 : 128;
         if (id[0] === '1') {
             const since = computeDaysSince(identities[id].date);
             return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem" }}>
                 <NoPrefetchLink href={`/identities/${id}`} style={{ width: isMobile ? "96px" : "128px", gap: "0.2rem" }}>
-                    <IdentityIcon id={id} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} />
+                    <IdentityIcon id={id} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} size={size} />
                 </NoPrefetchLink>
+                <span className="sub-text">{identities[id].date}</span>
                 <span className="title-text">{since} {since === 1 ? "Day" : "Days"}</span>
             </div>
         } else {
             const since = computeDaysSince(egos[id].date);
             return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0.2rem", width: isMobile ? "96px" : "128px", gap: "0.2rem" }}>
                 <NoPrefetchLink href={`/egos/${id}`} style={{ width: isMobile ? "96px" : "128px", gap: "0.2rem" }}>
-                    <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} />
+                    <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} size={size} />
                 </NoPrefetchLink>
+                <span className="sub-text">{egos[id].date}</span>
                 <span className="title-text">{since} {since === 1 ? "Day" : "Days"}</span>
             </div>
         }
