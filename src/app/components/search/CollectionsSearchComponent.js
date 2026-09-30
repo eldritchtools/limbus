@@ -14,10 +14,16 @@ export default function CollectionsSearchComponent({ initialValues = {}, createL
             setValues={setFilters}
             filters={["search", "tags", "sortBy"]}
         />
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.2rem" }}>
+        <div style={{ display: "flex", gap: "0.8rem", alignItems: "center", marginTop: "0.2rem" }}>
             <button style={{ fontSize: "1.2rem", cursor: "pointer" }} onClick={() => searchFunc(filters)}>Search Collections</button>
             {createLink ?
-                <span>or <NoPrefetchLink className="text-link" href={"/collections/new"}>create a collection</NoPrefetchLink></span> :
+                <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+                    <span>or</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                        <NoPrefetchLink className="text-link" href={"/collections/new"}>create a collection</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/my-posts?tab=collections"}>view my collections</NoPrefetchLink>
+                    </div>
+                </div> :
                 null
             }
         </div>

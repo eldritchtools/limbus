@@ -171,7 +171,7 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                     LinkComponent={NoPrefetchLink}
                                     sidebarTopComponent={<UserStatus />}
                                     footerTopComponent={<FooterNavigation />}
-                                    sidebarBottomComponent={<NitroAd id={"sidebar-ad"} style={{ margin: ".5rem" }} />}
+                                    sidebarBottomComponent={<NitroAd id={"sidebar-ad"} height={600} style={{ margin: ".5rem" }} />}
                                     footerLeftComponent={<NitroAd id={"footer-left-ad"} height={220} style={{ marginRight: "2rem", boxSizing: "border-box" }} mediaTypes={["desktop"]} adLevel={"high"} />}
                                     footerRightComponent={<NitroAd id={"footer-right-ad"} height={220} style={{ marginLeft: "2rem", boxSizing: "border-box" }} mediaTypes={["desktop"]} adLevel={"high"} />}
                                     footerBottomComponent={<NitroAd id={"footer-bottom-ad"} height={90} style={{ marginLeft: "2rem", boxSizing: "border-box" }} />}

@@ -154,7 +154,7 @@ export default function TrainingCalcPage() {
 
                 <span>XP: {xp}</span>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <select value={xLux} onChange={e => setXLux(e.target.value)}>
+                    <select value={xLux} onChange={e => setXLux(e.target.value)} style={{ width: "25ch" }}>
                         {Object.entries(xpLux).map(([k, v]) => <option key={k} value={k}>Lvl {v[0]} XP Lux</option>)}
                     </select>
                     <label>
@@ -169,7 +169,7 @@ export default function TrainingCalcPage() {
                 </div>
                 <span>Thread: {thread}</span>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <select value={tLux} onChange={e => setTLux(e.target.value)}>
+                    <select value={tLux} onChange={e => setTLux(e.target.value)} style={{ width: "25ch" }}>
                         {Object.keys(threadLux).map(k => <option key={k} value={k}>Lvl {k} Thread Lux</option>)}
                     </select>
                     <label>
@@ -188,7 +188,7 @@ export default function TrainingCalcPage() {
                 </div>
                 <span>Shards: {shard}</span>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <select value={md} onChange={e => setMd(e.target.value)}>
+                    <select value={md} onChange={e => setMd(e.target.value)} style={{ width: "25ch" }}>
                         {Object.keys(mdCrates).map(k => <option key={k} value={k}>{k}</option>)}
                     </select>
                     <label>
@@ -203,7 +203,7 @@ export default function TrainingCalcPage() {
                 </div>
                 <span>Spinchains: {spinchain}</span>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <select value={sc} onChange={e => setSC(e.target.value)}>
+                    <select value={sc} onChange={e => setSC(e.target.value)} style={{ width: "25ch" }}>
                         <option value={"shard"}>Sinner Shard</option>
                         <option value={"nshard"}>Non-Sinner Shard</option>
                         <option value={"ushard"}>Uptie/TS-only Shard</option>
@@ -221,7 +221,7 @@ export default function TrainingCalcPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Dispense and Training Calculator</h1>
+        <h1 style={{ fontSize: "1.75rem", margin: 0, textAlign: "center" }}>Dispense and Training Calculator</h1>
         <p style={{ margin: 0 }}>
             Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os.
         </p>

@@ -16,10 +16,16 @@ export default function BuildsSearchComponent({ initialValues = {}, createLink =
             setValues={setFilters}
             filters={["search", "tags", "identities", "egos", "keywords", "sortBy", "strictFiltering"]}
         />
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.2rem" }}>
+        <div style={{ display: "flex", gap: "0.8rem", alignItems: "center", marginTop: "0.2rem" }}>
             <button style={{ fontSize: "1.2rem", cursor: "pointer" }} onClick={() => searchFunc(filters)}>Search Builds</button>
             {createLink ?
-                <span>or <NoPrefetchLink className="text-link" href={"/builds/new"}>create a build</NoPrefetchLink></span> :
+                <div style={{display: "flex", gap: "0.8rem", alignItems: "center"}}>
+                    <span>or</span> 
+                    <div style={{display: "flex", flexDirection: "column", gap: "0.2rem"}}>
+                        <NoPrefetchLink className="text-link" href={"/builds/new"}>create a build</NoPrefetchLink>
+                        <NoPrefetchLink className="text-link" href={"/my-posts?tab=builds"}>view my builds</NoPrefetchLink>
+                    </div>
+                </div> :
                 null
             }
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import NoPrefetchLink from "../components/NoPrefetchLink";
@@ -11,15 +12,21 @@ import useLocalState from "../lib/useLocalState";
 
 export default function MyPostsPage() {
     const { user, loading } = useAuth();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
     const [content, setContent] = useState([]);
     const [contentLoading, setContentLoading] = useState(false);
     const [page, setPage] = useState(1);
 
-    const [mainActiveTab, setMainActiveTab, mainActiveTabInitialized] = useLocalState("myPostsMainTab", "builds");
-    const [activeTab, setActiveTab, activeTabInitialized] = useLocalState("myPostsSubTab", "published");
+    const [storedMainTab, setStoredMainTab, mainActiveTabInitialized] = useLocalState("myPostsMainTab", "builds");
+    const [storedSubTab, setStoredSubTab, subTabInitialized] = useLocalState("myPostsSubTab", "published");
+
+    const mainActiveTab = searchParams.get("tab") || storedMainTab;
+    const activeTab = searchParams.get("subTab") || storedSubTab;
 
     useEffect(() => {
-        if (!mainActiveTabInitialized || !activeTabInitialized) return;
+        if (!mainActiveTabInitialized || !subTabInitialized) return;
         const cfg = contentConfig[mainActiveTab];
         if (!cfg) return;
         const baseParams = { ignoreBlockDiscovery: true, sortBy: "new" };
@@ -57,7 +64,7 @@ export default function MyPostsPage() {
         }
 
         handleContent();
-    }, [user, activeTab, page, mainActiveTab, mainActiveTabInitialized, activeTabInitialized]);
+    }, [user, activeTab, page, mainActiveTab, mainActiveTabInitialized, subTabInitialized]);
 
     if (loading)
         return <div>
@@ -115,15 +122,26 @@ export default function MyPostsPage() {
     }
 
     const handleSetMainActiveTab = tab => {
-        setMainActiveTab(tab);
+        setStoredMainTab(tab);
         setContent([]);
         setPage(1);
+
+        const params = new URLSearchParams(searchParams);
+        params.set("tab", tab);
+
+        router.replace(`my-posts?${params.toString()}`, { scroll: false });
+
     }
 
     const handleSetActiveTab = tab => {
-        setActiveTab(tab);
+        setStoredSubTab(tab);
         setContent([]);
         setPage(1);
+
+        const params = new URLSearchParams(searchParams);
+        params.set("subTab", tab);
+
+        router.replace(`my-posts?${params.toString()}`, { scroll: false });
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

@@ -1,0 +1,188 @@
+.container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    background: #111;
+}
+
+.wrapper {
+    width: 100% !important;
+    height: min(75vh, 800px) !important;
+    min-height: 400px;
+    overflow: hidden;
+    background: #111;
+}
+
+.content {
+    cursor: grab;
+    user-select: none;
+}
+
+.content:active {
+    cursor: grabbing;
+}
+
+.controls {
+    position: absolute;
+    z-index: 20;
+    top: 12px;
+    left: 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px;
+
+    border: 1px solid #444;
+    border-radius: 6px;
+
+    background: rgb(25 25 25 / 94%);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
+}
+
+.controls button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 34px;
+    height: 32px;
+    padding: 0 8px;
+
+    border: 1px solid #4a4a4a;
+    border-radius: 4px;
+
+    background: #292929;
+    color: #ddd;
+
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #353535;
+}
+
+.controls button:active {
+    background: #202020;
+}
+
+.controls .reset {
+    margin-left: 2px;
+    font-size: 13px;
+}
+
+.coordinates {
+    position: absolute;
+    z-index: 20;
+    right: 12px;
+    bottom: 12px;
+
+    padding: 5px 8px;
+
+    border: 1px solid #444;
+    border-radius: 4px;
+
+    background: rgb(20 20 20 / 92%);
+    color: #ccc;
+
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+    user-select: none;
+}
+
+.selectedCoordinates {
+    position: absolute;
+    z-index: 20;
+    left: 12px;
+    bottom: 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 4px;
+
+    border: 1px solid #444;
+    border-radius: 4px;
+
+    background: rgb(20 20 20 / 94%);
+    color: #ddd;
+
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.selectedCoordinates>span {
+    padding: 0 4px;
+}
+
+.selectedCoordinates button {
+    height: 24px;
+    padding: 0 7px;
+
+    border: 1px solid #4a4a4a;
+    border-radius: 3px;
+
+    background: #292929;
+    color: #ccc;
+
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.selectedCoordinates button:hover {
+    background: #353535;
+}
+
+.loading {
+    position: absolute;
+    z-index: 15;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #111;
+    color: #aaa;
+
+    font-size: 14px;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .wrapper {
+        height: 65vh !important;
+        min-height: 300px;
+    }
+
+    .controls {
+        top: 8px;
+        left: 8px;
+    }
+
+    .controls button {
+        min-width: 32px;
+        height: 30px;
+    }
+
+    .controls .reset {
+        display: none;
+    }
+
+    .coordinates {
+        right: 8px;
+        bottom: 8px;
+    }
+
+    .selectedCoordinates {
+        left: 8px;
+        bottom: 8px;
+    }
+}

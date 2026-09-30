@@ -93,7 +93,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1, containerType: "inline-size" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1, containerType: "inline-size", minWidth: "300px" }}>
                 <div>
                     <button onClick={handleBack} className="text-link" style={{ background: "transparent", border: "none", padding: "0" }}>
                         <BackSolid text={"Go Back"} />
@@ -114,7 +114,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
                     </div>
                 </div>
             </div>
-            <NitroAd id={"content-page-header-ad"} height={90} style={{ width: "100%", maxWidth: "min(50%, 800px)" }} adLevel={"min"} />
+            <NitroAd id={"content-page-header-ad"} height={90} style={{ width: "100%", maxWidth: "min(50%, 800px)" }} adLevel={"min"} mediaTypes={["desktop"]} />
         </div>
 
         {children}
