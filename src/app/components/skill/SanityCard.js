@@ -39,13 +39,13 @@ export default function SanityCard({ sanityData, noTitle = false, noBorder = fal
                         </div>
                     }
                 </div>
-                {sanityData.add.length > 0 &&
+                {(sanityData.add ?? []).length > 0 &&
                     <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>
                         <span style={{ fontWeight: "bold", color: "#3B82D0" }}>Base Factors Increasing Sanity</span>
                         {sanityData.add.map((x, i) => <ProcessedText key={i} text={prependDash(x)} />)}
                     </div>
                 }
-                {sanityData.sub.length > 0 &&
+                {(sanityData.sub ?? []).length > 0 &&
                     <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>
                         <span style={{ fontWeight: "bold", color: "#D64545" }}>Base Factors Decreasing Sanity</span>
                         {(sanityData.sub ?? []).map((x, i) => <ProcessedText key={i} text={prependDash(x)} />)}

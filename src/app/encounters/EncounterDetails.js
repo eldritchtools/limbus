@@ -10,6 +10,7 @@ import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import StatusIcon from "../components/icons/StatusIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import Status from "../components/objects/Status";
 import PassiveCard from "../components/skill/PassiveCard";
 import SanityCard from "../components/skill/SanityCard";
 import SkillCard from "../components/skill/SkillCard";
@@ -94,6 +95,11 @@ function TargetComponent({ target }) {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, max-content)", gap: "0.25rem", justifyItems: "center", alignSelf: "center" }}>
                 {affinities.map(affinity => <KeywordIcon key={affinity} id={affinity} />)}
                 {affinities.map(affinity => <span key={`${affinity}-r`}>{maybeResist(affinity)}</span>)}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                <span style={{ fontWeight: "bold", textAlign: "center" }}>Statuses:</span>
+                {(target.statuses ?? []).map(status => <Status key={status} id={status} />)}
             </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
