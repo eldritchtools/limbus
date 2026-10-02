@@ -18,12 +18,14 @@ export default function GMSExplorerPage() {
     }, { tab: "map" });
 
     const handleSetTab = tab => {
+        console.log("set tab");
         const params = new URLSearchParams();
         params.set("tab", tab);
         router.replace(`/gms-explorer?${params.toString()}`, { scroll: false });
     }
 
     const handleSetRoute = route => {
+        console.log("set route");
         if (searchParams.tab !== "map") return;
         const params = new URLSearchParams();
         params.set("tab", searchParams.tab);
@@ -33,6 +35,7 @@ export default function GMSExplorerPage() {
     };
 
     const handleSetFloor = floor => {
+        console.log("set floor");
         if (searchParams.tab !== "map" || !searchParams.route) return;
         const params = new URLSearchParams();
         params.set("tab", searchParams.tab);
@@ -43,6 +46,7 @@ export default function GMSExplorerPage() {
     };
 
     const handleSetMarker = marker => {
+        console.log("set marker");
         if (searchParams.tab !== "map" || !searchParams.route || !searchParams.floor) return;
         const params = new URLSearchParams();
         params.set("tab", searchParams.tab);
