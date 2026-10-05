@@ -1,10 +1,13 @@
 import { useBreakpoint } from "@eldritchtools/shared-components";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import Select from "react-select";
 
+import DeathCard from "./DeathCard";
+import DialogueCard from "./DialogueCard";
 import ItemCard from "./ItemCard";
 import MapViewer from "./MapViewer";
 import MarkerPopover from "./MarkerPopover";
+import { subtabDescs } from "./util";
 import { useData } from "../components/DataProvider";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
@@ -18,7 +21,7 @@ function mapSource(path) {
     return `${ASSETS_ROOT}/rpg/maps/${path}.webp`;
 }
 
-function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMarker }) {
+function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMarker, subtab, handleSetSubtab }) {
     const [data, dataLoading] = useData(`rpg/${datafile}`);
     const [items, itemsLoading] = useData("rpg/items");
     const { isMobile } = useBreakpoint();
@@ -31,33 +34,68 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
     const itemsDisplay = useMemo(() => {
         if (dataLoading) return [];
         const itemsList = [...(data[floor]?.markers ?? []).reduce((acc, marker) => {
-            if (marker.type === "shop") {
-                marker.items.forEach(x => acc.add(x.itemId));
-            } else {
-                marker.items.forEach(x => acc.add(x));
+            if (subtab === "items") {
+                if (marker.type === "shop") {
+                    marker.items?.forEach(x => acc.add(x.itemId));
+                } else if (["drop", "interaction", "quest"].includes(marker.type)) {
+                    marker.items?.forEach(x => acc.add(x));
+                }
+            } else if (subtab === "dialogues") {
+                if (marker.type === "dialogue") acc.add(marker);
+            } else if (subtab === "deaths") {
+                if (marker.type === "death") acc.add(marker);
             }
             return acc;
         }, new Set())];
 
-        return itemsList.map((id) => {
+        return itemsList.map(idOrMarker => {
             if (selectedMarker) {
-                if (selectedMarker.type === "shop") {
-                    return [selectedMarker.items.some(x => x.itemId === id), id];
+                if (subtab === "items") {
+                    if (selectedMarker.type === "shop") {
+                        return [selectedMarker.items?.some(x => x.itemId === idOrMarker), idOrMarker];
+                    } else if (["drop", "interaction", "quest"].includes(selectedMarker.type)) {
+                        return [selectedMarker.items?.some(x => x === idOrMarker), idOrMarker];
+                    } else {
+                        return [false, idOrMarker];
+                    }
+                } else if (subtab === "dialogues") {
+                    if (selectedMarker.type === "dialogue")
+                        return [selectedMarker.id === idOrMarker.id, idOrMarker];
+                    else
+                        return [false, idOrMarker];
+                } else if (subtab === "deaths") {
+                    if (selectedMarker.type === "death")
+                        return [selectedMarker.id === idOrMarker.id, idOrMarker];
+                    else
+                        return [false, idOrMarker];
                 } else {
-                    return [selectedMarker.items.some(x => x === id), id];
+                    return [true, idOrMarker];
                 }
             } else {
-                return [true, id];
+                return [true, idOrMarker];
             }
-        }).sort((a, b) => Number(b[0]) - Number(a[0]));
-    }, [data, dataLoading, selectedMarker, floor]);
+        });
+    }, [data, dataLoading, selectedMarker, floor, subtab]);
+
+    const filteredMarkers = useMemo(() => {
+        if (dataLoading) return [];
+        if (subtab === "items") {
+            return data[floor]?.markers.filter(x => ["shop", "drop", "interaction", "quest"].includes(x.type))
+        } else if (subtab === "dialogues") {
+            return data[floor]?.markers.filter(x => x.type === "dialogue")
+        } else if (subtab === "deaths") {
+            return data[floor]?.markers.filter(x => x.type === "death")
+        }
+    }, [subtab, data, dataLoading, floor])
 
     const findItem = useCallback(item => {
         const newMarker = data[floor].markers.find(x => {
             if (x.type === "shop") {
                 return x.items.some(y => y.itemId === item)
+            } else if (["drop", "interaction", "quest"].includes(x.type)) {
+                return x.items?.some(y => y === item)
             } else {
-                return x.items.some(y => y === item)
+                return false;
             }
         })
 
@@ -75,7 +113,7 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
                     alt={`${route} ${floor} map`}
                     width={floorData.width}
                     height={floorData.height}
-                    markers={data[floor]?.markers ?? []}
+                    markers={filteredMarkers}
                     selectedMarker={selectedMarker}
                     setSelectedMarker={newMarker => handleSetMarker(newMarker?.id ?? null)}
                 />
@@ -87,13 +125,40 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
             </>
         }
 
-        <div className="title-text">Items</div>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 200 : 400}px, 1fr))`, width: "100%", gap: "0.2rem" }}>
-            {itemsDisplay.map(([on, id]) => {
-                const item = items[id];
-                return <ItemCard key={id} id={id} item={item} greyed={!on} clickable={() => findItem(id)} />;
-            })}
+        <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+            <div className={`tab-header ${subtab === "items" && "active"}`} onClick={() => handleSetSubtab("items")}>Items</div>
+            <div className={`tab-header ${subtab === "dialogues" && "active"}`} onClick={() => handleSetSubtab("dialogues")}>Dialogues</div>
+            <div className={`tab-header ${subtab === "deaths" && "active"}`} onClick={() => handleSetSubtab("deaths")}>Deaths</div>
         </div>
+
+        <span className="sub-text">{subtabDescs[subtab]}</span>
+
+        {subtab === "items" &&
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 200 : 400}px, 1fr))`, width: "100%", gap: "0.2rem" }}>
+                {itemsDisplay.map(([on, id]) => {
+                    const item = items[id];
+                    return <ItemCard key={id} id={id} item={item} greyed={!on} clickable={() => findItem(id)} />;
+                })}
+            </div>
+        }
+
+        {subtab === "dialogues" && <>
+            {selectedMarker && <DialogueCard id={selectedMarker.id} dialogue={selectedMarker} expanded={true} />}
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 200 : 400}px, 1fr))`, width: "100%", gap: "0.2rem" }}>
+                {itemsDisplay.map(([on, dialogue]) => {
+                    return <DialogueCard key={dialogue.id} id={dialogue.id} dialogue={dialogue} greyed={!on} clickable={() => handleSetMarker(dialogue.id)} />;
+                })}
+            </div>
+        </>
+        }
+
+        {subtab === "deaths" &&
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 200 : 400}px, 1fr))`, width: "100%", gap: "0.2rem" }}>
+                {itemsDisplay.map(([on, death]) => {
+                    return <DeathCard key={death.id} id={death.id} death={death} greyed={!on} clickable={() => handleSetMarker(death.id)} />;
+                })}
+            </div>
+        }
     </>
 }
 
@@ -101,6 +166,7 @@ export default function MapView({
     route, handleSetRoute,
     floor, handleSetFloor,
     marker, handleSetMarker,
+    subtab, handleSetSubtab
 }) {
     const [floors, floorsLoading] = useData("rpg/floors");
     const { isMobile } = useBreakpoint();
@@ -146,7 +212,7 @@ export default function MapView({
         <HorizontalDivider />
         {floorData && <ContentWrapper
             route={route} floor={floor} datafile={routeData.datafile} floorData={floorData}
-            marker={marker} handleSetMarker={handleSetMarker}
+            marker={marker} handleSetMarker={handleSetMarker} subtab={subtab} handleSetSubtab={handleSetSubtab}
         />}
     </>
 

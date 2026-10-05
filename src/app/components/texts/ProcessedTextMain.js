@@ -146,11 +146,9 @@ function renderNodes(nodes, options = {}) {
             });
         }
 
-        return (
-            <span key={node.key} data-tag={node.name}>
-                {children}
-            </span>
-        );
+        return <span key={node.key} data-tag={node.name}>
+            {children}
+        </span>
     }
 
     return nodes.map(render);

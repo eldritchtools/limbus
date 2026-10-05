@@ -3,7 +3,7 @@
 
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
-import { FaExclamation, FaStore } from "react-icons/fa";
+import { FaComment, FaExclamation, FaSkull, FaStore } from "react-icons/fa";
 import { GiBroadsword } from "react-icons/gi";
 import { useTransformEffect } from "react-zoom-pan-pinch";
 
@@ -15,14 +15,18 @@ const MARKER_ICONS = {
     shop: FaStore,
     drop: GiBroadsword,
     interaction: SparklesIcon,
-    quest: FaExclamation
+    quest: FaExclamation,
+    dialogue: FaComment,
+    death: FaSkull
 };
 
 const MARKER_BACKGROUNDS = {
     shop: "#8a6d3b",
     drop: "#8a3b3b",
     interaction: "#3b6d8a",
-    quest: "#e6b84a"
+    quest: "#e6b84a",
+    dialogue: "#5B9BD5",
+    death: "#B0B0B0"
 };
 
 function Marker({ marker, setSelectedMarker, ref }) {
@@ -31,6 +35,8 @@ function Marker({ marker, setSelectedMarker, ref }) {
     useTransformEffect(({ state }) => {
         setScale(state.scale);
     });
+
+    if (!marker.x || !marker.y) return null;
 
     const Icon = MARKER_ICONS[marker.type];
     const markerScale = Math.pow(1 / scale, 0.7);
