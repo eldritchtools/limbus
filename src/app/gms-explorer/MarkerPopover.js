@@ -5,7 +5,9 @@ const titleMapping = {
     "shop": x => `Shop: ${x.name}`,
     "drop": x => `Enemy: ${x.name}`,
     "interaction": _ => "Interaction",
-    "quest": _ => "Quest"
+    "quest": _ => "Quest",
+    "dialogue": _ => "Dialogue",
+    "death": _ => "Death"
 }
 
 export default function MarkerPopover({ marker, inDiv = false, onClose }) {
