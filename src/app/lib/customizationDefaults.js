@@ -17,5 +17,7 @@ export const customizationDefaults = {
     hideChat: false,
     autoConnectGlobalChat: false,
     autoConnectChat: false,
-    showPresenceNotifications: true
+    showPresenceNotifications: true,
+    chatWidth: 360,
+    chatHeight: 500
 }

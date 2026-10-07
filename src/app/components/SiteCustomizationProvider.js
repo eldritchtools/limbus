@@ -39,6 +39,11 @@ export function SiteCustomizationProvider({ children }) {
         return res === "main";
     }
 
+    const setCustomizationValues = async (values) => {
+        const res = await getLocalStore("siteCustomization").save({ id: "main", ...data, ...values });
+        return res === "main";
+    }
+
     const createPreviewContainer = ({ baseBackgroundColor, baseTextColor, surfaceContrast, textScale, font, children }) => {
         return <div
             data-theme-mode={isLight(baseBackgroundColor) ? "light" : "dark"}
@@ -79,6 +84,7 @@ export function SiteCustomizationProvider({ children }) {
         setCustomization,
         getCustomizationValue,
         setCustomizationValue,
+        setCustomizationValues,
         customizationLoading: data === undefined,
         createPreviewContainer
     }

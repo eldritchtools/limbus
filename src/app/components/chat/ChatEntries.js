@@ -14,7 +14,7 @@ function formatTime(date) {
 function ChatEntry({ entry }) {
     if (entry.type === "message")
         return <div className={styles.messageEntry}>
-            <MarkdownRenderer content={entry.text} />
+            <MarkdownRenderer content={entry.text} allowImages={false} />
         </div>
 
     if (entry.type === "author")

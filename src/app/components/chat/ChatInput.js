@@ -32,6 +32,7 @@ export default function ChatInput({ disabled, sendMessage, editorViewRef }) {
             onSubmit={onSubmit}
             autoFocus={true}
             mini={true} short={true}
+            allowImages={false}
         />
     </div>
 }
