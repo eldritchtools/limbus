@@ -44,11 +44,11 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>Assist units, levels, speed, hp, and offense/defense levels have been added to Encounters. Some things may have missing or incorrect levels if I&apos;ve missed them. They will be updated if I notice them or if they are reported.</li>
                     <li>The {wrapLink("GMS Explorer", "/gms-explorer")} page has been added.</li>
                     <li>Flavor text has been added to all relevant Statuses, Skills, Passives, and Panic info.</li>
                     <li>Alternative options in Builds and MD Plans can now be selected to replace the corresponding Identities or E.G.O, which updates the team code and other details.</li>
                     <li>GIFs are now supported when uploading images, emotes, or stickers.</li>
-                    <li>Façades and a wishlist feature has been added to profile {wrapLink("Companies", "/company")}.</li>
                 </> : null}
             </ul>
         </div>

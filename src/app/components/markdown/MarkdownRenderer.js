@@ -212,7 +212,7 @@ function GiftIconsItem({ vals, context }) {
     } else {
         return <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
             {vals.map((val, i) => {
-                if(val.length === 0) return;
+                if (val.length === 0) return;
                 const split = val.split("|");
                 const id = split[0];
                 const enhanceRank = split.length > 1 ? Number(split[1]) : 0;
@@ -397,7 +397,7 @@ function TeamCodeItem({ code }) {
     </HintText>
 }
 
-export default function MarkdownRenderer({ content, context, guardedLinks }) {
+export default function MarkdownRenderer({ content, context, guardedLinks, allowImages = true }) {
     const renderedMarkdown = useMemo(() => {
         return <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks, remarkMath, tokenExtractionPlugin]}
@@ -483,6 +483,11 @@ export default function MarkdownRenderer({ content, context, guardedLinks }) {
                 // ul: ({ node, ...props}) => (
                 //     <ul style={{marginBlock: 0}}>{props.children}</ul>
                 // ),
+                ...(allowImages
+                    ? {}
+                    : {
+                        img: () => null,
+                    }),
                 blockquote: ({ node, ...props }) => (
                     <blockquote
                         style={{
@@ -499,7 +504,7 @@ export default function MarkdownRenderer({ content, context, guardedLinks }) {
         >
             {content}
         </ReactMarkdown>
-    }, [content, context, guardedLinks]);
+    }, [content, context, guardedLinks, allowImages]);
 
     return <div style={{ lineHeight: "1.4", textAlign: "start", wordWrap: "break-word", overflowWrap: "break-word", wordBreak: "break-word" }}>
         {renderedMarkdown}

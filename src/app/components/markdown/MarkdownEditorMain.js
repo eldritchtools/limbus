@@ -268,7 +268,7 @@ function CommunityAssetPickerButton({ type, getView }) {
         {open && (
             createPortal(
                 <div ref={menuRef} style={{
-                    position: "fixed", top: position?.top ?? rect.bottom, left: position?.left ?? rect.left, 
+                    position: "fixed", top: position?.top ?? rect.bottom, left: position?.left ?? rect.left,
                     background: "var(--bg-secondary)", border: "1px solid var(--secondary-border-color)", borderRadius: "8px",
                     zIndex: 2010, padding: "0.2rem", boxSizing: "border-box", maxWidth: "90%"
                 }}>
@@ -290,7 +290,8 @@ export default function MarkdownEditorMain({
     short = false,
     mini = false,
     onSubmit,
-    autoFocus
+    autoFocus,
+    allowImages = true
 }) {
     const editorRef = useRef(null);
     const viewRef = useRef();
@@ -372,7 +373,7 @@ export default function MarkdownEditorMain({
             parent: editorRef.current,
         });
 
-        if(autoFocus) viewRef.current.focus();
+        if (autoFocus) viewRef.current.focus();
 
         return () => {
             viewRef.current?.destroy();
@@ -382,7 +383,7 @@ export default function MarkdownEditorMain({
     }, [dataFacetExtension]);
 
     useEffect(() => {
-        if(autoFocus && viewRef.current)
+        if (autoFocus && viewRef.current)
             viewRef.current.focus();
     }, [viewRef, autoFocus])
 
@@ -418,9 +419,11 @@ export default function MarkdownEditorMain({
                         <button className="editor-button-style" {...getGeneralTooltipProps("Insert Link")} onClick={() => insertLink(viewRef.current)}>
                             <FaLink />
                         </button>
-                        <button className="editor-button-style" {...getGeneralTooltipProps("Insert Image")} onClick={() => insertImage(viewRef.current)}>
-                            <FaImage />
-                        </button>
+                        {allowImages &&
+                            <button className="editor-button-style" {...getGeneralTooltipProps("Insert Image")} onClick={() => insertImage(viewRef.current)}>
+                                <FaImage />
+                            </button>
+                        }
                         <button className="editor-button-style" {...getGeneralTooltipProps("Inline Math (LaTeX)")} onClick={() => insertInlineLaTeX(viewRef.current)}>
                             <span style={{ fontWeight: "bold", transform: "translateY(-2px)" }}>$</span>
                         </button>

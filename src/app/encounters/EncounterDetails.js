@@ -6,6 +6,7 @@ import ChoiceEvent from "../components/choiceEvent/ChoiceEvent";
 import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import EnemyIcon from "../components/icons/EnemyIcon";
+import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import StatusIcon from "../components/icons/StatusIcon";
@@ -62,6 +63,11 @@ function TargetComponent({ target }) {
                 )}
             </div>
 
+            <div style={{ display: "flex", gap: "0.2rem" }}>
+                <span>Level: {target.level}</span>
+                <span>HP: {target.hp}</span>
+            </div>
+
             {target.parts ?
                 <div style={{ display: "flex", gap: "0.2rem" }}>
                     {target.parts.map((part, i) =>
@@ -76,6 +82,21 @@ function TargetComponent({ target }) {
                 </div> :
                 null
             }
+
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                {currentPart.hp && <>
+                    <div style={{ display: "flex", justifyContent: "center" }}><Icon path={"hp"} style={{ width: "32px", height: "32px" }} /></div>
+                    <span>{currentPart.hp}</span>
+                </>}
+                {currentPart.speed && <>
+                    <div style={{ display: "flex", justifyContent: "center" }}><Icon path={"speed"} style={{ width: "32px", height: "32px" }} /></div>
+                    <span>{currentPart.speed[0]}-{currentPart.speed[1]}</span>
+                </>}
+                {"defLevel" in currentPart && <>
+                    <div style={{ display: "flex", justifyContent: "center" }}><Icon path={"defense level"} style={{ width: "32px", height: "32px" }} /></div>
+                    <span>{currentPart.defLevel}</span>
+                </>}
+            </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", textAlign: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
@@ -109,7 +130,7 @@ function TargetComponent({ target }) {
                     {override}
                 </div>
             </> : null}
-            {(target.skills ?? []).map((skill, i) => <SkillCard key={i} skill={skill} includeSkillValues={false} />)}
+            {(target.skills ?? []).map((skill, i) => <SkillCard key={i} skill={skill} includeSkillValues={false} level={target.level ?? undefined} />)}
             {(target.passives ?? []).map((passive, i) => <PassiveCard key={i} passive={passive} />)}
             {target.sanity &&
                 <SanityCard sanityData={target.sanity} />
@@ -139,6 +160,7 @@ export default function EncounterDetails({ data }) {
     const [phase, setPhase] = useState(0);
     const [targetIndex, setTargetIndex] = useState(0);
     const [viewingEvents, setViewingEvents] = useState(false);
+    const [tab, setTab] = useState("enemy");
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -171,81 +193,113 @@ export default function EncounterDetails({ data }) {
     const targets = targetsData.targets;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
-        {battles &&
+        {
+            data.assists &&
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-                {Array.from({ length: battles }, (_, i) =>
-                    <div
-                        key={i} className={`tab-header ${battle === i ? "active" : ""}`}
-                        onClick={() => { setBattle(i); setWave(0); setPhase(0); setTargetIndex(0); setViewingEvents(false); }}
-                    >
-                        Battle {i + 1}
-                    </div>
-                )}
-            </div>
-        }
-
-        {waves &&
-            <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-                {Array.from({ length: waves }, (_, i) =>
-                    <div
-                        key={i} className={`tab-header ${wave === i ? "active" : ""}`}
-                        onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); setViewingEvents(false); }}
-                    >
-                        Wave {i + 1}
-                    </div>
-                )}
-            </div>
-        }
-
-        {phases &&
-            <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-                {Array.from({ length: phases }, (_, i) =>
-                    <div
-                        key={i} className={`tab-header ${phase === i ? "active" : ""}`}
-                        onClick={() => { setPhase(i); setTargetIndex(0); setViewingEvents(false); }}
-                    >
-                        Phase {i + 1}
-                    </div>
-                )}
-            </div>
-        }
-
-        {allyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
-            <h3 style={{ margin: "0.2rem 0", textAlign: "center" }}>Ally Buffs</h3>
-            {allyBuffs.map(id => <BuffComponent key={id} id={id} />)}
-        </div> : null}
-
-        {enemyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
-            <h3 style={{ margin: "0.2rem 0", textAlign: "center" }}>Enemy Buffs</h3>
-            {enemyBuffs.map(id => <BuffComponent key={id} id={id} />)}
-        </div> : null}
-
-        {targets &&
-            <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
-                <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
-                    {targets.map((target, i) =>
-                        <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => { setTargetIndex(i); setViewingEvents(false); }}>
-                            <EnemyIcon id={target.portrait} style={{ flex: 1, minHeight: 0, width: "100%" }} />
-                            {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
-                        </div>
-                    )}
-                    {
-                        targetsData.choiceEvents &&
-                        <div className={`${styles.targetIconContainer} ${viewingEvents ? styles.active : ""}`} style={{ display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setViewingEvents(true)}>
-                            Events
-                        </div>
-                    }
+                <div className={`tab-header ${tab === "enemy" ? "active" : ""}`}
+                    onClick={() => { setBattle(0); setWave(0); setPhase(0); setTargetIndex(0); setViewingEvents(false); setTab("enemy"); }}
+                >
+                    Enemies
+                </div>
+                <div className={`tab-header ${tab === "assist" ? "active" : ""}`}
+                    onClick={() => { setTargetIndex(0); setTab("assist"); }}
+                >
+                    Assists
                 </div>
             </div>
         }
 
-        {viewingEvents ?
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-                {targetsData.choiceEvents.map((event, i) => <div key={i} className="panel-container" style={{ maxWidth: "min(800px, 95%)" }}>
-                    <ChoiceEvent event={event} />
-                </div>)}
-            </div> :
-            (targets && <TargetComponent target={targets[targetIndex]} />)
-        }
+        {tab === "enemy" && <>
+            {battles &&
+                <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                    {Array.from({ length: battles }, (_, i) =>
+                        <div
+                            key={i} className={`tab-header ${battle === i ? "active" : ""}`}
+                            onClick={() => { setBattle(i); setWave(0); setPhase(0); setTargetIndex(0); setViewingEvents(false); }}
+                        >
+                            Battle {i + 1}
+                        </div>
+                    )}
+                </div>
+            }
+
+            {waves &&
+                <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                    {Array.from({ length: waves }, (_, i) =>
+                        <div
+                            key={i} className={`tab-header ${wave === i ? "active" : ""}`}
+                            onClick={() => { setWave(i); setPhase(0); setTargetIndex(0); setViewingEvents(false); }}
+                        >
+                            Wave {i + 1}
+                        </div>
+                    )}
+                </div>
+            }
+
+            {phases &&
+                <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                    {Array.from({ length: phases }, (_, i) =>
+                        <div
+                            key={i} className={`tab-header ${phase === i ? "active" : ""}`}
+                            onClick={() => { setPhase(i); setTargetIndex(0); setViewingEvents(false); }}
+                        >
+                            Phase {i + 1}
+                        </div>
+                    )}
+                </div>
+            }
+
+            {allyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
+                <h3 style={{ margin: "0.2rem 0", textAlign: "center" }}>Ally Buffs</h3>
+                {allyBuffs.map(id => <BuffComponent key={id} id={id} />)}
+            </div> : null}
+
+            {enemyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
+                <h3 style={{ margin: "0.2rem 0", textAlign: "center" }}>Enemy Buffs</h3>
+                {enemyBuffs.map(id => <BuffComponent key={id} id={id} />)}
+            </div> : null}
+
+            {targets &&
+                <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
+                    <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
+                        {targets.map((target, i) =>
+                            <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => { setTargetIndex(i); setViewingEvents(false); }}>
+                                <EnemyIcon id={target.portrait} style={{ flex: 1, minHeight: 0, width: "100%" }} />
+                                {target.num ? <span style={{ fontWeight: "bold" }}>x{target.num}</span> : null}
+                            </div>
+                        )}
+                        {
+                            targetsData.choiceEvents &&
+                            <div className={`${styles.targetIconContainer} ${viewingEvents ? styles.active : ""}`} style={{ display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setViewingEvents(true)}>
+                                Events
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            {viewingEvents ?
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                    {targetsData.choiceEvents.map((event, i) => <div key={i} className="panel-container" style={{ maxWidth: "min(800px, 95%)" }}>
+                        <ChoiceEvent event={event} />
+                    </div>)}
+                </div> :
+                (targets && <TargetComponent target={targets[targetIndex]} />)
+            }
+        </>}
+
+        {tab === "assist" && <>
+            <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
+                <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
+                    {data.assists.map((target, i) =>
+                        <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => { setTargetIndex(i); setViewingEvents(false); }}>
+                            <EnemyIcon id={target.portrait} style={{ flex: 1, minHeight: 0, width: "100%" }} />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <TargetComponent target={data.assists[targetIndex]} />
+        </>}
     </div>
 }

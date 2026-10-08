@@ -611,12 +611,13 @@ export default function PopularityPollPage() {
         <span style={{ maxWidth: "1000px", textAlign: "start" }}>
             Vote for your favorites of season 7! Submit or update your responses at any time while the poll is open. Current results are shown below. Refresh to see the latest results.
             <br /> <br />
-            Responses will be locked some time after Canto X&apos;s story is fully released to give people ample time to finalize their answers.
-            <br /> <br />
-            If there are any missing answers you&apos;d like to see, feel free to report it through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page. This page will be improved over time as responses come in. If you&apos;d like to suggest improvements, you can do so in the same page. Thank you!
+            Responses have been locked. A separate summary will be released in the future.
+            {/* <br /> <br />
+            If there are any missing answers you&apos;d like to see, feel free to report it through the <NoPrefetchLink className="text-link" href="/feedback">Feedback</NoPrefetchLink> page. This page will be improved over time as responses come in. If you&apos;d like to suggest improvements, you can do so in the same page. Thank you! */}
         </span>
 
-        {mode === "submit" ?
+        <ResultsTab results={results} responseCount={responseCount} />
+        {/* {mode === "submit" ?
             <div style={{ display: "flex", flexDirection: "column", gap: "2rem", width: "100%", maxWidth: "1000px" }}>
                 {questions.map((question, i) =>
                     <Question key={i}
@@ -642,6 +643,6 @@ export default function PopularityPollPage() {
                 </div>
                 <ResultsTab results={results} responseCount={responseCount} />
             </div>
-        }
+        } */}
     </div>
 }

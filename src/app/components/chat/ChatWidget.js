@@ -52,15 +52,59 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
     }
 }
 
+function ChatResizeHandle({ width, height, onResize, onResizeEnd }) {
+    const handlePointerDown = event => {
+        event.preventDefault();
+        event.currentTarget.setPointerCapture(event.pointerId);
+
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startWidth = width;
+        const startHeight = height;
+
+        const handlePointerMove = event => {
+            onResize({
+                width: Math.max(280, startWidth - (event.clientX - startX)),
+                height: Math.max(300, startHeight - (event.clientY - startY))
+            });
+        };
+
+        const handlePointerUp = event => {
+            const finalWidth = Math.max(280, startWidth - (event.clientX - startX));
+            const finalHeight = Math.max(300, startHeight - (event.clientY - startY));
+
+            onResizeEnd({ width: finalWidth, height: finalHeight });
+
+            event.currentTarget.releasePointerCapture(event.pointerId);
+            event.currentTarget.removeEventListener("pointermove", handlePointerMove);
+            event.currentTarget.removeEventListener("pointerup", handlePointerUp);
+        };
+
+        event.currentTarget.addEventListener("pointermove", handlePointerMove);
+        event.currentTarget.addEventListener("pointerup", handlePointerUp);
+    };
+
+    return <button type="button" className={styles.resizeHandle} onPointerDown={handlePointerDown} aria-label="Resize chat" />;
+}
+
 export default function ChatWidget({ username }) {
     const { room, chat } = useRealtime();
-    const { getCustomizationValue } = useSiteCustomization();
+    const { getCustomizationValue, setCustomizationValues } = useSiteCustomization();
     const [view, setView] = useState(CHAT_WIDGET_VIEWS.CHAT);
     const [expanded, setExpanded] = useState(false);
     const [activeRoomId, setActiveRoomId] = useState(GLOBAL_CHAT_ID);
     const [displayName, setDisplayName] = useLocalState("chatDisplayName", username ?? "Guest");
     const [unavailable, setUnavailable] = useState(false);
     const clientId = useRealtimeClientId();
+    const [resizeMode, setResizeMode] = useState(false);
+
+    const chatWidth = getCustomizationValue("chatWidth") ?? 360;
+    const chatHeight = getCustomizationValue("chatHeight") ?? 500;
+
+    const [resizeSize, setResizeSize] = useState({
+        width: chatWidth,
+        height: chatHeight
+    });
 
     const viewRef = useRef(view);
     const expandedRef = useRef(expanded);
@@ -334,7 +378,23 @@ export default function ChatWidget({ username }) {
             unavailable={unavailable}
         />
 
-    return <div className={styles.widget}>
+    return <div className={styles.widget}
+        style={{
+            "--chat-width": `${resizeSize.width}px`,
+            "--chat-height": `${resizeSize.height}px`
+        }}>
+
+        {resizeMode && (
+            <ChatResizeHandle
+                width={resizeSize.width}
+                height={resizeSize.height}
+                onResize={setResizeSize}
+                onResizeEnd={({ width, height }) => {
+                    setCustomizationValues({ chatWidth: width, chatHeight: height });
+                }}
+            />
+        )}
+
         <ChatHeader
             view={view} rooms={rooms} activeRoom={activeRoom}
             onShowRooms={() => setView(CHAT_WIDGET_VIEWS.ROOMS)}
@@ -367,7 +427,13 @@ export default function ChatWidget({ username }) {
         )}
 
         {view === CHAT_WIDGET_VIEWS.SETTINGS && (
-            <ChatSettings />
+            <ChatSettings resizeMode={resizeMode} setResizeMode={setResizeMode}
+                onResetSize={() => {
+                    setResizeSize({
+                        width: 360,
+                        height: 500
+                    });
+                }} />
         )}
     </div>
 }

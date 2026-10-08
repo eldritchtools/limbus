@@ -20,9 +20,9 @@ import { HomepageTimers } from "./timers/TimersTable";
 function PopularityPoll() {
     return <NoPrefetchLink href="/popularity-poll" className="text-link">
         <div className="panel-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
-            <BannerIcon path={"season_7"} style={{ width: "80%" }} />
+            {/* <BannerIcon path={"season_7"} style={{ width: "80%" }} /> */}
             <span>
-                To give people ample time to finalize their answers, the end-of-season 7 popularity poll will close a few weeks into season 8, likely after Canto X&apos;s story is fully released. Click here to submit your response or view the current results.
+                Responses for the end-of-season 7 popularity poll have been closed. You can view the results here. A separate summary will be released in the future.
             </span>
         </div>
     </NoPrefetchLink>

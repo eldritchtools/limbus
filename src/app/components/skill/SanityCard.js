@@ -18,16 +18,16 @@ export default function SanityCard({ sanityData, noTitle = false, noBorder = fal
                 <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: "min(400px, 100%)" }}>
                     <span style={{ fontWeight: "bold" }}>Panic Type</span>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "50%" }}>
                             <PanicIcon id={sanityData.id} style={{ width: "96px" }} />
-                            <span style={{ fontWeight: "bold" }}>{sanityData.name}</span>
+                            <span style={{ fontWeight: "bold", textAlign: "center" }}>{sanityData.name}</span>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-                            {sanityData.lowMoraleDesc.length > 0 && <>
+                            {sanityData.lowMoraleDesc?.length > 0 && <>
                                 <span>Low Morale</span>
                                 <ProcessedText text={prependDash(sanityData.lowMoraleDesc)} />
                             </>}
-                            {sanityData.panicDesc.length > 0 && <>
+                            {sanityData.panicDesc?.length > 0 && <>
                                 <span>Panic</span>
                                 <ProcessedText text={prependDash(sanityData.panicDesc)} />
                             </>}

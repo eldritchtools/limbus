@@ -10,7 +10,7 @@ import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
 const miniTooltip = "For smaller text boxes, the tokens guide is stripped to preserve the layout and save screen space, but they are still available. Type '{type:' to open the autocomplete window for tokens.\n\nQuick reference for types of important tokens:\nIdentities - identity or id\nE.G.Os - ego\nStatuses - status or st, statusicon or sti for icons only\nKeywords - keyword or kw\nGifts - giftname or gn, gifticons or gi for icons\nOther Icons - icon";
 
-export default function MarkdownEditorWrapper({ value, onChange, placeholder, initialState = "detailed", short = false, mini = false, guardedLinks, onSubmit, autoFocus }) {
+export default function MarkdownEditorWrapper({ value, onChange, placeholder, initialState = "detailed", short = false, mini = false, guardedLinks, onSubmit, autoFocus, allowImages=true }) {
     const [mode, setMode] = useState(initialState);
     const editorRef = useRef(null);
     const [guideTab, setGuideTab] = useState("none");
@@ -20,7 +20,7 @@ export default function MarkdownEditorWrapper({ value, onChange, placeholder, in
     if (mini)
         return <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
             <MarkdownEditorMain
-                ref={editorRef} value={value} onChange={onChange}
+                ref={editorRef} value={value} onChange={onChange} allowImages={allowImages}
                 placeholder={placeholder} short={short} mini={mini} onSubmit={onSubmit} autoFocus={autoFocus}
             />
             <span
@@ -48,7 +48,7 @@ export default function MarkdownEditorWrapper({ value, onChange, placeholder, in
         }
         {mode === "detailed" ?
             <MarkdownEditorMain
-                ref={editorRef} value={value} onChange={onChange}
+                ref={editorRef} value={value} onChange={onChange} allowImages={allowImages}
                 placeholder={placeholder} short={short} onSubmit={onSubmit} autoFocus={autoFocus} /> :
             null
         }
