@@ -121,7 +121,9 @@ export default function RoundRevealScreen({ clashBattle }) {
             </span>
         )}
 
-
+        <span className="sub-text">
+            Skills that are bugged and would otherwise cause the room to crash should return a 0 clash value with no coins. Please report these cases so I can review the broken skills. Thank you.
+        </span>
     </div >
 }
 
@@ -132,6 +134,7 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onC
     const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round, clashBattle.clashingData[result.item_id].statuses ?? []);
 
     useEffect(() => {
+        if(result.coins.length === 0) return;
         setValue(baseValue);
 
         const timer = setTimeout(() => { setRevealed(1); }, 500 + Math.random() * 1000);
@@ -141,7 +144,10 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onC
     }, []);
 
     useEffect(() => {
-        if (revealed === 0) return;
+        if (revealed === 0) {
+            if(result.coins.length === 0) onComplete();
+            return;
+        }
 
         const coin = result.coins[revealed - 1];
 
