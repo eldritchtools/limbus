@@ -8,14 +8,30 @@ export default function ScenarioDisplay({ round }) {
         <ScenarioSide label={"Player"} side={round.self} />
         <span style={{ alignSelf: "center", fontSize: "2rem", fontWeight: "bold" }}> - </span>
         <ScenarioSide label={"Target"} side={round.target} />
-        <span style={{gridColumn: "1 / span 3", textAlign: "center"}}>
+        <div style={{ gridColumn: "1 / span 3", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
             <span
                 className="hover-text"
                 {...getGeneralTooltipProps("Many identities have statuses unique to them or shared with a small number of other identities. For the sake of fairness, these statuses have been assigned values across four tiers: none, low, medium, high. A single tier is randomized for all such statuses at the start of each round.\n\nThis means that two identities with different unique statuses will always be assigned the same tier in a given round, even if one status normally ranges from 1-5 and the other ranges from 1-30.")}
             >
                 Unique Statuses: {statusTiers[round.unique_statuses_tier]}
             </span>
-        </span>
+            {round.faction_bonus > 0 &&
+                <span
+                    className="hover-text"
+                    {...getGeneralTooltipProps(`+${round.faction_bonus} clash power for each drafted identity that shares at least one faction with the identity owning the chosen skill.`)}
+                >
+                    Faction Bonus: +{round.faction_bonus}
+                </span>
+            }
+            {round.keyword_bonus > 0 &&
+                <span
+                    className="hover-text"
+                    {...getGeneralTooltipProps(`+${round.keyword_bonus} clash power for each drafted identity that shares at least one keyword with the identity owning the chosen skill.`)}
+                >
+                    Keyword Bonus: +{round.keyword_bonus}
+                </span>
+            }
+        </div>
     </div>
 }
 
@@ -38,7 +54,7 @@ function ScenarioSide({ label, side }) {
 
         <div style={{
             position: "absolute", right: "4px", top: "4px",
-            width: "1.25rem", height: "1.25rem", borderRadius: "50%", 
+            width: "1.25rem", height: "1.25rem", borderRadius: "50%",
             background: "var(--bg-hover)", textAlign: "center"
         }}
             {...getGeneralTooltipProps("HP and Speed values are simulated for use in some Identities' conditionals and are otherwise unused. SP functions the same way as in-game, affecting coin flip probabilities.")}
@@ -75,7 +91,7 @@ function ScenarioSide({ label, side }) {
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem", minHeight: 42 }}>
-            {Object.entries(side.statuses).map(([status, values]) => 
+            {Object.entries(side.statuses).map(([status, values]) =>
                 <StatusDisplay key={status} id={status} potency={values.potency} count={values.count} />
             )}
         </div>

@@ -10,7 +10,7 @@ import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashAren
 import { uiColors } from "../lib/colors";
 import { AUDIO_ROOT } from "../paths";
 
-function useCoinSound() {
+function useCoinSound(success) {
     const context = useRef(null);
     const buffer = useRef(null);
     const gain = useRef(null);
@@ -24,7 +24,7 @@ function useCoinSound() {
         gainNode.connect(audioContext.destination);
         gain.current = gainNode;
 
-        fetch(`${AUDIO_ROOT}/coin.wav`)
+        fetch(`${AUDIO_ROOT}/${success ? "coin" : "coin_fail"}.wav`)
             .then(response => response.arrayBuffer())
             .then(data => audioContext.decodeAudioData(data))
             .then(decoded => {
@@ -32,7 +32,7 @@ function useCoinSound() {
             });
 
         return () => audioContext.close();
-    }, []);
+    }, [success]);
 
     return useCallback(() => {
         if (!buffer.current) return;
@@ -49,7 +49,8 @@ function useCoinSound() {
 }
 
 export default function RoundRevealScreen({ clashBattle }) {
-    const playCoinSound = useCoinSound();
+    const playCoinSound = useCoinSound(true);
+    const playCoinFailSound = useCoinSound(false);
     const [completed, setCompleted] = useState(new Set());
 
     const handleComplete = useCallback(playerId => {
@@ -95,6 +96,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                         <div style={{ alignSelf: "start", maxWidth: "85%", paddingRight: "2rem", boxSizing: "border-box" }}>
                             <NamePill name={skillData.name} affinity={skillData.affinity} />
                         </div>
+                        {result.team_bonus > 0 && <span className="sub-text">Bonuses: +{result.team_bonus}</span>}
 
                         <ClashResult
                             clashBattle={clashBattle}
@@ -102,6 +104,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                             skillData={skillData}
                             round={clashBattle.round}
                             playCoinSound={playCoinSound}
+                            playCoinFailSound={playCoinFailSound}
                             onComplete={() => handleComplete(x.player_id)}
                         />
                     </div>
@@ -127,7 +130,7 @@ export default function RoundRevealScreen({ clashBattle }) {
     </div >
 }
 
-function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onComplete }) {
+function ClashResult({ clashBattle, result, skillData, round, playCoinSound, playCoinFailSound, onComplete }) {
     const [revealed, setRevealed] = useState(0);
     const [value, setValue] = useState(null);
 
@@ -154,6 +157,8 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, onC
         if (coin) {
             setValue(value => Math.max(value + coinValue, 0));
             playCoinSound();
+        } else {
+            playCoinFailSound();
         }
 
         if (revealed === result.coins.length) {

@@ -21,6 +21,7 @@ export function useClashBattle() {
     const [roomId, setRoomId] = useState(null);
     const [playerId, setPlayerId] = useState(null);
     const [isHost, setIsHost] = useState(false);
+    const [isPublic, setIsPublic] = useState(false);
     const [settings, setSettings] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [draftOrder, setDraftOrder] = useState([]);
@@ -32,7 +33,8 @@ export function useClashBattle() {
     const [roundNumber, setRoundNumber] = useState(0);
     const [chosenCount, setChosenCount] = useState(0);
     const [results, setResults] = useState(null);
-    const [skillConfirmed, setSkillConfirmed] = useState(false);
+    const [picked, setPicked] = useState(false);
+    const [blacklist, setBlacklist] = useState([]);
 
     const [lastRoomId, setLastRoomId] = useLocalState("clashBattleLastRoom", null);
 
@@ -98,7 +100,11 @@ export function useClashBattle() {
                         setSettings(p => ({ ...p, ...converted }));
                     },
 
-                    draft_started: ({ player_id, draft_order, draft_points, participants }) => {
+                    public_status: ({ status }) => {
+                        setIsPublic(status);
+                    },
+
+                    draft_started: ({ player_id, draft_order, draft_points, participants, blacklist }) => {
                         triggerGameStartGAEvent("clashBattle", "multi")
                         setPhase("draft");
                         setPlayerId(player_id);
@@ -106,6 +112,8 @@ export function useClashBattle() {
                         setDraftIndex(0);
                         if (draft_points) setDraftPoints(draft_points);
                         setParticipants(participants);
+                        setBlacklist(blacklist);
+                        setPicked(false);
                     },
 
                     draft_pick: ({ player_id, type, item_id, draft_index, draft_order, draft_points }) => {
@@ -117,6 +125,24 @@ export function useClashBattle() {
                         setDraftOrder(draft_order);
                         setDraftIndex(draft_index);
                         if (draft_points) setDraftPoints(draft_points);
+                        setPicked(false);
+                    },
+
+                    blacklist_state: ({ chosen_count, player_count }) => {
+                        setChosenCount(chosen_count);
+                    },
+
+                    blacklist_selected: ({ chosen_count, player_count }) => {
+                        setChosenCount(chosen_count);
+                        setPicked(true);
+                    },
+
+                    blacklist_resolved: ({ blacklist, draft_index, draft_order, draft_points }) => {
+                        setBlacklist(blacklist);
+                        setDraftOrder(draft_order);
+                        setDraftIndex(draft_index);
+                        if (draft_points) setDraftPoints(draft_points);
+                        setPicked(false);
                     },
 
                     round: ({ round_number, round, skill_counts, ego_used }) => {
@@ -125,7 +151,7 @@ export function useClashBattle() {
                         setRound(round);
                         setChosenCount(0);
                         setResults(null);
-                        setSkillConfirmed(false);
+                        setPicked(false);
                         setSkillCounts(skill_counts);
                         setEgoUsed(ego_used);
                     },
@@ -135,15 +161,15 @@ export function useClashBattle() {
                     },
 
                     skill_selected: ({ type, item_id, skill, chosen_count, player_count }) => {
-                        if(type === "id")
+                        if (type === "id")
                             setSkillCounts(p => ({
                                 ...p, [item_id]:
                                     p[item_id].map((x, i) => i === skill - 1 ? x - 1 : x)
                             }))
-                        else 
+                        else
                             setEgoUsed(true);
                         setChosenCount(chosen_count);
-                        setSkillConfirmed(true);
+                        setPicked(true);
                     },
 
                     round_reveal: ({ round_number, participants, results }) => {
@@ -179,6 +205,14 @@ export function useClashBattle() {
         clashBattle.changeSetting(roomIdRef.current, settingsToServer(key), value);
     }
 
+    function openToPublic() {
+        clashBattle.openToPublic(roomIdRef.current);
+    }
+
+    function closeToPublic() {
+        clashBattle.closeToPublic(roomIdRef.current);
+    }
+
     function resetSettings() {
         setSettings(defaultSettings);
         clashBattle.changeSettings(roomIdRef.current, defaultSettings);
@@ -192,12 +226,17 @@ export function useClashBattle() {
 
     async function pickItem(itemId) {
         const id = draftOrder[0];
-        const draftId = typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id;
-        if (draftId !== playerId) return;
-        const cost = clashingData[itemId].points;
-        if (settings.pointsPerDraft !== 0 && cost > draftPoints) return;
-        setDraftPoints(p => p - cost);
-        clashBattle.pickItem(roomIdRef.current, itemId);
+        if(id === "blacklist") {
+            if (picked) return;
+            clashBattle.pickItem(roomIdRef.current, itemId);
+        } else {
+            const draftId = typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id;
+            if (draftId !== playerId) return;
+            const cost = clashingData[itemId].points;
+            if (settings.pointsPerDraft !== 0 && cost > draftPoints) return;
+            setDraftPoints(p => p - cost);
+            clashBattle.pickItem(roomIdRef.current, itemId);
+        }
     }
 
     async function startGame() {
@@ -225,6 +264,8 @@ export function useClashBattle() {
         if ("player_id" in fields) setPlayerId(fields.player_id);
         if ("isHost" in fields) setIsHost(fields.isHost);
         if ("is_host" in fields) setIsHost(fields.is_host);
+        if ("isPublic" in fields) setIsPublic(fields.isPublic);
+        if ("is_public" in fields) setIsPublic(fields.is_public);
         if ("settings" in fields)
             setSettings(
                 Object.fromEntries(Object.entries(fields.settings).map(([k, v]) => [settingsToClient(k), v]))
@@ -245,6 +286,8 @@ export function useClashBattle() {
         if ("round_number" in fields) setRoundNumber(fields.round_number);
         if ("chosen_count" in fields) setChosenCount(fields.chosen_count);
         if ("results" in fields) setResults(fields.results);
+        if ("picked" in fields) setPicked(fields.picked);
+        if ("blacklist" in fields) setBlacklist(fields.blacklist);
     }
 
     function getSelectedIdentities() {
@@ -255,7 +298,7 @@ export function useClashBattle() {
 
     function getSelectedEgo() {
         return participants.reduce((acc, x) => {
-            if(x.ego) acc.push(x.ego);
+            if (x.ego) acc.push(x.ego);
             return acc;
         }, []);
     }
@@ -266,9 +309,10 @@ export function useClashBattle() {
 
     return {
         clashingData, loading, lastRoomId,
-        phase, roomId, playerId, isHost, settings, participants,
-        draftOrder, draftIndex, draftPoints, skillCounts, egoUsed, round, roundNumber, chosenCount, skillConfirmed, results,
-        setFields, joinRoom, leaveRoom, setSetting, resetSettings,
+        phase, roomId, playerId, isHost, isPublic, settings, participants,
+        draftOrder, draftIndex, blacklist, draftPoints, 
+        skillCounts, egoUsed, round, roundNumber, chosenCount, picked, results,
+        setFields, joinRoom, leaveRoom, setSetting, resetSettings, openToPublic, closeToPublic,
         startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup,
         getSelectedIdentities, getSelectedEgo, getPlayerEgo
     };

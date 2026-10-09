@@ -10,7 +10,10 @@ export const defaultSettings = {
     secondaryStatusChance: 25,
     hp: [1, 100],
     speed: [1, 10],
-    sp: [0, 45]
+    sp: [0, 45],
+    spBias: 0,
+    teamBonuses: true,
+    blacklisting: true
 };
 
 export function phaseConvert(phase) {
@@ -30,6 +33,8 @@ export function settingsToServer(key) {
         case "numStatus": return "num_status";
         case "secondaryStatusChance": return "secondary_status_chance";
         case "pointsPerDraft": return "points_per_draft";
+        case "spBias": return "sp_bias";
+        case "teamBonuses": return "team_bonuses";
         default: return key;
     }
 }
@@ -42,6 +47,8 @@ export function settingsToClient(key) {
         case "num_status": return "numStatus";
         case "secondary_status_chance": return "secondaryStatusChance";
         case "points_per_draft": return "pointsPerDraft";
+        case "sp_bias": return "spBias";
+        case "team_bonuses": return "teamBonuses";
         default: return key;
     }
 }
@@ -68,4 +75,20 @@ function modifierSum(modifiers, target) {
     return modifiers
         .filter(([modifierTarget]) => modifierTarget === target)
         .reduce((sum, [, value]) => sum + value, 0);
+}
+
+export const alerts = {
+    "none": ["None", 0],
+    "turn_start": ["Turn Start", 0.25],
+    "mouse_over_1": ["Mouse Over 1", 0.5],
+    "mouse_over_2": ["Mouse Over 2", 0.5],
+    "don_alert": ["GWANLIJA NARI", 0.25]
+}
+
+export function biasText(bias) {
+    if(bias < -3) return "Strong low bias";
+    if(bias < 0) return "Low bias";
+    if(bias === 0) return "No bias";
+    if(bias < 4) return "High bias";
+    return "Strong high bias";
 }
