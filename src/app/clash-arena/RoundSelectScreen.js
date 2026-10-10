@@ -35,8 +35,8 @@ export default function RoundSelectScreen({ clashBattle }) {
 
         return ids.reduce((acc, id) => {
             acc[id] = {
-                faction: ids.filter(x => x !== id && clashBattle.clashingData[id].factions.some(y => clashBattle.clashingData[x].factions.includes(y))).length,
-                keyword: ids.filter(x => x !== id && clashBattle.clashingData[id].keywords.some(y => clashBattle.clashingData[x].keywords.includes(y))).length,
+                faction: ids.filter(x => x !== id && (clashBattle.clashingData[id].factions ?? []).some(y => (clashBattle.clashingData[x].factions ?? []).includes(y))).length,
+                keyword: ids.filter(x => x !== id && (clashBattle.clashingData[id].keywords ?? []).some(y => (clashBattle.clashingData[x].keywords ?? []).includes(y))).length,
             };
             return acc;
         }, {})
