@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import PointsDisplay from "./PointsDisplay";
+import { biasText } from "./util";
 import NumberInput from "../components/objects/NumberInput";
 import RangeInput from "../components/objects/RangeInput";
 import { trimPrefixes } from "../components/realtime/realtimeUtil";
@@ -23,38 +24,37 @@ export default function SetupScreen({ clashBattle }) {
             </span>
         </div>
 
+        {clashBattle.isHost ?
+            <button
+                onClick={clashBattle.isPublic ? clashBattle.closeToPublic : clashBattle.openToPublic}
+                {...getGeneralTooltipProps("Opening the room to the public allows other players to find the room on the host/join room screen. Rooms are automatically closed when reaching 8 players. Note that players can still join the room even if it's closed if they already know the room id.")}
+                disabled={clashBattle.participants.length >= 8}
+            >
+                {clashBattle.isPublic ? "Close" : "Open"} to public
+            </button> :
+            <span>
+                Room is {clashBattle.isPublic ? "Opened" : "Closed"} to public
+            </span>
+        }
+
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>
             Choose your settings
         </span>
 
-        <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem", width: "100%" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, auto)", alignItems: "center", gap: "0.5rem" }}>
             <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
                 Team Size:
             </div>
 
-            <div  style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
-                        onChange={x => {
-                            clashBattle.setSetting("teamSize", x);
-                            if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
-                        }}
-                        style={{ textAlign: "center", width: "5ch" }}
-                        disabled={!clashBattle.isHost}
-                    />
-                </div>
-                <label
-                    {...getGeneralTooltipProps("Whether to include E.G.O in the draft.\nE.G.O will be drafted after all identities are finished being drafted. Players will get half the points they normally get per drafting round (rounded up). E.G.O are single use throughout the entire game. Awakenings and Corrosions share the same single use.")}
-                >
-                    <input type="checkbox"
-                        checked={clashBattle.settings.egoDraft}
-                        onChange={e => clashBattle.setSetting("egoDraft", e.target.checked)}
-                        disabled={!clashBattle.isHost}
-                    />
-                    <span className="hover-text">
-                        Draft E.G.O
-                    </span>
-                </label>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
+                    onChange={x => {
+                        clashBattle.setSetting("teamSize", x);
+                        if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
+                    }}
+                    style={{ textAlign: "center", width: "5ch" }}
+                    disabled={!clashBattle.isHost}
+                />
             </div>
 
             <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
@@ -69,9 +69,7 @@ export default function SetupScreen({ clashBattle }) {
                 />
             </div>
 
-            <div
-                style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}
-            >
+            <div style={{ textAlign: "end" }}>
                 <span
                     className="hover-text"
                     {...getGeneralTooltipProps("Each time you draft, you get points that you spend to choose an identity. Choosing an identity that costs less points allows you to save points for later picks.")}
@@ -79,37 +77,15 @@ export default function SetupScreen({ clashBattle }) {
                     Points per Draft:
                 </span>
             </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                <NumberInput min={1} max={10}
-                    value={clashBattle.isHost ? pointsPerDraft : String(clashBattle.settings["pointsPerDraft"])}
-                    onChange={x => {
-                        clashBattle.setSetting("pointsPerDraft", x);
-                        setPointsPerDraft(x);
-                    }}
-                    style={{ textAlign: "center", width: "5ch" }}
-                    disabled={!clashBattle.isHost || pointsDisabled}
-                />
-                <label
-                    {...getGeneralTooltipProps("Disable point limitations, allowing players to choose any identity while drafting.")}
-                >
-                    <input type="checkbox"
-                        checked={clashBattle.isHost ? pointsDisabled : (clashBattle.settings["pointsPerDraft"] === 0)}
-                        onChange={() => {
-                            const disabled = !pointsDisabled;
-                            setPointsDisabled(disabled);
-                            clashBattle.setSetting(
-                                "pointsPerDraft",
-                                disabled ? 0 : pointsPerDraft
-                            );
-                        }}
-                        disabled={!clashBattle.isHost}
-                    />
-                    <span className="hover-text">
-                        Disable points during drafting
-                    </span>
-                </label>
-            </div>
+            <NumberInput min={1} max={10}
+                value={clashBattle.isHost ? pointsPerDraft : String(clashBattle.settings["pointsPerDraft"])}
+                onChange={x => {
+                    clashBattle.setSetting("pointsPerDraft", x);
+                    setPointsPerDraft(x);
+                }}
+                style={{ textAlign: "center", width: "5ch" }}
+                disabled={!clashBattle.isHost || pointsDisabled}
+            />
 
             <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
                 <span
@@ -130,6 +106,55 @@ export default function SetupScreen({ clashBattle }) {
                     <option value="snake">Snake</option>
                     <option value="random">Random</option>
                 </select>
+            </div>
+
+            <div style={{ gridColumn: "1 / span 4", display: "flex", flexDirection: "column", gap: "0.5rem", justifySelf: "center", alignItems: "start" }}>
+                <label
+                    {...getGeneralTooltipProps("Disable point limitations, allowing players to choose any identity while drafting.")}
+                >
+                    <input type="checkbox"
+                        checked={clashBattle.isHost ? pointsDisabled : (clashBattle.settings["pointsPerDraft"] === 0)}
+                        onChange={() => {
+                            const disabled = !pointsDisabled;
+                            setPointsDisabled(disabled);
+                            clashBattle.setSetting(
+                                "pointsPerDraft",
+                                disabled ? 0 : pointsPerDraft
+                            );
+                        }}
+                        disabled={!clashBattle.isHost}
+                    />
+                    <span className="hover-text">
+                        Disable points during drafting
+                    </span>
+                </label>
+
+                <label
+                    {...getGeneralTooltipProps("Include E.G.O in the draft.\nE.G.O will be drafted after all identities are finished being drafted. Players will get half the points they normally get per drafting round (rounded up). E.G.O are single use throughout the entire game. Awakenings and Corrosions share the same single use.")}
+                >
+                    <input type="checkbox"
+                        checked={clashBattle.settings.egoDraft}
+                        onChange={e => clashBattle.setSetting("egoDraft", e.target.checked)}
+                        disabled={!clashBattle.isHost}
+                    />
+                    <span className="hover-text">
+                        Enable E.G.O Drafting
+                    </span>
+                </label>
+
+                <label
+                    {...getGeneralTooltipProps("When enabled, players enter a blacklist phase after every 2 rounds of drafting identities. Each player gets to vote for an identity to blacklist. All identities that get at least one vote get blacklisted for the rest of the game.\nWARNING: The game has no recovery method if a player is unable to draft an identity. Be careful when blacklisting if there are a lot of players and the team size is large.")}
+                >
+                    <input type="checkbox"
+                        checked={clashBattle.settings.blacklisting}
+                        onChange={e => clashBattle.setSetting("blacklisting", e.target.checked)}
+                        disabled={!clashBattle.isHost}
+                    />
+                    <span className="hover-text">
+                        Enable Blacklist Phases
+                    </span>
+                </label>
+
             </div>
         </div>
 
@@ -162,6 +187,23 @@ export default function SetupScreen({ clashBattle }) {
                             disabled={!clashBattle.isHost}
                         />
                     </div>
+
+                    <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
+                        <span className="hover-text"
+                            {...getGeneralTooltipProps("Rounds may generate faction or keyword bonuses. When a bonus is active, picking a skill from an identity who shares a faction or keyword with the player's other drafted identities will give the skill bonuses to clash power.")}
+                            onClick={() => clashBattle.setSetting("teamBonuses", !clashBattle.settings.teamBonuses)}
+                        >
+                            Enable Team Bonuses:
+                        </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+                        <input type="checkbox"
+                            checked={clashBattle.settings.teamBonuses}
+                            onChange={e => clashBattle.setSetting("teamBonuses", e.target.checked)}
+                            disabled={!clashBattle.isHost}
+                        />
+                    </div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "auto auto", alignItems: "center", gap: "0.5rem" }}>
@@ -189,6 +231,23 @@ export default function SetupScreen({ clashBattle }) {
                             onChange={x => clashBattle.setSetting("sp", x)}
                             disabled={!clashBattle.isHost}
                         />
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
+                        <span className="hover-text" {...getGeneralTooltipProps("Bias SP towards rolling higher or lower values.")}>
+                            SP Bias:
+                        </span>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <input
+                            type="range" min={-5} max={5} step={1} value={clashBattle.settings.spBias}
+                            onChange={(e) => clashBattle.setSetting("spBias", Number(e.target.value))}
+                            style={{ width: "100px" }} disabled={!clashBattle.isHost}
+                        />
+                        <span>
+                            {biasText(clashBattle.settings.spBias)}
+                        </span>
                     </div>
                 </div>
             </div>

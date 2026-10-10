@@ -5,6 +5,20 @@ import EgoIcon from "../components/icons/EgoIcon";
 import IdentityIcon from "../components/icons/IdentityIcon"
 
 export default function FinishedScreen({ clashBattle }) {
+    const scores = useMemo(() => {
+        const participants = clashBattle.participants.sort((a, b) => b.score - a.score);
+        const result = [];
+        result.push([1, participants[0].display_name, participants[0].score])
+
+        for(let i=1; i<participants.length; i++) {
+            if(participants[i].score === result[i-1][2]) 
+                result.push([result[i-1][0], participants[i].display_name, participants[i].score]);
+            else 
+                result.push([result[i-1][0]+1, participants[i].display_name, participants[i].score]);
+        }
+        return result;
+    }, [clashBattle.participants]);
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
 
@@ -19,12 +33,11 @@ export default function FinishedScreen({ clashBattle }) {
             <span>#</span>
             <span>Player</span>
             <span>Score</span>
-            {clashBattle.participants
-                .sort((a, b) => b.score - a.score)
-                .map((x, i) => <React.Fragment key={x.player_id}>
-                    <span>{i + 1}</span>
-                    <span>{x.display_name}</span>
-                    <span style={{ textAlign: "end" }}>{x.score}</span>
+            {scores
+                .map(([rank, name, score], i) => <React.Fragment key={i}>
+                    <span>{rank}</span>
+                    <span>{name}</span>
+                    <span style={{ textAlign: "end" }}>{score}</span>
                 </React.Fragment>)
             }
         </div>

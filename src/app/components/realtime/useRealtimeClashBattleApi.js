@@ -11,8 +11,8 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
             channel: `clashBattle:${roomId}`,
             params: { display_name: displayName, client_id: clientId, settings },
             events: [
-                "state", "joined", "left", "settings", 
-                "draft_started", "draft_pick", 
+                "state", "joined", "left", "settings", "public_status",
+                "draft_started", "draft_pick", "blacklist_state", "blacklist_selected", "blacklist_resolved",
                 "round", "skill_chosen_count", "skill_selected", "round_reveal", 
                 "finished"
             ],
@@ -34,6 +34,18 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
 
     const changeSettings = useCallback(async (roomId, settings) => {
         return push(roomId, "change_settings", { settings });
+    },
+        [push]
+    );
+
+    const openToPublic = useCallback(async (roomId) => {
+        return push(roomId, "open_to_public", {});
+    },
+        [push]
+    );
+
+    const closeToPublic = useCallback(async (roomId) => {
+        return push(roomId, "close_to_public", {});
     },
         [push]
     );
@@ -75,7 +87,7 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
     );
 
     return useMemo(() =>
-        ({ mount, unmount, changeSetting, changeSettings, startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup }),
-        [mount, unmount, changeSetting, changeSettings, startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup]
+        ({ mount, unmount, changeSetting, changeSettings, openToPublic, closeToPublic, startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup }),
+        [mount, unmount, changeSetting, changeSettings, openToPublic, closeToPublic, startDraft, pickItem, startGame, selectSkill, nextRound, returnToSetup]
     );
 }

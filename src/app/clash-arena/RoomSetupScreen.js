@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import useLocalState from "../lib/useLocalState";
 
@@ -9,6 +10,20 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
     const [displayName, setDisplayName] = useLocalState("chatDisplayName", profile?.username ?? "Guest");
     const [roomInput, setRoomInput] = useState("");
     const [joinMessage, setJoinMessage] = useState("");
+    const [publicRooms, setPublicRooms] = useState([]);
+
+    const refreshPublicRooms = useCallback(async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_API_URL}/api/rooms?type=clash_battle`);
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json.error) return;
+        setPublicRooms(json.rooms.map(x => ({ ...x, room_id: trimPrefixes(x.room_id) })));
+    }, []);
+
+    useEffect(() => {
+        refreshPublicRooms();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -69,5 +84,39 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
             <span className="sub-text">Rejoin the last joined room {clashBattle.lastRoomId}. Does not work if the room no longer exists.</span>
         </>}
         {joinMessage && <span>{joinMessage}</span>}
+
+        <h3 style={{ marginBottom: 0 }}>Public Rooms:</h3>
+        <button onClick={refreshPublicRooms}>Refresh rooms</button>
+        {publicRooms.length > 0 ?
+            <table style={{ minWidth: "min(400px, 100%)" }}>
+                <thead>
+                    <tr>
+                        <th>Room Id</th>
+                        <th>Host Name</th>
+                        <th>Players</th>
+                        <th>Join</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        publicRooms.map((room, i) => <tr key={i} style={{ textAlign: "center" }}>
+                            <td>{room.room_id}</td>
+                            <td>{room.host_name}</td>
+                            <td>{room.player_count}/{room.max_players}</td>
+                            <td>
+                                <span
+                                    className="text-link"
+                                    onClick={() => clashBattle.joinRoom(false, displayName, room.room_id, setJoinMessage)}
+                                >
+                                    Join Room
+                                </span>
+                            </td>
+                        </tr>)
+
+                    }
+                </tbody>
+            </table> :
+            <span>No public rooms available.</span>
+        }
     </div>
 }
