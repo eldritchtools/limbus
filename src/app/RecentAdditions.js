@@ -44,6 +44,7 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>{wrapLink("Clash Arena", "/clash-arena")} has had significant updates adding new mechanics like Team Bonuses and Blacklisting Phases. A Battle Royale mode has also been added to support significantly more players.</li>
                     <li>Assist units, levels, speed, hp, and offense/defense levels have been added to Encounters. Some things may have missing or incorrect levels if I&apos;ve missed them. They will be updated if I notice them or if they are reported.</li>
                     <li>The {wrapLink("GMS Explorer", "/gms-explorer")} page has been added.</li>
                     <li>Flavor text has been added to all relevant Statuses, Skills, Passives, and Panic info.</li>
