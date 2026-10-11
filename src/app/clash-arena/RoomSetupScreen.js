@@ -11,13 +11,23 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
     const [roomInput, setRoomInput] = useState("");
     const [joinMessage, setJoinMessage] = useState("");
     const [publicRooms, setPublicRooms] = useState([]);
+    const [roomsRefreshing, setRoomsRefreshing] = useState(false);
 
     const refreshPublicRooms = useCallback(async () => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_API_URL}/api/rooms?type=clash_battle`);
-        if (!res.ok) return;
+        setRoomsRefreshing(true);
+        const type = clashBattle.mode === "battleRoyale" ? "clash_battle_royale" : "clash_battle"
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_API_URL}/api/rooms?type=${type}`);
+        if (!res.ok) {
+            setRoomsRefreshing(false);
+            return;
+        }
         const json = await res.json();
-        if (json.error) return;
+        if (json.error) {
+            setRoomsRefreshing(false);
+            return;
+        }
         setPublicRooms(json.rooms.map(x => ({ ...x, room_id: trimPrefixes(x.room_id) })));
+        setRoomsRefreshing(false);
     }, []);
 
     useEffect(() => {
@@ -86,7 +96,7 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
         {joinMessage && <span>{joinMessage}</span>}
 
         <h3 style={{ marginBottom: 0 }}>Public Rooms:</h3>
-        <button onClick={refreshPublicRooms}>Refresh rooms</button>
+        <button onClick={refreshPublicRooms} disabled={roomsRefreshing}>Refresh rooms</button>
         {publicRooms.length > 0 ?
             <table style={{ minWidth: "min(400px, 100%)" }}>
                 <thead>

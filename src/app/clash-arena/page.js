@@ -3,6 +3,7 @@
 import DraftCompleteScreen from "./DraftCompleteScreen";
 import DraftScreen from "./DraftScreen";
 import FinishedScreen from "./FinishedScreen";
+import ModeSelectScreen from "./ModeSelectScreen";
 import RoomSetupScreen from "./RoomSetupScreen";
 import RoundRevealScreen from "./RoundRevealScreen";
 import RoundSelectScreen from "./RoundSelectScreen";
@@ -11,8 +12,11 @@ import { useClashBattle } from "./useClashBattle";
 import { useAuth } from "../database/authProvider";
 
 export default function ClashArenaPage() {
-    const {profile} = useAuth();
+    const { profile } = useAuth();
     const clashBattle = useClashBattle();
+
+    if (clashBattle.phase === "modeSelect")
+        return <ModeSelectScreen clashBattle={clashBattle} />
 
     if (clashBattle.phase === "roomSetup")
         return <RoomSetupScreen clashBattle={clashBattle} profile={profile} />

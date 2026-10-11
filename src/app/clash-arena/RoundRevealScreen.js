@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import ParticipantGrid from "./ParticipantsDisplay";
+import ParticipantGrid, { ParticipantTextGrid } from "./ParticipantsDisplay";
 import ScenarioDisplay from "./ScenarioDisplay";
 import { calculateSkillRange } from "./util";
 import Icon from "../components/icons/Icon";
 import SkillIcon from "../components/icons/SkillIcon";
 import NamePill from "../components/objects/NamePill";
+import { getClashArenaDraftTooltipProps } from "../components/tooltips/ClashArenaDraftTooltip";
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
 import { uiColors } from "../lib/colors";
 import { AUDIO_ROOT } from "../paths";
@@ -61,7 +62,7 @@ export default function RoundRevealScreen({ clashBattle }) {
         });
     }, []);
 
-    const allComplete = completed.size === clashBattle.participants.length;
+    const allComplete = completed.size === Object.keys(clashBattle.results).length;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -70,58 +71,115 @@ export default function RoundRevealScreen({ clashBattle }) {
         <ScenarioDisplay round={clashBattle.round} />
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Results</span>
-        <ParticipantGrid participants={clashBattle.participants}>
-            {x => {
-                const roundScore = clashBattle.results[x.player_id].points;
-                const result = clashBattle.results[x.player_id];
-                const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
-                return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
-                        {x.display_name}
-                    </span>
-                    {
-                        allComplete ?
-                            <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>
-                                Score: {x.score} (<span style={{ color: roundScore ? uiColors.green : "#777" }}>{`+${roundScore}`}</span>)
-                            </span> :
-                            <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>
-                                Score: {x.score - roundScore}
-                            </span>
-                    }
-                    <div key={`${x.player_id}-skill`}
-                        style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}
-                        {...getClashArenaSkillTooltipProps(result.item_id, result.resolved_skill, clashBattle.round)}
-                    >
-                        <SkillIcon skillData={skillData} />
-                        <div style={{ alignSelf: "start", maxWidth: "85%", paddingRight: "2rem", boxSizing: "border-box" }}>
-                            <NamePill name={skillData.name} affinity={skillData.affinity} />
-                        </div>
-                        {result.team_bonus > 0 && <span className="sub-text">Bonuses: +{result.team_bonus}</span>}
+        {clashBattle.mode === "standard" ?
+            <ParticipantGrid participants={clashBattle.participants}>
+                {x => {
+                    const result = clashBattle.results[x.player_id];
+                    const roundScore = result.points;
+                    const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
+                    return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
+                            {x.display_name}
+                        </span>
+                        {
+                            allComplete ?
+                                <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>
+                                    Score: {x.score} (<span style={{ color: roundScore ? uiColors.green : "#777" }}>{`+${roundScore}`}</span>)
+                                </span> :
+                                <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>
+                                    Score: {x.score - roundScore}
+                                </span>
+                        }
+                        <div key={`${x.player_id}-skill`}
+                            style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}
+                            {...getClashArenaSkillTooltipProps(result.item_id, result.resolved_skill, clashBattle.round)}
+                        >
+                            <SkillIcon skillData={skillData} />
+                            <div style={{ alignSelf: "start", maxWidth: "85%", paddingRight: "2rem", boxSizing: "border-box" }}>
+                                <NamePill name={skillData.name} affinity={skillData.affinity} />
+                            </div>
+                            {result.team_bonus > 0 && <span className="sub-text">Bonuses: +{result.team_bonus}</span>}
 
-                        <ClashResult
-                            clashBattle={clashBattle}
-                            result={result}
-                            skillData={skillData}
-                            round={clashBattle.round}
-                            playCoinSound={playCoinSound}
-                            playCoinFailSound={playCoinFailSound}
-                            onComplete={() => handleComplete(x.player_id)}
-                        />
+                            <ClashResult
+                                clashBattle={clashBattle}
+                                result={result}
+                                skillData={skillData}
+                                round={clashBattle.round}
+                                playCoinSound={playCoinSound}
+                                playCoinFailSound={playCoinFailSound}
+                                onComplete={() => handleComplete(x.player_id)}
+                            />
+                        </div>
                     </div>
-                </div>
-            }}
-        </ParticipantGrid>
+                }}
+            </ParticipantGrid> :
+            <ParticipantTextGrid participants={clashBattle.participants} sorted={(a, b) => b.score - a.score}>
+                {x => {
+                    const result = clashBattle.results[x.player_id];
+                    if (!result) {
+                        return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                            <div
+                                style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                                {...getClashArenaDraftTooltipProps([...x.identities, x.ego])}
+                            >
+                                <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>{x.display_name}</span>
+                                <span style={{ textAlign: "center" }}>Score: {x.score}</span>
+                            </div>
+                            <span>Skipped</span>
+                        </div>
+                    }
+                    const roundScore = result.points;
+                    const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
+                    return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                        <div
+                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                            {...getClashArenaDraftTooltipProps([...x.identities, x.ego])}
+                        >
+                            <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center", fontWeight: x.player_id === clashBattle.playerId ? "bold" : null }}>
+                                {x.display_name}
+                            </span>
+                            {
+                                allComplete ?
+                                    <span style={{ textAlign: "center" }}>
+                                        Score: {x.score} (<span style={{ color: roundScore ? uiColors.green : "#777" }}>{`+${roundScore}`}</span>)
+                                    </span> :
+                                    <span style={{ textAlign: "center" }}>
+                                        Score: {x.score - roundScore}
+                                    </span>
+                            }
+                        </div>
+                        <div
+                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                            {...getClashArenaSkillTooltipProps(result.item_id, result.resolved_skill, clashBattle.round)}
+                        >
+                            <span>{skillData.name}</span>
+                            {result.team_bonus > 0 && <span className="sub-text">Bonuses: +{result.team_bonus}</span>}
+                            <ClashResult
+                                clashBattle={clashBattle}
+                                result={result}
+                                skillData={skillData}
+                                round={clashBattle.round}
+                                playCoinSound={playCoinSound}
+                                playCoinFailSound={playCoinFailSound}
+                                onComplete={() => handleComplete(x.player_id)}
+                                textMode={true}
+                            />
+                        </div>
+                    </div>
+                }}
+            </ParticipantTextGrid>
+        }
 
         {allComplete && (
             clashBattle.isHost ?
-            <span className="text-link" onClick={clashBattle.nextRound}
-                style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-            >
-                {clashBattle.roundNumber === clashBattle.settings.rounds ? "End Game" : "Next Round"}
-            </span> :
-            <span>
-                Waiting for host to continue to the next round...
-            </span>
+                <span className="text-link" onClick={clashBattle.nextRound}
+                    style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
+                >
+                    {clashBattle.roundNumber === clashBattle.settings.rounds ? "End Game" : "Next Round"}
+                </span> :
+                <span>
+                    Waiting for host to continue to the next round...
+                </span>
         )}
 
         <span className="sub-text">
@@ -130,14 +188,14 @@ export default function RoundRevealScreen({ clashBattle }) {
     </div >
 }
 
-function ClashResult({ clashBattle, result, skillData, round, playCoinSound, playCoinFailSound, onComplete }) {
+function ClashResult({ clashBattle, result, skillData, round, playCoinSound, playCoinFailSound, onComplete, textMode = false }) {
     const [revealed, setRevealed] = useState(0);
     const [value, setValue] = useState(null);
 
     const { base: baseValue, coin: coinValue } = calculateSkillRange(skillData, round, clashBattle.clashingData[result.item_id].statuses ?? []);
 
     useEffect(() => {
-        if(result.coins.length === 0) return;
+        if (result.coins.length === 0) return;
         setValue(baseValue);
 
         const timer = setTimeout(() => { setRevealed(1); }, 500 + Math.random() * 1000);
@@ -148,7 +206,7 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, pla
 
     useEffect(() => {
         if (revealed === 0) {
-            if(result.coins.length === 0) onComplete();
+            if (result.coins.length === 0) onComplete();
             return;
         }
 
@@ -170,6 +228,20 @@ function ClashResult({ clashBattle, result, skillData, round, playCoinSound, pla
         return () => clearTimeout(timer);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [revealed]);
+
+    if (textMode)
+        return <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+                {Math.max(revealed === result.coins.length ? result.clash_value : value, 0)}
+            </span>
+            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                {result.coins.map((heads, i) =>
+                    <Icon key={i} path="coin"
+                        style={{ width: 24, height: 24, filter: i < revealed ? (heads ? "brightness(1.5)" : "brightness(0.5)") : "brightness(1)" }}
+                    />
+                )}
+            </div>
+        </div>
 
     return <>
         <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{Math.max(revealed === result.coins.length ? result.clash_value : value, 0)}</div>
