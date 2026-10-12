@@ -105,6 +105,8 @@ export default function PrivacyPage() {
 
             <p>Realtime information is generally held in memory and is not stored in Eldritch Tools&apos; persistent database. Global chat may retain a limited number of recent messages in memory while the realtime service is running. Other room state is discarded when the relevant room is terminated.</p>
 
+            <p>The realtime service may also log limited event information, such as identifiers, display names, and lobby activity, for monitoring, error diagnosis, and troubleshooting. These logs are stored separately from the persistent user database and retained for a limited period.</p>
+
             <p>For logged-in users, a connection may use the user&apos;s Eldritch Tools account identifier as a temporary client identifier. Unauthenticated users are assigned a randomly generated identifier. These identifiers are not stored by Eldritch Tools as persistent user data.</p>
 
             <h2>Third-party services</h2>
