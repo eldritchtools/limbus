@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 import styles from "./clashArena.module.css";
+import HoldButton from "./HoldButton";
 import { resolveSkills } from "./modifiers";
-import ParticipantGrid from "./ParticipantsDisplay";
+import ParticipantGrid, { ParticipantTextGrid } from "./ParticipantsDisplay";
 import ScenarioDisplay from "./ScenarioDisplay";
 import StatusDisplay from "./StatusDisplay";
 import { calculateSkillRange } from "./util";
@@ -11,6 +12,7 @@ import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
 import SkillIcon from "../components/icons/SkillIcon";
 import NamePill from "../components/objects/NamePill";
+import { getClashArenaDraftTooltipProps } from "../components/tooltips/ClashArenaDraftTooltip";
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
 import { getGeneralMarkdownTooltipProps } from "../components/tooltips/GeneralMarkdownTooltip";
 
@@ -32,11 +34,20 @@ export default function RoundSelectScreen({ clashBattle }) {
 
     const teamBonusMatches = useMemo(() => {
         const ids = Object.keys(clashBattle.skillCounts);
+        const egoId = clashBattle.getPlayerEgo();
+        const getKeywords = id => {
+            const data = clashBattle.clashingData[id];
+            const keywords = [...(data.keywords ?? [])];
+            (data.keywordModifiers ?? []).forEach(({ keyword, ego }) => {
+                if (ego === egoId) keywords.push(keyword);
+            })
+            return keywords;
+        }
 
         return ids.reduce((acc, id) => {
             acc[id] = {
                 faction: ids.filter(x => x !== id && (clashBattle.clashingData[id].factions ?? []).some(y => (clashBattle.clashingData[x].factions ?? []).includes(y))).length,
-                keyword: ids.filter(x => x !== id && (clashBattle.clashingData[id].keywords ?? []).some(y => (clashBattle.clashingData[x].keywords ?? []).includes(y))).length,
+                keyword: ids.filter(x => x !== id && getKeywords(id).some(y => getKeywords(x).includes(y))).length,
             };
             return acc;
         }, {})
@@ -91,9 +102,26 @@ export default function RoundSelectScreen({ clashBattle }) {
         </>}
 
         {clashBattle.picked &&
-            <span>
-                Waiting for everyone to choose their skills: {clashBattle.chosenCount}/{clashBattle.participants.length}
-            </span>
+            (
+                clashBattle.mode === "battleRoyale" ?
+                    (
+                        clashBattle.isHost ? <>
+                            <span>Waiting for everyone to choose: {clashBattle.chosenCount}/{clashBattle.participants.length}</span>
+                            <span className="sub-text">Updated after every 10 players.</span>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                <HoldButton onConfirm={clashBattle.forceAdvanceRound} duration={1000}>
+                                    Advance draft round
+                                </HoldButton>
+                                <span className="sub-text">Hold to advance to the next draft round. Players who haven&apos;t chosen skip this draft.</span>
+                            </div>
+
+                        </> :
+                            <span>Waiting for everyone to choose their skills...</span>
+                    ) :
+                    <span>
+                        Waiting for everyone to choose their skills: {clashBattle.chosenCount}/{clashBattle.participants.length}
+                    </span>
+            )
         }
 
         <span>Choose a skill to use:</span>
@@ -196,23 +224,40 @@ export default function RoundSelectScreen({ clashBattle }) {
         </div>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Players</span>
-        <ParticipantGrid participants={clashBattle.participants}>
-            {x => {
-                return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
-                        {x.display_name}
-                    </span>
-                    <span style={{ textAlign: "center" }}>
-                        Score: {x.score}
-                    </span>
-                    <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
-                        {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
+        {clashBattle.mode === "standard" ?
+            <ParticipantGrid participants={clashBattle.participants}>
+                {x => {
+                    return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
+                            {x.display_name}
+                        </span>
+                        <span style={{ textAlign: "center" }}>
+                            Score: {x.score}
+                        </span>
+                        <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
+                            {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
+                        </div>
+                        {x.ego &&
+                            <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
+                        }
                     </div>
-                    {x.ego &&
-                        <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
-                    }
-                </div>
-            }}
-        </ParticipantGrid>
+                }}
+            </ParticipantGrid> :
+            <ParticipantTextGrid participants={clashBattle.participants} sorted={(a, b) => b.score - a.score}>
+                {x => {
+                    return <div key={x.player_id}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                        {...getClashArenaDraftTooltipProps([...x.identities, x.ego])}
+                    >
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center", fontWeight: x.player_id === clashBattle.playerId ? "bold" : null }}>
+                            {x.display_name}
+                        </span>
+                        <span style={{ textAlign: "center" }}>
+                            Score: {x.score}
+                        </span>
+                    </div>
+                }}
+            </ParticipantTextGrid>
+        }
     </div >
 }

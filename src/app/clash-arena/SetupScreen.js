@@ -87,26 +87,49 @@ export default function SetupScreen({ clashBattle }) {
                 disabled={!clashBattle.isHost || pointsDisabled}
             />
 
-            <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
-                <span
-                    className="hover-text"
-                    {...getGeneralTooltipProps("Cycle: Players draft in the same order for each identity.\nSnake: The order players draft each identity is reversed after each set of drafts.\nRandom: Players draft each identity in a random order.")}
-                >
-                    Draft Order:
-                </span>
-            </div>
+            {clashBattle.mode === "battleRoyale" ? <>
+                <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
+                    <span
+                        className="hover-text"
+                        {...getGeneralTooltipProps("Determines how many points players get per round\nRank: Points are based on the player's rank for the round.\nValue: Points are based on the player's clash value for the round.")}
+                    >
+                        Scoring Mode:
+                    </span>
+                </div>
 
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <select
-                    value={clashBattle.settings.draftOrder}
-                    onChange={e => clashBattle.setSetting("draftOrder", e.target.value)}
-                    disabled={!clashBattle.isHost}
-                >
-                    <option value="cycle">Cycle</option>
-                    <option value="snake">Snake</option>
-                    <option value="random">Random</option>
-                </select>
-            </div>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <select
+                        value={clashBattle.settings.scoring}
+                        onChange={e => clashBattle.setSetting("scoring", e.target.value)}
+                        disabled={!clashBattle.isHost}
+                    >
+                        <option value="rank">Rank</option>
+                        <option value="value">Value</option>
+                    </select>
+                </div>
+            </> : <>
+                <div style={{ display: "flex", justifyContent: "end", fontSize: "1.1rem", textAlign: "end" }}>
+                    <span
+                        className="hover-text"
+                        {...getGeneralTooltipProps("Cycle: Players draft in the same order for each identity.\nSnake: The order players draft each identity is reversed after each set of drafts.\nRandom: Players draft each identity in a random order.")}
+                    >
+                        Draft Order:
+                    </span>
+                </div>
+
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <select
+                        value={clashBattle.settings.draftOrder}
+                        onChange={e => clashBattle.setSetting("draftOrder", e.target.value)}
+                        disabled={!clashBattle.isHost}
+                    >
+                        <option value="cycle">Cycle</option>
+                        <option value="snake">Snake</option>
+                        <option value="random">Random</option>
+                    </select>
+                </div>
+            </>
+            }
 
             <div style={{ gridColumn: "1 / span 4", display: "flex", flexDirection: "column", gap: "0.5rem", justifySelf: "center", alignItems: "start" }}>
                 <label
@@ -141,20 +164,6 @@ export default function SetupScreen({ clashBattle }) {
                         Enable E.G.O Drafting
                     </span>
                 </label>
-
-                <label
-                    {...getGeneralTooltipProps("When enabled, players enter a blacklist phase after every 2 rounds of drafting identities. Each player gets to vote for an identity to blacklist. All identities that get at least one vote get blacklisted for the rest of the game.\nWARNING: The game has no recovery method if a player is unable to draft an identity. Be careful when blacklisting if there are a lot of players and the team size is large.")}
-                >
-                    <input type="checkbox"
-                        checked={clashBattle.settings.blacklisting}
-                        onChange={e => clashBattle.setSetting("blacklisting", e.target.checked)}
-                        disabled={!clashBattle.isHost}
-                    />
-                    <span className="hover-text">
-                        Enable Blacklist Phases
-                    </span>
-                </label>
-
             </div>
         </div>
 
@@ -271,7 +280,7 @@ export default function SetupScreen({ clashBattle }) {
 
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Players: {clashBattle.participants.length}</span>
-            <span className="sub-text">Max Players: 8</span>
+            <span className="sub-text">Max Players: {clashBattle.mode === "battleRoyale" ? 200 : 8}</span>
             {clashBattle.participants.map((x, i) => <span key={`${x}-${i}`}>{x}</span>)}
         </div>
 

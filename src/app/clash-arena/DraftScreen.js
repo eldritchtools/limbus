@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaVolumeUp } from "react-icons/fa";
 
 import HoldButton from "./HoldButton";
-import ParticipantGrid from "./ParticipantsDisplay";
+import ParticipantGrid, { ParticipantTextGrid } from "./ParticipantsDisplay";
 import PointsDisplay from "./PointsDisplay";
 import { alerts } from "./util";
+import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon"
@@ -16,8 +17,10 @@ import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
 import { IdentityDropdownSelector } from "../components/selectors/IdentitySelectors"
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
 import ProcessedText from "../components/texts/ProcessedText";
+import { getClashArenaDraftTooltipProps } from "../components/tooltips/ClashArenaDraftTooltip";
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
 import { getGeneralMarkdownTooltipProps } from "../components/tooltips/GeneralMarkdownTooltip";
+import { sinnerIdMapping } from "../lib/constants";
 import { AUDIO_ROOT } from "../paths";
 import { selectStyleVariable } from "../styles/selectStyle"
 
@@ -65,6 +68,7 @@ function useAlertSound(initSound) {
 }
 
 function SkillsDisplay({ clashBattle, isEgo, itemId }) {
+    const [egos] = useData("egos_mini");
     if (!itemId) return null;
 
     return <>
@@ -84,50 +88,58 @@ function SkillsDisplay({ clashBattle, isEgo, itemId }) {
                         )}
                     </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <span style={{ fontWeight: "bold", textAlign: "center" }}>Keywords</span>
                     <div style={{ display: "flex", gap: "0.2rem", justifyContent: "center" }}>
                         {(clashBattle.clashingData[itemId].keywords || []).map(x => <KeywordIcon key={x} id={x} />)}
                     </div>
+                    {(clashBattle.clashingData[itemId].keywordModifiers || []).map(({ keyword, ego: egoId }) => {
+                        const ego = egos[egoId];
+                        return <span key={keyword} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <KeywordIcon id={keyword} />
+                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", maxWidth: "65vw" }}>
+                                <EgoIcon id={ego.id} type={"awaken"} displayName={false} scale={0.125} />
+                                <span style={{ minWidth: 0, flex: 1 }}>[{sinnerIdMapping[ego.sinnerId]}] {ego.name}</span>
+                            </div>
+                        </span>
+                    }
+                    )}
                 </div>
             </div>
         }
 
-        {!isEgo && <>
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${isEgo ? 2 : 3}, 1fr)`, gap: "1.5rem" }}>
-                {
-                    (isEgo ? ["a", "c"] : [1, 2, 3]).map(skill => {
-                        const skillData = clashBattle.clashingData[itemId][String(skill)]
-                        if (!skillData) return null;
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${isEgo ? 2 : 3}, 1fr)`, gap: "1.5rem" }}>
+            {
+                (isEgo ? ["a", "c"] : [1, 2, 3]).map(skill => {
+                    const skillData = clashBattle.clashingData[itemId][String(skill)]
+                    if (!skillData) return null;
 
-                        return <div key={skill}
-                            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}
-                            {...getClashArenaSkillTooltipProps(itemId, skill, null)}
-                        >
-                            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
-                                <SkillIcon skillData={skillData} />
-                                {!isEgo &&
-                                    <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>x{4 - skill}</span>
-                                }
-                            </div>
-                            <div style={{ maxWidth: "200px", margin: "0 1.5rem", alignSelf: "start" }}>
-                                <NamePill name={skillData.name} affinity={skillData.affinity} />
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                                    {skillData.base} {skillData.coin > 0 ? "+" : ""}{skillData.coin}
-                                </span>
-                                &nbsp;
-                                {Array.from({ length: skillData.coins }, (v, i) =>
-                                    <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
-                                )}
-                            </div>
+                    return <div key={skill}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}
+                        {...getClashArenaSkillTooltipProps(itemId, skill, null)}
+                    >
+                        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                            <SkillIcon skillData={skillData} />
+                            {!isEgo &&
+                                <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>x{4 - skill}</span>
+                            }
                         </div>
-                    })
-                }
-            </div>
-        </>
-        }
+                        <div style={{ maxWidth: "200px", margin: "0 1.5rem", alignSelf: "start" }}>
+                            <NamePill name={skillData.name} affinity={skillData.affinity} />
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                {skillData.base} {skillData.coin > 0 ? "+" : ""}{skillData.coin}
+                            </span>
+                            &nbsp;
+                            {Array.from({ length: skillData.coins }, (v, i) =>
+                                <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
+                            )}
+                        </div>
+                    </div>
+                })
+            }
+        </div>
     </>
 }
 
@@ -172,11 +184,28 @@ function BlacklistPhase({ clashBattle, itemId, setItemId, handleConfirm }) {
 }
 
 function DraftPhase({ clashBattle, draftId, itemId, setItemId, pointsDisabled, isEgo, handleConfirm }) {
-    if (draftId !== clashBattle.playerId)
+    if (clashBattle.mode === "standard" && draftId !== clashBattle.playerId)
         return <span>
             {clashBattle.participants.find(x => x.player_id === draftId).display_name} is choosing...
         </span>
 
+    if (clashBattle.mode === "battleRoyale" && clashBattle.picked) {
+        if (clashBattle.isHost)
+            return <>
+                <span>Waiting for everyone to choose: {clashBattle.chosenCount}/{clashBattle.participants.length}</span>
+                <span className="sub-text">Updated after every 10 players.</span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <HoldButton onConfirm={clashBattle.forceAdvanceDraft} duration={1000}>
+                        Advance draft round
+                    </HoldButton>
+                    <span className="sub-text">Hold to advance to the next draft round. Players who haven&apos;t chosen skip this draft.</span>
+                </div>
+            </>
+        else
+            return <>
+                <span>Waiting for everyone to choose...</span>
+            </>
+    }
 
     return <>
         {!pointsDisabled &&
@@ -194,7 +223,7 @@ function DraftPhase({ clashBattle, draftId, itemId, setItemId, pointsDisabled, i
                                 .filter(([, data]) => data.type === "ego")
                                 .map(([id]) => id)
                         }
-                        excludeOptions={clashBattle.getSelectedEgo()}
+                        excludeOptions={clashBattle.mode === "standard" ? clashBattle.getSelectedEgo() : []}
                         autoFocus={true}
                         nameAppendFunc={ego =>
                             pointsDisabled ? null :
@@ -210,7 +239,7 @@ function DraftPhase({ clashBattle, draftId, itemId, setItemId, pointsDisabled, i
                                 .filter(([, data]) => data.type === "id")
                                 .map(([id]) => id)
                         }
-                        excludeOptions={clashBattle.getSelectedIdentities()}
+                        excludeOptions={clashBattle.mode === "standard" ? clashBattle.getSelectedIdentities() : clashBattle.getPlayerIdentities()}
                         autoFocus={true}
                         nameAppendFunc={identity =>
                             pointsDisabled ? null :
@@ -245,11 +274,16 @@ export default function DraftScreen({ clashBattle }) {
     const [playAlert, setPlayAlert] = useAlertSound(getCustomizationValue("alertSound"));
 
     const [isEgo, draftId] = useMemo(() => {
-        const id = clashBattle.draftOrder[0];
-        const isEgo = typeof id === "string" && id.startsWith("e-");
-        const draftId = isEgo ? Number(id.slice(2)) : id;
-        return [isEgo, draftId]
-    }, [clashBattle.draftOrder])
+        if (clashBattle.mode === "standard") {
+            const id = clashBattle.draftOrder[0];
+            const isEgo = typeof id === "string" && id.startsWith("e-");
+            const draftId = isEgo ? Number(id.slice(2)) : id;
+            return [isEgo, draftId]
+        } else {
+            const id = clashBattle.draftOrder[0];
+            return [id === "ego", id]
+        }
+    }, [clashBattle.draftOrder, clashBattle.mode])
 
     const handleConfirm = useCallback(() => {
         clashBattle.pickItem(itemId);
@@ -260,8 +294,11 @@ export default function DraftScreen({ clashBattle }) {
 
     useEffect(() => {
         if (draftId === clashBattle.playerId || draftId === "blacklist") playAlert();
+        if (clashBattle.mode === "battleRoyale") playAlert();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [draftId]);
+    }, [draftId, clashBattle.mode, clashBattle.draftIndex]);
+
+    const playerEgo = clashBattle.getPlayerEgo();
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
@@ -294,10 +331,15 @@ export default function DraftScreen({ clashBattle }) {
         <div style={{ display: "flex", gap: "1rem" }}>
             {clashBattle.draftOrder.map((id, i) => {
                 let displayName = id;
-                if (id === "blacklist") displayName = "Blacklist Phase";
-                else displayName = clashBattle.participants.find(
-                    x => x.player_id === (typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id)
-                ).display_name
+                if (clashBattle.mode === "battleRoyale") {
+                    if (id === "identity") displayName = "Identity";
+                    else displayName = "E.G.O";
+                } else {
+                    if (id === "blacklist") displayName = "Blacklist Phase";
+                    else displayName = clashBattle.participants.find(
+                        x => x.player_id === (typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id)
+                    ).display_name
+                }
 
                 return <span key={`${id}-${i}`}>
                     {i === 0 ? "▶" : ""} {displayName}
@@ -313,21 +355,44 @@ export default function DraftScreen({ clashBattle }) {
         }
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Current Draft</span>
-        <ParticipantGrid participants={clashBattle.participants}>
-            {x => {
-                return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
-                        {x.display_name}
-                    </span>
-                    <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
-                        {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
+        {clashBattle.mode === "standard" ?
+            <ParticipantGrid participants={clashBattle.participants}>
+                {x => {
+                    return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                        <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>
+                            {x.display_name}
+                        </span>
+                        <div style={{ display: "flex", flexDirection: "column", width: "128px" }}>
+                            {x.identities.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} />)}
+                        </div>
+                        {x.ego &&
+                            <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
+                        }
                     </div>
-                    {x.ego &&
-                        <EgoIcon key={x.ego} id={x.ego} type="awaken" displayName={true} displayRarity={true} />
+                }}
+            </ParticipantGrid> : <>
+                <div style={{ display: "flex", padding: "0.5rem" }}>
+                    {Object.keys(clashBattle.skillCounts).map(id =>
+                        <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />
+                    )}
+                    {playerEgo &&
+                        <EgoIcon key={playerEgo} id={playerEgo} type="awaken" displayName={true} displayRarity={true} size={128} />
                     }
                 </div>
-            }}
-        </ParticipantGrid>
+                <ParticipantTextGrid participants={clashBattle.participants}>
+                    {x => {
+                        return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                            <span
+                                style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}
+                                {...getClashArenaDraftTooltipProps([...x.identities, x.ego])}
+                            >
+                                {x.display_name}
+                            </span>
+                        </div>
+                    }}
+                </ParticipantTextGrid>
+            </>
+        }
 
         {clashBattle.blacklist.length > 0 && <>
             <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Blacklist</span>

@@ -13,8 +13,17 @@ export const defaultSettings = {
     sp: [0, 45],
     spBias: 0,
     teamBonuses: true,
-    blacklisting: true
+    blacklisting: true,
+    scoring: "rank"
 };
+
+export function modeConvert(mode) {
+    switch (mode) {
+        case "battle_royale": return "battleRoyale";
+        default: return mode;
+    }
+}
+
 
 export function phaseConvert(phase) {
     switch (phase) {

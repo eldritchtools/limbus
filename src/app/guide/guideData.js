@@ -414,7 +414,8 @@ export const guideData = [
                     "Clash Arena is a minigame where players draft teams to compete with each other on who can win the most rounds of clashing against randomly generated scenarios.",
                     "Players draft identities one at a time until they form a team. Identities chosen by a player cannot be chosen by another player. Players are given points on each round and choosing identities costs points depending on their clashing values. Save points by choosing weaker identities so you can pick stronger ones later on.",
                     "E.G.O can optionally be included in the draft. If included, they will be drafted after all identities have been drafted. Players get half the usual points per round to draft a single E.G.O. E.G.O have a single use throughout the entire game. Awakenings and Corrosions share the same single use.",
-                    "After drafting, players are faced with multiple rounds of randomly generated scenarios where they choose a skill from their team to use. The player whose skill clashes the highest gets a point. The player with the most points at the end wins."
+                    "After drafting, players are faced with multiple rounds of randomly generated scenarios where they choose a skill from their team to use. The player whose skill clashes the highest gets a point. The player with the most points at the end wins.",
+                    "A standard game has a maximum of 8 players, but the Battle Royale mode exists for those who want to play with significantly more players. Battle Royale has a number of adjustments to accommodate the increased number of players."
                 ]
             }
         ]

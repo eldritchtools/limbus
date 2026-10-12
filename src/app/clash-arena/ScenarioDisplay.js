@@ -57,7 +57,7 @@ function ScenarioSide({ label, side }) {
             width: "1.25rem", height: "1.25rem", borderRadius: "50%",
             background: "var(--bg-hover)", textAlign: "center"
         }}
-            {...getGeneralTooltipProps("HP and Speed values are simulated for use in some Identities' conditionals and are otherwise unused. SP functions the same way as in-game, affecting coin flip probabilities.")}
+            {...getGeneralTooltipProps("This is a randomized scenario used only for the conditionals for this round and has no impact on other rounds whatsoever. HP and Speed values are simulated for use in some Identities' conditionals but are otherwise unused. SP functions the same way as in-game, affecting coin flip probabilities.")}
         >
             ?
         </div>
