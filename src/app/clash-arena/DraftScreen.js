@@ -108,41 +108,38 @@ function SkillsDisplay({ clashBattle, isEgo, itemId }) {
             </div>
         }
 
-        {!isEgo && <>
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${isEgo ? 2 : 3}, 1fr)`, gap: "1.5rem" }}>
-                {
-                    (isEgo ? ["a", "c"] : [1, 2, 3]).map(skill => {
-                        const skillData = clashBattle.clashingData[itemId][String(skill)]
-                        if (!skillData) return null;
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${isEgo ? 2 : 3}, 1fr)`, gap: "1.5rem" }}>
+            {
+                (isEgo ? ["a", "c"] : [1, 2, 3]).map(skill => {
+                    const skillData = clashBattle.clashingData[itemId][String(skill)]
+                    if (!skillData) return null;
 
-                        return <div key={skill}
-                            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}
-                            {...getClashArenaSkillTooltipProps(itemId, skill, null)}
-                        >
-                            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
-                                <SkillIcon skillData={skillData} />
-                                {!isEgo &&
-                                    <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>x{4 - skill}</span>
-                                }
-                            </div>
-                            <div style={{ maxWidth: "200px", margin: "0 1.5rem", alignSelf: "start" }}>
-                                <NamePill name={skillData.name} affinity={skillData.affinity} />
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                                    {skillData.base} {skillData.coin > 0 ? "+" : ""}{skillData.coin}
-                                </span>
-                                &nbsp;
-                                {Array.from({ length: skillData.coins }, (v, i) =>
-                                    <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
-                                )}
-                            </div>
+                    return <div key={skill}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}
+                        {...getClashArenaSkillTooltipProps(itemId, skill, null)}
+                    >
+                        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                            <SkillIcon skillData={skillData} />
+                            {!isEgo &&
+                                <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>x{4 - skill}</span>
+                            }
                         </div>
-                    })
-                }
-            </div>
-        </>
-        }
+                        <div style={{ maxWidth: "200px", margin: "0 1.5rem", alignSelf: "start" }}>
+                            <NamePill name={skillData.name} affinity={skillData.affinity} />
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                {skillData.base} {skillData.coin > 0 ? "+" : ""}{skillData.coin}
+                            </span>
+                            &nbsp;
+                            {Array.from({ length: skillData.coins }, (v, i) =>
+                                <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
+                            )}
+                        </div>
+                    </div>
+                })
+            }
+        </div>
     </>
 }
 
