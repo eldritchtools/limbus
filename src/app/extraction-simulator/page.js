@@ -14,6 +14,7 @@ import IdentityIcon from "../components/icons/IdentityIcon";
 import DropdownButton from "../components/objects/DropdownButton";
 import NumberInput from "../components/objects/NumberInput";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
 import { IdentityDropdownSelector } from "../components/selectors/IdentitySelectors";
 import { useAuth } from "../database/authProvider";
@@ -438,20 +439,21 @@ export default function ExtractionSimulatorPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Extraction Simulator</h1>
-        <p style={{ margin: 0 }}>
-            Choose an existing or custom banner to simulate extractions.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Simulate extractions using existing, upcoming, or custom banners. Existing and upcoming banners are kept updated with the game&apos;s current extraction pools, while custom banners let you choose which Identities and E.G.O are available.
-            <br /><br />
-            Use Pull 1 or Pull 10 to simulate extractions from the selected banner. You can also choose whether to include Walpurgis items and toggle E.G.O in the extraction pool, allowing you to simulate different extraction scenarios.
-            <br /><br />
-            A probability calculator at the bottom of the page shows the chances of obtaining items from the selected banner over a chosen number of pulls. You can calculate probabilities for all items, Identities, E.G.O, or Announcers and see how the chances change from 1 pull up to your specified number of pulls. The results show the probability of obtaining different numbers of the selected item type, from one item up to all of the available items.
-            <br /><br />
-            Results may differ slightly from the game due to possible differences in how randomization is implemented.
-        </p>
-
+        <PageHeader
+            title={"Extraction Simulator"}
+            mainDesc={"Choose an existing or custom banner to simulate extractions."}
+            subDesc={<>
+                Simulate extractions using existing, upcoming, or custom banners. Existing and upcoming banners are kept updated with the game&apos;s current extraction pools, while custom banners let you choose which Identities and E.G.O are available.
+                <br /><br />
+                Use Pull 1 or Pull 10 to simulate extractions from the selected banner. You can also choose whether to include Walpurgis items and toggle E.G.O in the extraction pool, allowing you to simulate different extraction scenarios.
+                <br /><br />
+                A probability calculator at the bottom of the page shows the chances of obtaining items from the selected banner over a chosen number of pulls. You can calculate probabilities for all items, Identities, E.G.O, or Announcers and see how the chances change from 1 pull up to your specified number of pulls. The results show the probability of obtaining different numbers of the selected item type, from one item up to all of the available items.
+                <br /><br />
+                Results may differ slightly from the game due to possible differences in how randomization is implemented.
+            </>}
+            wide={true}
+            maxAds={1}
+        />
         {timersLoading || identitiesLoading || egosLoading || announcersLoading ?
             <LoadingContentPageTemplate /> :
             <>

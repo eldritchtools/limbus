@@ -14,6 +14,7 @@ import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
 import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
 import { getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
@@ -161,21 +162,19 @@ export default function EncountersPage() {
     }, [selectedCategory, selectedEncounter, router]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Encounters</h1>
-        <p style={{ margin: 0 }}>
-            Browse notable encounters in Limbus Company, including boss skills, passives, and other encounter details.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Browse notable encounters such as bosses and other challenging fights. Each encounter provides information about the fight including skills, passives, and other details to help you understand what you will be facing and plan your team accordingly.
-            <br /> <br />
-            For non-Mirror Dungeon encounters, the Builds tab shows team builds specifically tagged for that encounter. These builds provide examples of teams and strategies that other players have used for the fight.
-            <br /> <br />
-            Refraction Railway and Reflectrial encounters also include a Clear Records leaderboard where players can submit their own clears. Submissions can include screenshots, details about the teams or run, and an optional video, allowing players to share how they approached the encounter and compare their results with other submissions.
-        </p>
-
-        {encountersLoading ?
-            <LoadingContentPageTemplate /> :
-            <>
+        <PageHeader
+            title={"Encounters"}
+            mainDesc={"Browse notable encounters in Limbus Company, including boss skills, passives, and other encounter details."}
+            subDesc={<>
+                Browse notable encounters such as bosses and other challenging fights. Each encounter provides information about the fight including skills, passives, and other details to help you understand what you will be facing and plan your team accordingly.
+                <br /> <br />
+                For non-Mirror Dungeon encounters, the Builds tab shows team builds specifically tagged for that encounter. These builds provide examples of teams and strategies that other players have used for the fight.
+                <br /> <br />
+                Refraction Railway and Reflectrial encounters also include a Clear Records leaderboard where players can submit their own clears. Submissions can include screenshots, details about the teams or run, and an optional video, allowing players to share how they approached the encounter and compare their results with other submissions.
+            </>}
+            maxAds={1}
+        >
+            {!encountersLoading &&
                 <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                     <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                         <span style={{ fontWeight: "bold", textAlign: "end" }}>Category</span>
@@ -198,6 +197,12 @@ export default function EncountersPage() {
                         />
                     </div>
                 </div>
+            }
+        </PageHeader>
+
+        {encountersLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
                 <HorizontalDivider />
                 {selectedCategory && selectedEncounter ?
                     <Encounter

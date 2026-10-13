@@ -10,6 +10,7 @@ import AchievementTips from "./Tips";
 import { useData } from "../components/DataProvider";
 import NumberInput from "../components/objects/NumberInput";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { getAchievementsProgress, updateAchievementsProgress } from "../database/achievements";
 import { useAuth } from "../database/authProvider";
 import { localStores } from "../database/localDB";
@@ -401,44 +402,47 @@ export default function AchievementsPage() {
     }, [saveStatus, lastSaved]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Mirror Dungeon Achievements Tracker</h1>
-        <p style={{ margin: 0 }}>
-            Browse all Mirror Dungeon achievements and rewards and track achievement progress.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Browse Mirror Dungeon achievements and their rewards while tracking progress towards your achievement levels. 
-            <br /><br />
-            Achievements are grouped by type and show their point value and whether they can be completed in Normal or Hard Mirror Dungeon. Expand an achievement to view its details and tips for completing it. Track completed achievements to automatically calculate your current achievement level. You can also enter additional achievement XP earned from completing runs.
-            <br /><br />
-            Progress is automatically saved after a few seconds of inactivity.
-        </p>
+        <PageHeader
+            title={"Mirror Dungeon Achievements Tracker"}
+            mainDesc={"Browse all Mirror Dungeon achievements and rewards and track achievement progress."}
+            subDesc={<>
+                Browse Mirror Dungeon achievements and their rewards while tracking progress towards your achievement levels.
+                <br /><br />
+                Achievements are grouped by type and show their point value and whether they can be completed in Normal or Hard Mirror Dungeon. Expand an achievement to view its details and tips for completing it. Track completed achievements to automatically calculate your current achievement level. You can also enter additional achievement XP earned from completing runs.
+                <br /><br />
+                Progress is automatically saved after a few seconds of inactivity.
+            </>}
+            maxAds={1}
+        >
+            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
+                    <div>Level: {Math.floor(xp / 100)}</div>
+                    <div style={{ width: "5rem", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "5px", overflow: "hidden", position: "relative" }}>
+                        <div style={{ width: `${xp % 100}%`, height: "100%", backgroundColor: uiColors.green, transition: "width 0.3s ease" }} />
+                        <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: "bold", textShadow: "0 0 8px #000" }}> {xp % 100}/100 </span>
+                    </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                    Additional XP:
+                    <NumberInput
+                        value={additionalPoints ?? 0}
+                        onChange={handleAdditionalPoints}
+                        min={0}
+                        style={{ textAlign: "center", width: "6ch" }}
+                    />
+                </div>
+                <div>
+                    {saveString}
+                </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
+                <button className={`toggle-button ${sortClearedToBottom ? 'active' : ''}`} onClick={toggleSortClearedToBottom}>Sort Cleared to Bottom</button>
+            </div>
+        </PageHeader>
+
         {achievementsLoading || dataLoading ?
             <LoadingContentPageTemplate /> :
             <>
-                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
-                        <div>Level: {Math.floor(xp / 100)}</div>
-                        <div style={{ width: "5rem", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "5px", overflow: "hidden", position: "relative" }}>
-                            <div style={{ width: `${xp % 100}%`, height: "100%", backgroundColor: uiColors.green, transition: "width 0.3s ease" }} />
-                            <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: "bold", textShadow: "0 0 8px #000" }}> {xp % 100}/100 </span>
-                        </div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                        Additional XP:
-                        <NumberInput
-                            value={additionalPoints ?? 0}
-                            onChange={handleAdditionalPoints}
-                            min={0}
-                            style={{ textAlign: "center", width: "6ch" }}
-                        />
-                    </div>
-                    <div>
-                        {saveString}
-                    </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
-                    <button className={`toggle-button ${sortClearedToBottom ? 'active' : ''}`} onClick={toggleSortClearedToBottom}>Sort Cleared to Bottom</button>
-                </div>
 
                 <div style={{ overflowX: "auto", maxWidth: "100%" }}>
                     <h2 style={{ display: "flex", margin: "0 0 10px", padding: 0, gap: "1rem", alignItems: "center", justifyContent: "center", width: "max-content" }}>

@@ -47,8 +47,8 @@ export default async function Page() {
         .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
 
 
-    return <>
+    return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
         <JsonLd data={schema} />
         <EgosPage initEgos={minifiedEgos} />
-    </>;
+    </div>;
 }

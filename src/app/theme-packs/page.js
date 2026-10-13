@@ -11,6 +11,7 @@ import HoverBlocker from "../components/HoverBlocker";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
@@ -219,57 +220,59 @@ export default function ThemePacksPage() {
         , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, selectedTags, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Theme Packs</h1>
-        <p style={{ margin: 0 }}>
-            Browse all Mirror Dungeon Theme Packs.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Search and filter Theme Packs by category, the floors where they are available, or tags. Categories follow the game&apos;s in-game classifications, while tags are a slightly looser version of this.
-            <br /><br />
-            Expand a Theme Pack to view its exclusive E.G.O Gifts and see its possible boss encounters. You can also expand all Theme Packs currently shown in the catalogue at once.
-        </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-            <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name..."} />
+        <PageHeader
+            title={"Theme Packs"}
+            mainDesc={"Browse all Mirror Dungeon Theme Packs."}
+            subDesc={<>
+                Search and filter Theme Packs by category, the floors where they are available, or tags. Categories follow the game&apos;s in-game classifications, while tags are a slightly looser version of this.
+                <br /><br />
+                Expand a Theme Pack to view its exclusive E.G.O Gifts and see its possible boss encounters. You can also expand all Theme Packs currently shown in the catalogue at once.
+            </>}
+            maxAds={1}
+        >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                    <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name..."} />
+                    <label>
+                        <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
+                        <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
+                            className="hover-text"
+                        >
+                            Include Exclusive Gifts
+                        </span>
+                    </label>
+                </div>
+                <span
+                    className="hover-text" style={{ textAlign: "end" }}
+                    {...getGeneralTooltipProps("Strict hierarchical categorization of Theme Packs based on how the game organizes them. Use Tags for a broader style of filtering.")}
+                >
+                    Filter Categories:
+                </span>
+                <CategorySelector
+                    selected={selectedCategories}
+                    setSelected={setSelectedCategories}
+                    categories={categories}
+                />
+                <span style={{ textAlign: "end" }}>Filter Floors:</span>
+                <FloorSelector
+                    selected={selectedFloors}
+                    setSelected={setSelectedFloors}
+                    floors={floorPacksLoading ? {} : floorPacksData}
+                />
+                <span style={{ textAlign: "end" }}>Filter Tags:</span>
+                <TagSelector
+                    selected={selectedTags}
+                    setSelected={setSelectedTags}
+                    tags={tags}
+                />
+                <div />
                 <label>
-                    <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
-                    <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
-                        className="hover-text"
-                    >
-                        Include Exclusive Gifts
-                    </span>
+                    <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
+                    <span>Show details for all theme packs</span>
                 </label>
             </div>
-            <span
-                className="hover-text" style={{ textAlign: "end" }}
-                {...getGeneralTooltipProps("Strict hierarchical categorization of Theme Packs based on how the game organizes them. Use Tags for a broader style of filtering.")}
-            >
-                Filter Categories:
-            </span>
-            <CategorySelector
-                selected={selectedCategories}
-                setSelected={setSelectedCategories}
-                categories={categories}
-            />
-            <span style={{ textAlign: "end" }}>Filter Floors:</span>
-            <FloorSelector
-                selected={selectedFloors}
-                setSelected={setSelectedFloors}
-                floors={floorPacksLoading ? {} : floorPacksData}
-            />
-            <span style={{ textAlign: "end" }}>Filter Tags:</span>
-            <TagSelector
-                selected={selectedTags}
-                setSelected={setSelectedTags}
-                tags={tags}
-            />
-            <div />
-            <label>
-                <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
-                <span>Show details for all theme packs</span>
-            </label>
-        </div>
+        </PageHeader>
 
         <HorizontalDivider />
 

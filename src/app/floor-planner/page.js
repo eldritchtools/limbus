@@ -14,6 +14,7 @@ import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
@@ -237,41 +238,44 @@ export default function FloorPlannerPage() {
     const size = isDesktop ? "400px" : "330px";
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Floor Planner</h1>
-        <p style={{ margin: 0 }}>
-            Plan Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Plan Mirror Dungeon floor routes by selecting Theme Packs for each floor. The planner shows the exclusive Gifts available from the Theme Packs you choose, letting you see which Gifts are accessible along your planned route and adjust your choices accordingly. You can use it to plan a run in advance or track the route of an ongoing run to help with decisions on later floors. You can also display the possible boss encounters for each Theme Pack.
-            <br /><br />
-            The Exclusive Gifts Helper lets you select the exclusive Gifts you want to obtain and finds Theme Packs that provide them. It can help identify Theme Packs that contain the most of your desired Gifts when deciding which ones to choose for your route.
-            <br /><br />
-            Floor Plans can be exported directly into a full MD Plan, where you can add the team, starting buffs, and other details before saving or sharing the plan.
-        </p>
-        <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-            <label>
-                <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
-                    className="hover-text"
-                    style={{ marginRight: "0.2rem" }}
-                >
-                    Select Difficulty:
-                </span>
-                <select name="difficulty" id="difficulty" value={difficulty} onChange={e => handleSetDifficulty(e.target.value)}>
-                    <option value="N">Normal</option>
-                    <option value="H">Hard</option>
-                    <option value="I">Infinity</option>
-                    <option value="E">Extreme</option>
-                </select>
-            </label>
-            <button onClick={clear}>Clear</button>
-            <button {...getGeneralTooltipProps("Find recommended theme packs based on the exclusive gifts you want to get.")} onClick={() => setShowExclusiveHelper(p => !p)}>
-                {showExclusiveHelper ? "Hide " : "Show "}Exclusive Gifts Helper
-            </button>
-            <button onClick={() => setShowEncounters(p => !p)}>
-                {showEncounters ? "Hide " : "Show "}Encounters
-            </button>
-            <button onClick={copyToMdPlan}>Copy to MD Plan</button>
-        </div>
+        <PageHeader
+            title={"Floor Planner"}
+            mainDesc={"Plan Mirror Dungeon floor routes by selecting theme packs and viewing available exclusive gifts."}
+            subDesc={<>
+                Plan Mirror Dungeon floor routes by selecting Theme Packs for each floor. The planner shows the exclusive Gifts available from the Theme Packs you choose, letting you see which Gifts are accessible along your planned route and adjust your choices accordingly. You can use it to plan a run in advance or track the route of an ongoing run to help with decisions on later floors. You can also display the possible boss encounters for each Theme Pack.
+                <br /><br />
+                The Exclusive Gifts Helper lets you select the exclusive Gifts you want to obtain and finds Theme Packs that provide them. It can help identify Theme Packs that contain the most of your desired Gifts when deciding which ones to choose for your route.
+                <br /><br />
+                Floor Plans can be exported directly into a full MD Plan, where you can add the team, starting buffs, and other details before saving or sharing the plan.
+            </>}
+            wide={true}
+            maxAds={1}
+        >
+            <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
+                <label>
+                    <span {...getGeneralTooltipProps("Changing to or from Normal will reset all selected theme packs.")}
+                        className="hover-text"
+                        style={{ marginRight: "0.2rem" }}
+                    >
+                        Select Difficulty:
+                    </span>
+                    <select name="difficulty" id="difficulty" value={difficulty} onChange={e => handleSetDifficulty(e.target.value)}>
+                        <option value="N">Normal</option>
+                        <option value="H">Hard</option>
+                        <option value="I">Infinity</option>
+                        <option value="E">Extreme</option>
+                    </select>
+                </label>
+                <button onClick={clear}>Clear</button>
+                <button {...getGeneralTooltipProps("Find recommended theme packs based on the exclusive gifts you want to get.")} onClick={() => setShowExclusiveHelper(p => !p)}>
+                    {showExclusiveHelper ? "Hide " : "Show "}Exclusive Gifts Helper
+                </button>
+                <button onClick={() => setShowEncounters(p => !p)}>
+                    {showEncounters ? "Hide " : "Show "}Encounters
+                </button>
+                <button onClick={copyToMdPlan}>Copy to MD Plan</button>
+            </div>
+        </PageHeader>
         {themePacksLoading || floorPacksLoading ?
             <LoadingContentPageTemplate /> :
             <>

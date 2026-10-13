@@ -10,6 +10,7 @@ import { GiftTagFilterSelector } from "../components/gifts/GiftTags";
 import GiftIcon from "../components/icons/GiftIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { GiftEffectsSelector, GiftTriggersSelector } from "../components/selectors/GiftSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
@@ -199,8 +200,8 @@ export default function GiftsPage({ initGifts }) {
             },
             strictFiltering
         ).map(x => [x.id, x]);
-    }, [filters, tagFilters, triggerFilters, effectFilters, 
-        giftsData, giftsLoading, initState, initGifts, 
+    }, [filters, tagFilters, triggerFilters, effectFilters,
+        giftsData, giftsLoading, initState, initGifts,
         searchString, includeDescription, strictFiltering, selectedThemePacks
     ]);
 
@@ -273,117 +274,120 @@ export default function GiftsPage({ initGifts }) {
     } : {};
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", alignItems: "center" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.O Gifts</h1>
-        <p style={{ margin: 0 }}>
-            Browse all Mirror Dungeon E.G.O Gifts and view detailed information about each gift.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Browse and search E.G.O Gifts by name or description. Gifts can be filtered by tier, keyword, affinity, or the Theme Packs they appear in. Tags, triggers, and effects that categorize the Gifts by their mechanics and uses have also been added as additional filter options to make it easier to find Gifts with specific characteristics.
-            <br /><br />
-            Select a Gift to view its details for its different upgrade tiers. The details also show related information such as fusion recipes, choice events where it can appear, exclusive Theme Packs, and related Gifts for cursed and blessed Gifts.
-            <br /><br />
-            A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run or to help them track their gift compendium.
-        </p>
-        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                    <input value={searchString} onChange={e => setSearchString(e.target.value)} />
-                    <label>
-                        <input type="checkbox" checked={includeDescription} onChange={e => setIncludeDescription(e.target.checked)} />
-                        <span {...getGeneralTooltipProps("This will check the description for all enhancement levels of the gift.")}
-                            className="hover-text"
+        <PageHeader
+            title={"E.G.O Gifts"}
+            mainDesc={"Browse all Mirror Dungeon E.G.O Gifts and view detailed information about each gift."}
+            subDesc={<>
+                Browse and search E.G.O Gifts by name or description. Gifts can be filtered by tier, keyword, affinity, or the Theme Packs they appear in. Tags, triggers, and effects that categorize the Gifts by their mechanics and uses have also been added as additional filter options to make it easier to find Gifts with specific characteristics.
+                <br /><br />
+                Select a Gift to view its details for its different upgrade tiers. The details also show related information such as fusion recipes, choice events where it can appear, exclusive Theme Packs, and related Gifts for cursed and blessed Gifts.
+                <br /><br />
+                A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run or to help them track their gift compendium.
+            </>}
+            maxAds={2}
+        >
+            <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                        <input value={searchString} onChange={e => setSearchString(e.target.value)} />
+                        <label>
+                            <input type="checkbox" checked={includeDescription} onChange={e => setIncludeDescription(e.target.checked)} />
+                            <span {...getGeneralTooltipProps("This will check the description for all enhancement levels of the gift.")}
+                                className="hover-text"
+                            >
+                                Include Description
+                            </span>
+                        </label>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <span style={{ fontWeight: "bold", textAlign: "end" }}>Tag Filter</span>
+                        <div
+                            className={`toggle-text ${tagFilterExcluding ? "red" : "green"}`}
+                            onClick={() => setTagFilterExcluding(p => !p)}
                         >
-                            Include Description
+                            {tagFilterExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "start" }}>
+                        <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
+                            {...getGeneralTooltipProps("Triggers are conditions that enable or modify the gift's effects. Some may only be necessary in certain situations.")}
+                        >
+                            Trigger Filter
                         </span>
-                    </label>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Tag Filter</span>
-                    <div
-                        className={`toggle-text ${tagFilterExcluding ? "red" : "green"}`}
-                        onClick={() => setTagFilterExcluding(p => !p)}
-                    >
-                        {tagFilterExcluding ? "Exclude" : "Include"}
+                        <div
+                            className={`toggle-text ${triggerFilterExcluding ? "red" : "green"}`}
+                            onClick={() => setTriggerFilterExcluding(p => !p)}
+                        >
+                            {triggerFilterExcluding ? "Exclude" : "Include"}
+                        </div>
                     </div>
-                </div>
-                <div style={{ textAlign: "start" }}>
-                    <GiftTagFilterSelector tagFilter={tagFilters} setTagFilter={setTagFilters} excludeMode={tagFilterExcluding} />
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
-                        {...getGeneralTooltipProps("Triggers are conditions that enable or modify the gift's effects. Some may only be necessary in certain situations.")}
-                    >
-                        Trigger Filter
-                    </span>
-                    <div
-                        className={`toggle-text ${triggerFilterExcluding ? "red" : "green"}`}
-                        onClick={() => setTriggerFilterExcluding(p => !p)}
-                    >
-                        {triggerFilterExcluding ? "Exclude" : "Include"}
+                    <div style={{ textAlign: "start" }}>
+                        <GiftTriggersSelector
+                            selected={triggerFilters} setSelected={setTriggerFilters}
+                            isMulti={true} giftOptions={Object.values(giftsData ?? [])}
+                            excludeMode={triggerFilterExcluding}
+                        />
                     </div>
-                </div>
-                <div style={{ textAlign: "start" }}>
-                    <GiftTriggersSelector
-                        selected={triggerFilters} setSelected={setTriggerFilters}
-                        isMulti={true} giftOptions={Object.values(giftsData ?? [])}
-                        excludeMode={triggerFilterExcluding}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
+                        <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
+                            {...getGeneralTooltipProps("Effects are outcomes when the gift's triggers are fulfilled. Some effects may only happen with certain combinations of triggers.")}
+                        >
+                            Effect Filter
+                        </span>
+                        <div
+                            className={`toggle-text ${effectFilterExcluding ? "red" : "green"}`}
+                            onClick={() => setEffectFilterExcluding(p => !p)}
+                        >
+                            {effectFilterExcluding ? "Exclude" : "Include"}
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "start" }}>
+                        <GiftEffectsSelector
+                            selected={effectFilters} setSelected={setEffectFilters}
+                            isMulti={true} giftOptions={Object.values(giftsData ?? [])}
+                            excludeMode={effectFilterExcluding}
+                        />
+                    </div>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
+                    <ThemePackDropdownSelector
+                        selected={selectedThemePacks}
+                        setSelected={setSelectedThemePacks}
+                        isMulti={true}
+                        options={themePackList}
+                        prefixCategory={true}
                     />
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "end", textAlign: "end", gap: "0.2rem" }}>
-                    <span style={{ fontWeight: "bold", textAlign: "end" }} className="hover-text"
-                        {...getGeneralTooltipProps("Effects are outcomes when the gift's triggers are fulfilled. Some effects may only happen with certain combinations of triggers.")}
-                    >
-                        Effect Filter
-                    </span>
-                    <div
-                        className={`toggle-text ${effectFilterExcluding ? "red" : "green"}`}
-                        onClick={() => setEffectFilterExcluding(p => !p)}
-                    >
-                        {effectFilterExcluding ? "Exclude" : "Include"}
+                    <div />
+                    <div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
+                            <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                            Strict Filtering
+                            <span className="sub-text">(Require all selected filters)</span>
+                        </label>
+                    </div>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Display Type</span>
+                    <div style={{ display: "flex", gap: "0.2rem", alignItems: "start" }}>
+                        <label>
+                            <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} />
+                            Icons Only
+                        </label>
+                        <label>
+                            <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} />
+                            Cards
+                        </label>
+                        <label>
+                            <input type="radio" name="displayType" value={"desc"} checked={displayType === "desc"} onChange={e => setDisplayType(e.target.value)} />
+                            Full Description
+                        </label>
                     </div>
                 </div>
-                <div style={{ textAlign: "start" }}>
-                    <GiftEffectsSelector
-                        selected={effectFilters} setSelected={setEffectFilters}
-                        isMulti={true} giftOptions={Object.values(giftsData ?? [])}
-                        excludeMode={effectFilterExcluding}
-                    />
-                </div>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
-                <ThemePackDropdownSelector
-                    selected={selectedThemePacks}
-                    setSelected={setSelectedThemePacks}
-                    isMulti={true}
-                    options={themePackList}
-                    prefixCategory={true}
-                />
-                <div />
-                <div>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
-                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                        Strict Filtering
-                        <span className="sub-text">(Require all selected filters)</span>
-                    </label>
-                </div>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Display Type</span>
-                <div style={{ display: "flex", gap: "0.2rem", alignItems: "start" }}>
-                    <label>
-                        <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} />
-                        Icons Only
-                    </label>
-                    <label>
-                        <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} />
-                        Cards
-                    </label>
-                    <label>
-                        <input type="radio" name="displayType" value={"desc"} checked={displayType === "desc"} onChange={e => setDisplayType(e.target.value)} />
-                        Full Description
-                    </label>
-                </div>
+                <IconsSelector type={"column"} categories={["giftTier", "status", "atkTypeKwless", "affinity"]} values={filters} setValues={setFilters} />
             </div>
-            <IconsSelector type={"column"} categories={["giftTier", "status", "atkTypeKwless", "affinity"]} values={filters} setValues={setFilters} />
-        </div>
+        </PageHeader>
+
         <div style={{ display: "flex", gap: "0.25rem" }}>
             <button onClick={() => toggleTracking()}>
                 {tracking === null ? "Activate Tracking Mode" : "Deactivate Tracking Mode"}

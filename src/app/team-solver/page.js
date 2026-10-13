@@ -4,28 +4,22 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import styles from "./teamSolver.module.css";
 import BuildIdentitiesGrid from "../components/build/BuildIdentitiesGrid";
 import { useData } from "../components/DataProvider";
-import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
-import SinnerIcon from "../components/icons/SinnerIcon";
 import StatusIcon from "../components/icons/StatusIcon";
 import NumberInput from "../components/objects/NumberInput";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 import WbList, { useWbState } from "../components/objects/WbList";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
-import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { FactionDropdownSelector } from "../components/selectors/FactionSelectors";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { IdentityMenuSelector } from "../components/selectors/IdentitySelectors";
 import { SinnerMenuSelector } from "../components/selectors/SinnerSelectors";
 import { StatusDropdownSelector } from "../components/selectors/StatusSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
-import { useAuth } from "../database/authProvider";
-import { getCompany } from "../database/companies";
 import { getLocalStore } from "../database/localDB";
-import { bitsetFunctions } from "../lib/bitset";
 import { uiColors } from "../lib/colors";
 import { keywords } from "../lib/constants";
 import { triggerToolUsedGAEvent } from "../lib/gaEvents";
@@ -110,7 +104,6 @@ function ResultComponent({ identities, result, keywordTargets, statusTargets, ro
 }
 
 export default function TeamSolverPage() {
-    const { user, loading } = useAuth();
     const [identities, identitiesLoading] = useData("identities");
     const [keywordModData, keywordModDataLoading] = useData("identity_keyword_modifiers");
     const [fixedIdentityIds, setFixedIdentityIds] = useState(Array.from({ length: 12 }, () => null));
@@ -212,31 +205,6 @@ export default function TeamSolverPage() {
         setEnabledSinners(Array.from({ length: 12 }, () => true));
     }
 
-    const applyCompanyData = () => {
-        if (identitiesLoading || loading) return;
-        setCompanyLoading(true);
-
-        const handleCompany = company => {
-            if (!company) return;
-            const newValues = [];
-            const idMasks = company.identities.map(mask => bitsetFunctions.fromString(mask));
-            Object.entries(identities).forEach(([id, identity]) => {
-                if (bitsetFunctions.hasFlag(idMasks[identity.sinnerId - 1], Number(id.slice(-2)) - 1)) return;
-                newValues.push(id);
-            });
-
-            setWbMode("b");
-            setWbList(newValues);
-            setCompanyLoading(false);
-        }
-
-        if (user) {
-            getCompany(user).then(handleCompany);
-        } else {
-            getLocalStore("companies").get("main").then(handleCompany);
-        }
-    }
-
     const triggerSolver = () => {
         if (solving) {
             if (!workerRef.current) return;
@@ -332,25 +300,24 @@ export default function TeamSolverPage() {
     }, [identities, identitiesLoading]);
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Team Solver</h1>
-        <p style={{ margin: 0 }}>
-            Generate teams that satisfy keyword or status requirements while following specified constraints.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Generate teams that satisfy specified keyword, status, faction, or tag requirements while following your chosen constraints. The solver searches through available Identities and produces multiple teams that meet the conditions you set. This can be useful for finding teams that satisfy specific requirements without manually testing different combinations or finding alternatives to team configurations you normally use.
-            <br /><br />
-            You can require a minimum number of Identities with particular statuses, keywords, factions, or tags, as well as set a maximum team size. The whitelist and blacklist feature can restrict which Identities are allowed, while individual Identities can be fixed into every generated team or sinners disabled from being selected.
-            <br /><br />
-            Placeholder Identities can also be added for Identities that do not exist in the game yet. This can be useful for planning around upcoming or hypothetical Identities without requiring them to already be available in the database.
-            <br /><br />
-            Generated teams include a team code that can be copied directly into the game. You can also copy the generated team into a Team Build to save or share it.
-            <br /><br />
-            The solver offers Balanced, Faster, and Variety search modes depending on whether you want to balance search time with the variety of results. The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. Only Identities that match at least one of your requirements will be considered.
-        </p>
-
-        {identitiesLoading || keywordModDataLoading || initializing ?
-            <LoadingContentPageTemplate /> :
-            <>
+        <PageHeader
+            title={"Team Solver"}
+            mainDesc={"Generate teams that satisfy keyword or status requirements while following specified constraints."}
+            subDesc={<>
+                Generate teams that satisfy specified keyword, status, faction, or tag requirements while following your chosen constraints. The solver searches through available Identities and produces multiple teams that meet the conditions you set. This can be useful for finding teams that satisfy specific requirements without manually testing different combinations or finding alternatives to team configurations you normally use.
+                <br /><br />
+                You can require a minimum number of Identities with particular statuses, keywords, factions, or tags, as well as set a maximum team size. The whitelist and blacklist feature can restrict which Identities are allowed, while individual Identities can be fixed into every generated team or sinners disabled from being selected.
+                <br /><br />
+                Placeholder Identities can also be added for Identities that do not exist in the game yet. This can be useful for planning around upcoming or hypothetical Identities without requiring them to already be available in the database.
+                <br /><br />
+                Generated teams include a team code that can be copied directly into the game. You can also copy the generated team into a Team Build to save or share it.
+                <br /><br />
+                The solver offers Balanced, Faster, and Variety search modes depending on whether you want to balance search time with the variety of results. The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. Only Identities that match at least one of your requirements will be considered.
+            </>}
+            wide={true}
+            maxAds={3}
+        >
+            {!identitiesLoading && !keywordModDataLoading && !initializing && <>
                 <h3 style={{ margin: 0 }}>Solver Settings</h3>
                 <h4 style={{ margin: 0 }}>Sinner Settings (fix or disable sinners)</h4>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center" }}>
@@ -496,7 +463,12 @@ export default function TeamSolverPage() {
                         />
                     </div>)}
                 </div>
-
+            </>
+            }
+        </PageHeader>
+        {identitiesLoading || keywordModDataLoading || initializing ?
+            <LoadingContentPageTemplate /> :
+            <>
                 {wbListOpen && <WbList wbState={wbState} />}
 
                 <h3 style={{ margin: 0 }}>Results</h3>

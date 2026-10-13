@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import CollectionsSearchDisplay from "../components/contentCardDisplays/CollectionsSearchDisplay";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import CollectionsSearchComponent from "../components/search/CollectionsSearchComponent";
 import { searchCollections } from "../database/collections";
 import useLocalState from "../lib/useLocalState";
@@ -32,10 +33,10 @@ export default function CollectionsPage() {
             try {
                 setLoading(true);
                 let data;
-                if(activeTab === "active") data = await searchCollections({ published: true, sortBy: "active" }, 1)
-                else if(activeTab === "top") data = await searchCollections({ published: true, sortBy: "top" }, 1)
-                else if(activeTab === "new") data = await searchCollections({ published: true, sortBy: "new" }, 1)
-                else if(activeTab === "random") data = await searchCollections({ published: true, sortBy: "random" }, 1)
+                if (activeTab === "active") data = await searchCollections({ published: true, sortBy: "active" }, 1)
+                else if (activeTab === "top") data = await searchCollections({ published: true, sortBy: "top" }, 1)
+                else if (activeTab === "new") data = await searchCollections({ published: true, sortBy: "new" }, 1)
+                else if (activeTab === "random") data = await searchCollections({ published: true, sortBy: "random" }, 1)
 
                 if (!canceled) {
                     setCollections(data || []);
@@ -62,7 +63,18 @@ export default function CollectionsPage() {
     }
 
     return <>
-        <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
+        <PageHeader
+            title={"Collections"}
+            mainDesc={"Browse collections organizing related builds and Mirror Dungeon plans."}
+            subDesc={<>
+                Group team builds and Mirror Dungeon plans into collections. Collections can be used to organize related builds and MD plans around a particular strategy, challenge, or other theme.
+                <br /><br />
+                Collection owners can also allow other users to submit their own builds and MD plans for consideration. The owner can review each submission and choose whether to add it to the collection.
+            </>}
+            maxAds={1}
+        >
+            <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
+        </PageHeader>
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
             <div className={`tab-header ${activeTab === "active" ? "active" : ""}`} onClick={() => handleTabClick("active")}>Active</div>

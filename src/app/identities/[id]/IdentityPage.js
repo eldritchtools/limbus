@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "./IdentityPage.module.css";
 import { SkillsTab } from "./IdentityPageComponents";
 
+import NitroAd from "@/app/components/ads/NitroAd";
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import { useData, useDataProvider } from "@/app/components/DataProvider";
 import EgoIcon from "@/app/components/icons/EgoIcon";
@@ -450,6 +451,8 @@ export default function IdentityPage({ id, identityData, initSkillData, notesTab
                     sanityData={sanityData}
                 />
             }
+
+            <NitroAd id={"id-ego-bottom-ad"} height={90} adLevel={"min"} style={{width: "100%"}} />
 
             <BottomLinks sinnerId={identityData.sinnerId} identities={minifiedIdentities} egos={minifiedEgos} />
         </div>

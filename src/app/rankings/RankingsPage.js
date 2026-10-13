@@ -10,6 +10,7 @@ import Avatar from "../components/icons/Avatar";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import Review from "../components/ratings/Review";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -406,76 +407,77 @@ export default function RankingsPage({ tab, username }) {
                 ["identityTier", "egoTier", "sinner", "status", "affinity", "atkType"]
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Community Rankings</h1>
-        <p style={{ margin: 0 }}>
-            View community rankings of Identities and E.G.O based on user ratings and reviews.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Compare Identities and E.G.O based on ratings submitted by the community. Each one is rated from 0 to 10 across five criteria: clashing, damage, potential impact, utility, and usability. The results show the average ratings across all criteria. The ranking setting allows you to view rankings across specific criterion.
-            <br /> <br />
-            A minimum rating count can be set when viewing the rankings to filter out entries with too few ratings. This is to prevent Identities and E.G.O with a small number of ratings from having an outsized effect on the rankings due to their average rating still being volatile.
-            <br /> <br />
-            Users can also leave reviews to provide more context behind their ratings. Reviews can be submitted from the rankings or from the corresponding Identity or E.G.O page, and can be upvoted or marked as funny to help surface useful or entertaining reviews.
-            <br /> <br />
-            The rankings represent community opinion rather than the official views of Limbus Company Tools. Ratings are subjective and may be influenced by differences in playstyle, personal preferences, trends, memes, and jokes, so the community average should not be treated as an objective measure of an Identity or E.G.O&apos;s quality.
-        </p>
+        <PageHeader
+            title={"Community Rankings"}
+            mainDesc={"View community rankings of Identities and E.G.O based on user ratings and reviews."}
+            subDesc={<>
+                Compare Identities and E.G.O based on ratings submitted by the community. Each one is rated from 0 to 10 across five criteria: clashing, damage, potential impact, utility, and usability. The results show the average ratings across all criteria. The ranking setting allows you to view rankings across specific criterion.
+                <br /> <br />
+                A minimum rating count can be set when viewing the rankings to filter out entries with too few ratings. This is to prevent Identities and E.G.O with a small number of ratings from having an outsized effect on the rankings due to their average rating still being volatile.
+                <br /> <br />
+                Users can also leave reviews to provide more context behind their ratings. Reviews can be submitted from the rankings or from the corresponding Identity or E.G.O page, and can be upvoted or marked as funny to help surface useful or entertaining reviews.
+                <br /> <br />
+                The rankings represent community opinion rather than the official views of Limbus Company Tools. Ratings are subjective and may be influenced by differences in playstyle, personal preferences, trends, memes, and jokes, so the community average should not be treated as an objective measure of an Identity or E.G.O&apos;s quality.
+            </>}
+            maxAds={2}
+        >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>
+                    <span style={{ textAlign: 'end' }}>Search:</span>
+                    <input type="text" placeholder="Search..." value={searchString} onChange={(e) => setSearchString(e.target.value)} />
+                    <div style={{ display: "flex", justifyContent: "end" }}>
+                        <span {...getRatingHelpTooltipProps(viewMode)} className="hover-text" style={{ textAlign: 'end' }}>Ranking:</span>
+                    </div>
+                    <div style={{ justifySelf: "start" }}>
+                        <RankingDropdown viewMode={viewMode} rankingMode={rankingMode} setRankingMode={setRankingMode} />
+                    </div>
+                    <span {...getGeneralTooltipProps("Minimum number of ratings needed to be ranked")} className="hover-text" style={{ textAlign: 'end' }}>Min Ratings:</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", filter: viewMode === "reviewer" ? "brightness(0.5)" : null }}>
+                        <input
+                            type="range" min={0} max={5} step={1} value={minRatings}
+                            onChange={(e) => setMinRatings(Number(e.target.value))}
+                            style={{ width: "100px" }} disabled={viewMode === "reviewer"}
+                        />
+                        <span>
+                            {MIN_RATINGS_MAPPING[minRatings] ? `${MIN_RATINGS_MAPPING[minRatings]}+ Ratings` : "Any"}
+                        </span>
+                    </div>
+                    <div />
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <input type="checkbox" checked={separateByPoint} onChange={e => setSeparateByPoint(e.target.checked)} />
+                        Separate by Point Thresholds
+                    </label>
+                    <div />
+                    <label style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.2rem" }}>
+                        <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
+                        Strict Filtering
+                        <span className="sub-text">(Require all selected filters)</span>
+                    </label>
+                    <div />
+                    <label
+                        {...getGeneralTooltipProps("If checked, computes ranking across all identities/E.G.Os instead of only the filtered ones.")}
+                        style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+                    >
+                        <input type="checkbox" checked={globalRanking} onChange={e => setGlobalRanking(e.target.checked)} />
+                        <span className="hover-text">Use Global Rankings</span>
+                    </label>
+                    <div />
+                    <label
+                        {...getGeneralTooltipProps("If checked, shows the breakdown of scores on all items.\nCaution: This may cause weaker devices to lag.")}
+                        style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+                    >
+                        <input type="checkbox" checked={showBreakdown} onChange={e => setShowBreakdown(e.target.checked)} />
+                        <span className="hover-text">Show Score Breakdowns</span>
+                    </label>
+                </div>
+
+                <IconsSelector type={"column"} categories={filterCategories} values={filters} setValues={setFilters} />
+            </div>
+        </PageHeader>
 
         {loading || identitiesLoading || egosLoading ?
             <LoadingContentPageTemplate /> :
             <>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>
-                        <span style={{ textAlign: 'end' }}>Search:</span>
-                        <input type="text" placeholder="Search..." value={searchString} onChange={(e) => setSearchString(e.target.value)} />
-                        <div style={{ display: "flex", justifyContent: "end" }}>
-                            <span {...getRatingHelpTooltipProps(viewMode)} className="hover-text" style={{ textAlign: 'end' }}>Ranking:</span>
-                        </div>
-                        <div>
-                            <RankingDropdown viewMode={viewMode} rankingMode={rankingMode} setRankingMode={setRankingMode} />
-                        </div>
-                        <span {...getGeneralTooltipProps("Minimum number of ratings needed to be ranked")} className="hover-text" style={{ textAlign: 'end' }}>Min Ratings:</span>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", filter: viewMode === "reviewer" ? "brightness(0.5)" : null }}>
-                            <input
-                                type="range" min={0} max={5} step={1} value={minRatings}
-                                onChange={(e) => setMinRatings(Number(e.target.value))}
-                                style={{ width: "100px" }} disabled={viewMode === "reviewer"}
-                            />
-                            <span>
-                                {MIN_RATINGS_MAPPING[minRatings] ? `${MIN_RATINGS_MAPPING[minRatings]}+ Ratings` : "Any"}
-                            </span>
-                        </div>
-                        <div />
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                            <input type="checkbox" checked={separateByPoint} onChange={e => setSeparateByPoint(e.target.checked)} />
-                            Separate by Point Thresholds
-                        </label>
-                        <div />
-                        <label style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.2rem" }}>
-                            <input type="checkbox" checked={strictFiltering} onChange={e => setStrictFiltering(e.target.checked)} />
-                            Strict Filtering
-                            <span className="sub-text">(Require all selected filters)</span>
-                        </label>
-                        <div />
-                        <label
-                            {...getGeneralTooltipProps("If checked, computes ranking across all identities/E.G.Os instead of only the filtered ones.")}
-                            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
-                        >
-                            <input type="checkbox" checked={globalRanking} onChange={e => setGlobalRanking(e.target.checked)} />
-                            <span className="hover-text">Use Global Rankings</span>
-                        </label>
-                        <div />
-                        <label
-                            {...getGeneralTooltipProps("If checked, shows the breakdown of scores on all items.\nCaution: This may cause weaker devices to lag.")}
-                            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
-                        >
-                            <input type="checkbox" checked={showBreakdown} onChange={e => setShowBreakdown(e.target.checked)} />
-                            <span className="hover-text">Show Score Breakdowns</span>
-                        </label>
-                    </div>
-
-                    <IconsSelector type={"column"} categories={filterCategories} values={filters} setValues={setFilters} />
-                </div>
-
                 <h2 style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                     <div className={`tab-header ${viewMode === "identity" ? "active" : ""}`} onClick={() => changeTab("identity")}>Identities</div>
                     <div className={`tab-header ${viewMode === "ego" ? "active" : ""}`} onClick={() => changeTab("ego")}>E.G.Os</div>

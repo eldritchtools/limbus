@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "./EgoPage.module.css";
 import { SkillsTab } from "./EgoPageComponents";
 
+import NitroAd from "@/app/components/ads/NitroAd";
 import TeamBuild from "@/app/components/contentCards/TeamBuild";
 import { useData, useDataProvider } from "@/app/components/DataProvider";
 import EgoIcon from "@/app/components/icons/EgoIcon";
@@ -374,6 +375,8 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
                     skillBonuses={skillBonuses}
                 />
             }
+
+            <NitroAd id={"id-ego-bottom-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
 
             <BottomLinks sinnerId={egoData.sinnerId} identities={minifiedIdentities} egos={minifiedEgos} />
         </div>

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useData } from "../components/DataProvider";
 import Gift from "../components/gifts/Gift";
 import KeywordIcon from "../components/icons/KeywordIcon";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { getLocalStore } from "../database/localDB";
 import { checkFilterMatch } from "../lib/filter";
@@ -168,36 +169,41 @@ export default function UniversalGiftsPage() {
     const props = { searchString, includeDesc, hideUnfiltered, tracking, setTracking };
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center", textAlign: "center", width: "100%" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Universal Gifts & Gift Combos</h1>
-        <p style={{ maxWidth: "1000px", textAlign: "left" }}>
-            This page lists Gifts and Gift combinations that have benefits for most team compositions in Mirror Dungeons. Universal Gifts provide a benefit without requiring a particular team composition or status archetype, while Gift Combos describe combinations of Gifts that can provide useful effects when used together. Gift combos are especially useful for Infinity, Extreme, or Challenge runs.
-            <br /> <br />
-            Items are loosely ordered by relevance within each category, but this varies significantly depending on team composition and situation, so the ordering should be taken as a rough guide rather than a strict ranking. Gifts with unreliable conditions are placed lower on the list.
-            <br /> <br />
-            Some gifts require specific theme packs that may prevent you from obtaining other gifts. Use your discretion when planning routes. Gifts from hidden bosses or theme packs and EX gifts are excluded since they cannot be obtained by normal means.
-            <br /> <br />
-            A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run.
-        </p>
+        <PageHeader
+            title={"Universal Gifts & Gift Combos"}
+            mainDesc={"View Universal E.G.O Gifts and Gift Combos that are useful for most team compositions in Mirror Dungeons."}
+            subDesc={<>
+                This page lists Gifts and Gift combinations that have benefits for most team compositions in Mirror Dungeons. Universal Gifts provide a benefit without requiring a particular team composition or status archetype, while Gift Combos describe combinations of Gifts that can provide useful effects when used together. Gift combos are especially useful for Infinity, Extreme, or Challenge runs.
+                <br /> <br />
+                Items are loosely ordered by relevance within each category, but this varies significantly depending on team composition and situation, so the ordering should be taken as a rough guide rather than a strict ranking. Gifts with unreliable conditions are placed lower on the list.
+                <br /> <br />
+                Some gifts require specific theme packs that may prevent you from obtaining other gifts. Use your discretion when planning routes. Gifts from hidden bosses or theme packs and EX gifts are excluded since they cannot be obtained by normal means.
+                <br /> <br />
+                A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run.
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>
-                <span style={{ textAlign: 'end' }}>Search:</span>
-                <input type="text" placeholder="Search..." value={searchString} onChange={(e) => setSearchString(e.target.value)} />
-                <div />
-                <label
-                    {...getGeneralTooltipProps("Include description when searching for gifts")}
-                    style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
-                >
-                    <input type="checkbox" checked={includeDesc} onChange={e => setIncludeDesc(e.target.checked)} />
-                    <span className="hover-text">Include description</span>
-                </label>
-                <div />
-                <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                    <input type="checkbox" checked={hideUnfiltered} onChange={e => setHideUnfiltered(e.target.checked)} />
-                    Hide unfiltered gifts
-                </label>
+            </>}
+            maxAds={1}
+        >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>
+                    <span style={{ textAlign: 'end' }}>Search:</span>
+                    <input type="text" placeholder="Search..." value={searchString} onChange={(e) => setSearchString(e.target.value)} />
+                    <div />
+                    <label
+                        {...getGeneralTooltipProps("Include description when searching for gifts")}
+                        style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+                    >
+                        <input type="checkbox" checked={includeDesc} onChange={e => setIncludeDesc(e.target.checked)} />
+                        <span className="hover-text">Include description</span>
+                    </label>
+                    <div />
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <input type="checkbox" checked={hideUnfiltered} onChange={e => setHideUnfiltered(e.target.checked)} />
+                        Hide unfiltered gifts
+                    </label>
+                </div>
             </div>
-        </div>
+        </PageHeader>
 
         <div style={{ display: "flex", gap: "0.25rem" }}>
             <button onClick={() => toggleTracking()}>
@@ -222,35 +228,35 @@ export default function UniversalGiftsPage() {
         </p>
         <p>
             When focusing on specific keywords, try to prioritize them in the following order (hover for more details):
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem", marginTop: "0.5rem"}}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem", marginTop: "0.5rem" }}>
                 <div {...getGeneralTooltipProps("Free Offense and Defense Level Down and Fragile automatically triggered every turn with Downpour, Melted Eyeball, and Bell of Truth. Bind and Paralyze from Reverberation also helps. Good wave clear potential on lower floors with Bio-venom Vial.")}>
                     <KeywordIcon id={"Tremor"} />
                 </div>
-                
+
                 <div {...getGeneralTooltipProps("SP and Power reduction is a significant help on higher floors.")}>
                     <KeywordIcon id={"Sinking"} />
                 </div>
-                
+
                 <div {...getGeneralTooltipProps("Gives everyone significant bonus damage and power with Clear Mirror, Calm Water, Cigarette Holder, and Finifugality. With enough gifts, everyone gets guaranteed crits every turn.")}>
                     <KeywordIcon id={"Poise"} />
                 </div>
 
-                <span style={{fontSize: "1.5rem", fontWeight: "bold"}}>&gt;</span>
-                
+                <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>&gt;</span>
+
                 <div {...getGeneralTooltipProps("Can give a decent amount of Offense level with Burning Fate and Charred Disk. Glimpse of Flames gives some free damage and Defense Level Down.")}>
                     <KeywordIcon id={"Burn"} />
                 </div>
-                
+
                 <div {...getGeneralTooltipProps("Red-Stained Gossypium applies a decent amount of Offense and Defense level down.")}>
                     <KeywordIcon id={"Bleed"} />
                 </div>
 
-                <span style={{fontSize: "1.5rem", fontWeight: "bold"}}>&gt;</span>
-                
+                <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>&gt;</span>
+
                 <div {...getGeneralTooltipProps("Gives some clash power, damage up, and haste. Strange Glyph Inscriptions requires the Nocturnal Sweeping pack which may not be ideal for some teams.")}>
                     <KeywordIcon id={"Rupture"} />
                 </div>
-                
+
                 <div {...getGeneralTooltipProps("Gives some offense level, damage up, and haste.")}>
                     <KeywordIcon id={"Charge"} />
                 </div>

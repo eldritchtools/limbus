@@ -11,6 +11,7 @@ import ChoiceEventIcon from "../components/icons/ChoiceEventIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { affinities } from "../lib/constants";
@@ -103,28 +104,42 @@ export default function MDEventsPage() {
     }, [selectedThemePacks, themePacks, choiceEvents, themePacksLoading, choiceEventsLoading])
 
     return <>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-            <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name or option..."} />
-                <label>
-                    <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
-                    <span {...getGeneralTooltipProps("This will check the names of the gifts that can be obtained from the event.")}
-                        className="hover-text"
-                    >
-                        Include Gifts
-                    </span>
-                </label>
+        <PageHeader
+            title={"Choice Events"}
+            mainDesc={"Browse all Mirror Dungeon Choice Events."}
+            subDesc={<>
+                Browse all Mirror Dungeon choice events and their possible outcomes.
+                <br /><br />
+                Search events by their name, choice text, or possible E.G.O Gift rewards. You can also filter events by the Theme Packs they appear in.
+                <br /><br />
+                Each event shows its possible Gift rewards and any affinities that receive a bonus or handicap when the event includes a check. Expand an event to view its description and all of its choices, including branching options and the details of their checks, requirements, and outcomes.
+            </>}
+            maxAds={1}
+        >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                    <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name or option..."} />
+                    <label>
+                        <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
+                        <span {...getGeneralTooltipProps("This will check the names of the gifts that can be obtained from the event.")}
+                            className="hover-text"
+                        >
+                            Include Gifts
+                        </span>
+                    </label>
+                </div>
+                <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
+                <ThemePackDropdownSelector
+                    selected={selectedThemePacks}
+                    setSelected={setSelectedThemePacks}
+                    isMulti={true}
+                    options={themePackList}
+                    prefixCategory={true}
+                />
             </div>
-            <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
-            <ThemePackDropdownSelector
-                selected={selectedThemePacks}
-                setSelected={setSelectedThemePacks}
-                isMulti={true}
-                options={themePackList}
-                prefixCategory={true}
-            />
-        </div>
+        </PageHeader>
+
         <HorizontalDivider />
         {choiceEventsLoading || giftsLoading ?
             <div style={{ textAlign: "center", fontSize: "1.5rem" }}>Loading Events...</div> :

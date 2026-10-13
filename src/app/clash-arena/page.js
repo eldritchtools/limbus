@@ -9,9 +9,10 @@ import RoundRevealScreen from "./RoundRevealScreen";
 import RoundSelectScreen from "./RoundSelectScreen";
 import SetupScreen from "./SetupScreen";
 import { useClashBattle } from "./useClashBattle";
+import NitroAd from "../components/ads/NitroAd";
 import { useAuth } from "../database/authProvider";
 
-export default function ClashArenaPage() {
+function ClashArenaPageContent() {
     const { profile } = useAuth();
     const clashBattle = useClashBattle();
 
@@ -38,4 +39,11 @@ export default function ClashArenaPage() {
 
     if (clashBattle.phase === "finished")
         return <FinishedScreen clashBattle={clashBattle} />
+}
+
+export default function ClashArenaPage() {
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
+        <ClashArenaPageContent />
+    </div>
 }

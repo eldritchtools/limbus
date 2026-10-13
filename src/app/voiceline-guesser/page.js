@@ -8,8 +8,10 @@ import GuessingScreen from "./GuessingScreen";
 import RevealScreen from "./RevealScreen";
 import { dailySettings, defaultSettings } from "./settings";
 import SetupScreen from "./SetupScreen";
+import NitroAd from "../components/ads/NitroAd";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { useQuiz } from "../components/quiz/useQuiz";
 import { useRealtime } from "../components/realtime/RealtimeProvider";
 import { trimPrefixes } from "../components/realtime/realtimeUtil";
@@ -83,7 +85,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, egos, 
     const [countStr, setCountStr] = useState("");
     const clientId = useRealtimeClientId();
     const participantCountRef = useRef(0);
-    
+
     const [lastRoomId, setLastRoomId] = useLocalState(`voicelineLastRoom`, null);
 
     const joinRoom = async (isHost, roomId) => {
@@ -257,7 +259,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, egos, 
             onStart={async () => {
                 if (isHost) {
                     triggerGameStartGAEvent(GUESSER_ID, mode);
-                    quiz.registerGenerator(constructVoicelineQuizGenerator({...settings, rounds: 1}, egoVoicelines));
+                    quiz.registerGenerator(constructVoicelineQuizGenerator({ ...settings, rounds: 1 }, egoVoicelines));
                     const problem = await quiz.generateProblem();
                     realtimeQuiz.startGame(roomId, problem, problem.answer);
                 }
@@ -346,42 +348,41 @@ export default function VoicelineGuesserPage() {
         setMode(mode);
     }
 
-    if (!mode)
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1000px", gap: "0.5rem" }}>
-                <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Voiceline Guesser</h1>
-                <span style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
-                    Guess the E.G.O the voiceline belongs to.
-                    <br /> <br />
-                    You will hear a clipped segment of one of the voicelines of a random E.G.O. Clips may come from the awakening or corrosion versions, and from any version for base E.G.Os. Try your best to guess which E.G.O it belongs to.
-                    <br /> <br />
-                    Choose a mode to begin.
-                </span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={loading}>Standard</span>
-                <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={loading}>Daily</span>
-                <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at normal difficulty and 3 chances.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={loading}>Multiplayer</span>
-                <span className="sub-text">Play against others to see who can get the highest score. May occasionally be interrupted by server updates.</span>
-            </div>
-        </div>;
-
-    if (mode === "multi") {
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-            <MultiplayerGuesser
-                mode={mode} setMode={setMode}
-                settings={settings} setSettings={setSettings}
-                quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}
-            />
-        </div>
-    }
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <Guesser
-            mode={mode} setMode={setMode}
-            settings={settings} setSettings={setSettings}
-            quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}
-        />
-    </div>
+        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
+        {!mode ?
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
+                <PageHeader
+                    title={"Voiceline Guesser"}
+                    mainDesc={<>
+                        Guess the E.G.O the voiceline belongs to.
+                        <br /> <br />
+                        You will hear a clipped segment of one of the voicelines of a random E.G.O. Clips may come from the awakening or corrosion versions, and from any version for base E.G.Os. Try your best to guess which E.G.O it belongs to.
+                        <br /> <br />
+                        Choose a mode to begin.
+                    </>}
+                    showAd={false}
+                >
+                    <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={loading}>Standard</span>
+                    <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
+                    <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={loading}>Daily</span>
+                    <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at normal difficulty and 3 chances.</span>
+                    <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={loading}>Multiplayer</span>
+                    <span className="sub-text">Play against others to see who can get the highest score. May occasionally be interrupted by server updates.</span>
+                </PageHeader>
+            </div> :
+            mode === "multi" ?
+                <MultiplayerGuesser
+                    mode={mode} setMode={setMode}
+                    settings={settings} setSettings={setSettings}
+                    quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}
+                /> :
+                <Guesser
+                    mode={mode} setMode={setMode}
+                    settings={settings} setSettings={setSettings}
+                    quiz={quiz} egos={egos} egoVoicelines={egoVoicelines}
+                />
+        }
+    </div>;
 }
 

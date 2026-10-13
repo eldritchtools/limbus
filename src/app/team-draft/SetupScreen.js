@@ -5,6 +5,7 @@ import styles from "./SetupScreen.module.css";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import NumberInput from "../components/objects/NumberInput";
 import WbList from "../components/objects/WbList";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { getGeneralTooltipProps } from "../components/tooltips/TooltipProps";
 
 export default function SetupScreen({ settings, setSettings, wbState, wbOpen, setWbOpen, onStart, loading }) {
@@ -16,121 +17,125 @@ export default function SetupScreen({ settings, setSettings, wbState, wbOpen, se
         setSettings(defaultSettings)
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", width: "100%", maxWidth: "1280px", gap: "2rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Team Draft</h1>
-        <p style={{ margin: 0, maxWidth: "1280px", textAlign: "start" }}>
-            Build a full team one Sinner at a time through a randomized drafting game. Each round presents several randomly generated options, with each option consisting of an Identity and a number of E.G.O. Choose one option to add to your team, then continue drafting until all rounds are complete.
-            <br /> <br />
-            The draft can be customized to control how the team is formed and how random the available options are. To limit the available options to Identities and E.G.O you own, you can use your Company data for the whitelist or blacklist. This requires your Company to be set up on the <NoPrefetchLink className="text-link" href="/company">Company</NoPrefetchLink> page.
-            <br /> <br />
-            The draft provides a more interactive alternative to simply randomizing a team, giving you choices during the process while still leaving the final composition partly to chance.
-            <br /> <br />
-            After all rounds are complete, your team can be exported as a team code for use in Mirror Dungeons, Refraction Railways, Reflectrials, or other content in the game.
-        </p>
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "start", width: "100%", gap: "2rem" }}>
+        <PageHeader
+            title={"Team Draft"}
+            mainDesc={<>
+                Build a full team one Sinner at a time through a randomized drafting game. Each round presents several randomly generated options, with each option consisting of an Identity and a number of E.G.O. Choose one option to add to your team, then continue drafting until all rounds are complete.
+                <br /> <br />
+                The draft can be customized to control how the team is formed and how random the available options are. To limit the available options to Identities and E.G.O you own, you can use your Company data for the whitelist or blacklist. This requires your Company to be set up on the <NoPrefetchLink className="text-link" href="/company">Company</NoPrefetchLink> page.
+                <br /> <br />
+                The draft provides a more interactive alternative to simply randomizing a team, giving you choices during the process while still leaving the final composition partly to chance.
+                <br /> <br />
+                After all rounds are complete, your team can be exported as a team code for use in Mirror Dungeons, Refraction Railways, Reflectrials, or other content in the game.
+            </>}
+            wide={true}
+            maxAds={1}
+        >
+            <div className={styles.setupLayout}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginLeft: "1rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
+                            {...getGeneralTooltipProps("This is the number of identities you'll end up picking. Setting this to a lower value means leaving some sinners without an identity.")}
+                        >
+                            Number of Rounds:
+                        </span>
+                        <NumberInput min={1} max={12} value={settings.rounds}
+                            onChange={x => handleSetSettings("rounds", x)}
+                            style={{ textAlign: "center", width: "3ch" }}
+                        />
+                    </div>
 
-        <div className={styles.setupLayout}>
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                    <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
-                        {...getGeneralTooltipProps("This is the number of identities you'll end up picking. Setting this to a lower value means leaving some sinners without an identity.")}
-                    >
-                        Number of Rounds:
-                    </span>
-                    <NumberInput min={1} max={12} value={settings.rounds}
-                        onChange={x => handleSetSettings("rounds", x)}
-                        style={{ textAlign: "center", width: "3ch" }}
-                    />
-                </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
+                            {...getGeneralTooltipProps("Maximum number of generated choices per round. The actual number of choices generated may be less if there aren't enough possible options remaining.")}
+                        >
+                            Choices per Round:
+                        </span>
+                        <NumberInput min={2} max={10} value={settings.choices}
+                            onChange={x => handleSetSettings("choices", x)}
+                            style={{ textAlign: "center", width: "3ch" }}
+                        />
+                    </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                    <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
-                        {...getGeneralTooltipProps("Maximum number of generated choices per round. The actual number of choices generated may be less if there aren't enough possible options remaining.")}
-                    >
-                        Choices per Round:
-                    </span>
-                    <NumberInput min={2} max={10} value={settings.choices}
-                        onChange={x => handleSetSettings("choices", x)}
-                        style={{ textAlign: "center", width: "3ch" }}
-                    />
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                    <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
-                        {...getGeneralTooltipProps("The number of seconds you get to choose an option. Setting this to 0 will disable the timer allowing you to draft without time pressure.")}
-                    >
-                        Timer Length:
-                    </span>
-                    <NumberInput min={0} max={60} value={settings.choiceTime}
-                        onChange={x => handleSetSettings("choiceTime", x)}
-                        style={{ textAlign: "center", width: "3ch" }}
-                    />
-                </div>
-            </div>
-
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label>
-                    <input type="checkbox" checked={settings.autoAdvance} onChange={e => handleSetSettings("autoAdvance", e.target.checked)} />
-                    <span className="hover-text" style={{ fontSize: "1.2rem" }}
-                        {...getGeneralTooltipProps("If set, the countdown to the next round immediately begins after selecting an option in the previous round.")}
-                    >
-                        Auto-advance rounds
-                    </span>
-                </label>
-
-
-                <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                    <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
-                        {...getGeneralTooltipProps("The probability of having empty E.G.O slots in options. ZAYIN is always guaranteed to have something.")}
-                    >
-                        Unset E.G.O Chance:
-                    </span>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <NumberInput min={0} max={100} value={settings.emptyEgoProb} onChange={x => handleSetSettings("emptyEgoProb", x)} style={{ textAlign: "center", width: "3ch" }} />
-                        <span>%</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
+                            {...getGeneralTooltipProps("The number of seconds you get to choose an option. Setting this to 0 will disable the timer allowing you to draft without time pressure.")}
+                        >
+                            Timer Length:
+                        </span>
+                        <NumberInput min={0} max={60} value={settings.choiceTime}
+                            onChange={x => handleSetSettings("choiceTime", x)}
+                            style={{ textAlign: "center", width: "3ch" }}
+                        />
                     </div>
                 </div>
 
-                <span>Randomization Rule:</span>
-                <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label>
-                        <input type="radio" value="strict" checked={settings.randomizationRule === "strict"} onChange={e => handleSetSettings("randomizationRule", e.target.value)} />
-                        <span {...getGeneralTooltipProps("All options will use identities and E.G.O of the same sinner.")}
-                            className="hover-text"
+                        <input type="checkbox" checked={settings.autoAdvance} onChange={e => handleSetSettings("autoAdvance", e.target.checked)} />
+                        <span className="hover-text" style={{ fontSize: "1.2rem" }}
+                            {...getGeneralTooltipProps("If set, the countdown to the next round immediately begins after selecting an option in the previous round.")}
                         >
-                            Strict
+                            Auto-advance rounds
                         </span>
                     </label>
-                    <label>
-                        <input type="radio" value="standard" checked={settings.randomizationRule === "standard"} onChange={e => handleSetSettings("randomizationRule", e.target.value)} />
-                        <span {...getGeneralTooltipProps("Options will choose identities of random sinners. E.G.O will be for the corresponding sinner only. Identities that appear in a round cannot appear again in future rounds unless there are no longer any options.")}
-                            className="hover-text"
-                        >
-                            Standard
-                        </span>
-                    </label>
-                    <label>
-                        <input type="radio" value="chaos" checked={settings.randomizationRule === "chaos"} onChange={e => handleSetSettings("randomizationRule", e.target.value)} />
-                        <span {...getGeneralTooltipProps("All options will use identities and E.G.O of completely random sinners. Identities that appear in a round cannot appear again in future rounds unless there are no longer any options.")}
-                            className="hover-text"
-                        >
-                            Chaos
-                        </span>
-                    </label>
-                </div>
-            </div>
 
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                <button onClick={() => resetSettings()}>Reset to Default</button>
-                <button onClick={() => setWbOpen(p => !p)}>
-                    {wbOpen ? "Hide " : "Show "}Black/Whitelist{wbState.list.length > 0 ? ` (${wbState.list.length})` : null}
-                </button>
-                <div style={{ display: "flex" }}>
-                    <button onClick={() => onStart()} style={{ background: "#1e7e34" }} disabled={loading}>
-                        {loading ? "Loading..." : "Begin Draft!"}
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        <span className="hover-text" style={{ fontSize: "1.2rem", textAlign: "end" }}
+                            {...getGeneralTooltipProps("The probability of having empty E.G.O slots in options. ZAYIN is always guaranteed to have something.")}
+                        >
+                            Unset E.G.O Chance:
+                        </span>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <NumberInput min={0} max={100} value={settings.emptyEgoProb} onChange={x => handleSetSettings("emptyEgoProb", x)} style={{ textAlign: "center", width: "3ch" }} />
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <span>Randomization Rule:</span>
+                    <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem" }}>
+                        <label>
+                            <input type="radio" value="strict" checked={settings.randomizationRule === "strict"} onChange={e => handleSetSettings("randomizationRule", e.target.value)} />
+                            <span {...getGeneralTooltipProps("All options will use identities and E.G.O of the same sinner.")}
+                                className="hover-text"
+                            >
+                                Strict
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" value="standard" checked={settings.randomizationRule === "standard"} onChange={e => handleSetSettings("randomizationRule", e.target.value)} />
+                            <span {...getGeneralTooltipProps("Options will choose identities of random sinners. E.G.O will be for the corresponding sinner only. Identities that appear in a round cannot appear again in future rounds unless there are no longer any options.")}
+                                className="hover-text"
+                            >
+                                Standard
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" value="chaos" checked={settings.randomizationRule === "chaos"} onChange={e => handleSetSettings("randomizationRule", e.target.value)} />
+                            <span {...getGeneralTooltipProps("All options will use identities and E.G.O of completely random sinners. Identities that appear in a round cannot appear again in future rounds unless there are no longer any options.")}
+                                className="hover-text"
+                            >
+                                Chaos
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", marginRight: "1rem" }}>
+                    <button onClick={() => resetSettings()}>Reset to Default</button>
+                    <button onClick={() => setWbOpen(p => !p)}>
+                        {wbOpen ? "Hide " : "Show "}Black/Whitelist{wbState.list.length > 0 ? ` (${wbState.list.length})` : null}
                     </button>
+                    <div style={{ display: "flex" }}>
+                        <button onClick={() => onStart()} style={{ background: "#1e7e34" }} disabled={loading}>
+                            {loading ? "Loading..." : "Begin Draft!"}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </PageHeader>
 
         {wbOpen && <WbList wbState={wbState} />}
     </div>
