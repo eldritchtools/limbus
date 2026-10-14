@@ -15,6 +15,7 @@ function ChatEntry({ entry }) {
     if (entry.type === "message")
         return <div className={styles.messageEntry}>
             <MarkdownRenderer content={entry.text} allowImages={false} />
+            <span className={styles.messageTime}> {formatTime(entry.timestamp)} </span>
         </div>
 
     if (entry.type === "author")
@@ -38,7 +39,7 @@ function ChatEntry({ entry }) {
 
     if (entry.type === "system")
         return <div className={styles.systemEntry}>
-            <span style={{maxWidth: "85%"}}>{entry.text}</span>
+            <span style={{ maxWidth: "85%" }}>{entry.text}</span>
         </div>
 }
 

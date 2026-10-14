@@ -213,7 +213,31 @@
 }
 
 .messageEntry {
-    margin-left: 0.25rem;
+    padding-left: 0.25rem;
+    position: relative;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.messageEntry:hover {
+    background: var(--bg-input)
+}
+
+.messageTime {
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    font-size: 0.7rem;
+    color: var(--secondary-text-color);
+    background: var(--primary-background-color);
+    padding-left: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.messageEntry:hover .messageTime {
+    opacity: 1;
 }
 
 .systemEntry {

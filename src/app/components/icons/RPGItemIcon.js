@@ -4,10 +4,14 @@
 
 import { ASSETS_ROOT } from "@/app/paths";
 
+export function getRpgItemImgSrc(id) {
+    return `${ASSETS_ROOT}/rpg/items/${id}.webp`
+}
+
 export default function RPGItemIcon({ id, className, style = {} }) {
     return <div className={className} style={style}>
         <img
-            src={`${ASSETS_ROOT}/rpg/items/${id}.webp`}
+            src={getRpgItemImgSrc(id)}
             alt={id} title={id}
             style={style}
             loading="lazy"
