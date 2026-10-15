@@ -8,8 +8,10 @@ import GuessingScreen from "./GuessingScreen";
 import RevealScreen from "./RevealScreen";
 import { dailySettings, defaultSettings } from "./settings";
 import SetupScreen from "./SetupScreen";
+import NitroAd from "../components/ads/NitroAd";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { useQuiz } from "../components/quiz/useQuiz";
 import { useRealtime } from "../components/realtime/RealtimeProvider";
 import { trimPrefixes } from "../components/realtime/realtimeUtil";
@@ -82,7 +84,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
     const [countStr, setCountStr] = useState("");
     const clientId = useRealtimeClientId();
     const participantCountRef = useRef(0);
-    
+
     const [lastRoomId, setLastRoomId] = useLocalState(`artworkLastRoom`, null);
 
     const joinRoom = async (isHost, roomId) => {
@@ -256,7 +258,7 @@ function MultiplayerGuesser({ mode, setMode, settings, setSettings, quiz, identi
             onStart={async () => {
                 if (isHost) {
                     triggerGameStartGAEvent(GUESSER_ID, mode);
-                    quiz.registerGenerator(constructArtworkQuizGenerator({...settings, rounds: 1}, identities));
+                    quiz.registerGenerator(constructArtworkQuizGenerator({ ...settings, rounds: 1 }, identities));
                     const problem = await quiz.generateProblem();
                     realtimeQuiz.startGame(roomId, problem, problem.answer);
                 }
@@ -343,41 +345,40 @@ export default function ArtworkGuesserPage() {
         setMode(mode);
     }
 
-    if (!mode)
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1000px", gap: "0.5rem" }}>
-                <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Artwork Guesser</h1>
-                <span style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
-                    Guess the identity the artwork belongs to.
-                    <br /> <br />
-                    You will be shown a cropped section of one of the full artworks of a random identity. Try your best to guess which identity it belongs to.
-                    <br /> <br />
-                    Choose a mode to begin.
-                </span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={identitiesLoading}>Standard</span>
-                <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={identitiesLoading}>Daily</span>
-                <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at Normal difficulty, 3 chances, and uptie art only.</span>
-                <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={identitiesLoading}>Multiplayer</span>
-                <span className="sub-text">Play against others to see who can get the highest score. May occasionally be interrupted by server updates.</span>
-            </div>
-        </div>;
-
-    if (mode === "multi") {
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-            <MultiplayerGuesser
-                mode={mode} setMode={setMode}
-                settings={settings} setSettings={setSettings}
-                quiz={quiz} identities={identities}
-            />
-        </div>
-    }
-
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <Guesser
-            mode={mode} setMode={setMode}
-            settings={settings} setSettings={setSettings}
-            quiz={quiz} identities={identities}
-        />
-    </div>
+        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
+        {!mode ?
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
+                <PageHeader
+                    title={"Artwork Guesser"}
+                    mainDesc={<>
+                        Guess the identity the artwork belongs to.
+                        <br /> <br />
+                        You will be shown a cropped section of one of the full artworks of a random identity. Try your best to guess which identity it belongs to.
+                        <br /> <br />
+                        Choose a mode to begin.
+                    </>}
+                    showAd={false}
+                >
+                    <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={identitiesLoading}>Standard</span>
+                    <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>
+                    <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("daily")} disabled={identitiesLoading}>Daily</span>
+                    <span className="sub-text">Daily mode gives everyone the same problem each day (Reset at 6AM KST). Fixed at Normal difficulty, 3 chances, and uptie art only.</span>
+                    <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("multi")} disabled={identitiesLoading}>Multiplayer</span>
+                    <span className="sub-text">Play against others to see who can get the highest score. May occasionally be interrupted by server updates.</span>
+                </PageHeader>
+            </div> :
+            mode === "multi" ?
+                <MultiplayerGuesser
+                    mode={mode} setMode={setMode}
+                    settings={settings} setSettings={setSettings}
+                    quiz={quiz} identities={identities}
+                /> :
+                <Guesser
+                    mode={mode} setMode={setMode}
+                    settings={settings} setSettings={setSettings}
+                    quiz={quiz} identities={identities}
+                />
+        }
+    </div>;
 }

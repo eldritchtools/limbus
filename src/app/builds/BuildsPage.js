@@ -10,6 +10,7 @@ import { useData } from "../components/DataProvider";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import Tag from "../components/objects/Tag";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import BuildsSearchComponent, { prepareBuildFilters } from "../components/search/BuildsSearchComponent";
 import { searchBuilds } from "../database/builds";
 import { getEncounterCategoryOptions, getEncounterOptions } from "../lib/encounters";
@@ -179,7 +180,20 @@ export default function BuildsPage({ activeBuilds }) {
     }
 
     return <>
-        <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
+        <PageHeader
+            title={"Team Builds"}
+            mainDesc={"Browse community-created team builds."}
+            subDesc={<>
+                Browse team builds shared by the Limbus Company community, or create and share your own. Explore popular, recent, and random builds, or find teams created for specific encounters.
+                <br /><br />
+                Builds can be searched and filtered in a variety of ways, including by text, tags, and keywords. You can also look specifically for teams that include or exclude particular identities or E.G.O.
+                <br /><br />
+                Each build provides the team&apos;s Identities, E.G.O, deployment order, stats, and other information. Builds may also include a description, images, and a linked video.
+            </>}
+            maxAds={2}
+        >
+            <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
+        </PageHeader>
         <HorizontalDivider />
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
             <div className={`tab-header ${activeTab === "active" ? "active" : ""}`} onClick={() => handleTabClick("active")}>Active</div>

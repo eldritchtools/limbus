@@ -8,6 +8,7 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import FusionRecipe from "../components/objects/FusionRecipe";
 import ThemePackNameWithTooltip from "../components/objects/ThemePackNameWithTooltip";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { ThemePackDropdownSelector } from "../components/selectors/ThemePackSelectors";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -160,17 +161,16 @@ export default function FusionsPage() {
     );
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "1rem", justifyContent: "center" }}>
-        <h1 style={{ fontSize: "1.75rem", alignSelf: "center", margin: 0 }}>Fusion Recipes</h1>
-        <p style={{ margin: 0, alignSelf: "center" }}>
-            Browse all E.G.O Gift fusion recipes.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", alignSelf: "center", maxWidth: "1280px" }}>
-            Search recipes by the name or description of the resulting E.G.O Gift or its ingredients. Recipes can be filtered by keywords and exclusive Theme Packs.
-            <br /><br />
-            Each recipe shows the required Gifts, whether it can be obtained in Normal or Hard Mirror Dungeon, and any Theme Packs you need to visit to obtain its ingredients.
-        </p>
-
-        {!giftsLoading && <>
+        <PageHeader
+            title={"Fusion Recipes"}
+            mainDesc={"Browse all E.G.O Gift fusion recipes."}
+            subDesc={<>
+                Search recipes by the name or description of the resulting E.G.O Gift or its ingredients. Recipes can be filtered by keywords and exclusive Theme Packs.
+                <br /><br />
+                Each recipe shows the required Gifts, whether it can be obtained in Normal or Hard Mirror Dungeon, and any Theme Packs you need to visit to obtain its ingredients.
+            </>}
+            maxAds={1}
+        >
             <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "0.5rem", alignItems: "center" }}>
                     <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
@@ -196,15 +196,20 @@ export default function FusionsPage() {
                     <span style={{ fontWeight: "bold", textAlign: "end" }}>Filter Keywords</span>
                     <IconsSelector type={"row"} categories={["status", "atkType", "keywordless"]} values={selectedKeywords} setValues={setSelectedKeywords} />
                     <span style={{ fontWeight: "bold", textAlign: "end" }}>Theme Packs</span>
-                    <ThemePackDropdownSelector
-                        selected={selectedThemePacks}
-                        setSelected={setSelectedThemePacks}
-                        isMulti={true}
-                        options={themePackList}
-                        prefixCategory={true}
-                    />
+                    {!giftsLoading &&
+                        <ThemePackDropdownSelector
+                            selected={selectedThemePacks}
+                            setSelected={setSelectedThemePacks}
+                            isMulti={true}
+                            options={themePackList}
+                            prefixCategory={true}
+                        />
+                    }
                 </div>
             </div>
+        </PageHeader>
+
+        {!giftsLoading && <>
             <div style={{ flex: 1, height: "50%", display: "flex", justifyContent: "center", width: "100%" }}>
                 <div style={{ height: "100%", minWidth: "80%", maxWidth: "100%", overflowY: "auto" }}>
                     {fusionsComponent}

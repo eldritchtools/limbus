@@ -6,6 +6,7 @@ import styles from "./communityAssets.module.css";
 import CommunityAsset from "../components/icons/CommunityAsset";
 import { useModal } from "../components/modals/ModalProvider";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { useAuth } from "../database/authProvider";
 import { createCommunityAsset, deleteCommunityAsset, getCommunityAsset, getRecentCommunityAssets, getUserCommunityAssets, searchCommunityAssets, updateCommunityAsset } from "../database/communityAssets";
@@ -302,19 +303,18 @@ export default function CommunityAssetsPage() {
     const [type, setType] = useLocalState("communityAssetsType", "emote");
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>
-            Community Assets
-        </h1>
-        <p style={{ margin: 0 }}>
-            Upload community emotes and stickers that anyone can use in posts, comments, and other content through the site&apos;s token system.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Upload community-created emotes and stickers for use across Limbus Company Tools. Once uploaded, assets can be used in comments, chat, descriptions, and other content through the emote and sticker pickers available in every Markdown editor on the site.
-            <br /><br />
-            Please only upload content you have permission to use. Inappropriate content or misuse of the system may result in upload restrictions.
-            <br /><br />
-            Before uploading, search for existing assets to help avoid duplicates.
-        </p>
+        <PageHeader
+            title={"Community Assets"}
+            mainDesc={"Upload community emotes and stickers that anyone can use in posts, comments, and other content through the site&apos;s token system."}
+            subDesc={<>
+                Upload community-created emotes and stickers for use across Limbus Company Tools. Once uploaded, assets can be used in comments, chat, descriptions, and other content through the emote and sticker pickers available in every Markdown editor on the site.
+                <br /><br />
+                Please only upload content you have permission to use. Inappropriate content or misuse of the system may result in upload restrictions.
+                <br /><br />
+                Before uploading, search for existing assets to help avoid duplicates.
+            </>}
+            showAd={false}
+        />
 
         <div style={{ display: "flex", gap: "1rem" }}>
             <div

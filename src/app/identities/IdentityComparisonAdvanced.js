@@ -4,6 +4,7 @@ import { useState } from "react"
 import styles from "./identities.module.css";
 import { useSkillData } from "../components/dataHooks/skills"
 import { useData } from "../components/DataProvider"
+import CoinIcon from "../components/icons/CoinIcon";
 import Icon from "../components/icons/Icon"
 import IdentityIcon from "../components/icons/IdentityIcon"
 import KeywordIcon from "../components/icons/KeywordIcon"
@@ -200,7 +201,9 @@ function ComparisonRow({ identity, skillList, compareType }) {
                             Power: {skillData.baseValue} {skillData.coinValue < 0 ? skillData.coinValue : `+${skillData.coinValue}`}
                         </span>
                         <span style={{ display: "flex", gap: "0" }}>
-                            {skillData.coins.map((coin, i) => <Icon key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} style={{ width: coinSize, height: coinSize }} />)}
+                            {skillData.coins.map((coin, i) =>
+                                <CoinIcon key={i} coin={coin} style={{ width: coinSize, height: coinSize }} />
+                            )}
                         </span>
                     </span>
                     <span style={{ display: "flex", gap: "0.25rem", alignItems: "center" }}>

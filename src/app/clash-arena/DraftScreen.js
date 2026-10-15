@@ -372,7 +372,7 @@ export default function DraftScreen({ clashBattle }) {
                 }}
             </ParticipantGrid> : <>
                 <div style={{ display: "flex", padding: "0.5rem" }}>
-                    {Object.keys(clashBattle.skillCounts).map(id =>
+                    {clashBattle.getPlayerIdentities().map(id =>
                         <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />
                     )}
                     {playerEgo &&

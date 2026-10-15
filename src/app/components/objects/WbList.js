@@ -115,7 +115,7 @@ export default function WbList({ wbState }) {
 
     if (identitiesLoading || egosLoading) return null;
 
-    return <div style={{ display: "flex", flexDirection: "column" }}>
+    return <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
         <div style={{ display: "flex", gap: "1rem", alignSelf: "start", alignItems: "center" }}>
             <span className={`tab-header ${wbState.mode === "b" ? "active" : null}`} onClick={() => wbState.setState("mode", "b")}>Blacklist</span>
             <span className={`tab-header ${wbState.mode === "w" ? "active" : null}`} onClick={() => wbState.setState("mode", "w")}>Whitelist</span>

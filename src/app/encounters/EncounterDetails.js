@@ -168,6 +168,7 @@ export default function EncounterDetails({ data }) {
         setWave(0);
         setPhase(0);
         setTargetIndex(0);
+        setTab("enemy");
     }, [data]);
 
     if (!data) return <div>
@@ -291,7 +292,7 @@ export default function EncounterDetails({ data }) {
         {tab === "assist" && <>
             <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>
                 <div style={{ display: "flex", marginBottom: "1rem", width: "max-content", gap: "1rem" }}>
-                    {data.assists.map((target, i) =>
+                    {data.assists?.map((target, i) =>
                         <div key={i} className={`${styles.targetIconContainer} ${targetIndex === i ? styles.active : ""}`} onClick={() => { setTargetIndex(i); setViewingEvents(false); }}>
                             <EnemyIcon id={target.portrait} style={{ flex: 1, minHeight: 0, width: "100%" }} />
                         </div>
@@ -299,7 +300,7 @@ export default function EncounterDetails({ data }) {
                 </div>
             </div>
 
-            <TargetComponent target={data.assists[targetIndex]} />
+            <TargetComponent target={data.assists?.[targetIndex]} />
         </>}
     </div>
 }

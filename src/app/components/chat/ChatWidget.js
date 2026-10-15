@@ -40,6 +40,7 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
             type: "message",
             id: newEntry.id,
             text: newEntry.text,
+            timestamp: newEntry.sent_at,
             participantId: newEntry.participant_id
         })
     }

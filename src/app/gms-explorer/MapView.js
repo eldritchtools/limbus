@@ -187,6 +187,7 @@ export default function MapView({
     const floorData = routeData && floor ? routeData.floors[floor] : null;
 
     return <>
+        <HorizontalDivider />
         <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
             <div style={{ display: "grid", gridTemplateColumns: `auto ${isMobile ? 200 : 300}px`, alignItems: "center", justifyContent: "center", gap: "0.5rem", textAlign: "center" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Route</span>
@@ -209,7 +210,6 @@ export default function MapView({
                 />
             </div>
         </div>
-        <HorizontalDivider />
         {floorData && <ContentWrapper
             route={route} floor={floor} datafile={routeData.datafile} floorData={floorData}
             marker={marker} handleSetMarker={handleSetMarker} subtab={subtab} handleSetSubtab={handleSetSubtab}

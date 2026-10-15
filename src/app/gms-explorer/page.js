@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ItemsView from "./ItemsView";
 import MapView from "./MapView";
 import NoPrefetchLink from "../components/NoPrefetchLink";
+import PageHeader from "../components/pageTemplates/PageHeader";
 
 export default function GMSExplorerPage() {
     const router = useRouter();
@@ -76,24 +77,25 @@ export default function GMSExplorerPage() {
     };
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0 }}>Grand Magasin Sisyphe Explorer</h1>
-        <p style={{ margin: 0 }}>
-            Explore an interactive map and other details of the Grand Magasin Sisyphe.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Explore the different maps of the Grand Magasin Sisyphe and find items obtainable on each floor. The <b>Map</b> tab lets you select a Route and Floor to view the map for that floor, while the <b>Items</b> tab provides a complete list of items across all routes and floors.
-            <br /> <br />
-            Each map has interactive markers showing locations with details about each location. Select the tab of the markers you want below the map to view the relevant items. Clicking on a marker or item will highlight the corresponding marker for its location and show any additional details.
-            <br /> <br />
-            All credit goes to the <NoPrefetchLink className="text-link" href={"https://limbuscompany.wiki.gg/"}>Limbus Company Wiki</NoPrefetchLink> for the map images. Each map will also show a link to its corresponding wiki page. Some floors are currently using incomplete maps or are missing maps entirely. They will be updated once their corresponding maps are available.
-            <br /> <br />
-            Any corrections or suggestions can be submitted through the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.
-        </p>
-
-        <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${searchParams.tab === "map" && "active"}`} onClick={() => handleSetTab("map")}>Map</div>
-            <div className={`tab-header ${searchParams.tab === "items" && "active"}`} onClick={() => handleSetTab("items")}>Items</div>
-        </div>
+        <PageHeader
+            title={"Grand Magasin Sisyphe Explorer"}
+            mainDesc={"Explore an interactive map and other details of the Grand Magasin Sisyphe."}
+            subDesc={<>
+                Explore the different maps of the Grand Magasin Sisyphe and find items obtainable on each floor. The <b>Map</b> tab lets you select a Route and Floor to view the map for that floor, while the <b>Items</b> tab provides a complete list of items across all routes and floors.
+                <br /> <br />
+                Each map has interactive markers showing locations with details about each location. Select the tab of the markers you want below the map to view the relevant items. Clicking on a marker or item will highlight the corresponding marker for its location and show any additional details.
+                <br /> <br />
+                All credit goes to the <NoPrefetchLink className="text-link" href={"https://limbuscompany.wiki.gg/"}>Limbus Company Wiki</NoPrefetchLink> for the map images. Each map will also show a link to its corresponding wiki page. Some floors are currently using incomplete maps or are missing maps entirely. They will be updated once their corresponding maps are available.
+                <br /> <br />
+                Any corrections or suggestions can be submitted through the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.
+            </>}
+            maxAds={1}
+        >
+            <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+                <div className={`tab-header ${searchParams.tab === "map" && "active"}`} onClick={() => handleSetTab("map")}>Map</div>
+                <div className={`tab-header ${searchParams.tab === "items" && "active"}`} onClick={() => handleSetTab("items")}>Items</div>
+            </div>
+        </PageHeader>
 
         {searchParams.tab === "map" &&
             <MapView

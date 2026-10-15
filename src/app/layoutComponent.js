@@ -88,6 +88,7 @@ const paths = [
         title: "Minigames", subpaths: [
             { path: "/artwork-guesser", title: "Artwork Guesser" },
             { path: "/voiceline-guesser", title: "Voiceline Guesser" },
+            { path: "/shadow-guesser", title: "Shadow Guesser" },
             { path: "/clash-arena", title: "Clash Arena" },
         ]
     },
@@ -134,7 +135,7 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Hi! I&apos;ve introduced ads to the site to help cover hosting costs and allow me to continue spending time maintaining and improving the site. I&apos;m still figuring out where to place them and how many to have, so this first update only has a few placements. More pages will likely get ads in the future and ad positions may move around while I figure out what works. Ideally, I want the ads to be enough for me to be able to keep the site running long term, while making sure they aren&apos;t obstructive to everyone&apos;s experience.
+                        Hi! I&apos;ve introduced ads to the site to help cover hosting costs and allow me to continue spending time maintaining and improving the site. I&apos;m still figuring out where to place them and how many to have, so you&apos;ll see them move around or get added or removed while I figure out what works. Ideally, I want the ads to be enough for me to be able to keep the site running long term, while making sure they aren&apos;t obstructive to everyone&apos;s experience.
                         <br /><br />
                         Feel free to submit suggestions through the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page if you have ideas or feel certain placements are problematic. There are also settings in the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize or remove the ads. You&apos;re free to turn them off, but keeping them on is a free and easy way to support the site. Thanks!
                     </span>

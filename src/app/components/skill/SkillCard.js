@@ -4,6 +4,7 @@ import { AtkWeight, DiffedAtkWeight } from "./AtkWeight";
 import Coin from "./Coin";
 import { computeSkillValues } from "./SkillCalc";
 import styles from "./SkillCard.module.css";
+import CoinIcon from "../icons/CoinIcon";
 import Icon from "../icons/Icon";
 import KeywordIcon from "../icons/KeywordIcon";
 import SkillIcon from "../icons/SkillIcon";
@@ -56,7 +57,7 @@ export default function SkillCard({
                         <span style={{ display: "flex", flexWrap: "wrap", gap: "0" }}>
                             {
                                 skill.coins.map((coin, i) =>
-                                    <Icon className={coinClass} key={i} path={coin["type"] === "unbreakable" ? "unbreakable coin" : "coin"} />
+                                    <CoinIcon key={i} className={coinClass} coin={coin} />
                                 )
                             }
                         </span>

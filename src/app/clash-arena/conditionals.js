@@ -78,6 +78,27 @@ export function evaluateConditional(conditional, self, target, uniqueStatuses) {
                 )
             ];
         }
+        case "status-with-required-cond": {
+            if ((uniqueStatuses[conditional.statusCond] ?? 0) === 0)
+                return [conditional.target, 0];
+
+            const total = conditional.status.reduce((sum, status) => {
+                if (status.owner === "unique") {
+                    return sum + uniqueStatuses[status.status] ?? 0;
+                } else {
+                    const side = status.owner === "self" ? self : target;
+                    return sum + (side.statuses[status.status]?.[status.type.toLowerCase()] ?? 0);
+                }
+            }, 0);
+
+            return [
+                conditional.target,
+                Math.min(
+                    Math.floor(total / conditional.per) * conditional.value,
+                    conditional.max
+                )
+            ];
+        }
 
         case "negative-statuses": {
             const count = ["Combustion", "Laceration", "Vibration", "Burst", "Sinking"]
@@ -352,6 +373,38 @@ export function getExplanation(modifier, conditional, withResult) {
                     acc.push(component);
                     return acc;
                 }, [])}
+                {conditional.valueCond !== conditional.maxCond && ` (max ${conditional.maxCond})`}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "status-with-required-cond":
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {
+                    conditional.value === conditional.max ?
+                        ` at ${conditional.per}+ ` :
+                        ` for every ${conditional.per} `
+                }
+                {conditional.status.reduce((acc, status, i) => {
+                    const component =
+                        <span key={acc.length}>
+                            <Status id={status.status} />
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
+                        </span>
+
+                    if (acc.length > 0) acc.push(<span key={`${i}-space`}> + </span>)
+                    acc.push(component);
+                    return acc;
+                }, [])}
+                {conditional.value !== conditional.max && ` (max ${conditional.max})`}
+                {` with `}
+                <Status id={conditional.statusCond} />
                 {conditional.valueCond !== conditional.maxCond && ` (max ${conditional.maxCond})`}
                 {withResult ? `: +${value}` : null}
             </div>;

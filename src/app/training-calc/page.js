@@ -7,6 +7,7 @@ import LuxTable from "./LuxTable";
 import SelectedTable from "./SelectedTable";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import AllIdEgoSelector from "../components/selectors/AllIdEgoSelector";
 import { getLocalStore } from "../database/localDB";
 import { LEVEL_CAP } from "../lib/constants";
@@ -145,7 +146,10 @@ export default function TrainingCalcPage() {
         const shardRuns = Math.ceil(shard / shardsPerRun);
         const shardModules = shardRuns * mdCrates[md][1];
 
-        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        return <div style={{
+            display: "flex", flexDirection: "column", gap: "0.5rem",
+            border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.5rem"
+        }}>
             <h3 style={{ margin: 0, textAlign: "center" }}>Totals:</h3>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ textAlign: "center" }}>Cost</span>
@@ -221,26 +225,25 @@ export default function TrainingCalcPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, textAlign: "center" }}>Dispense and Training Calculator</h1>
-        <p style={{ margin: 0 }}>
-            Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os.
-        </p>
-        <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
-            Calculate the resources and farming runs needed to level and uptie selected Identities and E.G.O. Select the Identities and E.G.O you want to upgrade, then set their current and target levels and uptie or Threadspin levels. The calculator determines the total Tickets, Threads, and Shards required to bring the selected items to their targets.
-            <br /><br />
-            The results also estimate how many modules and farming runs are needed to obtain the required resources. You can choose which farming stages to use for the calculation, allowing you to plan around the stages you have available. This can help you plan the resources and time needed to upgrade multiple Identities and E.G.O.
-            <br /><br />
-            A farming schedule at the bottom of the page shows which resource stages are available on each day of the game&apos;s daily schedule. There are also links to their corresponding encounters for more information.
-            <br /><br />
-            Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of Shard amounts from crate rewards.
-        </p>
-
-        {identitiesLoading || egosLoading ?
-            <LoadingContentPageTemplate /> :
-            <>
+        <PageHeader
+            title={"Dispense and Training Calculator"}
+            mainDesc={"Calculate the total tickets, threads, and shards required to dispense, level, and uptie selected Identities and E.G.Os."}
+            subDesc={<>
+                Calculate the resources and farming runs needed to level and uptie selected Identities and E.G.O. Select the Identities and E.G.O you want to upgrade, then set their current and target levels and uptie or Threadspin levels. The calculator determines the total Tickets, Threads, and Shards required to bring the selected items to their targets.
+                <br /><br />
+                The results also estimate how many modules and farming runs are needed to obtain the required resources. You can choose which farming stages to use for the calculation, allowing you to plan around the stages you have available. This can help you plan the resources and time needed to upgrade multiple Identities and E.G.O.
+                <br /><br />
+                A farming schedule at the bottom of the page shows which resource stages are available on each day of the game&apos;s daily schedule. There are also links to their corresponding encounters for more information.
+                <br /><br />
+                Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of Shard amounts from crate rewards.
+            </>}
+            wide={true}
+            maxAds={3}
+        >
+            {!identitiesLoading && !egosLoading &&
                 <div style={{
-                    display: "flex", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row", gap: "1rem",
-                    alignItems: "center", justifyContent: isMobile ? null : "center", maxWidth: "100%"
+                    display: "flex", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row", gap: "0.5rem",
+                    justifyContent: isMobile ? null : "center", maxWidth: "100%"
                 }}>
                     <SelectedTable
                         identities={identities} egos={egos}
@@ -250,7 +253,12 @@ export default function TrainingCalcPage() {
                     />
                     {totalComponent()}
                 </div>
+            }
+        </PageHeader>
 
+        {identitiesLoading || egosLoading ?
+            <LoadingContentPageTemplate /> :
+            <>
                 <h3 style={{ margin: 0 }}>Choose Identities or E.G.Os</h3>
                 <AllIdEgoSelector
                     identityIds={selected.filter(x => `${x}`[0] === "1")}

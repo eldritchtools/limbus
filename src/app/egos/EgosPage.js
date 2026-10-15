@@ -15,6 +15,7 @@ import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import Status from "../components/objects/Status";
+import PageHeader from "../components/pageTemplates/PageHeader";
 import DropdownSelectorWithExclusion from "../components/selectors/DropdownSelectorWithExclusion";
 import IconsSelector from "../components/selectors/IconsSelector";
 import { SeasonDropdownSelector } from "../components/selectors/SeasonSelectors";
@@ -302,18 +303,18 @@ export default function EgosPage({ initEgos }) {
     }, [egos, egosLoading, statuses, statusesLoading]);
 
     return <>
-        <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
-            <h1 style={{ fontSize: "1.75rem", margin: 0 }}>E.G.Os</h1>
-            <p style={{ margin: 0 }}>
-                Browse through all available E.G.O using search and a comprehensive set of filters.
-            </p>
-            <p className="sub-text" style={{ margin: 0, textAlign: "center", maxWidth: "1280px" }}>
+        <PageHeader
+            title={"E.G.Os"}
+            mainDesc={"Browse through all available E.G.O using search and a comprehensive set of filters."}
+            subDesc={<>
                 Browse through the full list of E.G.O. Search or filter them by statuses, seasons, or other filters. Display types let you choose how much information is shown for each E.G.O.
                 <br /><br />
                 Compare modes provide more detailed ways to examine multiple E.G.O at once. <strong>Basic Compare Mode</strong> places the full details of selected E.G.O side by side, making it easier to compare their stats, skills, passives, and other information.
                 <br /><br />
                 <strong>Advanced Compare Mode</strong> turns the catalogue into a more powerful search and analysis tool. E.G.O can be filtered and sorted by their costs and resistances. Skills and passives can also be searched and filtered based on properties like power, coin count, damage type, and text from their descriptions. This makes it possible to find E.G.O based on specific characteristics rather than only by name or the existing filters.
-            </p>
+            </>}
+            maxAds={2}
+        >
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                     <span style={{ textAlign: 'end' }}>Search:</span>
@@ -397,21 +398,21 @@ export default function EgosPage({ initEgos }) {
                 </div>
                 <IconsSelector type={"column"} categories={["egoTier", "sinner", "status", "affinity", "atkType"]} values={filters} setValues={setFilters} />
             </div>
-            <HorizontalDivider />
-            <EgoList
-                initEgos={initEgos}
-                egos={egos}
-                egosLoading={egosLoading}
-                searchString={searchString}
-                filters={filters}
-                displayType={displayType}
-                separateSinners={separateSinners}
-                companyFilter={companyFilter}
-                strictFiltering={strictFiltering}
-                selectedStatuses={selectedStatuses}
-                selectedSeasons={selectedSeasons}
-                compareMode={compareMode}
-            />
-        </div>
+        </PageHeader>
+        <HorizontalDivider />
+        <EgoList
+            initEgos={initEgos}
+            egos={egos}
+            egosLoading={egosLoading}
+            searchString={searchString}
+            filters={filters}
+            displayType={displayType}
+            separateSinners={separateSinners}
+            companyFilter={companyFilter}
+            strictFiltering={strictFiltering}
+            selectedStatuses={selectedStatuses}
+            selectedSeasons={selectedSeasons}
+            compareMode={compareMode}
+        />
     </>;
 }
