@@ -8,6 +8,7 @@ import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentP
 
 export default function UpdateHistoryPage() {
     const [updates, updatesLoading] = useData("updates_index");
+    const [updatesOld, updatesOldLoading] = useData("updates_index_old");
     const { openUpdateHistoryModal } = useModal();
 
 
@@ -16,13 +17,21 @@ export default function UpdateHistoryPage() {
         <span className="sub-text">
             This update history may not always be complete or up to date. Join the discord if you want to be notified when new updates are pushed to the site.
         </span>
-        {updatesLoading ? <LoadingContentPageTemplate /> :
+        {updatesLoading || updatesOldLoading ? <LoadingContentPageTemplate /> :
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", alignItems: "center", width: "100%", gap: ".2rem", marginTop: "0.5rem" }}>
                 {updates.map((update, i) => <React.Fragment key={i}>
                     <span className="sub-text">{update.date}</span>
                     <span className="text-link"
                         style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
                         onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, path: update.path })} >
+                        {update.title}
+                    </span>
+                </React.Fragment>)}
+                {updatesOld.map((update, i) => <React.Fragment key={i}>
+                    <span className="sub-text">{update.date}</span>
+                    <span className="text-link"
+                        style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
+                        onClick={() => openUpdateHistoryModal({ date: update.date, title: update.title, path: update.path, old: true })} >
                         {update.title}
                     </span>
                 </React.Fragment>)}
