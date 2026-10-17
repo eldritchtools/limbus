@@ -3,7 +3,7 @@ import NumberInput from "../components/objects/NumberInput";
 import PageHeader from "../components/pageTemplates/PageHeader";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
-export default function SetupScreen({ settings, setSettings, onStart, onReset }) {
+export default function SetupScreen({ settings, setSettings, shadowData, onStart, onReset }) {
     const handleSetSettings = (key, value) => {
         setSettings(p => ({ ...p, [key]: value }))
     }
@@ -93,21 +93,26 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
                 </span>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "0.2rem" }}>
-                {Object.entries(categories).map(([id, data]) =>
-                    <label key={id}>
-                        <input type="checkbox"
-                            checked={settings.categories.includes(id)}
-                            onChange={e => {
-                                if (e.target.checked)
-                                    handleSetSettings("categories", [...settings.categories, id])
-                                else
-                                    handleSetSettings("categories", settings.categories.filter(x => x !== id))
-                            }}
-                        />
-                        <span>{data.label}</span>
-                    </label>
-                )}
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, max-content)", alignItems: "start", gap: "0.5rem" }}>
+                    {Object.entries(categories).map(([id, data]) =>
+                        <div key={id} style={{ display: "flex", flexDirection: "column" }}>
+                            <label>
+                                <input type="checkbox"
+                                    checked={settings.categories.includes(id)}
+                                    onChange={e => {
+                                        if (e.target.checked)
+                                            handleSetSettings("categories", [...settings.categories, id])
+                                        else
+                                            handleSetSettings("categories", settings.categories.filter(x => x !== id))
+                                    }}
+                                />
+                                <span>{data.label}</span>
+                            </label>
+                            {data.useShadowData && <span className="sub-text">Last Updated: {shadowData[id].lastUpdated}</span>}
+                        </div>
+                    )}
+                </div>
                 <span className="sub-text">
                     More categories will be added over time.
                 </span>

@@ -313,6 +313,7 @@ export default function EgosPage({ initEgos }) {
                 <br /><br />
                 <strong>Advanced Compare Mode</strong> turns the catalogue into a more powerful search and analysis tool. E.G.O can be filtered and sorted by their costs and resistances. Skills and passives can also be searched and filtered based on properties like power, coin count, damage type, and text from their descriptions. This makes it possible to find E.G.O based on specific characteristics rather than only by name or the existing filters.
             </>}
+            wide={true}
             maxAds={2}
         >
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>

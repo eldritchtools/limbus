@@ -99,8 +99,8 @@ export function ModalProvider({ children }) {
         openModal("deleteComment", { targetType, commentId, commentBody, onDelete });
     }
 
-    const openUpdateHistoryModal = ({ date, title, path }) => {
-        openModal("updateHistory", { date, title, path });
+    const openUpdateHistoryModal = ({ date, title, path, old }) => {
+        openModal("updateHistory", { date, title, path, old });
     }
 
     const openChoiceEventModal = ({ choiceEvent }) => {

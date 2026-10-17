@@ -101,6 +101,7 @@ export default function RecommendedSpecBuildDisplay({ identityIds, setIdentityId
             build={build}
             defaultAdditionalToggle={additionalToggle} 
             includeEventRolls={true}
+            skillReplaces={true}
         />
     }
 
