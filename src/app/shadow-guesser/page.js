@@ -7,15 +7,17 @@ import { useShadowGuesserGenerator } from "./generator";
 import GuessingScreen from "./GuessingScreen";
 import RevealScreen from "./RevealScreen";
 import SetupScreen from "./SetupScreen";
-import { categories, checkAnswer, defaultSettings } from "./util";
+import { answerToText, categories, checkAnswer, defaultSettings } from "./util";
 import NitroAd from "../components/ads/NitroAd";
+import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { useGuesser } from "../components/quiz/useGuesser";
 import { getLocalStore } from "../database/localDB";
+import { buildSearchStrings } from "../lib/filter";
 
 const GUESSER_ID = "shadow";
 
-function SetupWrapper({ settings, setSettings, guesser }) {
+function SetupWrapper({ settings, setSettings, guesser, shadowData }) {
     const handleSetSettings = async (valueOrFn) => {
         const newSettings = typeof valueOrFn === "function" ? valueOrFn(settings) : valueOrFn;
         await getLocalStore("guessers").save({ id: GUESSER_ID, ...newSettings });
@@ -25,13 +27,15 @@ function SetupWrapper({ settings, setSettings, guesser }) {
     return <SetupScreen
         settings={settings}
         setSettings={handleSetSettings}
+        shadowData={shadowData}
         onStart={() => guesser.start(settings)}
         onReset={() => handleSetSettings(defaultSettings)}
     />
 }
 
-function Guesser({ settings, guesser }) {
-    const [generator, data, loading] = useShadowGuesserGenerator(settings);
+function Guesser({ settings, guesser, shadowData }) {
+    const [generator, data, loading] = useShadowGuesserGenerator(settings, shadowData);
+    const [altNames, altLoading] = useData("alt_names")
 
     useEffect(() => {
         if (guesser.phase !== "loading" || loading) return;
@@ -41,23 +45,43 @@ function Guesser({ settings, guesser }) {
     }, [guesser, generator, loading]);
 
     const options = useMemo(() => {
-        if (loading) return [];
+        if (loading || altLoading) return [];
         const options = [];
-        Object.entries(data).forEach(([cat, dat]) => {
-            Object.entries(dat).forEach(([id, item]) => {
-                const option = { category: cat, answer: id };
-                if (cat === "gifts") {
-                    option.label = `[${categories[cat].label}] ${item.names[0]}`;
-                    option.searchStrings = [item.names[0]];
-                } else {
-                    option.label = `[${categories[cat].label}] ${item.name}`;
-                    option.searchStrings = [item.name];
-                }
-                options.push(option);
-            })
+        settings.categories.forEach(cat => {
+            if (categories[cat].useShadowData) {
+                shadowData[cat].items.forEach(id => {
+                    const option = { category: cat, answer: id };
+                    switch (cat) {
+                        case "ids":
+                            option.label = answerToText(option, data)
+                            option.searchStrings = buildSearchStrings(data[cat][id], altNames)
+                            break;
+                        case "ego":
+                            option.label = answerToText(option, data)
+                            option.searchStrings = buildSearchStrings(data[cat][id], altNames)
+                            break;
+                    }
+                    options.push(option);
+                })
+            } else {
+                Object.entries(data[cat]).forEach(([id, item]) => {
+                    const option = { category: cat, answer: id };
+                    switch (cat) {
+                        case "gifts":
+                            option.label = `[${categories[cat].label}] ${item.names[0]}`;
+                            option.searchStrings = [item.names[0]];
+                            break;
+                        case "gmsItem":
+                            option.label = `[${categories[cat].label}] ${item.name}`;
+                            option.searchStrings = [item.name];
+                            break;
+                    }
+                    options.push(option);
+                })
+            }
         })
         return options;
-    }, [data, loading]);
+    }, [data, shadowData, altNames, altLoading, loading, settings.categories]);
 
     if (loading || guesser.phase === "loading")
         return <LoadingContentPageTemplate />
@@ -73,6 +97,7 @@ function Guesser({ settings, guesser }) {
 }
 
 export default function ShadowGuesserPage() {
+    const [shadowData, shadowDataLoading] = useData("shadow_guesser");
     const guesser = useGuesser(GUESSER_ID);
     const [settings, setSettings] = useState(defaultSettings);
 
@@ -86,12 +111,14 @@ export default function ShadowGuesserPage() {
         loadSettings();
     }, []);
 
+    if (shadowDataLoading) return <LoadingContentPageTemplate />
+
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
 
         {guesser.phase === "setup" ?
-            <SetupWrapper settings={settings} setSettings={setSettings} guesser={guesser} /> :
-            <Guesser settings={settings} guesser={guesser} />
+            <SetupWrapper settings={settings} setSettings={setSettings} guesser={guesser} shadowData={shadowData} /> :
+            <Guesser settings={settings} guesser={guesser} shadowData={shadowData} />
         }
     </div>;
 }

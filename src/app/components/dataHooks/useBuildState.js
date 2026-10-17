@@ -103,6 +103,9 @@ export default function useBuildState() {
 
         if ("iconSwaps" in extraOpts) setIconSwaps(extraOpts.iconSwaps);
         else setIconSwaps([]);
+
+        if ("skillReplaces" in extraOpts) setSkillReplaces(extraOpts.skillReplaces);
+        else setSkillReplaces({});
     }, []);
 
     const setBuildState = useCallback(build => {

@@ -33,7 +33,8 @@ import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
 function SinnerEditableComponent({
     build, buildRef, index,
     identities, identityOptions, egos, egoOptions,
-    additionalToggle, minimalEditor, replaceDeployment
+    additionalToggle, minimalEditor, replaceDeployment,
+    skillReplaces
 }) {
     const { openAltOptionsModal } = useModal();
     const [depType, depIndex] = getDeploymentPosition(build.deploymentOrder, build.activeSinners, index + 1);
@@ -117,15 +118,14 @@ function SinnerEditableComponent({
                         maxUptie={egos[build.egoIds[index][rank]]?.maxThreadspin ?? 4}
                     />)}
             </div>
-            {build.skillReplaces[index + 1] ?
+            {skillReplaces &&
                 <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                     Skills: <SkillReplace
                         counts={build.skillReplaces[index + 1] ?? "321"}
                         setCounts={x => build.setSkillReplace(index + 1, x)}
                         editable={true}
                     />
-                </div> :
-                null
+                </div>
             }
             <div style={{ width: "100%" }}>
                 <MarkdownEditorWrapper
@@ -141,7 +141,7 @@ function SinnerEditableComponent({
 
 export default function BuildEditingComponent({
     build, minimalEditor = false, replaceDeployment, insertPanel,
-    defaultAdditionalToggle = false, includeEventRolls = false
+    defaultAdditionalToggle = false, includeEventRolls = false, skillReplaces = false
 }) {
     const { openSelectDeploymentModal } = useModal();
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
@@ -191,6 +191,7 @@ export default function BuildEditingComponent({
                                     identityOptions={identityOptions} egoOptions={egoOptions}
                                     additionalToggle={additionalToggle}
                                     minimalEditor={minimalEditor} replaceDeployment={replaceDeployment}
+                                    skillReplaces={skillReplaces}
                                 />
                             )}
                         </div>
