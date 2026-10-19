@@ -70,7 +70,7 @@ export default function DaysSinceTable({ entries, identities, egos, show00 }) {
         </tr>
     }
 
-    return <div style={{ overflowX: "auto", maxWidth: "95vw", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
+    return <div id="days-since" style={{ overflowX: "auto", maxWidth: "95vw", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem" }}>
         <table style={{ borderCollapse: "collapse" }}>
             <thead>
                 <tr>

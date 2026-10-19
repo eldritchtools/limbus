@@ -23,14 +23,21 @@ export function answerToText(ans, data) {
     const { category, answer } = ans;
     switch (category) {
         case "ids": 
-            return `[${categories[category].label}] [${sinnerIdMapping[data[category][answer].sinnerId]}] ${data[category][answer].name}`
+            return `[${sinnerIdMapping[data[category][answer].sinnerId]}] ${data[category][answer].name}`
         case "ego": 
-            return `[${categories[category].label}] [${sinnerIdMapping[data[category][answer].sinnerId]}] ${data[category][answer].name}`
+            return `[${sinnerIdMapping[data[category][answer].sinnerId]}] ${data[category][answer].name}`
         case "gifts":
-            return `[${categories[category].label}] ${data[category][answer].names[0]}`;
+            return `${data[category][answer].names[0]}`;
         case "gmsItem":
-            return `[${categories[category].label}] ${data[category][answer].name}`;
+            return `${data[category][answer].name}`;
     }
+}
+
+export function constructLabel(category, label) {
+    return <span style={{display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap"}}>
+        {label}
+        <span className="sub-text">{categories[category].label}</span>
+    </span>
 }
 
 export function checkAnswer(answer, problem) {

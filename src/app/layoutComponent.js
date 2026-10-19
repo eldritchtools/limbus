@@ -26,6 +26,7 @@ import { AuthProvider } from "./database/authProvider";
 import { RequestsCacheProvider } from "./database/RequestsCacheProvider";
 import FooterNavigation from "./FooterNavigation";
 import useLocalState from "./lib/useLocalState";
+import TitleSearch from "./TitleSearch";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -170,6 +171,7 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                     githubLink={"https://github.com/eldritchtools/limbus"}
                                     paths={paths}
                                     LinkComponent={NoPrefetchLink}
+                                    headerCenterOverride={<TitleSearch />}
                                     sidebarTopComponent={<UserStatus />}
                                     footerTopComponent={<FooterNavigation />}
                                     sidebarBottomComponent={<NitroAd id={"sidebar-ad"} height={600} style={{ margin: ".5rem" }} />}

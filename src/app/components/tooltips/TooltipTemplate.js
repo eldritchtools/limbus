@@ -2,7 +2,7 @@
 
 import { Tooltip } from "react-tooltip";
 
-const style = {
+export const tooltipStyle = {
     outlineStyle: "solid",
     outlineColor: "var(--primary-border-color)",
     outlineWidth: "1px",
@@ -13,12 +13,14 @@ const style = {
     color: "var(--primary-text-color)"
 };
 
-export default function TooltipTemplate({ id, contentFunc, clickable }) {
+export default function TooltipTemplate({ ref, id, contentFunc, clickable, isOpen, place, imperativeModeOnly }) {
     return <Tooltip
+        ref={ref}
         id={id}
-        render={({ content }) => <div style={style}>{contentFunc(content)}</div>}
+        render={({ content }) => <div style={tooltipStyle}>{contentFunc(content)}</div>}
         getTooltipContainer={() => document.body}
         style={{ backgroundColor: "transparent", zIndex: "9999" }}
         clickable={clickable}
+        isOpen={isOpen} place={place} imperativeModeOnly={imperativeModeOnly}
     />
 }

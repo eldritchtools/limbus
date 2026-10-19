@@ -25,7 +25,7 @@ function EncountersComponent({ levels, type }) {
 export default function LuxTable() {
     const threadLevels = [...Object.keys(threadLux)];
 
-    return <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem", maxWidth: "100%" }}>
+    return <div id="lux-table" style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem", maxWidth: "100%" }}>
         <div className="title-text">Luxcavation Cheatsheet</div>
         <DragContainer>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(100px, 1fr))", width: "max-content" }}>

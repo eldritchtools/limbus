@@ -7,7 +7,7 @@ import { useShadowGuesserGenerator } from "./generator";
 import GuessingScreen from "./GuessingScreen";
 import RevealScreen from "./RevealScreen";
 import SetupScreen from "./SetupScreen";
-import { answerToText, categories, checkAnswer, defaultSettings } from "./util";
+import { answerToText, categories, checkAnswer, constructLabel, defaultSettings } from "./util";
 import NitroAd from "../components/ads/NitroAd";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
@@ -53,12 +53,12 @@ function Guesser({ settings, guesser, shadowData }) {
                     const option = { category: cat, answer: id };
                     switch (cat) {
                         case "ids":
-                            option.label = answerToText(option, data)
-                            option.searchStrings = buildSearchStrings(data[cat][id], altNames)
+                            option.label = constructLabel(cat, answerToText(option, data));
+                            option.searchStrings = buildSearchStrings(data[cat][id], altNames);
                             break;
                         case "ego":
-                            option.label = answerToText(option, data)
-                            option.searchStrings = buildSearchStrings(data[cat][id], altNames)
+                            option.label = constructLabel(cat, answerToText(option, data));
+                            option.searchStrings = buildSearchStrings(data[cat][id], altNames);
                             break;
                     }
                     options.push(option);
@@ -68,11 +68,11 @@ function Guesser({ settings, guesser, shadowData }) {
                     const option = { category: cat, answer: id };
                     switch (cat) {
                         case "gifts":
-                            option.label = `[${categories[cat].label}] ${item.names[0]}`;
+                            option.label = constructLabel(cat, item.names[0]);
                             option.searchStrings = [item.names[0]];
                             break;
                         case "gmsItem":
-                            option.label = `[${categories[cat].label}] ${item.name}`;
+                            option.label = constructLabel(cat, item.name);
                             option.searchStrings = [item.name];
                             break;
                     }

@@ -21,12 +21,14 @@ import SelectGiftModalContent from "./SelectGiftModalContent";
 import SelectMdPlanModalContent from "./SelectMdPlanModalContent";
 import SelectThemePackModalContent from "./SelectThemePackModalContent";
 import SetFavoriteLinksModalContent from "./SetFavoriteLinksModalContent";
+import StatusModalContent from "./StatusModalContent";
 import UpdateHistoryModalContent from "./UpdateHistoryModalContent";
 
 const ModalContext = createContext();
 
 const MODAL_COMPONENTS = {
     "gift": GiftModalContent,
+    "status": StatusModalContent,
     "selectBuild": SelectBuildModalContent,
     "selectMdPlan": SelectMdPlanModalContent,
     "selectGift": SelectGiftModalContent,
@@ -71,8 +73,12 @@ export function ModalProvider({ children }) {
         setStack(prev => [...prev, { modalId: stack.length, type, props, beforeClose: null }]);
     }
 
-    const openGiftModal = ({ id, enhanceRank, forceTriggersEffects }) => {
+    const openGiftModal = ({ id, enhanceRank = 0, forceTriggersEffects }) => {
         openModal("gift", { id, enhanceRank, forceTriggersEffects });
+    }
+
+    const openStatusModal = ({ id }) => {
+        openModal("status", { id });
     }
 
     const openSelectBuildModal = ({ onSelectBuild, allowDrafts = false }) => {
@@ -171,6 +177,7 @@ export function ModalProvider({ children }) {
 
     const exportFunctions = {
         openGiftModal,
+        openStatusModal,
         openSelectBuildModal,
         openSelectMdPlanModal,
         openSelectGiftModal,

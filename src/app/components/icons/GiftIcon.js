@@ -39,7 +39,18 @@ function GiftIconContainer({ scale = 1, children }) {
     </div>
 }
 
-function GiftIconMain({ id, gift, enhanceRank = 0, scale = 1, forceTagStrips }) {
+function GiftIconOnly({ gift, scale }) {
+    const src = getGiftImgSrc(gift);
+    if (!src) return null;
+
+    const size = 96 * scale;
+    // return <Image src={src} alt={gift.names[0]} width={64} height={64} style={style} />
+    return <img src={src} alt={gift.names[0]} loading="lazy" style={{ width: `${size}px`, height: `${size}px` }} />
+}
+
+function GiftIconMain({ id, gift, enhanceRank = 0, scale = 1, forceTagStrips, imgOnly }) {
+    if (imgOnly) return <GiftIconOnly gift={gift} scale={scale} />
+
     return <GiftIconContainer scale={scale}>
         <GiftImg gift={gift} />
         <TierIcon className={styles.giftIconTier} tier={gift.tier} scaleY={1.4} />

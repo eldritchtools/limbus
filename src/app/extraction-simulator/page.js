@@ -518,7 +518,7 @@ export default function ExtractionSimulatorPage() {
                     </div>
                 </div>
 
-                <div className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)", gap: "0.5rem" }}>
+                <div id="probabilities" className="panel-container" style={{ width: "100%", maxWidth: "min(1600px, 100vw)", gap: "0.5rem" }}>
                     <h3 style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", margin: 0 }}>
                         Probabilities Calculator
                         <div style={{ display: "flex", alignItems: "center" }}>

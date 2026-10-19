@@ -39,17 +39,19 @@ const schema = {
 };
 
 
-export default async function Page() {
+export default async function Page({ searchParams }) {
+    const { compare } = await searchParams;
     const identities = await fetchData("identities");
     const minifiedIdentities = Object.entries(identities)
         .map(([id, data]) => {
+            if(compare) return [id, data];
             const { name, rank, sinnerId, skillKeywordList, tags, skillTypes, defenseSkillTypes } = data;
-            return [id, { id, name, rank, sinnerId, skillKeywordList, tags, skillTypes, defenseSkillTypes }]
+            return [id, { id, name, rank, sinnerId, skillKeywordList, tags, skillTypes, defenseSkillTypes }];
         })
         .sort(([aid, ao], [bid, bo]) => ao.sinnerId === bo.sinnerId ? bid.localeCompare(aid) : ao.sinnerId - bo.sinnerId)
 
     return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
         <JsonLd data={schema} />
-        <IdentitiesPage initIdentities={minifiedIdentities} />
+        <IdentitiesPage initIdentities={minifiedIdentities} compare={compare} />
     </div>;
 }
