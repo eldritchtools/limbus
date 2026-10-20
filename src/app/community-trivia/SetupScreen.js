@@ -354,8 +354,9 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1000px", gap: "1rem" }}>
         <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignSelf: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
-            <div className={`tab-header ${tab === "game" ? "active" : ""}`} onClick={() => setTab("game")}>Play</div>
-
+            {user &&
+                <div className={`tab-header ${tab === "game" ? "active" : ""}`} onClick={() => setTab("game")}>Play</div>
+            }
             {user &&
                 <div className={`tab-header ${tab === "submit" ? "active" : ""}`} onClick={() => setTab("submit")}>Submit</div>
             }
