@@ -30,7 +30,8 @@
     top: 12px;
     left: 12px;
 
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
     align-items: center;
     gap: 4px;
 
@@ -74,6 +75,12 @@
 .controls .reset {
     margin-left: 2px;
     font-size: 13px;
+}
+
+.controls .zoomMode {
+    margin-left: 2px;
+    font-size: 13px;
+    grid-column: span 3;
 }
 
 .coordinates {

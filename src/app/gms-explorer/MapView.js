@@ -106,6 +106,12 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
     if (dataLoading || itemsLoading) return;
 
     return <>
+        <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+            <div className={`tab-header ${subtab === "items" && "active"}`} onClick={() => handleSetSubtab("items")}>Items</div>
+            <div className={`tab-header ${subtab === "dialogues" && "active"}`} onClick={() => handleSetSubtab("dialogues")}>Dialogues</div>
+            <div className={`tab-header ${subtab === "deaths" && "active"}`} onClick={() => handleSetSubtab("deaths")}>Deaths</div>
+        </div>
+
         {floorData.image ?
             <>
                 <MapViewer
@@ -124,12 +130,6 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
                 {selectedMarker && <MarkerPopover marker={selectedMarker} inDiv={true} onClose={() => handleSetMarker(null)} />}
             </>
         }
-
-        <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${subtab === "items" && "active"}`} onClick={() => handleSetSubtab("items")}>Items</div>
-            <div className={`tab-header ${subtab === "dialogues" && "active"}`} onClick={() => handleSetSubtab("dialogues")}>Dialogues</div>
-            <div className={`tab-header ${subtab === "deaths" && "active"}`} onClick={() => handleSetSubtab("deaths")}>Deaths</div>
-        </div>
 
         <span className="sub-text">{subtabDescs[subtab]}</span>
 
