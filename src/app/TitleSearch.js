@@ -14,6 +14,7 @@ import { useModal } from "./components/modals/ModalProvider";
 import Status from "./components/objects/Status";
 import { EgoTooltipLoader } from "./components/tooltips/EgoTooltip";
 import { EncounterTooltipLoader } from "./components/tooltips/EncounterTooltip";
+import { getGeneralTooltipProps } from "./components/tooltips/GeneralTooltip";
 import { GiftTooltipLoader } from "./components/tooltips/GiftTooltip";
 import { IdentityTooltipLoader } from "./components/tooltips/IdentityTooltip";
 import { StatusTooltipLoader } from "./components/tooltips/StatusTooltip";
@@ -37,21 +38,25 @@ const DATABASE_ACTIONS = [
     {
         id: "user",
         keywords: ["user", "users"],
+        description: "Search users",
         label: "Users",
     },
     {
         id: "builds",
         keywords: ["build", "builds", "team", "teams"],
+        description: "Search builds",
         label: "Community Builds",
     },
     {
         id: "md-plans",
         keywords: ["md plan", "md plans", "md", "plan", "plans"],
+        description: "Search md plans",
         label: "MD Plans",
     },
 ];
 
 const ALL_ACTIONS = [...INDEX_ACTIONS, ...DATABASE_ACTIONS.map(x => ({ ...x, category: "database" }))]
+const actionDescs = ALL_ACTIONS.map(x => `${x.keywords.join("/")} - ${x.description}`).join("\n");
 
 function parseSearchQuery(query, actions) {
     const match = query.match(/^([^:]+):\s*(.*)$/);
@@ -88,7 +93,9 @@ export default function TitleSearch() {
             <SearchComponent setSearch={setSearch} />
         }
 
-        <button onClick={() => setSearch(p => !p)} style={{ background: "transparent", border: "none" }}>
+        <button onClick={() => setSearch(p => !p)} style={{ background: "transparent", border: "none" }}
+            {...getGeneralTooltipProps("Search pages, identities, E.G.O, and so on. There are also actions you can do by typing 'action: query'.\n\n" + actionDescs)}
+        >
             <FaSearch />
         </button>
     </div>
@@ -239,6 +246,11 @@ function SearchComponent({ setSearch }) {
     }
 
     useEffect(() => {
+        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            tooltipRef.current?.close();
+            return;
+        }
+
         const item = results[selectedIndex];
         tooltipRef.current?.close();
         if (!item) return;

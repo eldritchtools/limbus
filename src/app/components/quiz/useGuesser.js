@@ -37,7 +37,7 @@ export function useGuesser(id) {
             if (settings.infinite) setResults([true]);
             else setResults(p => [...p, true]);
             setPhase("reveal");
-        } else if (newAnswers.length >= settings.guesses) {
+        } else if (newAnswers.length >= (settings.guesses ?? 1)) {
             if (settings.infinite) setResults([false]);
             else setResults(p => [...p, false]);
             setPhase("reveal");

@@ -44,12 +44,12 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>A site-wide search function have been added. You can find it beside the title of the site on the header.</li>
+                    <li>Added the {wrapLink("Community Trivia Quiz", "/community-trivia")} minigame. There aren&apos;t many questions to start with, but hopefully the dataset will grow over time. If you&apos;d like to contribue, you can submit your own questions for others to answer! (Login required to submit questions)</li>
                     <li>Added the {wrapLink("Shadow Guesser", "/shadow-guesser")} minigame.</li>
                     <li>{wrapLink("Clash Arena", "/clash-arena")} has had significant updates adding new mechanics like Team Bonuses and Blacklisting Phases. A Battle Royale mode has also been added to support significantly more players.</li>
                     <li>Assist units, levels, speed, hp, and offense/defense levels have been added to Encounters. Some things may have missing or incorrect levels if I&apos;ve missed them. They will be updated if I notice them or if they are reported.</li>
                     <li>The {wrapLink("GMS Explorer", "/gms-explorer")} page has been added.</li>
-                    <li>Flavor text has been added to all relevant Statuses, Skills, Passives, and Panic info.</li>
-                    <li>Alternative options in Builds and MD Plans can now be selected to replace the corresponding Identities or E.G.O, which updates the team code and other details.</li>
                 </> : null}
             </ul>
         </div>

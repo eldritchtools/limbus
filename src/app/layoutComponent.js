@@ -91,6 +91,7 @@ const paths = [
             { path: "/voiceline-guesser", title: "Voiceline Guesser" },
             { path: "/shadow-guesser", title: "Shadow Guesser" },
             { path: "/clash-arena", title: "Clash Arena" },
+            { path: "/community-trivia", title: "Community Trivia Quiz" },
         ]
     },
     {
