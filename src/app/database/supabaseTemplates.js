@@ -88,7 +88,7 @@ export async function withRetry(fn, options = {}) {
     throw lastError;
 }
 
-export async function callRPC(name, params) {
+export async function callRPC(name, params = {}) {
     return withRetry(async () => {
         const { data, error } = await getSupabase().rpc(name, params);
 

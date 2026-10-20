@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 
 import Problem from "./Problem";
-import { additionalInfoLabels, answerToText, checkAnswer } from "./util";
+import { additionalInfoLabels, answerToText, checkAnswer, constructLabel } from "./util";
 import { uiColors } from "../lib/colors";
 
 const buttonStyle = { fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" };
@@ -43,7 +43,7 @@ export default function RevealScreen({ settings, guesser, data, next }) {
         <span>Additional Info: {additionalInfoLabels[settings.additionalInfo]}</span>
 
         <span>
-            {answerToText(guesser.currentProblem, data)}
+            {constructLabel(guesser.currentProblem.category, answerToText(guesser.currentProblem, data))}
         </span>
 
         <span className="text-link" onClick={next} style={buttonStyle}>Continue</span>
@@ -56,7 +56,7 @@ export default function RevealScreen({ settings, guesser, data, next }) {
                     <div style={{ color: checkAnswer(x, guesser.currentProblem) ? uiColors.green : uiColors.red, fontSize: "1.5rem", fontWeight: "bold" }}>
                         {checkAnswer(x, guesser.currentProblem) ? "✓" : "✕"}
                     </div>
-                    {answerToText(x, data)}
+                    {constructLabel(x.category, answerToText(x, data))}
                 </span>
             )}
         </div>

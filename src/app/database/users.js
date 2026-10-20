@@ -84,3 +84,23 @@ export async function checkFollow(userId, targetId) {
         return data;
     });
 }
+
+export async function searchUsers(username) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("users")
+            .select("username")
+            .ilike("username", `%${username}%`)
+            .limit(10);
+
+        if (error) throw error;
+        return data.sort((a, b) => {
+            const q = username.toLowerCase();
+            const aName = a.username.toLowerCase();
+            const bName = b.username.toLowerCase();
+
+            const score = name => name === q ? 3 : name.startsWith(q) ? 2 : 1;
+            return score(bName) - score(aName);
+        });
+    });
+}

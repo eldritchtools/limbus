@@ -37,10 +37,12 @@ const schema = {
     }
 }
 
-export default async function Page() {
+export default async function Page({ searchParams }) {
+    const { compare } = await searchParams;
     const egos = await fetchData("egos");
     const minifiedEgos = Object.entries(egos)
         .map(([id, data]) => {
+            if (compare) return [id, data];
             const { name, rank, sinnerId, cost, resists, awakeningType, corrosionType, statuses } = data;
             return [id, { id, name, rank, sinnerId, cost, resists, awakeningType, corrosionType, statuses }]
         })
@@ -49,6 +51,6 @@ export default async function Page() {
 
     return <div style={{ display: "flex", flexDirection: "column", maxHeight: "100%", width: "100%", gap: "1rem", alignItems: "center" }}>
         <JsonLd data={schema} />
-        <EgosPage initEgos={minifiedEgos} />
+        <EgosPage initEgos={minifiedEgos} compare={compare} />
     </div>;
 }

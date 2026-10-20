@@ -17,7 +17,9 @@ import PassiveCard from "../skill/PassiveCard";
 import SanityCard from "../skill/SanityCard";
 import SkillCard from "../skill/SkillCard";
 
+import { useAuth } from "@/app/database/authProvider";
 import { searchBuilds } from "@/app/database/builds";
+import { getItemAggregates, getOverallScore, getReviewScores, getUserReview } from "@/app/database/reviews";
 import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, LEVEL_CAP, sinnerIdMapping } from "@/app/lib/constants";
 import { constructDefenseLevel, constructHp, constructSpeed } from "@/app/lib/identity";
@@ -168,6 +170,7 @@ function BuildsTab({ builds }) {
 }
 
 export default function RatingModalContent({ modalId, type, id, getCommunityReviews, getUserReviews, onChange }) {
+    const { user } = useAuth();
     const { setModalBeforeClose } = useModal();
     const [identities, identitiesLoading] = useData("identities_mini")
     const [egos, egosLoading] = useData("egos_mini");
@@ -179,18 +182,59 @@ export default function RatingModalContent({ modalId, type, id, getCommunityRevi
     const [reviewText, setReviewText] = useState("");
     const [isReviewing, setIsReviewing] = useState(false);
 
+    const [dbUserReview, setDbUserReview] = useState(null);
+    const [dbCommunityRating, setDbCommunityRating] = useState(null);
+
     const triggerRender = useCallback(() => { updateCount(p => p + 1) }, []);
 
     const handleChange = async x => {
-        await onChange(x);
+        await onChange?.(x);
+
+        if (!getUserReviews) {
+            const modEntry = (global, user, delta) => {
+                if (!user) return global;
+
+                const scores = getReviewScores(user);
+                if (!global) return { votes: 1, rating: scores, overallRating: getOverallScore(scores) };
+
+                const votesDelta = scores.some(x => x > 0) ? delta : 0;
+                const newRating = global.rating.map((score, i) => ((score * global.votes) + delta * scores[i]) / (global.votes + votesDelta));
+                return {
+                    votes: global.votes + votesDelta,
+                    rating: newRating,
+                    overallRating: getOverallScore(newRating)
+                }
+            }
+
+            if (x === null) {
+                const newReviews = modEntry(dbCommunityRating, dbUserReview, -1);
+                if (newReviews.votes === 0) setDbCommunityRating(null);
+                else setDbCommunityRating(newReviews);
+                setDbUserReview(null);
+                return;
+            }
+
+            setDbCommunityRating(p => modEntry(modEntry(p, dbUserReview, -1), x, 1));
+            setDbUserReview(x);
+        }
 
         setTimeout(() => {
             triggerRender();
         }, 0);
     }
 
-    const review = getUserReviews()?.[id];
-    const communityRating = getCommunityReviews()?.[id];
+    useEffect(() => {
+        const fetch = async () => {
+            if (!getUserReviews) setDbUserReview(await getUserReview({ userId: user.id, itemType: type, itemId: id }));
+            if (!getCommunityReviews) setDbCommunityRating(await getItemAggregates({ itemType: type, itemId: id }));
+        }
+
+        fetch();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const review = getUserReviews ? getUserReviews()[id] : dbUserReview;
+    const communityRating = getCommunityReviews ? getCommunityReviews()[id] : dbCommunityRating;
 
     useEffect(() => {
         const fetchBuilds = async () => {

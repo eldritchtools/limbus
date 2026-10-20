@@ -1,7 +1,7 @@
 import Select from "react-select";
 
 import Problem from "./Problem";
-import { additionalInfoLabels, answerToText } from "./util";
+import { additionalInfoLabels, answerToText, constructLabel } from "./util";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch } from "../lib/filter";
 import { selectStyleVariable } from "../styles/selectStyle";
@@ -21,7 +21,7 @@ export default function GuessingScreen({ settings, guesser, data, options, submi
                     <div style={{ color: uiColors.red, fontSize: "1.5rem", fontWeight: "bold" }}>
                         ✕
                     </div>
-                    {answerToText(x, data)}
+                    {constructLabel(x.category, answerToText(x, data))}
                 </span>
             )}
         </div>

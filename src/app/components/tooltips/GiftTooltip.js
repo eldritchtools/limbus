@@ -68,3 +68,5 @@ export function getGiftTooltipProps(id, enhanceRank, expandable) {
         "data-tooltip-content": `${id}:${enhanceRank}:${expandable}`
     }
 }
+
+export { TooltipLoader as GiftTooltipLoader };

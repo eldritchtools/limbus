@@ -263,7 +263,7 @@ function IdentityList({
     }
 }
 
-export default function IdentitiesPage({ initIdentities }) {
+export default function IdentitiesPage({ initIdentities, compare }) {
     const [identities, identitiesLoading] = useData("identities");
 
     const [searchString, setSearchString] = useState("");
@@ -272,7 +272,7 @@ export default function IdentitiesPage({ initIdentities }) {
     const [strictFiltering, setStrictFiltering] = useLocalState("idEgoStrictFiltering", false);
     const [separateSinners, setSeparateSinners] = useLocalState("idEgoSeparateSinners", false);
     const [companyFilter, setCompanyFilter] = useLocalState("idEgoCompanyFilter", false);
-    const [compareMode, setCompareMode] = useState("off");
+    const [compareMode, setCompareMode] = useState(compare ? "adv" : "off");
 
     const [selectedStatuses, setSelectedStatuses] = useState([]);
     const [statusesExcluding, setStatusesExcluding] = useState(false);

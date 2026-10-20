@@ -15,7 +15,7 @@ const TOOLTIP_ID = "encounter-tooltip";
 function EncounterTooltipContent({ cat, id, encounter }) {
     const { getCustomizationValue } = useSiteCustomization();
     const handleTargets = (acc, targets) => {
-        if(targets) acc.push(...targets);
+        if (targets) acc.push(...targets);
     }
 
     const handlePhase = (acc, phase) => {
@@ -23,20 +23,20 @@ function EncounterTooltipContent({ cat, id, encounter }) {
     }
 
     const handleWave = (acc, wave) => {
-        if("phases" in wave) wave.phases.forEach(phase => handlePhase(acc, phase));
+        if ("phases" in wave) wave.phases.forEach(phase => handlePhase(acc, phase));
         else handleTargets(acc, wave.targets);
     }
 
     const handleBattle = (acc, battle) => {
-        if("waves" in battle) battle.waves.forEach(wave => handleWave(acc, wave));
+        if ("waves" in battle) battle.waves.forEach(wave => handleWave(acc, wave));
         else if ("phases" in battle) battle.phases.forEach(phase => handlePhase(acc, phase));
         else handleTargets(acc, battle.targets);
     }
-    
+
     const handleEncounter = (acc, encounter) => {
-        if("battles" in encounter) encounter.battles.forEach(battle => handleBattle(acc, battle));
-        else if("waves" in encounter) encounter.waves.forEach(wave => handleWave(acc, wave));
-        else if("phases" in encounter) encounter.phases.forEach(phase => handlePhase(acc, phase));
+        if ("battles" in encounter) encounter.battles.forEach(battle => handleBattle(acc, battle));
+        else if ("waves" in encounter) encounter.waves.forEach(wave => handleWave(acc, wave));
+        else if ("phases" in encounter) encounter.phases.forEach(phase => handlePhase(acc, phase));
         else handleTargets(acc, encounter.targets);
         return acc;
     }
@@ -73,7 +73,7 @@ function TooltipLoader({ cat, id }) {
 
 export default function EncounterTooltip() {
     return <TooltipTemplate id={TOOLTIP_ID} contentFunc={str => {
-        if(!str) return; 
+        if (!str) return;
         const [cat, id] = str.split("|");
         return <TooltipLoader cat={cat} id={id} />
     }} clickable={isTouchDevice()} />
@@ -85,3 +85,5 @@ export function getEncounterTooltipProps(cat, id) {
         "data-tooltip-content": `${cat}|${id}`
     }
 }
+
+export { TooltipLoader as EncounterTooltipLoader };
