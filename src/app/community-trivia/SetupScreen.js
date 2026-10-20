@@ -221,6 +221,7 @@ function ModerateTab() {
 
         {question && <>
             <span>Status: {question.status}</span>
+            <span>Submitted by: {question.username}</span>
             <Question question={question} setQuestion={handleSetQuestion} editable={true} />
 
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -315,9 +316,11 @@ function ReportsTab() {
 
         {report && <>
             <span>Status: {report.status}</span>
+            <span>Submitted by: {report.username}</span>
             <Question question={report} setQuestion={handleSetReport} editable={true} />
 
             <span>Report: {TRIVIA_REPORT_REASONS[report.reason]}</span>
+            <span>Reported by: {report.reporter}</span>
             <div>
                 {report.details}
             </div>
