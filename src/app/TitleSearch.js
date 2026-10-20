@@ -83,7 +83,7 @@ export default function TitleSearch() {
         return () => { document.removeEventListener("mousedown", handleClickOutside); };
     }, []);
 
-    return <div ref={containerRef} style={{ display: "flex", alignItems: "center" }}>
+    return <div ref={containerRef} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
         {!search ?
             <h1 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>
                 <a href={"/"} style={{ color: "var(--primary-text-color, #ddd)", textDecoration: "none", cursor: "pointer" }}>
@@ -93,8 +93,8 @@ export default function TitleSearch() {
             <SearchComponent setSearch={setSearch} />
         }
 
-        <button onClick={() => setSearch(p => !p)} style={{ background: "transparent", border: "none" }}
-            {...getGeneralTooltipProps("Search pages, identities, E.G.O, and so on. There are also actions you can do by typing 'action: query'.\n\n" + actionDescs)}
+        <button onClick={() => setSearch(p => !p)} style={{ background: "transparent", padding: "0.2rem" }}
+            {...getGeneralTooltipProps("Search pages, identities, E.G.O, and so on. There are also actions you can do by typing 'action: query'. For example, typing 'ratings: lcb' then selecting something would open the ratings menu instead of navigating to its page.\n\nActions:\n" + actionDescs)}
         >
             <FaSearch />
         </button>
