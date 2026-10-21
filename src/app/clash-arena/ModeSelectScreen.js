@@ -25,7 +25,7 @@ export default function ModeSelectScreen({ clashBattle }) {
         >
             Battle Royale
         </span>
-        <span className="sub-text">Play with up to 200 players. Players draft simultaneously and can pick identities and E.G.O. already picked by other players. Blacklisting phases are unavailable in this mode.</span>
+        <span className="sub-text">Play with up to 100 players. Players draft simultaneously and can pick identities and E.G.O. already picked by other players. Blacklisting phases are unavailable in this mode.</span>
         <span className="sub-text">Note: Performance may be affected when many players are in the same room. The player limit may be adjusted in the future as necessary to maintain server stability.</span>
    </div>
 }

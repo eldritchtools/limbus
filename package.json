@@ -28,6 +28,7 @@
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.4.0",
     "diff": "^8.0.3",
+    "fflate": "^0.8.3",
     "lodash.debounce": "^4.0.8",
     "lru-cache": "^11.3.6",
     "nanoid": "^5.1.11",

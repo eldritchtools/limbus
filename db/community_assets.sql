@@ -58,7 +58,7 @@ ON community_assets
 FOR DELETE
 USING (false);
 
-CREATE OR REPLACE FUNCTION create_community_asset(
+CREATE OR REPLACE FUNCTION create_community_asset_v2(
   p_id TEXT,
   p_type community_asset_type,
   p_prefix TEXT,
@@ -71,6 +71,15 @@ DECLARE
 BEGIN
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM auth.users
+    WHERE id = v_uid
+      AND created_at > NOW() - INTERVAL '7 days'
+  ) THEN
+    RAISE EXCEPTION 'Account must be at least 7 days old to upload assets';
   END IF;
 
   IF EXISTS (

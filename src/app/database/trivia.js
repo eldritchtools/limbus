@@ -43,7 +43,7 @@ export async function resolveTriviaReport(reportId) {
 }
 
 export async function updateTriviaQuestion({ id, question, answer, answerType, otherAnswers = [], explanation = null }) {
-    return callRPC("update_trivia_question", {
+    return callRPC("update_trivia_question_v2", {
         p_question_id: id,
         p_question: question,
         p_answer: answer,
@@ -55,4 +55,12 @@ export async function updateTriviaQuestion({ id, question, answer, answerType, o
 
 export async function getTriviaQuestionCounts() {
     return callRPC("get_trivia_question_counts");
+}
+
+export async function getMyPendingTriviaQuestions() {
+    return callRPC("get_my_pending_trivia_questions");
+}
+
+export async function deleteTriviaQuestion(questionId) {
+    return callRPC("delete_trivia_question", { p_question_id: questionId })
 }

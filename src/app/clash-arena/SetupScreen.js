@@ -28,7 +28,7 @@ export default function SetupScreen({ clashBattle }) {
             <button
                 onClick={clashBattle.isPublic ? clashBattle.closeToPublic : clashBattle.openToPublic}
                 {...getGeneralTooltipProps("Opening the room to the public allows other players to find the room on the host/join room screen. Rooms are automatically closed when reaching 8 players. Note that players can still join the room even if it's closed if they already know the room id.")}
-                disabled={clashBattle.participants.length >= 8}
+                disabled={clashBattle.participants.length >= (clashBattle.mode === "battleRoyale" ? 100 : 8)}
             >
                 {clashBattle.isPublic ? "Close" : "Open"} to public
             </button> :
@@ -164,6 +164,21 @@ export default function SetupScreen({ clashBattle }) {
                         Enable E.G.O Drafting
                     </span>
                 </label>
+
+                {clashBattle.mode === "standard" &&
+                    <label
+                        {...getGeneralTooltipProps("If enabled, ban phases happen between every 2 cycles of drafting.")}
+                    >
+                        <input type="checkbox"
+                            checked={clashBattle.settings.blacklisting}
+                            onChange={e => clashBattle.setSetting("blacklisting", e.target.checked)}
+                            disabled={!clashBattle.isHost}
+                        />
+                        <span className="hover-text">
+                            Enable Ban Phase
+                        </span>
+                    </label>
+                }
             </div>
         </div>
 

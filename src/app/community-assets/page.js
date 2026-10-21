@@ -143,6 +143,14 @@ function ManageComponent({ type }) {
     const onSubmit = async () => {
         if (!file || !name) return;
 
+        if (!user?.created_at) return;
+
+        const ACCOUNT_AGE_REQUIREMENT = 7 * 24 * 60 * 60 * 1000;
+        if (Date.now() - new Date(user.created_at).getTime() < ACCOUNT_AGE_REQUIREMENT) {
+            setError("Accounts must be at least 1 week old to upload assets.");
+            return;
+        }
+
         const nameValidation = validatePrefix(name.trim());
         if (nameValidation) {
             setError(nameValidation);

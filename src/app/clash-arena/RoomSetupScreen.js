@@ -28,6 +28,7 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
         }
         setPublicRooms(json.rooms.map(x => ({ ...x, room_id: trimPrefixes(x.room_id) })));
         setRoomsRefreshing(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
