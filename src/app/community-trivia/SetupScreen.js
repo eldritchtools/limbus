@@ -7,7 +7,7 @@ import { defaultQuestion, remapQuestion, TRIVIA_REPORT_REASONS } from "./util";
 import NumberInput from "../components/objects/NumberInput";
 import PageHeader from "../components/pageTemplates/PageHeader";
 import { useAuth } from "../database/authProvider";
-import { getPendingTriviaQuestions, getTriviaQuestionCounts, getTriviaReports, moderateTriviaQuestion, resolveTriviaReport, searchTriviaQuestions, submitTriviaQuestion, updateTriviaQuestion } from "../database/trivia";
+import { deleteTriviaQuestion, getMyPendingTriviaQuestions, getPendingTriviaQuestions, getTriviaQuestionCounts, getTriviaReports, moderateTriviaQuestion, resolveTriviaReport, searchTriviaQuestions, submitTriviaQuestion, updateTriviaQuestion } from "../database/trivia";
 
 function GameTab({ settings, setSettings, onStart, onReset }) {
     const [counts, setCounts] = useState(null);
@@ -164,6 +164,75 @@ function SubmitTab() {
                     <span>A: {x.answer}</span>
                 </div>)}
             </div>
+        }
+    </>
+}
+
+function ReviewTab() {
+    const [questions, setQuestions] = useState(null);
+    const [selected, setSelected] = useState(null);
+
+    useEffect(() => {
+        const fetch = async () => setQuestions((await getMyPendingTriviaQuestions()).map(x => remapQuestion(x)));
+        if (!questions) fetch();
+    }, [questions]);
+
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const question = questions?.find(x => x.id === selected);
+
+    const updateQuestion = async () => {
+        if (!question) return;
+        setMessage("");
+        setLoading(true);
+        await updateTriviaQuestion(question);
+        setMessage("Updated");
+        setLoading(false);
+    }
+
+    const deleteQuestion = async () => {
+        if (!question) return;
+        setMessage("");
+        setLoading(true);
+        await deleteTriviaQuestion(question.id);
+        setQuestions(p => p.filter(x => x.id !== question.id));
+        setMessage("Deleted")
+        setLoading(false);
+    }
+
+    const handleSetQuestion = fn => {
+        setQuestions(p => p.map(x => x.id === selected ? fn(x) : x));
+    }
+
+    return <>
+        <PageHeader
+            title={"Review my Pending Questions"}
+            mainDesc={<>
+                You can review and edit your pending questions here. Accepted and rejected questions can no longer be edited.
+            </>}
+            showAd={false}
+        ></PageHeader>
+
+        <select value={selected} onChange={e => { setMessage(""); setSelected(Number(e.target.value)) }}>
+            <option value={-1}></option>
+            {questions?.map(x => <option key={x.id} value={x.id}>
+                {x.question}
+            </option>)}
+        </select>
+
+        {question && <>
+            <Question question={question} setQuestion={handleSetQuestion} editable={true} />
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <button onClick={() => updateQuestion()} disabled={loading}>Update Question</button>
+                <button onClick={() => deleteQuestion()} disabled={loading}>Delete Question</button>
+            </div>
+
+            <div>
+                {message}
+            </div>
+        </>
         }
     </>
 }
@@ -365,6 +434,9 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
             {user &&
                 <div className={`tab-header ${tab === "submit" ? "active" : ""}`} onClick={() => setTab("submit")}>Submit</div>
             }
+            {user &&
+                <div className={`tab-header ${tab === "review" ? "active" : ""}`} onClick={() => setTab("review")}>Review</div>
+            }
             {profile && profile.is_admin &&
                 <div className={`tab-header ${tab === "mod" ? "active" : ""}`} onClick={() => setTab("mod")}>Moderate</div>
             }
@@ -374,6 +446,7 @@ export default function SetupScreen({ settings, setSettings, onStart, onReset })
         </div>
 
         {tab === "game" && <GameTab settings={settings} setSettings={setSettings} onStart={onStart} onReset={onReset} />}
+        {tab === "review" && <ReviewTab />}
         {tab === "submit" && <SubmitTab />}
         {tab === "mod" && <ModerateTab />}
         {tab === "report" && <ReportsTab />}

@@ -1,4 +1,5 @@
 import MarkdownEditorWrapper from "../components/markdown/MarkdownEditorWrapper"
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
 
 function EditableQuestion({ question, setQuestion }) {
@@ -43,7 +44,7 @@ function EditableQuestion({ question, setQuestion }) {
         <div style={{ display: "flex", justifyContent: "end" }}>
             <span style={{ fontSize: "1.1rem", textAlign: "end" }}>
                 {question.answerType === "short_answer" ?
-                    <span>Alternate Answers</span> :
+                    <span className="hover-text" {...getGeneralTooltipProps("Other ways to input the correct answer.")}>Alternate Answers</span> :
                     <span>Incorrect Options</span>
                 }
             </span>

@@ -246,7 +246,11 @@ export default function RoundSelectScreen({ clashBattle }) {
             <ParticipantTextGrid participants={clashBattle.participants} sorted={(a, b) => b.score - a.score}>
                 {x => {
                     return <div key={x.player_id}
-                        style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                        style={{
+                            display: "flex", flexDirection: "column", alignItems: "center",
+                            border: x.player_id === clashBattle.playerId ? "1px solid var(--primary-border-color)" : null,
+                            borderRadius: "0.5rem"
+                        }}
                         {...getClashArenaDraftTooltipProps([...x.identities, x.ego])}
                     >
                         <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center", fontWeight: x.player_id === clashBattle.playerId ? "bold" : null }}>

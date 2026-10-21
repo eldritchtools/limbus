@@ -425,7 +425,7 @@ $$;
 REVOKE ALL ON FUNCTION public.resolve_trivia_report(bigint) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.resolve_trivia_report(bigint) TO authenticated;
 
-CREATE OR REPLACE FUNCTION public.update_trivia_question(
+CREATE OR REPLACE FUNCTION public.update_trivia_question_v2(
     p_question_id bigint,
     p_question text,
     p_answer text,
@@ -438,12 +438,31 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
 AS $$
+DECLARE
+    v_status text;
+    v_user_id uuid := auth.uid();
+    v_is_admin boolean;
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM public.users u
-        WHERE u.id = auth.uid() AND u.is_admin IS TRUE
-    ) THEN
-        RAISE EXCEPTION 'Admin access required'
+    SELECT u.is_admin IS TRUE
+    INTO v_is_admin
+    FROM public.users u
+    WHERE u.id = v_user_id;
+
+    v_is_admin := COALESCE(v_is_admin, FALSE);
+
+    SELECT tq.status
+    INTO v_status
+    FROM public.trivia_questions tq
+    WHERE tq.id = p_question_id AND ( v_is_admin OR (tq.user_id = v_user_id AND tq.status = 'pending') )
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Question not found or permission denied'
+            USING ERRCODE = '42501';
+    END IF;
+
+    IF NOT v_is_admin AND v_status <> 'pending' THEN
+        RAISE EXCEPTION 'Only pending questions can be edited'
             USING ERRCODE = '42501';
     END IF;
 
@@ -458,8 +477,8 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.update_trivia_question(bigint, text, text, text, text[], text) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.update_trivia_question(bigint, text, text, text, text[], text) TO authenticated;
+REVOKE ALL ON FUNCTION public.update_trivia_question_v2(bigint, text, text, text, text[], text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.update_trivia_question_v2(bigint, text, text, text, text[], text) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.get_trivia_question_counts()
 RETURNS TABLE (
@@ -479,3 +498,51 @@ $$;
 
 REVOKE ALL ON FUNCTION public.get_trivia_question_counts() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.get_trivia_question_counts() TO anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.get_my_pending_trivia_questions()
+RETURNS SETOF public.trivia_questions
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+    SELECT tq.*
+    FROM public.trivia_questions tq
+    WHERE tq.user_id = auth.uid() AND tq.status = 'pending'
+    ORDER BY tq.updated_at DESC;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_my_pending_trivia_questions() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.get_my_pending_trivia_questions() TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.delete_trivia_question(
+    p_question_id bigint
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_user_id uuid := auth.uid();
+    v_is_admin boolean;
+BEGIN
+    SELECT u.is_admin IS TRUE
+    INTO v_is_admin
+    FROM public.users u
+    WHERE u.id = v_user_id;
+
+    v_is_admin := COALESCE(v_is_admin, FALSE);
+
+    DELETE FROM public.trivia_questions tq
+    WHERE tq.id = p_question_id AND (v_is_admin OR (tq.user_id = v_user_id AND tq.status = 'pending'));
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Question not found or permission denied'
+            USING ERRCODE = '42501';
+    END IF;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.delete_trivia_question(bigint) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.delete_trivia_question(bigint) TO authenticated;

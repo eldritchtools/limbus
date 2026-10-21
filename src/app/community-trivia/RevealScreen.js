@@ -11,7 +11,7 @@ import { uiColors } from "../lib/colors";
 
 const buttonStyle = { fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" };
 
-export default function RevealScreen({ settings, guesser, next }) {
+export default function RevealScreen({ guesser, next }) {
     const [reporting, setReporting] = useState(false);
     const [reason, setReason] = useState("incorrect_answer");
     const [details, setDetails] = useState("");
@@ -21,26 +21,19 @@ export default function RevealScreen({ settings, guesser, next }) {
     const correct = guesser.results[guesser.results.length - 1];
 
     useEffect(() => {
-        let handleKeyDown;
+        if (reporting) return;
 
-        const timeout = setTimeout(() => {
-            handleKeyDown = e => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    next();
-                }
-            };
-
-            window.addEventListener("keydown", handleKeyDown);
-        }, 0);
-
-        return () => {
-            clearTimeout(timeout);
-
-            if (handleKeyDown)
-                window.removeEventListener("keydown", handleKeyDown);
+        const handleKeyDown = e => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                next();
+            }
         };
-    }, [next, settings]);
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [next, reporting]);
 
     const submitReport = async () => {
         setLoading(true);
@@ -68,7 +61,7 @@ export default function RevealScreen({ settings, guesser, next }) {
         </div>
 
         <span className="text-link" onClick={next} style={buttonStyle}>Continue</span>
-        <span className="sub-text">Press Enter/Space to continue.</span>
+        <span className="sub-text">Press Enter/Space to continue. (Disabled when reporting)</span>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
             {(guesser.answers ?? []).map((x, i) =>
@@ -81,8 +74,8 @@ export default function RevealScreen({ settings, guesser, next }) {
             )}
         </div>
 
-        <button onClick={() => {setReporting(p => !p); setMessage("");}} style={{display: "flex", alignItems: "center", gap: "0.2rem"}}>
-            <FlagIcon style={{width: "24px", height: "24px"}}/> Report Question
+        <button onClick={() => { setReporting(p => !p); setMessage(""); }} style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+            <FlagIcon style={{ width: "24px", height: "24px" }} /> Report Question
         </button>
 
         {reporting && <>

@@ -130,7 +130,13 @@ export default function RoundRevealScreen({ clashBattle }) {
                     }
                     const roundScore = result.points;
                     const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
-                    return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                    return <div key={x.player_id}
+                        style={{ 
+                            display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
+                            border: x.player_id === clashBattle.playerId ? "1px solid var(--primary-border-color)" : null,
+                            borderRadius: "0.5rem"
+                        }}
+                    >
                         <div
                             style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                             {...getClashArenaDraftTooltipProps([...x.identities, x.ego])}

@@ -4,7 +4,7 @@ import { callRPC, withRetry } from "./supabaseTemplates";
 let userAssetCache = {};
 
 export async function createCommunityAsset(id, type, prefix, keywords) {
-    const result = callRPC("create_community_asset", { p_id: id, p_type: type, p_prefix: prefix, p_keywords: keywords });
+    const result = callRPC("create_community_asset_v2", { p_id: id, p_type: type, p_prefix: prefix, p_keywords: keywords });
     userAssetCache = {};
     return result;
 }

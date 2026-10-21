@@ -335,7 +335,7 @@ export default function DraftScreen({ clashBattle }) {
                     if (id === "identity") displayName = "Identity";
                     else displayName = "E.G.O";
                 } else {
-                    if (id === "blacklist") displayName = "Blacklist Phase";
+                    if (id === "blacklist") displayName = "Ban Phase";
                     else displayName = clashBattle.participants.find(
                         x => x.player_id === (typeof id === "string" && id.startsWith("e-") ? Number(id.slice(2)) : id)
                     ).display_name
@@ -395,7 +395,7 @@ export default function DraftScreen({ clashBattle }) {
         }
 
         {clashBattle.blacklist.length > 0 && <>
-            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Blacklist</span>
+            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Bans</span>
             <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {clashBattle.blacklist.map(id => <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />)}
             </div>

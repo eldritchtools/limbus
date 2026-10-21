@@ -28,7 +28,7 @@ export default function SetupScreen({ clashBattle }) {
             <button
                 onClick={clashBattle.isPublic ? clashBattle.closeToPublic : clashBattle.openToPublic}
                 {...getGeneralTooltipProps("Opening the room to the public allows other players to find the room on the host/join room screen. Rooms are automatically closed when reaching 8 players. Note that players can still join the room even if it's closed if they already know the room id.")}
-                disabled={clashBattle.participants.length >= 8}
+                disabled={clashBattle.participants.length >= (clashBattle.mode === "battleRoyale" ? 100 : 8)}
             >
                 {clashBattle.isPublic ? "Close" : "Open"} to public
             </button> :
