@@ -30,7 +30,10 @@ export default function GuessingScreen({ settings, guesser, submitAnswer, skip }
         }
 
         <div style={{ display: "flex", gap: "1rem" }}>
-            <span className="text-link" onClick={() => submitAnswer(answer)}
+            <span className="text-link" onClick={() => {
+                if(!answer || answer.length === 0) return;
+                submitAnswer(answer);
+            }}
                 style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
             >
                 Submit Answer

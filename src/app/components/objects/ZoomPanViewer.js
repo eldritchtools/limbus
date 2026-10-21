@@ -1,10 +1,12 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper, useControls } from "react-zoom-pan-pinch";
 
 import styles from "./ZoomPanViewer.module.css";
+
+import useLocalState from "@/app/lib/useLocalState";
 
 function CenterOnRef({ ref, width, height }) {
     const { zoomToElement } = useControls();
@@ -21,6 +23,9 @@ export default function ZoomPanViewer({ width, height, initialScale = 1, minScal
     const [coordinates, setCoordinates] = useState(null);
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [zoomMode, setZoomMode] = useLocalState("mapZoomMode", "scroll");
+    const mouseDownPos = useRef(null);
+    const dragged = useRef(false);
 
     const getImageCoordinates = event => {
         const viewer = event.currentTarget;
@@ -42,12 +47,49 @@ export default function ZoomPanViewer({ width, height, initialScale = 1, minScal
         setCoordinates(null);
     };
 
-    const handleClick = event => {
+    const handleMouseDown = event => {
+        mouseDownPos.current = { x: event.clientX, y: event.clientY };
+        dragged.current = false;
+    };
+
+    const handleMouseMoveForDrag = event => {
+        if (!mouseDownPos.current) return;
+
+        const dx = event.clientX - mouseDownPos.current.x;
+        const dy = event.clientY - mouseDownPos.current.y;
+
+        if (Math.sqrt(dx * dx + dy * dy) > 5) {
+            dragged.current = true;
+        }
+    };
+
+    const handleMouseUp = () => {
+        mouseDownPos.current = null;
+    };
+
+    const handleClick = (event, zoomIn) => {
+        if (zoomMode === "click" && !dragged.current) {
+            zoomIn(0.5, 150);
+            dragged.current = false;
+        }
+
         const coords = getImageCoordinates(event);
         if (!coords) return;
 
         setSelectedCoordinates(coords);
         setCopied(false);
+    };
+
+    const handleContextMenu = (event, zoomOut) => {
+        if (zoomMode !== "click") return;
+        event.preventDefault();
+
+        if(dragged.current) {
+            dragged.current = false;
+            return;
+        }
+        
+        zoomOut(0.5, 150);
     };
 
     const handleCopy = async () => {
@@ -60,7 +102,7 @@ export default function ZoomPanViewer({ width, height, initialScale = 1, minScal
         <TransformWrapper
             initialScale={initialScale} minScale={minScale} maxScale={maxScale}
             centerOnInit limitToBounds={false} smooth
-            wheel={{ step: 0.002 }}
+            wheel={{ disabled: zoomMode === "click", step: 0.002 }}
             pinch={{ disabled: false }}
             doubleClick={{ disabled: true }}
             panning={{ disabled: false, velocityDisabled: true }}
@@ -72,12 +114,20 @@ export default function ZoomPanViewer({ width, height, initialScale = 1, minScal
                         <button type="button" onClick={() => zoomIn(0.1, 150)} aria-label="Zoom in" title="Zoom in">+</button>
                         <button type="button" onClick={() => zoomOut(0.1, 150)} aria-label="Zoom out" title="Zoom out">−</button>
                         <button type="button" className={styles.reset} onClick={() => resetTransform(150)}>Reset</button>
+                        <button type="button" className={styles.zoomMode} onClick={() => setZoomMode(mode => mode === "scroll" ? "click" : "scroll")}>
+                            Zoom Mode: {zoomMode === "scroll" ? "Scroll" : "Click"}
+                        </button>
                     </div>
 
                     {centerOnRef && <CenterOnRef ref={centerOnRef} width={width} height={height} />}
 
                     <TransformComponent wrapperClass={styles.wrapper} contentClass={styles.content}>
-                        <div style={{ width, height }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} onClick={handleClick}>
+                        <div style={{ width, height }}
+                            onPointerDown={handleMouseDown} onPointerUp={handleMouseUp}
+                            onPointerMove={event => { handleMouseMove(event); handleMouseMoveForDrag(event); }}
+                            onMouseLeave={event => { handleMouseLeave(event); handleMouseUp(event); }}
+                            onClick={event => handleClick(event, zoomIn)} onContextMenu={event => handleContextMenu(event, zoomOut)}
+                        >
                             {children}
                         </div>
                     </TransformComponent>

@@ -106,8 +106,16 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
     if (dataLoading || itemsLoading) return;
 
     return <>
+        <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
+            <div className={`tab-header ${subtab === "items" && "active"}`} onClick={() => handleSetSubtab("items")}>Items</div>
+            <div className={`tab-header ${subtab === "dialogues" && "active"}`} onClick={() => handleSetSubtab("dialogues")}>Dialogues</div>
+            <div className={`tab-header ${subtab === "deaths" && "active"}`} onClick={() => handleSetSubtab("deaths")}>Deaths</div>
+        </div>
+        <span className="sub-text">{subtabDescs[subtab]}</span>
+
         {floorData.image ?
             <>
+                <span>Map Credit: <NoPrefetchLink className="text-link" href={floorData.source}>{floorData.source}</NoPrefetchLink></span>
                 <MapViewer
                     src={mapSource(floorData.image)}
                     alt={`${route} ${floor} map`}
@@ -117,7 +125,6 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
                     selectedMarker={selectedMarker}
                     setSelectedMarker={newMarker => handleSetMarker(newMarker?.id ?? null)}
                 />
-                <span>Map Credit: <NoPrefetchLink className="text-link" href={floorData.source}>{floorData.source}</NoPrefetchLink></span>
             </> :
             <>
                 Map Currently Unavailable
@@ -125,13 +132,6 @@ function ContentWrapper({ route, floor, datafile, floorData, marker, handleSetMa
             </>
         }
 
-        <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
-            <div className={`tab-header ${subtab === "items" && "active"}`} onClick={() => handleSetSubtab("items")}>Items</div>
-            <div className={`tab-header ${subtab === "dialogues" && "active"}`} onClick={() => handleSetSubtab("dialogues")}>Dialogues</div>
-            <div className={`tab-header ${subtab === "deaths" && "active"}`} onClick={() => handleSetSubtab("deaths")}>Deaths</div>
-        </div>
-
-        <span className="sub-text">{subtabDescs[subtab]}</span>
 
         {subtab === "items" &&
             <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${isMobile ? 200 : 400}px, 1fr))`, width: "100%", gap: "0.2rem" }}>

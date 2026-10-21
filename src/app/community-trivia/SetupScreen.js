@@ -30,6 +30,8 @@ function GameTab({ settings, setSettings, onStart, onReset }) {
                 Need to practice your trivia before going to HamHamPangPang? Try the Community Trivia Quiz.
                 <br /> <br />
                 All questions are submitted by the community and periodically reviewed for accuracy. Playing on the Curated dataset will only include approved questions, while playing on the Community dataset will also include questions that haven&apos;t been reviewed. Questions that have been rejected due to being incorrect, a duplicate, ambiguous, or for other reasons are excluded from both.
+                <br /> <br />
+                If you have questions of your own, you can submit them in the Submit tab above. To keep things organized, please avoid submitting questions through other channels.
             </>}
             showAd={false}
         ></PageHeader>
@@ -221,6 +223,7 @@ function ModerateTab() {
 
         {question && <>
             <span>Status: {question.status}</span>
+            <span>Submitted by: {question.username}</span>
             <Question question={question} setQuestion={handleSetQuestion} editable={true} />
 
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -315,9 +318,11 @@ function ReportsTab() {
 
         {report && <>
             <span>Status: {report.status}</span>
+            <span>Submitted by: {report.username}</span>
             <Question question={report} setQuestion={handleSetReport} editable={true} />
 
             <span>Report: {TRIVIA_REPORT_REASONS[report.reason]}</span>
+            <span>Reported by: {report.reporter}</span>
             <div>
                 {report.details}
             </div>

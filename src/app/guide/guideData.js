@@ -390,7 +390,7 @@ export const guideData = [
                 title: "Artwork Guesser",
                 description: "Guess identities from small snippets of their artwork.",
                 details: [
-                    "The Artwork Guesser is a minigame that shows you cropped sections of identities' full art then asks you to guess which identity it is.",
+                    "Artwork Guesser is a minigame that shows you cropped sections of identities' full art then asks you to guess which identity it is.",
                     "There's a standard and a daily mode for the guesser. Standard mode lets you play the game normally, allowing you to choose settings like number of rounds and difficulty, while daily mode gives a single problem for everyone and resets every day.",
                     "Higher difficulties make the cropped section smaller and prioritizes sections further from the center of the art. The highest difficulty applies transformations on the image. Try it out to see for yourself.",
                     "The settings also allow you to choose whether preuptie and/or uptie arts are included in the selection.",
@@ -401,10 +401,19 @@ export const guideData = [
                 title: "Voiceline Guesser",
                 description: "Guess E.G.O from small snippets of their voicelines.",
                 details: [
-                    "The Voiceline Guesser is a minigame that shows you clipped sections of E.G.O voicelines then asks you to guess which E.G.O it is.",
+                    "Voiceline Guesser is a minigame that shows you clipped sections of E.G.O voicelines then asks you to guess which E.G.O it is.",
                     "There's a standard and a daily mode for the guesser. Standard mode lets you play the game normally, allowing you to choose settings like number of rounds and difficulty, while daily mode gives a single problem for everyone and resets every day.",
                     "Higher difficulties make the clipped section shorter and makes them start at random points in the clip. The highest difficulty applies transformations on the clip. Try it out to see for yourself.",
                     "There's also multiplayer support where you can compete with other players on who makes the most correct guesses. A chat room is provided when creating a multiplayer room. Refer to Chat Widget under Shared Features for more details."
+                ]
+            },
+            {
+                title: "Shadow Guesser",
+                description: "Guess things from their silhouettes and optionally some additional information.",
+                details: [
+                    "Shadow Guesser is a minigame that shows you a silhouette of an object from the game then asks you to guess what it is.",
+                    "Multiple categories of items can be toggled on and off to choose what problem can be generated.",
+                    "Additional information about the items can also be shown as additional hints. The setting for this is chosen in the game settings before starting the game."
                 ]
             },
             {
@@ -416,6 +425,16 @@ export const guideData = [
                     "E.G.O can optionally be included in the draft. If included, they will be drafted after all identities have been drafted. Players get half the usual points per round to draft a single E.G.O. E.G.O have a single use throughout the entire game. Awakenings and Corrosions share the same single use.",
                     "After drafting, players are faced with multiple rounds of randomly generated scenarios where they choose a skill from their team to use. The player whose skill clashes the highest gets a point. The player with the most points at the end wins.",
                     "A standard game has a maximum of 8 players, but the Battle Royale mode exists for those who want to play with significantly more players. Battle Royale has a number of adjustments to accommodate the increased number of players."
+                ]
+            },
+            {
+                title: "Community Trivia Quiz",
+                description: "Answer trivia questions submitted by the community.",
+                details: [
+                    "Community Trivia Quiz is a minigame that shows you a trivia questions submitted by the community.",
+                    "Submitted questions are periodically reviewed for accuracy.",
+                    "You can select between Curated and Community datasets. Curated questions are only those that have been accepted during review, while Community questions also includes questions that have not yet been reviewed. Rejected questions are excluded from both datasets.",
+                    "Anyone logged into an account can submit questions through the submit tab on the page. While playing, the contributor's username is shown to give credit for the question."
                 ]
             }
         ]
@@ -474,6 +493,15 @@ export const guideData = [
         id: "shared-features",
         title: "Shared Features",
         items: [
+            {
+                title: "Search",
+                description: "Search pages, identities, E.G.O, etc, or use certain actions.",
+                details: [
+                    "On the header of the site, beside the title, there's a search button that triggers the site-wide search function",
+                    "Users can search for things across and site and be sent directly to the corresponding page.",
+                    "A number of actions are provided to trigger alternate actions. They are triggered by typing 'action: query'. More details can be found when hovering over the search button."
+                ]
+            },
             {
                 title: "Post Actions",
                 description: "All posts (builds, md plans, collections) that users create have all the standard actions.",
