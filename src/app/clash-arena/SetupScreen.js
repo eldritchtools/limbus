@@ -164,6 +164,21 @@ export default function SetupScreen({ clashBattle }) {
                         Enable E.G.O Drafting
                     </span>
                 </label>
+
+                {clashBattle.mode === "standard" &&
+                    <label
+                        {...getGeneralTooltipProps("If enabled, ban phases happen between every 2 cycles of drafting.")}
+                    >
+                        <input type="checkbox"
+                            checked={clashBattle.settings.blacklisting}
+                            onChange={e => clashBattle.setSetting("blacklisting", e.target.checked)}
+                            disabled={!clashBattle.isHost}
+                        />
+                        <span className="hover-text">
+                            Enable Ban Phase
+                        </span>
+                    </label>
+                }
             </div>
         </div>
 
