@@ -1,9 +1,9 @@
 .button {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: var(--chat-bottom, 20px);
+    right: var(--chat-right, 20px);
 
-    width: 300px;
+    width: min(300px, 70%);
     height: 30px;
 
     background: var(--bg-secondary);
@@ -17,7 +17,7 @@
 
     transition: 0.2s ease all;
     cursor: pointer;
-    
+
     z-index: 1500;
 }
 
@@ -35,8 +35,8 @@
 
 .widget {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: var(--chat-bottom, 20px);
+    right: var(--chat-right, 20px);
 
     width: min(var(--chat-width, 360px), 90%);
     height: min(var(--chat-height, 500px), 50%);
@@ -55,11 +55,11 @@
 
 @media (max-width:768px) {
     .widget {
-        bottom: 10px;
-        right: 10px;
+        bottom: var(--chat-bottom, 10px);
+        right: var(--chat-right, 10px);
 
-        width: min(360px, 80%);
-        height: min(400px, 70%);
+        width: min(var(--chat-width, 100px), 80%);
+        height: min(var(--chat-height, 150px), 70%);
     }
 }
 
@@ -67,7 +67,7 @@
     height: 100%;
     width: 100%;
     overflow-y: auto;
-    scrollbar-width: thin; 
+    scrollbar-width: thin;
     scrollbar-color: var(--secondary-border-color) var(--bg-primary);
 }
 
@@ -345,5 +345,41 @@
     border-top: 2px solid var(--secondary-text-color);
     border-left: 2px solid var(--secondary-text-color);
 
+    opacity: 0.8;
+}
+
+.moveHandle {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    cursor: nwse-resize;
+    touch-action: none;
+
+    z-index: 1501;
+}
+
+.moveHandle::before {
+    content: "✥";
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--secondary-text-color);
+    font-size: 20px;
     opacity: 0.8;
 }
