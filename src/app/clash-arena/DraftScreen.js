@@ -320,7 +320,7 @@ export default function DraftScreen({ clashBattle }) {
             else
                 pieces.push(`${clashBattle.settings["pointsPerDraft"]} points per identity`);
         }
-
+        pieces.push(`${clashBattle.settings["sp"][0]} - ${clashBattle.settings["sp"][1]} SP range`);
         pieces.push(`${biasText(clashBattle.settings["spBias"]).slice(0, -5)} SP bias`);
         return pieces.join(", ");
     }, [clashBattle.settings]);
