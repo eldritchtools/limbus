@@ -162,7 +162,7 @@ function NoAiIcon() {
         {...getGeneralTooltipProps("This website is human-authored. No AI-generated code is used on this site.")}
     >
         <span style={{ position: "absolute", fontSize: "18px", fontWeight: "bold" }}>AI</span>
-        <FaBan style={{ position: "absolute", width: "36px", height: "36px", color: "red", rotate: "90deg" }} />
+        <FaBan style={{ position: "absolute", width: "36px", height: "36px", color: "#bb0000", rotate: "90deg" }} />
     </div>
 }
 

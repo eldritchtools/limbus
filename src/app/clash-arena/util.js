@@ -91,7 +91,10 @@ export const alerts = {
     "turn_start": ["Turn Start", 0.25],
     "mouse_over_1": ["Mouse Over 1", 0.5],
     "mouse_over_2": ["Mouse Over 2", 0.5],
-    "don_alert": ["GWANLIJA NARI", 0.25]
+    "danteh": ["Danteh", 1],
+    "don_alert": ["GWANLIJA NARI", 0.25],
+    "wh_alert": ["HE HE HA HA", 0.35],
+    "ff_alert": ["AAAAAAA", 0.35]
 }
 
 export function biasText(bias) {

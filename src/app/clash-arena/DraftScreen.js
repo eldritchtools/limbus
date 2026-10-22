@@ -4,7 +4,7 @@ import { FaVolumeUp } from "react-icons/fa";
 import HoldButton from "./HoldButton";
 import ParticipantGrid, { ParticipantTextGrid } from "./ParticipantsDisplay";
 import PointsDisplay from "./PointsDisplay";
-import { alerts } from "./util";
+import { alerts, biasText } from "./util";
 import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import Icon from "../components/icons/Icon";
@@ -300,6 +300,22 @@ export default function DraftScreen({ clashBattle }) {
 
     const playerEgo = clashBattle.getPlayerEgo();
 
+    const settingsString = useMemo(() => {
+        const pieces = [];
+        pieces.push(`${clashBattle.settings["rounds"]} rounds`);
+        pieces.push(`${clashBattle.settings["teamSize"]} identities`);
+        if(clashBattle.settings["egoDraft"]) pieces.push("1 E.G.O");
+        if (clashBattle.settings["pointsPerDraft"]) {
+            if (clashBattle.settings["egoDraft"])
+                pieces.push(`${clashBattle.settings["pointsPerDraft"]} points per identity (${Math.ceil(clashBattle.settings["pointsPerDraft"] / 2)} for E.G.O)`);
+            else
+                pieces.push(`${clashBattle.settings["pointsPerDraft"]} points per identity`);
+        }
+
+        pieces.push(`${biasText(clashBattle.settings["spBias"]).slice(0, -5)} SP bias`);
+        return pieces.join(", ");
+    }, [clashBattle.settings]);
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
         <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
 
@@ -326,6 +342,10 @@ export default function DraftScreen({ clashBattle }) {
                 <FaVolumeUp />
             </button>
         </div>
+
+        <span>
+            Game Settings: {settingsString}
+        </span>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Next Drafts</span>
         <div style={{ display: "flex", gap: "1rem" }}>

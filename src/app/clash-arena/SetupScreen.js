@@ -50,7 +50,8 @@ export default function SetupScreen({ clashBattle }) {
                 <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
                     onChange={x => {
                         clashBattle.setSetting("teamSize", x);
-                        if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
+                        const limit = x * 6 + (clashBattle.settings.egoDraft ? 1 : 0);
+                        if (clashBattle.settings.rounds > limit) clashBattle.setSetting("rounds", limit);
                     }}
                     style={{ textAlign: "center", width: "5ch" }}
                     disabled={!clashBattle.isHost}
@@ -62,7 +63,7 @@ export default function SetupScreen({ clashBattle }) {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <NumberInput min={1} max={clashBattle.settings.teamSize * 6} value={clashBattle.settings.rounds}
+                <NumberInput min={1} max={clashBattle.settings.teamSize * 6 + (clashBattle.settings.egoDraft ? 1 : 0)} value={clashBattle.settings.rounds}
                     onChange={x => clashBattle.setSetting("rounds", x)}
                     style={{ textAlign: "center", width: "5ch" }}
                     disabled={!clashBattle.isHost}
@@ -157,7 +158,11 @@ export default function SetupScreen({ clashBattle }) {
                 >
                     <input type="checkbox"
                         checked={clashBattle.settings.egoDraft}
-                        onChange={e => clashBattle.setSetting("egoDraft", e.target.checked)}
+                        onChange={e => {
+                            clashBattle.setSetting("egoDraft", e.target.checked)
+                            const limit = clashBattle.settings.teamSize * 6 + (e.target.checked ? 1 : 0);
+                            if (clashBattle.settings.rounds > limit) clashBattle.setSetting("rounds", limit);
+                        }}
                         disabled={!clashBattle.isHost}
                     />
                     <span className="hover-text">

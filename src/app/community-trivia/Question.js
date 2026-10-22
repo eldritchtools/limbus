@@ -63,9 +63,11 @@ function EditableQuestion({ question, setQuestion }) {
                     style={{ flex: 1, width: "100%" }}
                 />
             </div>)}
-            <button onClick={() => setField("otherAnswers", [...question.otherAnswers, ""])}>
-                +
-            </button>
+            {question.otherAnswers.length < 10 &&
+                <button onClick={() => setField("otherAnswers", [...question.otherAnswers, ""])}>
+                    +
+                </button>
+            }
         </div>
 
         <div style={{ display: "flex", justifyContent: "end" }}>
