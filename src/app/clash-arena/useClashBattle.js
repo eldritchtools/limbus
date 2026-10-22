@@ -22,6 +22,7 @@ export function useClashBattle() {
     const [roomId, setRoomId] = useState(null);
     const [playerId, setPlayerId] = useState(null);
     const [isHost, setIsHost] = useState(false);
+    const [isSpectator, setIsSpectator] = useState(false);
     const [isPublic, setIsPublic] = useState(false);
     const [settings, setSettings] = useState(null);
     const [participants, setParticipants] = useState([]);
@@ -350,6 +351,8 @@ export function useClashBattle() {
         if ("results" in fields) setResults(fields.results);
         if ("picked" in fields) setPicked(fields.picked);
         if ("blacklist" in fields) setBlacklist(fields.blacklist);
+        if ("is_spectator" in fields) setIsSpectator(fields.is_spectator);
+        if ("isSpectator" in fields) setIsSpectator(fields.isSpectator);
     }
 
     function getSelectedIdentities() {
@@ -366,16 +369,16 @@ export function useClashBattle() {
     }
 
     function getPlayerIdentities() {
-        return participants.find(x => x.player_id === playerId).identities;
+        return participants.find(x => x.player_id === playerId)?.identities;
     }
 
     function getPlayerEgo() {
-        return participants.find(x => x.player_id === playerId).ego;
+        return participants.find(x => x.player_id === playerId)?.ego;
     }
 
     return {
         clashingData, loading, lastRoomId,
-        mode, phase, roomId, playerId, isHost, isPublic, settings, participants,
+        mode, phase, roomId, playerId, isHost, isSpectator, isPublic, settings, participants,
         draftOrder, draftIndex, blacklist, draftPoints,
         skillCounts, egoUsed, round, roundNumber, chosenCount, picked, results,
         setFields, selectMode, joinRoom, leaveRoom, setSetting, resetSettings, openToPublic, closeToPublic,

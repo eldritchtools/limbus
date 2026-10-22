@@ -13,14 +13,10 @@ export default function SetupScreen({ clashBattle }) {
     const [pointsDisabled, setPointsDisabled] = useState(clashBattle.settings.pointsPerDraft === 0);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
-
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                Room ID: {trimPrefixes(clashBattle.roomId)}
-            </span>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena: {trimPrefixes(clashBattle.roomId)}</h1>
             <span className="sub-text">
-                Share this ID to others so they can join this game.
+                Share the room ID to others so they can join this game.
             </span>
         </div>
 

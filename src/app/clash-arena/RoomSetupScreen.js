@@ -61,6 +61,7 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
             />
         </div>
         <span className="sub-text">Code used to join a hosted room. Ignored when hosting a new room.</span>
+        <span className="sub-text">Joining a room with a game currently in progress will automatically set you as a spectator.</span>
 
         <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
             <input type="checkbox"
@@ -71,6 +72,7 @@ export default function RoomSetupScreen({ clashBattle, profile }) {
         </label>
 
         <h2>Choose an option</h2>
+
         <span
             className="text-link" style={{ fontSize: "1.2rem" }}
             onClick={() => clashBattle.joinRoom(true, displayName, roomInput, setJoinMessage)}

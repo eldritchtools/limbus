@@ -6,6 +6,7 @@ import { calculateSkillRange } from "./util";
 import Icon from "../components/icons/Icon";
 import SkillIcon from "../components/icons/SkillIcon";
 import NamePill from "../components/objects/NamePill";
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import { getClashArenaDraftTooltipProps } from "../components/tooltips/ClashArenaDraftTooltip";
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
 import { uiColors } from "../lib/colors";
@@ -65,7 +66,12 @@ export default function RoundRevealScreen({ clashBattle }) {
     const allComplete = completed.size === Object.keys(clashBattle.results).length;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena: {trimPrefixes(clashBattle.roomId)}</h1>
+            <span className="sub-text">
+                Share the room ID to others so they can spectate this game.
+            </span>
+        </div>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Current Scenario</span>
         <ScenarioDisplay round={clashBattle.round} />
