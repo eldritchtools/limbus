@@ -71,7 +71,9 @@ function EditableQuestion({ question, setQuestion }) {
         </div>
 
         <div style={{ display: "flex", justifyContent: "end" }}>
-            <span style={{ fontSize: "1.1rem", textAlign: "end" }}>
+            <span className="hover-text" style={{ fontSize: "1.1rem", textAlign: "end" }}
+                {...getGeneralTooltipProps("Shown after the player answers the question")}
+            >
                 Explanation (Optional)
             </span>
         </div>
