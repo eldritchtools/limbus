@@ -185,9 +185,17 @@ function BlacklistPhase({ clashBattle, itemId, setItemId, handleConfirm }) {
 
 function DraftPhase({ clashBattle, draftId, itemId, setItemId, pointsDisabled, isEgo, handleConfirm }) {
     if (clashBattle.mode === "standard" && draftId !== clashBattle.playerId)
-        return <span>
+        return <div style={{display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center"}}>
             {clashBattle.participants.find(x => x.player_id === draftId).display_name} is choosing...
-        </span>
+            {clashBattle.isHost &&
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <HoldButton onConfirm={clashBattle.forceAdvanceDraft} duration={1000}>
+                        Advance draft
+                    </HoldButton>
+                    <span className="sub-text">Hold to skip the current player&apos;s turn. Use for unresponsive players.</span>
+                </div>
+            }
+        </div>
 
     if (clashBattle.mode === "battleRoyale" && clashBattle.picked) {
         if (clashBattle.isHost)
@@ -304,7 +312,7 @@ export default function DraftScreen({ clashBattle }) {
         const pieces = [];
         pieces.push(`${clashBattle.settings["rounds"]} rounds`);
         pieces.push(`${clashBattle.settings["teamSize"]} identities`);
-        if(clashBattle.settings["egoDraft"]) pieces.push("1 E.G.O");
+        if (clashBattle.settings["egoDraft"]) pieces.push("1 E.G.O");
         if (clashBattle.settings["pointsPerDraft"]) {
             if (clashBattle.settings["egoDraft"])
                 pieces.push(`${clashBattle.settings["pointsPerDraft"]} points per identity (${Math.ceil(clashBattle.settings["pointsPerDraft"] / 2)} for E.G.O)`);

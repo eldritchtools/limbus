@@ -12,7 +12,7 @@ export default function useRealtimeClashBattleApi({ getRoom, checkLeaveRoom }) {
             params: { display_name: displayName, client_id: clientId, mode, settings },
             events: [
                 "state", "joined", "left", "settings", "public_status",
-                "draft_started", "draft_pick", "draft_round_complete", "draft_progress", "draft_successful",
+                "draft_started", "draft_pick", "draft_pick_skipped", "draft_round_complete", "draft_progress", "draft_successful",
                 "blacklist_state", "blacklist_selected", "blacklist_resolved",
                 "round", "skill_chosen_count", "skill_selected", "round_progress", "round_reveal",
                 "finished"

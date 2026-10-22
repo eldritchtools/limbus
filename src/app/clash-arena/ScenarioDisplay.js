@@ -45,7 +45,7 @@ function ScenarioSide({ label, side }) {
     const orbSaturation = Math.abs(t) * 90;
 
     return <div style={{
-        flex: 1, width: "200px", border: "1px var(--primary-border-color) solid", borderRadius: "1rem", padding: "0.5rem",
+        flex: 1, width: "100%", maxWidth: "200px", border: "1px var(--primary-border-color) solid", borderRadius: "1rem", padding: "0.5rem",
         display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", position: "relative"
     }}>
         <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>

@@ -75,6 +75,13 @@ export default function RoundRevealScreen({ clashBattle }) {
             <ParticipantGrid participants={clashBattle.participants}>
                 {x => {
                     const result = clashBattle.results[x.player_id];
+                    if (!result) {
+                        return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                            <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>{x.display_name}</span>
+                            <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>Score: {x.score}</span>
+                            <span>Skipped</span>
+                        </div>
+                    }
                     const roundScore = result.points;
                     const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
                     return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
@@ -131,7 +138,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                     const roundScore = result.points;
                     const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
                     return <div key={x.player_id}
-                        style={{ 
+                        style={{
                             display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
                             border: x.player_id === clashBattle.playerId ? "1px solid var(--primary-border-color)" : null,
                             borderRadius: "0.5rem"

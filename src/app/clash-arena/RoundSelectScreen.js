@@ -73,34 +73,6 @@ export default function RoundSelectScreen({ clashBattle }) {
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Current Scenario</span>
         <ScenarioDisplay round={clashBattle.round} />
 
-        {skillData && skillRange && <>
-            <span>
-                Chosen Skill:
-            </span>
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <SkillIcon skillData={skillData} />
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <NamePill name={skillData.name} affinity={skillData.affinity} />
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                            {skillRange.min + (teamBonuses[itemId]?.total ?? 0)} - {skillRange.max + (teamBonuses[itemId]?.total ?? 0)}
-                        </span>
-                        <div style={{ width: "0.5rem" }} />
-                        {Array.from({ length: skillData.coins }, (v, i) =>
-                            <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
-                        )}
-                    </div>
-                </div>
-            </div>
-            {!clashBattle.picked &&
-                <span className="text-link" onClick={handleConfirm}
-                    style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
-                >
-                    Confirm choice
-                </span>
-            }
-        </>}
-
         {clashBattle.picked &&
             (
                 clashBattle.mode === "battleRoyale" ?
@@ -110,17 +82,25 @@ export default function RoundSelectScreen({ clashBattle }) {
                             <span className="sub-text">Updated after every 10 players.</span>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                 <HoldButton onConfirm={clashBattle.forceAdvanceRound} duration={1000}>
-                                    Advance draft round
+                                    Advance round
                                 </HoldButton>
-                                <span className="sub-text">Hold to advance to the next draft round. Players who haven&apos;t chosen skip this draft.</span>
+                                <span className="sub-text">Hold to advance to the next draft round. Players who haven&apos;t chosen skip this round.</span>
                             </div>
-
                         </> :
                             <span>Waiting for everyone to choose their skills...</span>
                     ) :
-                    <span>
-                        Waiting for everyone to choose their skills: {clashBattle.chosenCount}/{clashBattle.participants.length}
-                    </span>
+                    (
+                        clashBattle.isHost ? <>
+                            <span>Waiting for everyone to choose their skills: {clashBattle.chosenCount}/{clashBattle.participants.length}</span>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                <HoldButton onConfirm={clashBattle.forceAdvanceRound} duration={1000}>
+                                    Advance round
+                                </HoldButton>
+                                <span className="sub-text">Hold to advance to the next draft round. Players who haven&apos;t chosen skip this round.</span>
+                            </div>
+                        </> :
+                            <span>Waiting for everyone to choose their skills: {clashBattle.chosenCount}/{clashBattle.participants.length}</span>
+                    )
             )
         }
 
@@ -144,34 +124,68 @@ export default function RoundSelectScreen({ clashBattle }) {
                     {teamBonuses[id].faction > 0 && <span className="sub-text">Faction Bonus: +{teamBonuses[id].faction}</span>}
                     {teamBonuses[id].keyword > 0 && <span className="sub-text">Keyword Bonus: +{teamBonuses[id].keyword}</span>}
                 </div>
-                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
                     {
-                        resolveSkills(clashBattle.clashingData[id], [1, 2, 3, 4], clashBattle.round)
-                            .map((skill, index) => {
-                                if (index === 3 && counts[index] === 0) return;
-                                const skillData = clashBattle.clashingData[id][String(skill)];
-                                const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
-                                return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
-                                    <div
-                                        className={`${styles.skillOption} ${counts[index] <= 0 ? styles.disabled : null}`}
-                                        {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round)}
-                                        onClick={() => {
-                                            if (counts[index] === 0 || clashBattle.picked) return;
-                                            setItemId(id);
-                                            setSkill(String(skill));
-                                            setSkillSlot(index + 1);
-                                        }}
-                                    >
-                                        <SkillIcon skillData={skillData} />
-                                        <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>
-                                            x{counts[index]}
-                                        </span>
+                        itemId === id && !clashBattle.picked ?
+                            <div style={{
+                                display: "flex", border: "1px var(--primary-border-color) solid", borderRadius: "1rem", padding: "0.25rem",
+                                gap: "0.5rem", alignItems: "center", columnSpan: "3", width: "100%", background: "var(--bg-secondary)",
+                                flexWrap: "wrap"
+                            }}>
+                                {skillData && skillRange && <>
+                                    <SkillIcon skillData={skillData} />
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", paddingRight: "3rem" }}>
+                                        <NamePill name={skillData.name} affinity={skillData.affinity} />
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                                {skillRange.min + (teamBonuses[itemId]?.total ?? 0)} - {skillRange.max + (teamBonuses[itemId]?.total ?? 0)}
+                                            </span>
+                                            <div style={{ width: "0.5rem" }} />
+                                            {Array.from({ length: skillData.coins }, (v, i) =>
+                                                <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
+                                            )}
+                                        </div>
                                     </div>
-                                    <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                                        {range.min + teamBonuses[id].total} - {range.max + teamBonuses[id].total}
+                                </>}
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                    <span className="text-link" onClick={handleConfirm}
+                                        style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
+                                    >
+                                        Confirm choice
+                                    </span>
+                                    <span className="text-link" onClick={() => { setItemId(null); setSkill(null); setSkillSlot(null); }}
+                                        style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
+                                    >
+                                        Cancel
                                     </span>
                                 </div>
-                            })
+                            </div> :
+                            resolveSkills(clashBattle.clashingData[id], [1, 2, 3, 4], clashBattle.round)
+                                .map((skill, index) => {
+                                    if (index === 3 && counts[index] === 0) return;
+                                    const skillData = clashBattle.clashingData[id][String(skill)];
+                                    const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
+                                    return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
+                                        <div
+                                            className={`${styles.skillOption} ${counts[index] <= 0 ? styles.disabled : null}`}
+                                            {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round)}
+                                            onClick={() => {
+                                                if (counts[index] === 0 || clashBattle.picked) return;
+                                                setItemId(id);
+                                                setSkill(String(skill));
+                                                setSkillSlot(index + 1);
+                                            }}
+                                        >
+                                            <SkillIcon skillData={skillData} />
+                                            <span style={{ color: "var(--secondary-text-color", fontSize: "2rem", fontWeight: "bold" }}>
+                                                x{counts[index]}
+                                            </span>
+                                        </div>
+                                        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                            {range.min + teamBonuses[id].total} - {range.max + teamBonuses[id].total}
+                                        </span>
+                                    </div>
+                                })
                     }
                 </div>
             </React.Fragment>)}
@@ -192,31 +206,65 @@ export default function RoundSelectScreen({ clashBattle }) {
                             }
                         </div>
                     </div>
-                    <div style={{ display: "flex", gap: "2rem", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ display: "flex", gap: "2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
                         {
-                            resolveSkills(clashBattle.clashingData[playerEgo], ["a", "c"], clashBattle.round)
-                                .map(skill => {
-                                    const skillData = clashBattle.clashingData[playerEgo][skill];
-                                    if (!skillData) return;
-                                    const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[playerEgo]?.statuses ?? []);
-                                    return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
-                                        <div
-                                            className={`${styles.skillOption} ${clashBattle.egoUsed ? styles.disabled : null}`}
-                                            {...getClashArenaSkillTooltipProps(playerEgo, skill, clashBattle.round)}
-                                            onClick={() => {
-                                                if (clashBattle.egoUsed || clashBattle.picked) return;
-                                                setItemId(playerEgo);
-                                                setSkill(skill);
-                                                setSkillSlot(skill);
-                                            }}
-                                        >
-                                            <SkillIcon skillData={skillData} />
+                            itemId === playerEgo && !clashBattle.picked ?
+                                <div style={{
+                                    display: "flex", border: "1px var(--primary-border-color) solid", borderRadius: "1rem", padding: "0.25rem",
+                                    gap: "0.5rem", alignItems: "center", columnSpan: "3", width: "100%", background: "var(--bg-secondary)",
+                                    flexWrap: "wrap"
+                                }}>
+                                    {skillData && skillRange && <>
+                                        <SkillIcon skillData={skillData} />
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", paddingRight: "3rem" }}>
+                                            <NamePill name={skillData.name} affinity={skillData.affinity} />
+                                            <div style={{ display: "flex", alignItems: "center" }}>
+                                                <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                                    {skillRange.min + (teamBonuses[itemId]?.total ?? 0)} - {skillRange.max + (teamBonuses[itemId]?.total ?? 0)}
+                                                </span>
+                                                <div style={{ width: "0.5rem" }} />
+                                                {Array.from({ length: skillData.coins }, (v, i) =>
+                                                    <Icon style={{ width: "24px", height: "24px" }} key={i} path={"coin"} />
+                                                )}
+                                            </div>
                                         </div>
-                                        <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                                            {range.min} - {range.max}
+                                    </>}
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                        <span className="text-link" onClick={handleConfirm}
+                                            style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
+                                        >
+                                            Confirm choice
+                                        </span>
+                                        <span className="text-link" onClick={() => { setItemId(null); setSkill(null); setSkillSlot(null); }}
+                                            style={{ fontSize: "1.2rem", border: "1px var(--secondary-border-color) solid", padding: "0.5rem", borderRadius: "0.5rem" }}
+                                        >
+                                            Cancel
                                         </span>
                                     </div>
-                                })
+                                </div> :
+                                resolveSkills(clashBattle.clashingData[playerEgo], ["a", "c"], clashBattle.round)
+                                    .map(skill => {
+                                        const skillData = clashBattle.clashingData[playerEgo][skill];
+                                        if (!skillData) return;
+                                        const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[playerEgo]?.statuses ?? []);
+                                        return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
+                                            <div
+                                                className={`${styles.skillOption} ${clashBattle.egoUsed ? styles.disabled : null}`}
+                                                {...getClashArenaSkillTooltipProps(playerEgo, skill, clashBattle.round)}
+                                                onClick={() => {
+                                                    if (clashBattle.egoUsed || clashBattle.picked) return;
+                                                    setItemId(playerEgo);
+                                                    setSkill(skill);
+                                                    setSkillSlot(skill);
+                                                }}
+                                            >
+                                                <SkillIcon skillData={skillData} />
+                                            </div>
+                                            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                                {range.min} - {range.max}
+                                            </span>
+                                        </div>
+                                    })
                         }
                     </div>
                 </>

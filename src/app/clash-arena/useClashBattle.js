@@ -136,6 +136,13 @@ export function useClashBattle() {
                         setPicked(false);
                     },
 
+                    draft_pick_skipped: ({ player_id, draft_index, draft_order, draft_points }) => {
+                        setDraftOrder(draft_order);
+                        setDraftIndex(draft_index);
+                        if (draft_points) setDraftPoints(draft_points);
+                        setPicked(false);
+                    },
+
                     blacklist_state: ({ chosen_count, player_count }) => {
                         setChosenCount(chosen_count);
                     },
