@@ -196,6 +196,14 @@
 
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
+
+    position: relative;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.authorEntry:hover {
+    background: var(--bg-input)
 }
 
 .authorName {
@@ -210,6 +218,23 @@
     display: inline;
     font-size: 0.75rem;
     opacity: .6;
+}
+
+.authorId {
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    font-size: 0.7rem;
+    color: var(--secondary-text-color);
+    background: var(--primary-background-color);
+    padding-left: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.authorEntry:hover .authorId {
+    opacity: 1;
 }
 
 .messageEntry {

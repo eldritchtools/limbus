@@ -35,6 +35,8 @@ function ChatEntry({ entry }) {
             <span className={styles.authorTime}>
                 &nbsp;{formatTime(entry.timestamp)}
             </span>
+
+            <span className={styles.authorId}> {entry.participantId} </span>
         </div>
 
     if (entry.type === "system")

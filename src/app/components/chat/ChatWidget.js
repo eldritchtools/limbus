@@ -32,7 +32,8 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
                 id: `author:${newEntry.id}`,
                 displayName: newEntry.display_name,
                 timestamp: newEntry.sent_at,
-                isDeveloper: newEntry.is_developer
+                isDeveloper: newEntry.is_developer,
+                participantId: newEntry.participant_id.split(":")[0].slice(-4)
             })
         }
 
