@@ -77,9 +77,9 @@ BEGIN
     SELECT 1
     FROM auth.users
     WHERE id = v_uid
-      AND created_at > NOW() - INTERVAL '30 days'
+      AND created_at > NOW() - INTERVAL '14 days'
   ) THEN
-    RAISE EXCEPTION 'Account must be at least 30 days old to upload assets';
+    RAISE EXCEPTION 'Account must be at least 14 days old to upload assets';
   END IF;
 
   IF EXISTS (
