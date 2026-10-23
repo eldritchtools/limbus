@@ -22,6 +22,7 @@ export function useClashBattle() {
     const [roomId, setRoomId] = useState(null);
     const [playerId, setPlayerId] = useState(null);
     const [isHost, setIsHost] = useState(false);
+    const [isSpectator, setIsSpectator] = useState(false);
     const [isPublic, setIsPublic] = useState(false);
     const [settings, setSettings] = useState(null);
     const [participants, setParticipants] = useState([]);
@@ -130,6 +131,13 @@ export function useClashBattle() {
                                 type === "id" ? { ...x, identities: [...x.identities, item_id] } : { ...x, ego: item_id }
                             ) : x)
                         )
+                        setDraftOrder(draft_order);
+                        setDraftIndex(draft_index);
+                        if (draft_points) setDraftPoints(draft_points);
+                        setPicked(false);
+                    },
+
+                    draft_pick_skipped: ({ player_id, draft_index, draft_order, draft_points }) => {
                         setDraftOrder(draft_order);
                         setDraftIndex(draft_index);
                         if (draft_points) setDraftPoints(draft_points);
@@ -343,6 +351,8 @@ export function useClashBattle() {
         if ("results" in fields) setResults(fields.results);
         if ("picked" in fields) setPicked(fields.picked);
         if ("blacklist" in fields) setBlacklist(fields.blacklist);
+        if ("is_spectator" in fields) setIsSpectator(fields.is_spectator);
+        if ("isSpectator" in fields) setIsSpectator(fields.isSpectator);
     }
 
     function getSelectedIdentities() {
@@ -359,16 +369,16 @@ export function useClashBattle() {
     }
 
     function getPlayerIdentities() {
-        return participants.find(x => x.player_id === playerId).identities;
+        return participants.find(x => x.player_id === playerId)?.identities;
     }
 
     function getPlayerEgo() {
-        return participants.find(x => x.player_id === playerId).ego;
+        return participants.find(x => x.player_id === playerId)?.ego;
     }
 
     return {
         clashingData, loading, lastRoomId,
-        mode, phase, roomId, playerId, isHost, isPublic, settings, participants,
+        mode, phase, roomId, playerId, isHost, isSpectator, isPublic, settings, participants,
         draftOrder, draftIndex, blacklist, draftPoints,
         skillCounts, egoUsed, round, roundNumber, chosenCount, picked, results,
         setFields, selectMode, joinRoom, leaveRoom, setSetting, resetSettings, openToPublic, closeToPublic,

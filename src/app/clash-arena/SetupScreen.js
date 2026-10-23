@@ -13,14 +13,10 @@ export default function SetupScreen({ clashBattle }) {
     const [pointsDisabled, setPointsDisabled] = useState(clashBattle.settings.pointsPerDraft === 0);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
-
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                Room ID: {trimPrefixes(clashBattle.roomId)}
-            </span>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena: {trimPrefixes(clashBattle.roomId)}</h1>
             <span className="sub-text">
-                Share this ID to others so they can join this game.
+                Share the room ID to others so they can join this game.
             </span>
         </div>
 
@@ -50,7 +46,8 @@ export default function SetupScreen({ clashBattle }) {
                 <NumberInput min={1} max={10} value={clashBattle.settings.teamSize}
                     onChange={x => {
                         clashBattle.setSetting("teamSize", x);
-                        if (clashBattle.settings.rounds > x * 6) clashBattle.setSetting("rounds", x * 6);
+                        const limit = x * 6 + (clashBattle.settings.egoDraft ? 1 : 0);
+                        if (clashBattle.settings.rounds > limit) clashBattle.setSetting("rounds", limit);
                     }}
                     style={{ textAlign: "center", width: "5ch" }}
                     disabled={!clashBattle.isHost}
@@ -62,7 +59,7 @@ export default function SetupScreen({ clashBattle }) {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <NumberInput min={1} max={clashBattle.settings.teamSize * 6} value={clashBattle.settings.rounds}
+                <NumberInput min={1} max={clashBattle.settings.teamSize * 6 + (clashBattle.settings.egoDraft ? 1 : 0)} value={clashBattle.settings.rounds}
                     onChange={x => clashBattle.setSetting("rounds", x)}
                     style={{ textAlign: "center", width: "5ch" }}
                     disabled={!clashBattle.isHost}
@@ -157,7 +154,11 @@ export default function SetupScreen({ clashBattle }) {
                 >
                     <input type="checkbox"
                         checked={clashBattle.settings.egoDraft}
-                        onChange={e => clashBattle.setSetting("egoDraft", e.target.checked)}
+                        onChange={e => {
+                            clashBattle.setSetting("egoDraft", e.target.checked)
+                            const limit = clashBattle.settings.teamSize * 6 + (e.target.checked ? 1 : 0);
+                            if (clashBattle.settings.rounds > limit) clashBattle.setSetting("rounds", limit);
+                        }}
                         disabled={!clashBattle.isHost}
                     />
                     <span className="hover-text">
@@ -295,7 +296,7 @@ export default function SetupScreen({ clashBattle }) {
 
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", gap: "0.5rem" }}>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Players: {clashBattle.participants.length}</span>
-            <span className="sub-text">Max Players: {clashBattle.mode === "battleRoyale" ? 200 : 8}</span>
+            <span className="sub-text">Max Players: {clashBattle.mode === "battleRoyale" ? 100 : 8}</span>
             {clashBattle.participants.map((x, i) => <span key={`${x}-${i}`}>{x}</span>)}
         </div>
 

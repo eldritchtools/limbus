@@ -6,6 +6,7 @@ import { calculateSkillRange } from "./util";
 import Icon from "../components/icons/Icon";
 import SkillIcon from "../components/icons/SkillIcon";
 import NamePill from "../components/objects/NamePill";
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import { getClashArenaDraftTooltipProps } from "../components/tooltips/ClashArenaDraftTooltip";
 import { getClashArenaSkillTooltipProps } from "../components/tooltips/ClashArenaSkillTooltip";
 import { uiColors } from "../lib/colors";
@@ -65,7 +66,12 @@ export default function RoundRevealScreen({ clashBattle }) {
     const allComplete = completed.size === Object.keys(clashBattle.results).length;
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena: {trimPrefixes(clashBattle.roomId)}</h1>
+            <span className="sub-text">
+                Share the room ID to others so they can spectate this game.
+            </span>
+        </div>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Current Scenario</span>
         <ScenarioDisplay round={clashBattle.round} />
@@ -75,6 +81,13 @@ export default function RoundRevealScreen({ clashBattle }) {
             <ParticipantGrid participants={clashBattle.participants}>
                 {x => {
                     const result = clashBattle.results[x.player_id];
+                    if (!result) {
+                        return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                            <span style={{ wordWrap: "break-word", overflowWrap: "break-word", textAlign: "center" }}>{x.display_name}</span>
+                            <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "center" }}>Score: {x.score}</span>
+                            <span>Skipped</span>
+                        </div>
+                    }
                     const roundScore = result.points;
                     const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
                     return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
@@ -131,7 +144,7 @@ export default function RoundRevealScreen({ clashBattle }) {
                     const roundScore = result.points;
                     const skillData = clashBattle.clashingData[result.item_id][result.resolved_skill];
                     return <div key={x.player_id}
-                        style={{ 
+                        style={{
                             display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
                             border: x.player_id === clashBattle.playerId ? "1px solid var(--primary-border-color)" : null,
                             borderRadius: "0.5rem"

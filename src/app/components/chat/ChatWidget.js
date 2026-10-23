@@ -32,7 +32,8 @@ function appendEntry(type, entries, newEntry, nextEntryIdRef) {
                 id: `author:${newEntry.id}`,
                 displayName: newEntry.display_name,
                 timestamp: newEntry.sent_at,
-                isDeveloper: newEntry.is_developer
+                isDeveloper: newEntry.is_developer,
+                participantId: newEntry.participant_id.split(":")[0].slice(-4)
             })
         }
 
@@ -65,14 +66,14 @@ function ChatResizeHandle({ width, height, onResize, onResizeEnd }) {
 
         const handlePointerMove = event => {
             onResize({
-                width: Math.max(280, startWidth - (event.clientX - startX)),
-                height: Math.max(300, startHeight - (event.clientY - startY))
+                width: Math.max(100, startWidth - (event.clientX - startX)),
+                height: Math.max(150, startHeight - (event.clientY - startY))
             });
         };
 
         const handlePointerUp = event => {
-            const finalWidth = Math.max(280, startWidth - (event.clientX - startX));
-            const finalHeight = Math.max(300, startHeight - (event.clientY - startY));
+            const finalWidth = Math.max(100, startWidth - (event.clientX - startX));
+            const finalHeight = Math.max(150, startHeight - (event.clientY - startY));
 
             onResizeEnd({ width: finalWidth, height: finalHeight });
 
@@ -88,6 +89,44 @@ function ChatResizeHandle({ width, height, onResize, onResizeEnd }) {
     return <button type="button" className={styles.resizeHandle} onPointerDown={handlePointerDown} aria-label="Resize chat" />;
 }
 
+function ChatMoveHandle({ right, bottom, onMove, onMoveEnd }) {
+    const handlePointerDown = event => {
+        event.preventDefault();
+        event.currentTarget.setPointerCapture(event.pointerId);
+
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startRight = right;
+        const startBottom = bottom;
+
+        const getPosition = event => {
+            const rect = event.currentTarget.closest("[data-chat-widget]").getBoundingClientRect();
+
+            return {
+                right: Math.max(0, Math.min(window.innerWidth - rect.width, startRight - (event.clientX - startX))),
+                bottom: Math.max(0, Math.min(window.innerHeight - rect.height, startBottom - (event.clientY - startY)))
+            };
+        };
+
+        const handlePointerMove = event => {
+            onMove(getPosition(event));
+        };
+
+        const handlePointerUp = event => {
+            onMoveEnd(getPosition(event));
+
+            event.currentTarget.releasePointerCapture(event.pointerId);
+            event.currentTarget.removeEventListener("pointermove", handlePointerMove);
+            event.currentTarget.removeEventListener("pointerup", handlePointerUp);
+        };
+
+        event.currentTarget.addEventListener("pointermove", handlePointerMove);
+        event.currentTarget.addEventListener("pointerup", handlePointerUp);
+    };
+
+    return <button type="button" className={styles.moveHandle} onPointerDown={handlePointerDown} aria-label="Move chat" />;
+}
+
 export default function ChatWidget({ username }) {
     const { room, chat } = useRealtime();
     const { getCustomizationValue, setCustomizationValues } = useSiteCustomization();
@@ -98,14 +137,15 @@ export default function ChatWidget({ username }) {
     const [unavailable, setUnavailable] = useState(false);
     const clientId = useRealtimeClientId();
     const [resizeMode, setResizeMode] = useState(false);
+    const [moveMode, setMoveMode] = useState(false);
 
     const chatWidth = getCustomizationValue("chatWidth") ?? 360;
     const chatHeight = getCustomizationValue("chatHeight") ?? 500;
+    const chatRight = getCustomizationValue("chatRight") ?? 20;
+    const chatBottom = getCustomizationValue("chatBottom") ?? 20;
 
-    const [resizeSize, setResizeSize] = useState({
-        width: chatWidth,
-        height: chatHeight
-    });
+    const [resizeSize, setResizeSize] = useState({ width: chatWidth, height: chatHeight });
+    const [anchor, setAnchor] = useState({ right: chatRight, bottom: chatBottom });
 
     const viewRef = useRef(view);
     const expandedRef = useRef(expanded);
@@ -369,6 +409,10 @@ export default function ChatWidget({ username }) {
 
     if (!expanded)
         return <ChatButton
+            style={{
+                "--chat-right": `${anchor.right}px`,
+                "--chat-bottom": `${anchor.bottom}px`
+            }}
             onExpand={() => {
                 setExpanded(true);
                 setView(CHAT_WIDGET_VIEWS.CHAT);
@@ -379,10 +423,12 @@ export default function ChatWidget({ username }) {
             unavailable={unavailable}
         />
 
-    return <div className={styles.widget}
+    return <div className={styles.widget} data-chat-widget
         style={{
             "--chat-width": `${resizeSize.width}px`,
-            "--chat-height": `${resizeSize.height}px`
+            "--chat-height": `${resizeSize.height}px`,
+            "--chat-right": `${anchor.right}px`,
+            "--chat-bottom": `${anchor.bottom}px`
         }}>
 
         {resizeMode && (
@@ -392,6 +438,17 @@ export default function ChatWidget({ username }) {
                 onResize={setResizeSize}
                 onResizeEnd={({ width, height }) => {
                     setCustomizationValues({ chatWidth: width, chatHeight: height });
+                }}
+            />
+        )}
+
+        {moveMode && (
+            <ChatMoveHandle
+                right={anchor.right}
+                bottom={anchor.bottom}
+                onMove={setAnchor}
+                onMoveEnd={({ right, bottom }) => {
+                    setCustomizationValues({ chatRight: right, chatBottom: bottom });
                 }}
             />
         )}
@@ -428,19 +485,16 @@ export default function ChatWidget({ username }) {
         )}
 
         {view === CHAT_WIDGET_VIEWS.SETTINGS && (
-            <ChatSettings resizeMode={resizeMode} setResizeMode={setResizeMode}
-                onResetSize={() => {
-                    setResizeSize({
-                        width: 360,
-                        height: 500
-                    });
-                }} />
+            <ChatSettings resizeMode={resizeMode} setResizeMode={setResizeMode} moveMode={moveMode} setMoveMode={setMoveMode}
+                onResetSize={() => { setResizeSize({ width: 360, height: 500 }); }}
+                onResetAnchor={() => { setAnchor({ right: 20, bottom: 20 }); }}
+            />
         )}
     </div>
 }
 
 function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unavailable }) {
-    return <>
+    return <div style={{ display: "flex", flexDirection: "column", gap: "5px", overflowY: "auto", overflowX: "hidden" }}>
         {roomId === GLOBAL_CHAT_ID ? <>
             <p style={{ margin: 0, textAlign: "center" }}>Welcome to Global Chat!</p>
 
@@ -479,6 +533,7 @@ function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unav
                 onKeyDown={e => {
                     if (room.status === "disconnected" && e.key === 'Enter' && displayName.trim().length > 0) joinChat(roomId, { displayName })
                 }}
+                style={{ maxWidth: "50%" }}
             />
         </div>
 
@@ -490,5 +545,5 @@ function WelcomeView({ displayName, setDisplayName, roomId, room, joinChat, unav
         </button>
 
         {unavailable && <span style={{ textAlign: "center" }}>Chat is temporarily unavailable.<br />Please try again later.</span>}
-    </>;
+    </div>;
 }

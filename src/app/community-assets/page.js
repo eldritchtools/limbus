@@ -145,9 +145,9 @@ function ManageComponent({ type }) {
 
         if (!user?.created_at) return;
 
-        const ACCOUNT_AGE_REQUIREMENT = 7 * 24 * 60 * 60 * 1000;
+        const ACCOUNT_AGE_REQUIREMENT = 14 * 24 * 60 * 60 * 1000;
         if (Date.now() - new Date(user.created_at).getTime() < ACCOUNT_AGE_REQUIREMENT) {
-            setError("Accounts must be at least 1 week old to upload assets.");
+            setError("Accounts must be at least 2 weeks old to upload assets.");
             return;
         }
 

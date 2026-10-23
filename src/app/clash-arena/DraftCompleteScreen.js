@@ -1,13 +1,19 @@
 import ParticipantGrid, { ParticipantTextGrid } from "./ParticipantsDisplay"
 import EgoIcon from "../components/icons/EgoIcon"
 import IdentityIcon from "../components/icons/IdentityIcon"
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import { getClashArenaDraftTooltipProps } from "../components/tooltips/ClashArenaDraftTooltip"
 
 export default function DraftCompleteScreen({ clashBattle }) {
     const playerEgo = clashBattle.getPlayerEgo();
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena: {trimPrefixes(clashBattle.roomId)}</h1>
+            <span className="sub-text">
+                Share the room ID to others so they can spectate this game.
+            </span>
+        </div>
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Final Draft</span>
         {clashBattle.mode === "standard" ?
@@ -26,14 +32,16 @@ export default function DraftCompleteScreen({ clashBattle }) {
                     </div>
                 }}
             </ParticipantGrid> : <>
-                <div style={{ display: "flex", padding: "0.5rem" }}>
-                    {Object.keys(clashBattle.skillCounts).map(id =>
-                        <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />
-                    )}
-                    {playerEgo &&
-                        <EgoIcon key={playerEgo} id={playerEgo} type="awaken" displayName={true} displayRarity={true} size={128} />
-                    }
-                </div>
+                {!clashBattle.isSpectator &&
+                    <div style={{ display: "flex", padding: "0.5rem" }}>
+                        {Object.keys(clashBattle.skillCounts).map(id =>
+                            <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />
+                        )}
+                        {playerEgo &&
+                            <EgoIcon key={playerEgo} id={playerEgo} type="awaken" displayName={true} displayRarity={true} size={128} />
+                        }
+                    </div>
+                }
                 <ParticipantTextGrid participants={clashBattle.participants}>
                     {x => {
                         return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>

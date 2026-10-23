@@ -1,9 +1,9 @@
 import styles from "./ChatWidget.module.css";
 
-export default function ChatButton({ onExpand, rooms, activeRoom, unavailable }) {
+export default function ChatButton({ onExpand, rooms, activeRoom, unavailable, style }) {
     const hasUnread = Object.values(rooms).some(room => room.unread > 0)
 
-    return <div className={styles.button} onClick={onExpand}>
+    return <div className={styles.button} onClick={onExpand} style={style}>
         {unavailable ?
             "Temporarily Unavailable" :
             <>

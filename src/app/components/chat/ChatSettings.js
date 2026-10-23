@@ -1,7 +1,7 @@
 import NoPrefetchLink from "../NoPrefetchLink";
 import { useSiteCustomization } from "../SiteCustomizationProvider";
 
-export default function ChatSettings({ resizeMode, setResizeMode, onResetSize }) {
+export default function ChatSettings({ resizeMode, setResizeMode, moveMode, setMoveMode, onResetSize, onResetAnchor }) {
     const { getCustomizationValue, setCustomizationValue, setCustomizationValues } = useSiteCustomization();
 
     const resetChatSize = () => {
@@ -9,7 +9,12 @@ export default function ChatSettings({ resizeMode, setResizeMode, onResetSize })
         onResetSize();
     };
 
-    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    const resetAnchor = () => {
+        setCustomizationValues({ chatRight: 20, chatBottom: 20 });
+        onResetAnchor();
+    };
+
+    return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", overflowY: "auto", overflowX: "hidden" }}>
         <p style={{ margin: 0, padding: "0.5rem", textAlign: "center" }}>
             More settings and details can be found in <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink>.
         </p>
@@ -30,14 +35,24 @@ export default function ChatSettings({ resizeMode, setResizeMode, onResetSize })
             <span>Show Presence Notifications</span>
         </label>
 
-        <span>Resize Chat Window:</span>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button onClick={() => setResizeMode(value => !value)}>
+        <span>Manage Chat Window:</span>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            <button onClick={() => { setResizeMode(value => !value); setMoveMode(false); }}>
                 {resizeMode ? "Done Resizing" : "Resize Chat"}
             </button>
 
             <button onClick={resetChatSize}>
                 Reset Size
+            </button>
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            <button onClick={() => { setMoveMode(value => !value); setResizeMode(false); }}>
+                {moveMode ? "Done Moving" : "Move Chat"}
+            </button>
+
+            <button onClick={resetAnchor}>
+                Reset Position
             </button>
         </div>
     </div>

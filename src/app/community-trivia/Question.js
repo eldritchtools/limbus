@@ -63,13 +63,17 @@ function EditableQuestion({ question, setQuestion }) {
                     style={{ flex: 1, width: "100%" }}
                 />
             </div>)}
-            <button onClick={() => setField("otherAnswers", [...question.otherAnswers, ""])}>
-                +
-            </button>
+            {question.otherAnswers.length < 10 &&
+                <button onClick={() => setField("otherAnswers", [...question.otherAnswers, ""])}>
+                    +
+                </button>
+            }
         </div>
 
         <div style={{ display: "flex", justifyContent: "end" }}>
-            <span style={{ fontSize: "1.1rem", textAlign: "end" }}>
+            <span className="hover-text" style={{ fontSize: "1.1rem", textAlign: "end" }}
+                {...getGeneralTooltipProps("Shown after the player answers the question")}
+            >
                 Explanation (Optional)
             </span>
         </div>

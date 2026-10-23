@@ -4,7 +4,7 @@ import { FaVolumeUp } from "react-icons/fa";
 import HoldButton from "./HoldButton";
 import ParticipantGrid, { ParticipantTextGrid } from "./ParticipantsDisplay";
 import PointsDisplay from "./PointsDisplay";
-import { alerts } from "./util";
+import { alerts, biasText } from "./util";
 import { useData } from "../components/DataProvider";
 import EgoIcon from "../components/icons/EgoIcon";
 import Icon from "../components/icons/Icon";
@@ -13,6 +13,7 @@ import KeywordIcon from "../components/icons/KeywordIcon";
 import SkillIcon from "../components/icons/SkillIcon";
 import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import NamePill from "../components/objects/NamePill";
+import { trimPrefixes } from "../components/realtime/realtimeUtil";
 import { EgoDropdownSelector } from "../components/selectors/EgoSelectors";
 import { IdentityDropdownSelector } from "../components/selectors/IdentitySelectors"
 import { useSiteCustomization } from "../components/SiteCustomizationProvider";
@@ -185,9 +186,17 @@ function BlacklistPhase({ clashBattle, itemId, setItemId, handleConfirm }) {
 
 function DraftPhase({ clashBattle, draftId, itemId, setItemId, pointsDisabled, isEgo, handleConfirm }) {
     if (clashBattle.mode === "standard" && draftId !== clashBattle.playerId)
-        return <span>
+        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
             {clashBattle.participants.find(x => x.player_id === draftId).display_name} is choosing...
-        </span>
+            {clashBattle.isHost &&
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <HoldButton onConfirm={clashBattle.forceAdvanceDraft} duration={1000}>
+                        Advance draft
+                    </HoldButton>
+                    <span className="sub-text">Hold to skip the current player&apos;s turn. Use for unresponsive players.</span>
+                </div>
+            }
+        </div>
 
     if (clashBattle.mode === "battleRoyale" && clashBattle.picked) {
         if (clashBattle.isHost)
@@ -300,8 +309,29 @@ export default function DraftScreen({ clashBattle }) {
 
     const playerEgo = clashBattle.getPlayerEgo();
 
+    const settingsString = useMemo(() => {
+        const pieces = [];
+        pieces.push(`${clashBattle.settings["rounds"]} rounds`);
+        pieces.push(`${clashBattle.settings["teamSize"]} identities`);
+        if (clashBattle.settings["egoDraft"]) pieces.push("1 E.G.O");
+        if (clashBattle.settings["pointsPerDraft"]) {
+            if (clashBattle.settings["egoDraft"])
+                pieces.push(`${clashBattle.settings["pointsPerDraft"]} points per identity (${Math.ceil(clashBattle.settings["pointsPerDraft"] / 2)} for E.G.O)`);
+            else
+                pieces.push(`${clashBattle.settings["pointsPerDraft"]} points per identity`);
+        }
+        pieces.push(`${clashBattle.settings["sp"][0]} - ${clashBattle.settings["sp"][1]} SP range`);
+        pieces.push(`${biasText(clashBattle.settings["spBias"]).slice(0, -5)} SP bias`);
+        return pieces.join(", ");
+    }, [clashBattle.settings]);
+
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena</h1>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Clash Arena: {trimPrefixes(clashBattle.roomId)}</h1>
+            <span className="sub-text">
+                Share the room ID to others so they can spectate this game.
+            </span>
+        </div>
 
         <span className="sub-text" style={{ maxWidth: "1000px", textAlign: "center", marginBottom: "1rem" }}>
             Note: Some skills and conditionals have been simplified or modified to better fit the mechanics and limitations of Clash Arena. Certain mechanics like resonance or deploying specific identities have been omitted entirely. Hover over a skill to see the conditionals currently implemented for it.
@@ -327,6 +357,10 @@ export default function DraftScreen({ clashBattle }) {
             </button>
         </div>
 
+        <span>
+            Game Settings: {settingsString}
+        </span>
+
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Next Drafts</span>
         <div style={{ display: "flex", gap: "1rem" }}>
             {clashBattle.draftOrder.map((id, i) => {
@@ -347,11 +381,13 @@ export default function DraftScreen({ clashBattle }) {
             })}
         </div>
 
-        {draftId === "blacklist" ?
-            <BlacklistPhase clashBattle={clashBattle} itemId={itemId} setItemId={setItemId} handleConfirm={handleConfirm} /> :
-            <DraftPhase
-                clashBattle={clashBattle} draftId={draftId} itemId={itemId} setItemId={setItemId}
-                pointsDisabled={pointsDisabled} isEgo={isEgo} handleConfirm={handleConfirm} />
+        {!clashBattle.isSpectator &&
+            (draftId === "blacklist" ?
+                <BlacklistPhase clashBattle={clashBattle} itemId={itemId} setItemId={setItemId} handleConfirm={handleConfirm} /> :
+                <DraftPhase
+                    clashBattle={clashBattle} draftId={draftId} itemId={itemId} setItemId={setItemId}
+                    pointsDisabled={pointsDisabled} isEgo={isEgo} handleConfirm={handleConfirm} />
+            )
         }
 
         <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Current Draft</span>
@@ -371,14 +407,16 @@ export default function DraftScreen({ clashBattle }) {
                     </div>
                 }}
             </ParticipantGrid> : <>
-                <div style={{ display: "flex", padding: "0.5rem" }}>
-                    {clashBattle.getPlayerIdentities().map(id =>
-                        <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />
-                    )}
-                    {playerEgo &&
-                        <EgoIcon key={playerEgo} id={playerEgo} type="awaken" displayName={true} displayRarity={true} size={128} />
-                    }
-                </div>
+                {!clashBattle.isSpectator &&
+                    <div style={{ display: "flex", padding: "0.5rem" }}>
+                        {clashBattle.getPlayerIdentities().map(id =>
+                            <IdentityIcon key={id} id={id} displayName={true} displayRarity={true} size={128} />
+                        )}
+                        {playerEgo &&
+                            <EgoIcon key={playerEgo} id={playerEgo} type="awaken" displayName={true} displayRarity={true} size={128} />
+                        }
+                    </div>
+                }
                 <ParticipantTextGrid participants={clashBattle.participants}>
                     {x => {
                         return <div key={x.player_id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
