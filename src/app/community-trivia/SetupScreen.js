@@ -29,7 +29,7 @@ function GameTab({ settings, setSettings, onStart, onReset }) {
             mainDesc={<>
                 Need to practice your trivia before going to HamHamPangPang? Try the Community Trivia Quiz.
                 <br /> <br />
-                All questions are submitted by the community and periodically reviewed for accuracy. Playing on the Curated dataset will only include approved questions, while playing on the Community dataset will also include questions that haven&apos;t been reviewed. Questions that have been rejected due to being incorrect, a duplicate, ambiguous, or for other reasons are excluded from both.
+                All questions are submitted by the community and periodically reviewed for accuracy. Playing on the Reviewed dataset will only include approved questions, while playing on the Community dataset will also include questions that haven&apos;t been reviewed. Questions that have been rejected due to being incorrect, a duplicate, ambiguous, or for other reasons are excluded from both.
                 <br /> <br />
                 If you have questions of your own, you can submit them in the Submit tab above. To keep things organized, please avoid submitting questions through other channels.
             </>}
@@ -66,7 +66,7 @@ function GameTab({ settings, setSettings, onStart, onReset }) {
                         <input type="radio" name="curated" value={true} checked={settings.curated}
                             onChange={() => handleSetSettings("curated", true)}
                         />
-                        Curated{counts && ` (${counts.curated_count} questions)`}
+                        Reviewed{counts && ` (${counts.curated_count} questions)`}
                     </label>
                     <label>
                         <input type="radio" name="curated" value={false} checked={!settings.curated}
