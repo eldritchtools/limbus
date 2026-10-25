@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL } from "./constants";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
 import { simulateTick, simulateUntil } from "./simulation";
-import { createInitialState, AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL, getCurrentLocalTick, getClockOffset } from "./util";
+import { createInitialState, getCurrentLocalTick, getClockOffset } from "./util";
 import { useData } from "../components/DataProvider";
 import { useAuth } from "../database/authProvider";
 
