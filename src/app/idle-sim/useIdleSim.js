@@ -1,11 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL } from "./constants";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
 import { simulateTick, simulateUntil } from "./simulation";
-import { createInitialState, AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL, getCurrentLocalTick, getClockOffset } from "./util";
+import { createInitialState, getCurrentLocalTick, getClockOffset } from "./util";
+import { useData } from "../components/DataProvider";
 import { useAuth } from "../database/authProvider";
 
 export default function useIdleSim() {
+    const [rawData, rawDataLoading] = useData("idle_sim/idle_sim");
+    const [data, dataLoading] = useMemo(() => {
+        if(rawDataLoading) return [null, true];
+        const data = {...rawData};
+
+        const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5 };
+        data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, {...defaultSubject, ...subject}]))
+
+        return [data, false];
+    }, [rawData, rawDataLoading]);
     const { user, loading: authLoading } = useAuth();
 
     const [state, setState] = useState(null);
@@ -63,7 +75,7 @@ export default function useIdleSim() {
             const result = user ? await loadDBGame() : await loadLocalGame();
             clockOffsetRef.current = getClockOffset(result.serverTime);
             const initialState = result.state ?? createInitialState(result.serverTick);
-            const nextState = simulateUntil(initialState, result.serverTick);
+            const nextState = simulateUntil(data, initialState, result.serverTick);
 
             updateState(nextState);
             revisionRef.current = result.revision;
@@ -77,7 +89,7 @@ export default function useIdleSim() {
             console.error("Failed to load idle game:", err);
             setError("Failed to load game.");
         }
-    }, [user, updateState, saveGame]);
+    }, [user, data, updateState, saveGame]);
 
     const resetGame = useCallback(async () => {
         if (!window.confirm("Are you sure you want to reset your game? All progress will be lost.")) return;
@@ -99,15 +111,15 @@ export default function useIdleSim() {
         const currentState = stateRef.current;
         if (!currentState || !loaded) return;
 
-        const nextState = simulateTick(currentState);
+        const nextState = simulateTick(data, currentState);
         updateState(nextState);
         await saveGame();
-    }, [loaded, updateState, saveGame]);
+    }, [loaded, data, updateState, saveGame]);
 
     useEffect(() => {
-        if (authLoading) return;
+        if (authLoading || dataLoading) return;
         loadGame();
-    }, [authLoading, loadGame]);
+    }, [authLoading, dataLoading, loadGame]);
 
     useEffect(() => {
         if (!loaded) return;
@@ -119,13 +131,13 @@ export default function useIdleSim() {
             const targetTick = getCurrentLocalTick(clockOffsetRef.current);
             if (targetTick <= currentState.latest_simulated_tick) return;
 
-            updateState(simulateUntil(currentState, targetTick));
+            updateState(simulateUntil(data, currentState, targetTick));
 
             saveGame();
         }, TICK_CHECK_INTERVAL);
 
         return () => clearInterval(interval);
-    }, [loaded, updateState, saveGame]);
+    }, [loaded, data, updateState, saveGame]);
 
     useEffect(() => {
         if (!loaded) return;
@@ -140,7 +152,7 @@ export default function useIdleSim() {
     }, [loaded, saveGame]);
 
     return {
-        state, loaded, saving, error,
+        state, data, loaded, saving, error,
         updateState, loadGame, saveGame, resetGame, forceTick
     };
 }

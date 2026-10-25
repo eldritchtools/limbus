@@ -134,7 +134,7 @@ function EgoDetails({ id }) {
                     {<ColoredResistance resist={data.resists[affinity]} />}
                 </div>
             </div>)}
-            <NoPrefetchLink href={`/identities/${id}`} className="text-link" guarded={true}>
+            <NoPrefetchLink href={`/egos/${id}`} className="text-link" guarded={true}>
                 Go to page
             </NoPrefetchLink>
         </div>);

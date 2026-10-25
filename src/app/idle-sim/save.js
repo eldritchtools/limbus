@@ -1,6 +1,7 @@
 import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
 
-import { getCurrentLocalTick, SAVE_VERSION } from "./util";
+import { SAVE_VERSION } from "./constants";
+import { getCurrentLocalTick } from "./util";
 import { getLocalStore } from "../database/localDB";
 import { callRPC } from "../database/supabaseTemplates";
 

@@ -55,6 +55,10 @@ export default function RevealScreen({ guesser, next }) {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", maxWidth: "1280px" }}>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Answer</span>
             {guesser.currentProblem.answer}
+            {guesser.currentProblem.answerType === "short_answer" && guesser.currentProblem.otherAnswers.length > 0 && <>
+                <span>Alternative answers:</span>
+                {guesser.currentProblem.otherAnswers.map((x, i) => <span key={i}>{x}</span>)}
+            </>}
             {guesser.currentProblem.explanation?.length > 0 &&
                 <MarkdownRenderer content={guesser.currentProblem.explanation} />
             }
