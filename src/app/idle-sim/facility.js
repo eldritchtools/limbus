@@ -1,4 +1,12 @@
 import { DEPARTMENT_BASE_COST, DEPARTMENT_COST_GROWTH, MAX_CYCLE_LENGTH, MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS } from "./constants";
+import { isAgentOnExpedition } from "./expeditions";
+
+export function findAgentDepartment(state, agentId) {
+    for (const department of state.departments) {
+        if(department.agent_ids.includes(agentId)) return department;
+    }
+    return null;
+}
 
 function removeAgentFromDepartment(department, agentId) {
     department.agent_ids = department.agent_ids.filter(id => id !== agentId);
@@ -17,8 +25,8 @@ function removeSubjectFromDepartment(department, subjectId) {
 
 export function assignAgent(state, agentId, departmentIndex) {
     const department = state.departments[departmentIndex];
-    if (!department || !state.agents.some(agent => agent.id === agentId)) return null;
-    if (department.agent_ids.includes(agentId)) return null;
+    if (!department || !state.agents[agentId]) return null;
+    if (department.agent_ids.includes(agentId) || isAgentOnExpedition(state, agentId)) return null;
     if (department.agent_ids.length >= MAX_DEPARTMENT_AGENTS) return null;
 
     const nextState = structuredClone(state);

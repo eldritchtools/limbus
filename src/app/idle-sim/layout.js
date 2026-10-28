@@ -36,6 +36,8 @@ const schema = {
 };
 
 export default function IdleSimLayout({ children }) {
+    return null;
+    
     return <>
         <JsonLd data={schema} />
         {children}
