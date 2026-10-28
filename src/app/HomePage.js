@@ -28,6 +28,11 @@ function PopularityPoll() {
     </NoPrefetchLink>
 }
 
+function MaybeWrapLink({ href, children }) {
+    if (href) return <NoPrefetchLink href={href}>{children}</NoPrefetchLink>;
+    return children;
+}
+
 export default async function HomePage() {
     const identitiesBase = await fetchData("identities");
     const egosBase = await fetchData("egos");
@@ -86,26 +91,16 @@ export default async function HomePage() {
                                     <div>{date}</div>
                                     <div style={{ display: "flex", gap: "1px" }}>
                                         {list.map(obj => obj.id[0] === "1" ?
-                                            (obj.upcoming ?
-                                                <div key={obj.id} className={styles.latestIconContainer}>
+                                            <MaybeWrapLink key={obj.id} href={obj.upcoming ? obj.href : `/identities/${obj.id}`}>
+                                                <div className={styles.latestIconContainer}>
                                                     <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} lazyLoad={false} />
-                                                </div> :
-                                                <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
-                                                    <div className={styles.latestIconContainer}>
-                                                        <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} lazyLoad={false} />
-                                                    </div>
-                                                </NoPrefetchLink>
-                                            ) :
-                                            (obj.upcoming ?
-                                                <div key={obj.id} className={styles.latestIconContainer}>
+                                                </div>
+                                            </MaybeWrapLink> :
+                                            <MaybeWrapLink key={obj.id} href={obj.upcoming ? obj.href : `/egos/${obj.id}`}>
+                                                <div className={styles.latestIconContainer}>
                                                     <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} lazyLoad={false} />
-                                                </div> :
-                                                <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
-                                                    <div className={styles.latestIconContainer}>
-                                                        <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} lazyLoad={false} />
-                                                    </div>
-                                                </NoPrefetchLink>
-                                            )
+                                                </div>
+                                            </MaybeWrapLink>
                                         )}
                                     </div>
                                 </div>

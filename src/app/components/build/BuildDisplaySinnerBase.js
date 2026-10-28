@@ -6,6 +6,7 @@ import IdentityIcon from "../icons/IdentityIcon";
 import RarityIcon from "../icons/RarityIcon";
 import SinnerIcon from "../icons/SinnerIcon";
 import LinkWithTooltip from "../LinkWithTooltip";
+import NoPrefetchLink from "../NoPrefetchLink";
 import { getAltOptionsTooltipProps } from "../tooltips/AltOptionsTooltip";
 import { getEgoTooltipProps } from "../tooltips/EgoTooltip";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
@@ -14,6 +15,11 @@ import { getIdentityTooltipProps } from "../tooltips/IdentityTooltip";
 import { deploymentColors, uiColors } from "@/app/lib/colors";
 import { egoRanks } from "@/app/lib/constants";
 import { getDeploymentPosition } from "@/app/lib/deploymentOrder";
+
+function MaybeWrapLink({ disableLinks, href, children }) {
+    if (href && !disableLinks) return <NoPrefetchLink href={href}>{children}</NoPrefetchLink>;
+    return children;
+}
 
 function Identity({ identity, displayType, sinnerId, uptie, level, swapIcon, disableLinks }) {
     if (!identity)
@@ -36,9 +42,11 @@ function Identity({ identity, displayType, sinnerId, uptie, level, swapIcon, dis
     return displayType !== null ?
         (
             identity.upcoming ?
-                <div style={{ position: "relative", width: "100%" }}>
-                    <IdentityIcon identity={identity} {...props} />
-                </div> :
+                <MaybeWrapLink disableLinks={disableLinks} href={identity.href}>
+                    <div style={{ position: "relative", width: "100%" }}>
+                        <IdentityIcon identity={identity} {...props} />
+                    </div>
+                </MaybeWrapLink> :
                 disableLinks ?
                     <div style={{ position: "relative", width: "100%" }} {...getIdentityTooltipProps(identity.id)}>
                         <IdentityIcon identity={identity} {...props} />
@@ -70,9 +78,11 @@ function Ego({ ego, displayType, rank, threadspin, disableLinks }) {
     return displayType !== null ?
         (
             ego.upcoming ?
-                <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
-                    <EgoIcon ego={ego} {...props} />
-                </div> :
+                <MaybeWrapLink disableLinks={disableLinks} href={ego.href}>
+                    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }}>
+                        <EgoIcon ego={ego} {...props} />
+                    </div>
+                </MaybeWrapLink> :
                 disableLinks ?
                     <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", aspectRatio: aspectRatio }} {...getEgoTooltipProps(tooltipId)}>
                         <EgoIcon ego={ego} {...props} />
@@ -107,7 +117,7 @@ export default function BuildDisplaySinnerBase({
             />
             <div style={{ display: "flex", alignItems: "stretch", minHeight: "32px", height: "100%", boxSizing: "border-box" }}>
                 {altOptions.length > 0 &&
-                    <div 
+                    <div
                         style={{
                             position: "relative", display: "flex", alignItems: "center", margin: 0, cursor: "pointer",
                             padding: "0 6px", border: "1px var(--secondary-border-color) solid", borderRadius: ".5rem"
@@ -145,7 +155,7 @@ export default function BuildDisplaySinnerBase({
 
             <div style={{ display: "flex", alignItems: "stretch", height: "100%", boxSizing: "border-box" }}>
                 {altOptions.length > 0 &&
-                    <div 
+                    <div
                         style={{
                             position: "relative", display: "flex", alignItems: "center", margin: 0, cursor: "pointer",
                             padding: "0 6px", border: "1px var(--secondary-border-color) solid", borderRadius: ".5rem"

@@ -12,6 +12,11 @@ import CommentSection from "../components/pageTemplates/CommentSection";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { commentsTargetIds } from "../lib/commentsTargetIds";
 
+function MaybeWrapLink({ href, children }) {
+    if (href) return <NoPrefetchLink href={href}>{children}</NoPrefetchLink>;
+    return children;
+}
+
 export default function UpdateHistoryPage() {
     const [identities, identitiesLoading] = useIdentitiesWithUpcoming();
     const [egos, egosLoading] = useEgosWithUpcoming();
@@ -52,26 +57,16 @@ export default function UpdateHistoryPage() {
                     <DragContainer>
                         <div style={{ display: "flex", gap: "1px", width: "max-content" }}>
                             {list.map(obj => obj.id[0] === "1" ?
-                                (obj.upcoming ?
-                                    <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
+                                <MaybeWrapLink key={obj.id} href={obj.upcoming ? obj.href : `/identities/${obj.id}`}>
+                                    <div style={{ width: latestSize, height: latestSize }}>
                                         <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
-                                    </div> :
-                                    <NoPrefetchLink key={obj.id} href={`/identities/${obj.id}`}>
-                                        <div style={{ width: latestSize, height: latestSize }}>
-                                            <IdentityIcon identity={obj} uptie={4} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
-                                        </div>
-                                    </NoPrefetchLink>
-                                ) :
-                                (obj.upcoming ?
-                                    <div key={obj.id} style={{ width: latestSize, height: latestSize }}>
+                                    </div>
+                                </MaybeWrapLink> :
+                                <MaybeWrapLink key={obj.id} href={obj.upcoming ? obj.href : `/egos/${obj.id}`}>
+                                    <div style={{ width: latestSize, height: latestSize }}>
                                         <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
-                                    </div> :
-                                    <NoPrefetchLink key={obj.id} href={`/egos/${obj.id}`}>
-                                        <div style={{ width: latestSize, height: latestSize }}>
-                                            <EgoIcon ego={obj} type={"awaken"} displayName={true} displayRarity={true} includeTooltip={true} style={{ pointerEvents: "none", borderRadius: "8px" }} />
-                                        </div>
-                                    </NoPrefetchLink>
-                                )
+                                    </div>
+                                </MaybeWrapLink>
                             )}
                         </div>
                     </DragContainer>
