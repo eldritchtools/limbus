@@ -16,6 +16,7 @@ export const PAYOUT_PER_WE = 20;
 export const BREAK_HP_PERCENT_HEAL = 0.2;
 export const BREAK_SP_HEAL = 15;
 export const INCAPACITATION_TICKS = 24;
+export const PANIC_TICKS = 12;
 
 // Reports
 export const MAX_REPORTS = 200;
@@ -31,7 +32,9 @@ export const DEPARTMENT_COST_GROWTH = 2.5;
 // Agents
 export const MAX_AGENT_LEVEL = 30;
 export const POINTS_PER_LEVEL = 3;
+export const START_HP = 100;
 export const HP_PER_LEVEL = 5;
+export const START_WE = 25;
 export const WE_PER_LEVEL = 3;
 export const MAX_SP = 45;
 export const MIN_SP = -45;
@@ -44,7 +47,7 @@ export const DEFAULT_GEAR_COST_GROWTH = 1.25;
 export const BASE_OFFENSE = 3;
 export const BOOSTED_OFFENSE = 5;
 
-export const AGENT_BASE_COST = 20_000;
+export const AGENT_BASE_COST = 10_000;
 export const AGENT_COST_GROWTH = 1.15;
 export const AGENT_REROLL_COST_RATIO = 0.1;
 
@@ -54,4 +57,9 @@ export const CATCHUP_LEVEL_GAP = 3;
 export const BOOSTED_POINT_CHANCE = 0.9;
 
 // Subjects
+export const STARTER_SUBJECT_IDS = ["S-P1", "S-P2", "S-P3", "S-P4", "S-P5", "S-P6"];
 
+// Expeditions
+export const MAX_EXPEDITION_TICKS = 48;
+export const MAX_EXPEDITION_AGENTS = 5;
+export const SP_COMBAT_SWING = 0.25;

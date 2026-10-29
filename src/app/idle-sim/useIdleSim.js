@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { assignAgentPoints } from "./agents";
 import { AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL } from "./constants";
+import { chooseCandidate, rerollCandidates, startHiring } from "./hiring";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
+import { getSetting, setSetting } from "./settings";
 import { simulateTick, simulateUntil } from "./simulation";
 import { createInitialState, getCurrentLocalTick, getClockOffset } from "./util";
 import { useData } from "../components/DataProvider";
@@ -10,17 +13,18 @@ import { useAuth } from "../database/authProvider";
 export default function useIdleSim() {
     const [rawData, rawDataLoading] = useData("idle_sim/idle_sim");
     const [data, dataLoading] = useMemo(() => {
-        if(rawDataLoading) return [null, true];
-        const data = {...rawData};
+        if (rawDataLoading) return [null, true];
+        const data = { ...rawData };
 
         const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5 };
-        data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, {...defaultSubject, ...subject}]))
+        data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, ...subject }]))
 
         return [data, false];
     }, [rawData, rawDataLoading]);
     const { user, loading: authLoading } = useAuth();
 
     const [state, setState] = useState(null);
+    const [uiState, setUiState] = useState({ tab: "reports" });
     const [revision, setRevision] = useState(null);
     const [loaded, setLoaded] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -32,7 +36,7 @@ export default function useIdleSim() {
     const revisionRef = useRef(null);
     const clockOffsetRef = useRef(0);
 
-    const updateState = useCallback((nextState) => {
+    const updateState = useCallback(nextState => {
         stateRef.current = nextState;
         dirtyRef.current = true;
         setState(nextState);
@@ -107,7 +111,7 @@ export default function useIdleSim() {
     }, [user, loadGame]);
 
     const forceTick = useCallback(async () => {
-        if(process.env.NODE_ENV !== "development") return;
+        if (process.env.NODE_ENV !== "development") return;
         const currentState = stateRef.current;
         if (!currentState || !loaded) return;
 
@@ -151,8 +155,23 @@ export default function useIdleSim() {
         return () => clearInterval(interval);
     }, [loaded, saveGame]);
 
+    const updateUiState = update => setUiState(p => ({ ...p, ...update }));
+
+    const functions = useMemo(() => {
+        return {
+            getSetting: setting => getSetting(state, setting),
+            setSetting: async (setting, value) => { updateState(setSetting(state, setting, value)) },
+            startHiring: async level => { updateState(startHiring(state, level)) },
+            rerollCandidates: async () => { updateState(rerollCandidates(state)) },
+            chooseCandidate: async index => { updateState(chooseCandidate(state, index)) },
+            assignAgentPoints: async (agentId, points) => { updateState(assignAgentPoints(state, agentId, points)) }
+        }
+    }, [state, updateState])
+
     return {
+        uiState, setUiState, updateUiState,
         state, data, loaded, saving, error,
-        updateState, loadGame, saveGame, resetGame, forceTick
+        updateState, loadGame, saveGame, resetGame, forceTick,
+        ...functions
     };
 }

@@ -4,10 +4,11 @@
 
 import { ASSETS_ROOT } from "@/app/paths";
 
-export default function Icon({ path, className, style = {} }) {
+export default function Icon({ path, className, size, style = {} }) {
+    const finalStyle = size ? { width: `${size}px`, height: `${size}px`, ...style } : style
     // const { width, height } = style;
     // return <div style={{ width, height }}>
     {/* <Image src={`${ASSETS_ROOT}/icons/${path}.png`} alt={path} title={path} fill sizes="32px" style={{ ...remStyle, objectFit: "cover" }} /> */ }
-    return <img className={className} src={`${ASSETS_ROOT}/icons/${path}.webp`} alt={path} title={path} style={style} />
+    return <img className={className} src={`${ASSETS_ROOT}/icons/${path}.webp`} alt={path} title={path} style={finalStyle} />
     // </div>
 }

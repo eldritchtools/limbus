@@ -1,4 +1,29 @@
 import { DEFAULT_GEAR_COST_GROWTH } from "./constants";
+import { resolveGearStatEffects } from "./effects";
+import { isAgentOnExpedition } from "./expeditions";
+
+
+export function getAgentEffectiveStats(data, state, agent) {
+    const stats = {
+        work_efficiency: agent.work_efficiency,
+        offense: [...agent.offense],
+        defense: [1, 1, 1, 1, 1, 1, 1],
+        off_mult: [1, 1, 1, 1, 1, 1, 1]
+    };
+
+    const weapon = data.weapons[agent.weapon];
+    if (weapon) stats.off_mult = [...weapon.offense];
+
+    const armor = data.armor[agent.armor];
+    if (armor) stats.defense = [...armor.defense];
+
+    resolveGearStatEffects(data, state, agent, stats);
+
+    stats.offense = stats.offense.map((v, i) => v * stats.off_mult[i]);
+    delete stats.off_mult;
+
+    return stats;
+}
 
 export function getSubjectGearUnlocks(data, subjectId) {
     const unlocks = [];
@@ -43,7 +68,7 @@ export function getGearCost(data, state, type, id) {
 function getEquippedCopies(state, type, id) {
     let count = 0;
 
-    for (const agent of state.agents) {
+    for (const agent of Object.values(state.agents)) {
         switch (type) {
             case "weapons":
                 if (agent.weapon === id) count += 1;
@@ -62,6 +87,19 @@ function getEquippedCopies(state, type, id) {
     return count;
 }
 
+export function grantGear(data, state, type, id) {
+    if (!["weapons", "armor", "gifts"].includes(type)) return false;
+
+    const gear = data[type][id];
+    if (!gear) return false;
+
+    const owned = getOwnedCopies(state, type, id);
+    if (gear.max_copies !== undefined && owned >= gear.max_copies) return false;
+
+    state.inventory[type][id] = owned + 1;
+    return true;
+}
+
 export function buyGear(data, state, type, id) {
     if (!data[type]?.[id]) return null;
     if (getOwnedCopies(state, type, id) >= getPurchaseLimit(data, state, type, id)) return null;
@@ -76,8 +114,8 @@ export function buyGear(data, state, type, id) {
 }
 
 export function equipGear(data, state, agentId, type, id) {
-    const agent = state.agents.find(a => a.id === agentId);
-    if (!agent || !data[type]?.[id]) return null;
+    const agent = state.agents[agentId];
+    if (!agent || !data[type]?.[id] || isAgentOnExpedition(state, agentId)) return null;
     if (getOwnedCopies(state, type, id) - getEquippedCopies(state, type, id) < 1) return null;
 
     switch (type) {
@@ -95,7 +133,7 @@ export function equipGear(data, state, agentId, type, id) {
     }
 
     const nextState = structuredClone(state);
-    const target = nextState.agents.find(a => a.id === agentId);
+    const target = nextState.agents[agentId];
 
     switch (type) {
         case "weapons":
@@ -115,8 +153,8 @@ export function equipGear(data, state, agentId, type, id) {
 }
 
 export function unequipGear(data, state, agentId, type, id) {
-    const agent = state.agents.find((a) => a.id === agentId);
-    if (!agent || !data[type]?.[id]) return null;
+    const agent = state.agents[agentId];
+    if (!agent || !data[type]?.[id] || isAgentOnExpedition(state, agentId)) return null;
 
     switch (type) {
         case "weapons":
@@ -133,7 +171,7 @@ export function unequipGear(data, state, agentId, type, id) {
     }
 
     const nextState = structuredClone(state);
-    const target = nextState.agents.find((a) => a.id === agentId);
+    const target = nextState.agents[agentId];
 
     switch (type) {
         case "weapons":

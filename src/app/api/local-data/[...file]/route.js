@@ -3,6 +3,9 @@ import path from "path";
 
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function GET(req) {
     if (process.env.NODE_ENV !== "development") {
         return new Response(null, { status: 404 });

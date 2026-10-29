@@ -251,7 +251,7 @@ export default function SetupScreen({ clashBattle }) {
 
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <RangeInput
-                            min={-45} max={45}
+                            min={-50} max={50}
                             value={clashBattle.settings.sp}
                             onChange={x => clashBattle.setSetting("sp", x)}
                             disabled={!clashBattle.isHost}

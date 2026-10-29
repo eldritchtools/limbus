@@ -1,0 +1,29 @@
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    box-sizing: border-box;
+
+    border: 1px var(--primary-border-color) solid;
+    border-radius: 0.5rem;
+}
+
+.clickableTile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    box-sizing: border-box;
+
+    border: 1px var(--primary-border-color) solid;
+    border-radius: 0.5rem;
+
+    background: transparent;
+    transition: 0.2s ease all;
+}
+
+.clickableTile:hover {
+    background: var(--bg-hover);
+    cursor: pointer;
+}

@@ -2,9 +2,12 @@ import {
     BASE_OFFENSE, BOOSTED_OFFENSE,
     POINTS_PER_LEVEL, HP_PER_LEVEL, WE_PER_LEVEL,
     XP_SKIP_COST, AGENT_BASE_COST, AGENT_COST_GROWTH, AGENT_REROLL_COST_RATIO, CATCHUP_LEVEL_GAP,
-    BOOSTED_POINT_CHANCE
+    BOOSTED_POINT_CHANCE,
+    MAX_SP,
+    START_HP,
+    START_WE
 } from "./constants";
-import { createAgent, agentXpToNext } from "./util";
+import { agentXpToNext } from "./util";
 
 function pickAffinity(boosted) {
     const options = Math.random() < BOOSTED_POINT_CHANCE ?
@@ -13,7 +16,7 @@ function pickAffinity(boosted) {
 }
 
 export function getMaxStartLevel(state) {
-    const highest = Math.max(1, ...state.agents.map(agent => agent.level));
+    const highest = Math.max(1, ...Object.values(state.agents).map(agent => agent.level));
     return Math.max(1, highest - CATCHUP_LEVEL_GAP);
 }
 
@@ -24,15 +27,15 @@ function getSkippedXp(startLevel) {
 }
 
 function getBaseAgentCost(state) {
-    return Math.round(AGENT_BASE_COST * AGENT_COST_GROWTH ** state.agents.length);
+    return Math.round(AGENT_BASE_COST * AGENT_COST_GROWTH ** Object.keys(state.agents).length);
 }
 
 export function getAgentHireCost(state, startLevel = 1) {
     return getBaseAgentCost(state) + Math.round(getSkippedXp(startLevel) * XP_SKIP_COST);
 }
 
-export function getRerollCost(state) {
-    return Math.round(getBaseAgentCost(state) * AGENT_REROLL_COST_RATIO);
+export function getRerollCost(state, startLevel = 1) {
+    return Math.round(getAgentHireCost(state, startLevel) * AGENT_REROLL_COST_RATIO);
 }
 
 function createCandidate(startLevel) {
@@ -42,7 +45,7 @@ function createCandidate(startLevel) {
         [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
     }
 
-    const boosted = indexes.slice(0, BOOSTED_COUNT);
+    const boosted = indexes.slice(0, 3);
     const offense = Array(7).fill(BASE_OFFENSE);
     for (const i of boosted) offense[i] = BOOSTED_OFFENSE;
 
@@ -82,6 +85,25 @@ export function rerollCandidates(state) {
     return nextState;
 }
 
+function createAgent(id, name, offense) {
+    return {
+        id,
+        name,
+        level: 1,
+        xp: 0,
+        unspent_points: 0,
+        max_hp: START_HP,
+        work_efficiency: START_WE,
+        offense,
+        hp: START_HP,
+        sp: MAX_SP,
+        statuses: [],
+        weapon: null,
+        armor: null,
+        gifts: [],
+    };
+}
+
 export function chooseCandidate(state, index) {
     if (!state.hiring?.candidates[index]) return null;
 
@@ -96,7 +118,7 @@ export function chooseCandidate(state, index) {
     agent.hp = agent.max_hp;
     agent.work_efficiency += WE_PER_LEVEL * levelsGained;
  
-    nextState.agents.push(agent);
+    nextState.agents[id] = agent;
     nextState.next_agent_id = id + 1;
     nextState.hiring = null;
     return nextState;

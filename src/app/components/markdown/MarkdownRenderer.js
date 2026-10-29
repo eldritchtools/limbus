@@ -246,7 +246,7 @@ function EncounterItem({ str, context, guardedLinks }) {
     const [encounters, encountersLoading] = useData("encounters", !context?.encounter);
     if (encountersLoading && !context?.encounter) {
         return <span>{"{Loading...}"}</span>
-    } else if (!(cat in encounters) || !(enc in encounters[cat])) {
+    } else if (encounters && (!(cat in encounters) || !(enc in encounters[cat]))) {
         return <span>{`{encounter:${str}}`}</span>;
     } else {
         const data = context ? context.encounter[cat][enc] : encounters[cat][enc];

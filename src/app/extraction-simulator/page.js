@@ -69,7 +69,6 @@ function Banner({ banner, identities, egos, announcers, isMobile, selected, setS
                 const insertItem = (isIdentity, id, obj) => {
                     if (obj.sinnerId !== v || obj.season >= 8000 || obj.upcoming) return;
                     if (isIdentity) {
-                        if (obj.eventReward) return;
                         items[obj.rank].push(id);
                     } else {
                         if (egos[id].extractable || (obj.sinnerId === v && egos[id].eventExtractable)) items["ego"].push(id);
