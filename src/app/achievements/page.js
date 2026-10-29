@@ -204,7 +204,7 @@ function RewardsTab({ totalPoints, columns = 2 }) {
 
     const headers = [];
     for (let i = 0; i < columns; i++) {
-        headers.push(<div style={{ display: "grid", gridTemplateColumns: "1fr 4fr", textAlign: "center" }}>
+        headers.push(<div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 4fr", textAlign: "center" }}>
             <span style={{ fontWeight: "bold", padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>Level</span>
             <span style={{ fontWeight: "bold", padding: "0.1rem", border: "1px var(--secondary-border-color) solid" }}>Reward</span>
         </div>);
