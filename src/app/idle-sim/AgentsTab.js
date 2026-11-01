@@ -1,14 +1,14 @@
+import { PencilIcon } from "@heroicons/react/24/solid";
 import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
 import { HP_PER_LEVEL, START_HP, START_WE, WE_PER_LEVEL } from "./constants";
-import { findAgentExpedition } from "./expeditions";
 import { findAgentDepartment } from "./facility";
 import { getAgentEffectiveStats } from "./gear";
 import { getAgentHireCost, getMaxStartLevel, getRerollCost } from "./hiring";
 import { GiftSprite } from "./icons";
 import styles from "./idleSim.module.css";
-import { agentXpToNext, sum, toCurrencyStr } from "./util";
+import { agentXpToNext, findAgentExpedition, sum, toCurrencyStr } from "./util";
 import Icon from "../components/icons/Icon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import NumberInput from "../components/objects/NumberInput";
@@ -59,26 +59,32 @@ function AgentsScreen({ idleSim }) {
     const assignments = useMemo(() =>
         Object.fromEntries(Object.values(idleSim.state.agents).map(({ id }) => {
             const department = findAgentDepartment(idleSim.state, id);
-            if (department) return [id, department.name];
+            if (department) return [id, department.label];
             const expedition = findAgentExpedition(idleSim.state, id);
             if (expedition) return [id, idleSim.data.expeditions[expedition.expedition_id].name];
             return [id, "Idle"];
         })),
         [idleSim.state, idleSim.data]);
 
-    const handleSelectAgent = id => {
-        if (idleSim.uiState.agent === id) idleSim.updateUiState({ agent: null });
-        else idleSim.updateUiState({ agent: id })
-    }
-
     const [statToggle, setStatToggle] = useState(false);
     const [pointsSpent, setPointsSpent] = useState(null);
     const [assignGear, setAssignGear] = useState(null);
     const [selectedGear, setSelectedGear] = useState(null);
 
+    const [editingName, setEditingName] = useState(false);
+    const [name, setName] = useState("");
+
+    const handleSelectAgent = id => {
+        if (idleSim.uiState.agent === id) idleSim.updateUiState({ agent: null });
+        else {
+            idleSim.updateUiState({ agent: id });
+            setEditingName(false);
+        }
+    }
+
     return <>
         <div style={{ display: "flex" }}>
-            <button onClick={() => idleSim.updateUiState({ hiring: true })}>Hire New Agent</button>
+            <button onClick={() => idleSim.updateUiState({ hiring: true })}>{idleSim.state.hiring ? "Resume Hiring" : "Hire New Agent"}</button>
         </div>
         {Object.values(idleSim.state.agents).map(agent => {
             const stats = getAgentEffectiveStats(idleSim.data, idleSim.state, agent);
@@ -107,7 +113,23 @@ function AgentsScreen({ idleSim }) {
                 </div>
                 {idleSim.uiState.agent === agent.id &&
                     <div style={{ display: "flex", flexDirection: "column", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.5rem", boxSizing: "border-box" }}>
-                        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{agent.name}</span>
+                        <div style={{ display: "flex", gap: "0.2rem" }}>
+                            {editingName ? <>
+                                <input value={name} onChange={e => setName(e.target.value)} />
+                                <button onClick={() => { setEditingName(false); idleSim.renameAgent(agent.id, name); }} style={{ padding: "2px" }}>
+                                    ✔
+                                </button>
+                                <button onClick={() => { setEditingName(false); setName(""); }} style={{ padding: "2px" }}>
+                                    ✘
+                                </button>
+                            </> : <>
+                                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{agent.name}</span>
+                                <button onClick={() => { setEditingName(true); setName(agent.name); }} style={{ padding: "2px" }}>
+                                    <PencilIcon style={{ width: "16px", height: "16px" }} />
+                                </button>
+                            </>
+                            }
+                        </div>
                         <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
                             <div style={{ display: "flex", flexDirection: "column" }}>
                                 <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
@@ -149,7 +171,7 @@ function AgentsScreen({ idleSim }) {
                                             {agent.unspent_points > 0 && <>
                                                 <div />
                                                 {affinities.map((x, i) =>
-                                                    <button key={`${x}-up`} disabled={pointsSpent[i] <= 0}
+                                                    <button key={`${x}-down`} disabled={pointsSpent[i] <= 0}
                                                         style={{ padding: "0 4px" }}
                                                         onClick={() => setPointsSpent(p => p.map((x, j) => i === j ? x - 1 : x))}
                                                     >∨</button>)

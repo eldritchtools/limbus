@@ -1,20 +1,7 @@
-import { canWork } from "./agents";
+import { addAgentXp, canWork } from "./agents";
 import { MAX_EXPEDITION_AGENTS } from "./constants";
-
-export function findAgentExpedition(state, agentId) {
-    for (const expedition of state.expeditions) {
-        if (expedition.agent_ids.includes(agentId)) return expedition;
-    }
-    for (const event of state.pending_events) {
-        if (event.agent_ids.includes(agentId) && !event.result) return event;
-    }
-    return null;
-}
-
-export function isAgentOnExpedition(state, agentId) {
-    return state.expeditions.some(expedition => expedition.agent_ids.includes(agentId)) ||
-        state.pending_events.some(event => event.agent_ids.includes(agentId) && !event.result);
-}
+import { grantGear } from "./gear";
+import { isAgentOnExpedition } from "./util";
 
 export function createEnemy(data, enemyId) {
     return { id: enemyId, hp: data.enemies[enemyId].max_hp }
@@ -40,12 +27,53 @@ export function startExpedition(data, state, expeditionId, agentIds) {
     const nextState = structuredClone(state);
     nextState.currency -= expedition.cost;
     nextState.expeditions.push({
+        id: state.next_expedition_id,
         expedition_id: expeditionId,
         agent_ids: [...agentIds],
         wave: 0,
         enemy_state: constructEnemyState(data, expeditionId, 0),
         ticks: 0,
     });
+    nextState.next_expedition_id += 1;
+
+    return nextState;
+}
+
+function grantExpeditionRewards(data, state, expedition) {
+    for (const reward of expedition.rewards ?? []) {
+        if (reward.type === "xp") {
+            for (const agentId of expedition.agent_ids) {
+                const agent = state.agents[agentId];
+                if (!agent) continue;
+                addAgentXp(agent, reward.value);
+            }
+        } else if (reward.type === "drop") {
+            grantGear(data, state, reward.dropType, reward.dropId);
+        } else if (reward.type === "subject") {
+            state.subjects[reward.id] ??= { research_level: 0, research_xp: 0 };
+        }
+    }
+}
+
+export function claimExpedition(data, state, expeditionId) {
+    const expedition = state.finished_expeditions.find(ex => ex.id === expeditionId);
+    if (!expedition) return null;
+
+    const nextState = structuredClone(state);
+    nextState.finished_expeditions = nextState.finished_expeditions.filter(ex => ex.id !== expedition.id)
+
+    if (expedition.result === "failed") return nextState;
+
+    grantExpeditionRewards(data, nextState, expedition);
+
+    if (expedition.event) {
+        nextState.pending_events.push({
+            id: expedition.id,
+            event_id: expedition.event,
+            expedition_id: expedition.expedition_id,
+            agent_ids: [...expedition.agent_ids],
+        });
+    }
 
     return nextState;
 }

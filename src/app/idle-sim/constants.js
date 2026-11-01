@@ -20,6 +20,8 @@ export const PANIC_TICKS = 12;
 
 // Reports
 export const MAX_REPORTS = 200;
+export const NOTABLE_EVENT_TYPES = new Set(["died", "incapacitated", "panic"]);
+export const COUNTED_EVENT_TYPES = new Set(["level_up", "research_level_up", "recovered"]);
 
 // Facility
 export const MAX_DEPARTMENT_AGENTS = 5;

@@ -1,21 +1,9 @@
-import { getAffinityIndex } from "./util";
+import { checkConditions, getAffinityIndex } from "./util";
 
 const CONDITIONS = {
     "tick_mod": (data, state, condition) => state.game_tick % condition.value === 0,
     "on_kill": (data, state, condition) => state.defeated > 0
 };
-
-function checkConditions(data, state, conditions, op = "and") {
-    if (!conditions) return true;
-
-    if (op === "and") {
-        return conditions.every(condition => CONDITIONS[condition.type]?.(data, state, condition))
-    } else if (op === "or") {
-        return conditions.some(condition => CONDITIONS[condition.type]?.(data, state, condition))
-    }
-
-    return false;
-}
 
 function compileEffects(data, agent) {
     const weapon = data.weapons[agent.weapon];
@@ -37,12 +25,12 @@ const STAT_EFFECTS = {
 };
 
 export function resolveGearStatEffects(data, state, agent, stats) {
-    for (const effect in compileEffects(data, agent)) {
+    for (const effect of compileEffects(data, agent)) {
         if ("conditions" in effect || "effects" in effect) {
-            if (!checkConditions(data, { ...state }, effect.conditions, effect.conditionOp ?? "and")) continue;
+            if (!checkConditions(data, state, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
 
-            for (const trueEffect in effect.effects) {
-                STAT_EFFECTS[trueEffect.type]?.(stats, trueEffect.effects);
+            for (const trueEffect of effect.effects) {
+                STAT_EFFECTS[trueEffect.type]?.(stats, trueEffect);
             }
         } else {
             STAT_EFFECTS[effect.type]?.(stats, effect);
@@ -51,23 +39,23 @@ export function resolveGearStatEffects(data, state, agent, stats) {
 }
 
 const DAMAGE_EFFECTS = {
-    "fixed_damage": (damage, effect) => {
-        damage.damageToEnemy[getAffinityIndex(effect.affinity)] += effect.value;
+    "fixed_damage": (stats, damage, effect) => {
+        damage.damageToEnemy += effect.value * stats.enemy.defense[getAffinityIndex(effect.affinity)];
     }
 };
 
-export function resolveGearDamageEffects(data, state, initDamageToEnemy, initDamageToAgent) {
+export function resolveGearDamageEffects(data, state, stats, initDamageToEnemy, initDamageToAgent) {
     const damage = { damageToEnemy: initDamageToEnemy, damageToAgent: initDamageToAgent };
 
-    for (const effect in compileEffects(data, state.agentState[state.agentIndex])) {
+    for (const effect of compileEffects(data, state.agentState[state.agentIndex])) {
         if ("conditions" in effect || "effects" in effect) {
-            if (!checkConditions(data, state, effect.conditions, effect.conditionOp ?? "and")) continue;
+            if (!checkConditions(data, state, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
 
-            for (const trueEffect in effect.effects) {
-                DAMAGE_EFFECTS[trueEffect.type]?.(damage, trueEffect.effects);
+            for (const trueEffect of effect.effects) {
+                DAMAGE_EFFECTS[trueEffect.type]?.(stats, damage, trueEffect);
             }
         } else {
-            DAMAGE_EFFECTS[effect.type]?.(damage, effect);
+            DAMAGE_EFFECTS[effect.type]?.(stats, damage, effect);
         }
     }
 
@@ -79,16 +67,21 @@ const EXPEDITION_EFFECTS = {
         state.agent.hp += effect.value
     },
     bonus_damage: (data, state, effect) => {
-        state.agent.statuses.push({ "type": "bonus_damage", "affinity": effect.affinity, "value": effect.value, "until": state.game_tick + effect.ticks })
+        state.agent.statuses.push({ "type": "bonus_damage", "affinity": effect.affinity, "value": effect.value, "until": state.state.game_tick + effect.ticks })
     },
 }
 
 export function resolveGearExpeditionEffects(data, state) {
-    for (const agent in state.agents) {
+    for (const agent of state.agents) {
         for (const effect of compileEffects(data, agent)) {
-            if (!checkConditions(data, { ...state, agent }, effect.conditions, effect.conditionOp ?? "and")) continue;
-            for (const trueEffect of effect.effects) {
-                EXPEDITION_EFFECTS[trueEffect.type]?.(data, { ...state, agent }, trueEffect);
+            if ("conditions" in effect || "effects" in effect) {
+                if (!checkConditions(data, { ...state, agent }, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
+
+                for (const trueEffect of effect.effects) {
+                    EXPEDITION_EFFECTS[trueEffect.type]?.(data, { ...state, agent }, trueEffect);
+                }
+            } else {
+                EXPEDITION_EFFECTS[effect.type]?.(data, { ...state, agent }, effect);
             }
         }
     }

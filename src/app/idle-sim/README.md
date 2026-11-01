@@ -165,7 +165,7 @@ Hiring is a paid, multi-step flow:
 1. The player starts a hire and chooses a starting level, seeing the cost before confirming.
 2. The cost is deducted immediately.
 3. Three candidates are generated and saved, so leaving and returning does not reroll them. A candidate is a set of offense ratings with three random boosted affinities.
-4. The player may pay a small extra cost to reroll the candidates, which is 10% of the base price.
+4. The player may pay a small extra cost to reroll the candidates, which is 10% of the price.
 5. The player picks a candidate, who joins unassigned, and the other candidates are discarded.
 
 Only one hire can be in progress at a time.

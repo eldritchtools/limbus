@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { SubjectSprite } from "./icons";
+import { OUTCOMES } from "./constants";
+import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { researchXpToNext } from "./util";
 import DropdownButton from "../components/objects/DropdownButton";
@@ -16,7 +17,7 @@ function Subject({ idleSim }) {
         <button onClick={() => idleSim.updateUiState({ subject: null })}>Go Back</button>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <SubjectSprite width={250} height={250} src={subjectData.src} style={{ filter: subjectState ? "" : "brightness(0)" }} />
+                <EnemySprite width={250} height={250} src={subjectData.src} style={{ filter: subjectState ? "" : "brightness(0)" }} />
                 <span style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>{subjectState ? subjectData.name : "???"}</span>
                 {subjectState &&
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 100px)", gap: "0.5rem", alignItems: "center", justifyItems: "center" }}>
@@ -32,10 +33,10 @@ function Subject({ idleSim }) {
                         <span style={{ fontWeight: "bold", fontSize: "2rem" }}
                             {...getGeneralTooltipProps("Research Level\nCurrent research level of the subject. Higher research levels give small boosts to the work efficiency of agents that work on this subject and may unlock weapons and armor for purchase.")}
                         >
-                            {subjectState.research_level}
+                            {subjectState.research_level === subjectData.max_level ? "MAX" : subjectState.research_level}
                         </span>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}
-                            {...getGeneralTooltipProps("Research XP\nXP required to reach the next research level. Each good, average, or bad instance of work an agent does on the subject gives 2, 1, or 0 XP respectively.")}
+                            {...getGeneralTooltipProps(`Research XP\nXP required to reach the next research level. Each good, average, or bad instance of work an agent does on the subject gives ${OUTCOMES.good.subject_xp}, ${OUTCOMES.avg.subject_xp}, or ${OUTCOMES.bad.subject_xp} XP respectively.`)}
                         >
                             <span>{subjectState.research_xp}</span>
                             <div style={{ width: "100%", border: "1px var(--primary-border-color) solid" }} />
@@ -69,7 +70,7 @@ function SubjectsGrid({ idleSim, subjectsList }) {
             const subject = idleSim.data.subjects[id];
             const owned = id in idleSim.state.subjects;
             return <div key={id} className={styles.clickableTile} onClick={() => idleSim.updateUiState({ subject: id })}>
-                <SubjectSprite width={150} height={150} src={subject.src} style={{ filter: owned ? "" : "brightness(0)" }} />
+                <EnemySprite width={150} height={150} src={subject.src} style={{ filter: owned ? "" : "brightness(0)" }} />
                 <span style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>{owned ? subject.name : "???"}</span>
             </div>
         })}

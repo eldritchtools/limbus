@@ -1,6 +1,6 @@
-import { DEFAULT_GEAR_COST_GROWTH } from "./constants";
+import { DEFAULT_GEAR_COST_GROWTH, MAX_AGENT_GIFTS } from "./constants";
 import { resolveGearStatEffects } from "./effects";
-import { isAgentOnExpedition } from "./expeditions";
+import { isAgentOnExpedition } from "./util";
 
 
 export function getAgentEffectiveStats(data, state, agent) {
@@ -46,7 +46,7 @@ export function getOwnedCopies(state, type, id) {
 }
 
 export function getPurchaseLimit(data, state, type, id) {
-    if (!["weapons", "armor"].includes(type)) return 0;
+    if (!["weapons", "armor", "gifts"].includes(type)) return 0;
 
     const gear = data[type][id];
     let limit = 0;
@@ -59,7 +59,7 @@ export function getPurchaseLimit(data, state, type, id) {
 }
 
 export function getGearCost(data, state, type, id) {
-    if (!["weapons", "armor"].includes(type)) return undefined;
+    if (!["weapons", "armor", "gifts"].includes(type)) return undefined;
 
     const gear = data[type][id];
     return Math.round(gear.price * (gear.price_growth ?? DEFAULT_GEAR_COST_GROWTH) ** getOwnedCopies(state, type, id));
@@ -126,7 +126,7 @@ export function equipGear(data, state, agentId, type, id) {
             if (agent.armor === id) return null;
             break;
         case "gifts":
-            if (agent.gifts.includes(id) || agent.gifts.length >= MAX_GIFTS_PER_AGENT) return null;
+            if (agent.gifts.includes(id) || agent.gifts.length >= MAX_AGENT_GIFTS) return null;
             break;
         default:
             break;

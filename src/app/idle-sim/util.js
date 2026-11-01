@@ -1,4 +1,4 @@
-import { STARTER_SUBJECT_IDS, TICK_DURATION } from "./constants";
+import { MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS, STARTER_SUBJECT_IDS, TICK_DURATION } from "./constants";
 import { affinities } from "../lib/constants";
 
 export function sum(values) {
@@ -29,6 +29,37 @@ export function getAffinityIndex(affinity) {
     return affinities.findIndex(x => x === affinity);
 }
 
+export function checkConditions(data, state, conditionsTable, conditions, op = "and") {
+    if (!conditions) return true;
+
+    if (op === "and") {
+        return conditions.every(condition => conditionsTable[condition.type]?.(data, state, condition))
+    } else if (op === "or") {
+        return conditions.some(condition => conditionsTable[condition.type]?.(data, state, condition))
+    }
+
+    return false;
+}
+
+export function isAgentOnExpedition(state, agentId) {
+    return state.expeditions.some(expedition => expedition.agent_ids.includes(agentId)) ||
+        state.finished_expeditions.some(expedition => expedition.agent_ids.includes(agentId)) ||
+        state.pending_events.some(event => event.agent_ids.includes(agentId) && !event.result);
+}
+
+export function findAgentExpedition(state, agentId) {
+    for (const expedition of state.expeditions) {
+        if (expedition.agent_ids.includes(agentId)) return expedition;
+    }
+    for (const expedition of state.finished_expeditions) {
+        if (expedition.agent_ids.includes(agentId)) return expedition;
+    }
+    for (const event of state.pending_events) {
+        if (event.agent_ids.includes(agentId) && !event.result) return event;
+    }
+    return null;
+}
+
 export function createInitialState(serverTick) {
     return {
         game_tick: 0,
@@ -47,12 +78,14 @@ export function createInitialState(serverTick) {
                 label: "Department 1",
                 cycle_length: 8,
                 cycle_block: 0,
-                agent_ids: [],
-                subject_ids: [],
+                agent_ids: Array.from({ length: MAX_DEPARTMENT_AGENTS }, () => null),
+                subject_ids: Array.from({ length: MAX_DEPARTMENT_SUBJECTS }, () => null),
                 schedule: {}
             },
         ],
+        next_expedition_id: 1,
         expeditions: [],
+        finished_expeditions: [],
         cleared_expeditions: [],
         pending_events: [],
         reports: [],

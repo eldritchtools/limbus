@@ -25,7 +25,7 @@ const EFFECTS = {
 export function chooseEventOption(data, state, pendingIndex, optionIndex) {
     const pending = state.pending_events[pendingIndex];
     const option = data.events[pending?.event_id]?.options[optionIndex];
-    if (pending.result || !option) return null;
+    if (!pending || pending.result || !option) return null;
 
     const nextState = structuredClone(state);
 
@@ -33,13 +33,13 @@ export function chooseEventOption(data, state, pendingIndex, optionIndex) {
         .map(id => nextState.agents[id])
         .filter(Boolean);
 
-    for (const condition of option.conditions) {
+    for (const condition of (option.conditions ?? [])) {
         const handler = CONDITIONS[condition.type];
         if (!handler || !handler(data, state, agents, condition)) return null;
     }
 
     const result = [];
-    for (const effect of option.effects) {
+    for (const effect of (option.effects ?? [])) {
         const handler = EFFECTS[effect.type];
         if (handler) result.push(handler(data, nextState, agents, effect));
         else console.warn(`Unknown event effect type: ${effect.type}`);
@@ -47,7 +47,7 @@ export function chooseEventOption(data, state, pendingIndex, optionIndex) {
 
     if (nextState.currency < 0) return null;
 
-    pending.result = { option_index: optionIndex, effects: result.filter(Boolean) };
+    nextState.pending_events[pendingIndex].result = { option_index: optionIndex, effects: result.filter(Boolean) };
     return nextState;
 }
 

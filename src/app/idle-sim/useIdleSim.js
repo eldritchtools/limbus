@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { assignAgentPoints } from "./agents";
+import { assignAgentPoints, renameAgent } from "./agents";
 import { AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL } from "./constants";
+import { assignAgent, assignSubject, renameDepartment, setCycleLength, setScheduleBlock, unassignAgent, unassignSubject } from "./facility";
 import { chooseCandidate, rerollCandidates, startHiring } from "./hiring";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
 import { getSetting, setSetting } from "./settings";
@@ -17,7 +18,15 @@ export default function useIdleSim() {
         const data = { ...rawData };
 
         const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5 };
-        data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, ...subject }]))
+        data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, id, ...subject }]));
+
+        const defaultGear = { unlocks: [] };
+        data.weapons = Object.fromEntries(Object.entries(data.weapons).map(([id, weapon]) => [id, { ...defaultGear, ...weapon }]));
+        data.armor = Object.fromEntries(Object.entries(data.armor).map(([id, armor]) => [id, { ...defaultGear, ...armor }]));
+        data.gifts = Object.fromEntries(Object.entries(data.gifts).map(([id, gift]) => [id, { ...defaultGear, ...gift }]));
+
+        const defaultQuest = { requires: [] };
+        data.quests = Object.fromEntries(Object.entries(data.quests).map(([id, quest]) => [id, { ...defaultQuest, ...quest }]));
 
         return [data, false];
     }, [rawData, rawDataLoading]);
@@ -36,7 +45,11 @@ export default function useIdleSim() {
     const revisionRef = useRef(null);
     const clockOffsetRef = useRef(0);
 
+    const userId = user?.id ?? null;
+    const loadedForRef = useRef(undefined);
+
     const updateState = useCallback(nextState => {
+        if (!nextState) { console.warn("Action rejected"); return; }
         stateRef.current = nextState;
         dirtyRef.current = true;
         setState(nextState);
@@ -78,7 +91,7 @@ export default function useIdleSim() {
         try {
             const result = user ? await loadDBGame() : await loadLocalGame();
             clockOffsetRef.current = getClockOffset(result.serverTime);
-            const initialState = result.state ?? createInitialState(result.serverTick);
+            const initialState = {...createInitialState(result.serverTick), ...result.state};
             const nextState = simulateUntil(data, initialState, result.serverTick);
 
             updateState(nextState);
@@ -122,8 +135,10 @@ export default function useIdleSim() {
 
     useEffect(() => {
         if (authLoading || dataLoading) return;
+        if (loadedForRef.current === userId) return;
+        loadedForRef.current = userId;
         loadGame();
-    }, [authLoading, dataLoading, loadGame]);
+    }, [authLoading, dataLoading, userId, loadGame]);
 
     useEffect(() => {
         if (!loaded) return;
@@ -160,13 +175,22 @@ export default function useIdleSim() {
     const functions = useMemo(() => {
         return {
             getSetting: setting => getSetting(state, setting),
-            setSetting: async (setting, value) => { updateState(setSetting(state, setting, value)) },
-            startHiring: async level => { updateState(startHiring(state, level)) },
-            rerollCandidates: async () => { updateState(rerollCandidates(state)) },
-            chooseCandidate: async index => { updateState(chooseCandidate(state, index)) },
-            assignAgentPoints: async (agentId, points) => { updateState(assignAgentPoints(state, agentId, points)) }
+            setSetting: (setting, value) => { updateState(setSetting(stateRef.current, setting, value)) },
+            renameAgent: (agentId, name) => { updateState(renameAgent(stateRef.current, agentId, name)) },
+            renameDepartment: (departmentIndex, name) => { updateState(renameDepartment(stateRef.current, departmentIndex, name)) },
+            startHiring: level => { updateState(startHiring(stateRef.current, level)) },
+            rerollCandidates: () => { updateState(rerollCandidates(stateRef.current)) },
+            chooseCandidate: index => { updateState(chooseCandidate(stateRef.current, index)) },
+            assignAgentPoints: (agentId, points) => { updateState(assignAgentPoints(stateRef.current, agentId, points)) },
+            assignAgent: (agentId, departmentIndex, agentIndex) => { updateState(assignAgent(stateRef.current, agentId, departmentIndex, agentIndex)) },
+            unassignAgent: agentId => { updateState(unassignAgent(stateRef.current, agentId)) },
+            assignSubject: (subjectId, departmentIndex, subjectIndex) => { updateState(assignSubject(data, stateRef.current, subjectId, departmentIndex, subjectIndex)) },
+            unassignSubject: subjectId => { updateState(unassignSubject(stateRef.current, subjectId)) },
+            setCycleLength: (departmentIndex, cycleLength) => { updateState(setCycleLength(state, departmentIndex, cycleLength)) },
+            setScheduleBlock: (departmentIndex, agentId, block, subjectId) => { updateState(setScheduleBlock(data, state, departmentIndex, agentId, block, subjectId)) }
+
         }
-    }, [state, updateState])
+    }, [data, state, updateState])
 
     return {
         uiState, setUiState, updateUiState,
