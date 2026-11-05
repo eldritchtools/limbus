@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { ASSETS_ROOT } from "../paths"
 
-export function SubjectSprite({ width, height, src, style = {} }) {
+export function EnemySprite({ width, height, src, style = {} }) {
     const [finalSrc, setFinalSrc] = useState(Array.isArray(src) ? null : src);
 
     useEffect(() => {
@@ -12,9 +12,12 @@ export function SubjectSprite({ width, height, src, style = {} }) {
             setFinalSrc(src[Math.floor(Math.random() * src.length)]);
     }, [src, finalSrc])
 
-    return <div style={{ width: `${width}px`, height: `${height}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    const widthStr = typeof width === "number" ? `${width}px` : width;
+    const heightStr = typeof height === "number" ? `${height}px` : height;
+
+    return <div style={{ width: widthStr, height: heightStr, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {finalSrc &&
-            <img src={`${ASSETS_ROOT}/enemy_sprites/${finalSrc}.webp`} alt={""} title={""}
+            <img key={finalSrc} src={`${ASSETS_ROOT}/enemy_sprites/${finalSrc}.webp`} alt={""} title={""}
                 style={{ ...style, maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
             />
         }

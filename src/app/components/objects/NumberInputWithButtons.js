@@ -1,10 +1,12 @@
 import NumberInput from "./NumberInput";
 
-function NumberInputWithButtons({ value, setValue, min = 1, max = 100, allowEmpty = false, vertical = false, inputStyle = {} }) {
-    return <div style={{
-        display: vertical ? "flex" : "inline-flex", flexDirection: vertical ? "column" : null,
-        alignItems: "center", border: "1px solid var(--secondary-border-color)", borderRadius: "8px", padding: "2px"
-    }}>
+const padStyle = { border: "1px solid var(--secondary-border-color)", borderRadius: "8px", padding: "2px" };
+
+function NumberInputWithButtons({ value, setValue, min = 1, max = 100, allowEmpty = false, vertical = false, inputStyle = {}, mini = false }) {
+    const baseStyle = { display: vertical ? "flex" : "inline-flex", flexDirection: vertical ? "column" : null, alignItems: "center" };
+    const style = mini ? baseStyle : { ...baseStyle, ...padStyle };
+
+    return <div style={style}>
         {vertical ?
             <button
                 onClick={() => setValue(Math.min(max, (value ?? 0) + 1))}
@@ -26,7 +28,7 @@ function NumberInputWithButtons({ value, setValue, min = 1, max = 100, allowEmpt
         {vertical ?
             <button
                 onClick={() => setValue(Math.max(min, (value ?? 0) - 1))}
-                // style={{ marginRight: "6px" }}
+            // style={{ marginRight: "6px" }}
             >−</button> :
             <button
                 onClick={() => setValue(Math.min(max, (value ?? 0) + 1))}

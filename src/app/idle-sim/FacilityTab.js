@@ -1,45 +1,142 @@
-import { useMemo, useState } from "react";
+import { PencilIcon } from "@heroicons/react/24/solid";
+import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS } from "./constants";
-import { getAgentEffectiveStats } from "./gear";
-import { SubjectSprite } from "./icons";
+import { MAX_CYCLE_LENGTH } from "./constants";
+import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
+import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
+import { AgentMenuSelector, ScheduleMenuSelector, SubjectMenuSelector } from "./selectors";
+import { getOutcomeChances } from "./simulation";
+import { HorizontalDivider } from "../components/objects/Dividers";
+import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 
 function DepartmentScreen({ idleSim }) {
-    const department = idleSim.state.departments[idleSim.uiState.department];
-    const [subjectIndex, setSubjectIndex] = useState(0);
-    const [agentIndex, setAgentIndex] = useState(0);
+    const [department, subjects, agents, agentStats] = useMemo(() => {
+        const department = idleSim.state.departments[idleSim.uiState.department];
+        const subjects = department.subject_ids.map(id => id ? { ...idleSim.data.subjects[id], ...idleSim.state.subjects[id] } : null);
 
-    const subject = idleSim.data.subjects[department.subject_ids[subjectIndex]];
+        const agents = department.agent_ids.map(id => id ? idleSim.state.agents[id] : null);
+        const agentStats = agents.map(agent => agent ? getAgentEffectiveStats(idleSim.data, idleSim.state, agent) : null);
 
-    const [agent, agentStats] = useMemo(() => {
-        const agent = idleSim.state.agents[department.agent_ids[agentIndex]];
-        return [agent, agent ? getAgentEffectiveStats(idleSim.data, idleSim.state, agent) : null];
-    }, [idleSim, department, agentIndex]);
+        return [department, subjects, agents, agentStats];
+    }, [idleSim.data, idleSim.state, idleSim.uiState]);
+
+    const [editingLabel, setEditingLabel] = useState(false);
+    const [label, setLabel] = useState("");
 
     return <>
         <button onClick={() => idleSim.updateUiState({ department: null })}>Go Back</button>
-        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
-        <div style={{ display: "flex", gap: "1rem" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid var(--primary-border-color)", borderRadius: "0.5rem", padding: "0.5rem", boxSizing: "border-box" }}>
-                {agent ? <>
-                    <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{agent.name}</span>
-                    <StatTable data={agentStats} />
-                </> :
-                    <span>No agents</span>
-                }
+        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}></span>
+        <div style={{ display: "flex", gap: "0.2rem" }}>
+            {editingLabel ? <>
+                <input value={label} onChange={e => setLabel(e.target.value)} />
+                <button onClick={() => { setEditingLabel(false); idleSim.renameDepartment(idleSim.uiState.department, label); }} style={{ padding: "2px" }}>
+                    ✔
+                </button>
+                <button onClick={() => { setEditingLabel(false); setLabel(""); }} style={{ padding: "2px" }}>
+                    ✘
+                </button>
+            </> : <>
+                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
+                <button onClick={() => { setEditingLabel(true); setLabel(department.label); }} style={{ padding: "2px" }}>
+                    <PencilIcon style={{ width: "16px", height: "16px" }} />
+                </button>
+            </>
+            }
+        </div>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div className={styles.tile} style={{ gap: "0.5rem" }}>
+                {subjects.map((subject, i) => subject ?
+                    <React.Fragment key={i}>
+                        {i !== 0 && <HorizontalDivider />}
+                        <span style={{ fontWeight: "bold" }}>{subject.name}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                            <span>Lv. {subject.research_level}</span>
+                            <span>WE Req: {subject.we_req}</span>
+                            <span>SP Cost: {subject.sp_cost}</span>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <EnemySprite width={96} height={96} src={subject.src} />
+                            <StatTable data={subject} />
+                        </div>
+                        {subject.desc && <span style={{ maxWidth: "400px" }}>{subject.desc}</span>}
+                    </React.Fragment> :
+                    <React.Fragment key={i}>
+                        {i !== 0 && <HorizontalDivider />}
+                        <span key={i} style={{ fontWeight: "bold" }}>Unassigned</span>
+                    </React.Fragment>
+                )}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid var(--primary-border-color)", borderRadius: "0.5rem", padding: "0.5rem", boxSizing: "border-box" }}>
-                {subject ? <>
-                    <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{subject.name}</span>
-                    <SubjectSprite width={128} height={128} src={subject.src} />
-                    <StatTable data={subject} />
-                </> :
-                    <span>No subjects</span>
-                }
+            <div className={styles.tile} style={{ gap: "0.5rem" }}>
+                {agents.map((agent, i) => agent ?
+                    <React.Fragment key={i}>
+                        {i !== 0 && <HorizontalDivider />}
+                        <span style={{ fontWeight: "bold" }}>{agent.name}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                            <span>Lv. {agent.level}</span>
+                            <span>HP: {agent.hp}/{agent.max_hp}</span>
+                            <span>SP: {agent.sp}</span>
+                            <span>WE: {agentStats[i].work_efficiency}</span>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <StatTable data={agentStats[i]} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", maxWidth: "400px" }}>
+                            {getAgentGearEffectList(idleSim.data, agent)}
+                        </div>
+                    </React.Fragment> :
+                    <React.Fragment key={i}>
+                        {i !== 0 && <HorizontalDivider />}
+                        <span key={i} style={{ fontWeight: "bold" }}>Unassigned</span>
+                    </React.Fragment>
+                )}
             </div>
+        </div>
+
+        <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Estimated Success Rate</span>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${subjects.filter(Boolean).length + 1}, auto)`, gap: "0.5rem" }}>
+            <div />
+            {subjects.filter(Boolean).map(subject => <EnemySprite key={subject.id} width={64} height={64} src={subject.src} />)}
+            {agents.filter(Boolean).map(agent => <React.Fragment key={agent.id}>
+                <span>{agent.name}</span>
+                {subjects.filter(Boolean).map(subject => {
+                    const chances = getOutcomeChances(idleSim.data, idleSim.state, agent, subject);
+                    return <span key={subject.id}>
+                        <span style={{ color: "#3c9d5d" }}>{Math.floor(chances.good * 100)}%</span>/
+                        <span style={{ color: "#d4b43a" }}>{Math.floor(chances.avg * 100)}%</span>/
+                        <span style={{ color: "#c0463c" }}>{Math.floor(chances.bad * 100)}%</span>
+                    </span>
+                })}
+            </React.Fragment>)}
+        </div>
+
+        <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Schedule</span>
+        <div style={{ display: "flex", gap: "0.2rem", marginBottom: "0.5rem", alignItems: "center" }}>
+            Cycle Length: <NumberInputWithButtons min={1} max={MAX_CYCLE_LENGTH}
+                value={department.cycle_length} setValue={x => idleSim.setCycleLength(idleSim.uiState.department, x)} />
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: `auto auto repeat(${agents.filter(Boolean).length}, 150px)`, gap: "0.2rem", overflowX: "auto", alignItems: "center", justifyItems: "center" }}>
+            <div />
+            <div />
+            {agents.map((agent, i) => agent &&
+                <span key={`name-${i}`} style={{ fontWeight: "bold" }}>{agent.name}</span>
+            )}
+            {
+                Array.from({ length: department.cycle_length }, (_, i) => <React.Fragment key={`block-${i}`}>
+                    <span>{department.cycle_block === i ? "▶" : ""}</span>
+                    <span style={{ fontSize: "1.2rem", fontWeight: "bold", padding: "4px" }}>{i + 1}</span>
+                    {agents.map((agent, j) => agent &&
+                        <ScheduleMenuSelector key={`sch-${i}-${j}`}
+                            value={department.schedule[agent.id][i]}
+                            setValue={x => idleSim.setScheduleBlock(idleSim.uiState.department, agent.id, i, x)}
+                            options={subjects.filter(Boolean)}
+                        />
+                    )}
+                </React.Fragment>)
+            }
         </div>
     </>
 }
@@ -55,39 +152,55 @@ function ListScreen({ idleSim }) {
         });
 
         idleSim.state.expeditions.forEach(exp => exp.agent_ids.forEach(id => assignedAgents.add(id)));
+        idleSim.state.finished_expeditions.forEach(exp => exp.agent_ids.forEach(id => assignedAgents.add(id)));
         idleSim.state.pending_events.forEach(ev => ev.agent_ids.forEach(id => assignedAgents.add(id)));
 
         return [
-            Object.keys(idleSim.state.agents).filter(({ id }) => !assignedAgents.has(id)),
-            Object.keys(idleSim.state.subjects).filter(id => !assignedSubjects.has(id))
+            Object.keys(idleSim.state.agents).filter(id => !assignedAgents.has(Number(id))).map(id => idleSim.state.agents[id]),
+            Object.keys(idleSim.state.subjects).filter(id => !assignedSubjects.has(id)).map(id => idleSim.data.subjects[id])
         ]
     },
-        [idleSim.state]
+        [idleSim.data, idleSim.state]
     );
+
+    const handleAssignSubject = (subjectId, departmentIndex, newSubject, subjectIndex) => {
+        if (!newSubject) idleSim.unassignSubject(subjectId);
+        else idleSim.assignSubject(newSubject, departmentIndex, subjectIndex);
+    }
+
+    const handleAssignAgent = (agentId, departmentIndex, newAgent, agentIndex) => {
+        if (!newAgent) idleSim.unassignAgent(agentId);
+        else idleSim.assignAgent(newAgent, departmentIndex, agentIndex);
+    }
 
     return <>
         {idleSim.state.departments.map((department, i) => {
-            return <div key={i} className={styles.tile} style={{ gap: "0.5rem" }} onClick={() => idleSim.updateUiState({ department: i })}>
+            return <div key={i} className={styles.tile} style={{ gap: "0.2rem", width: "600px" }}>
                 <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
-                <div style={{ display: "flex", gap: "0.2rem" }}>
-                    {department.subject_ids.map(subjectId =>
-                        <div key={subjectId} className={styles.clickableTile} style={{ width: "100px", height: "100px", justifyContent: "center" }}>
-                            <SubjectSprite width={96} height={96} src={idleSim.data.subjects[subjectId].src} />
-                        </div>
+                <div style={{ display: "flex", gap: "0.1rem" }}>
+                    {department.subject_ids.map((subjectId, j) =>
+                        <SubjectMenuSelector
+                            key={`${j}-${subjectId}`}
+                            value={subjectId ? idleSim.data.subjects[subjectId] : null}
+                            setValue={x => handleAssignSubject(subjectId, i, x, j)}
+                            options={freeSubjects}
+                        />
                     )}
-                    {department.subject_ids.length < MAX_DEPARTMENT_SUBJECTS &&
-                        <div className={styles.clickableTile} style={{ width: "100px", height: "100px", justifyContent: "center" }}>
-                            + Subject
-                        </div>
-                    }
                 </div>
-                <div style={{ display: "flex", gap: "0.2rem" }}>
-                    {department.agent_ids.map(agentId => <div key={agentId}>
-                        {idleSim.data.agents[agentId].name}
-                    </div>)}
-                    {department.agent_ids.length < MAX_DEPARTMENT_AGENTS &&
-                        <button>+ Agent</button>
-                    }
+                <div style={{ display: "flex", gap: "0.1rem" }}>
+                    {department.agent_ids.map((agentId, j) =>
+                        <AgentMenuSelector
+                            key={`${j}-${agentId}`}
+                            value={agentId ? idleSim.state.agents[agentId] : null}
+                            setValue={x => handleAssignAgent(agentId, i, x, j)}
+                            options={freeAgents}
+                        />
+                    )}
+                </div>
+                <div>
+                    <button onClick={() => idleSim.updateUiState({ department: i })}>
+                        Edit Details/Assign Schedule
+                    </button>
                 </div>
             </div>
         })}

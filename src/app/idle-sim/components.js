@@ -1,3 +1,4 @@
+import { formatNumber } from "./util";
 import Icon from "../components/icons/Icon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { ColoredResistance } from "../lib/colors";
@@ -10,7 +11,7 @@ export function StatTable({ data }) {
         {data.offense && <>
             <Icon path={"offense level"} size={32} />
             {data.offense.map((x, i) =>
-                <span key={`off-${i}`} style={{ color: x === 0 ? "var(--disabled-text-color)" : undefined }}>{x}</span>
+                <span key={`off-${i}`} style={{ color: x === 0 ? "var(--disabled-text-color)" : undefined }}>{formatNumber(x)}</span>
             )}
         </>}
         {data.defense && <>

@@ -76,7 +76,7 @@ export function startHiring(state, startLevel = 1) {
 export function rerollCandidates(state) {
     if (!state.hiring) return null;
 
-    const cost = getRerollCost(state);
+    const cost = getRerollCost(state, state.hiring.start_level);
     if (state.currency < cost) return null;
 
     const nextState = structuredClone(state);

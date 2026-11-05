@@ -1,0 +1,100 @@
+.selectorTrigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    margin: 0;
+    background: var(--bg-input);
+    border: 1px solid var(--secondary-border-color);
+    border-radius: 0.5rem;
+}
+
+.selectorTrigger:hover {
+    background-color: var(--bg-hover);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.selectorValue {
+    display: flex;
+    align-items: center;
+}
+
+.selectorContent {
+    background: var(--bg-secondary);
+    border: 1px solid var(--secondary-border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    max-height: min(400px, 50vh);
+    z-index: 1000;
+    overflow-y: auto;
+    max-width: clamp(330px, 85vw, 900px);
+}
+
+.selectorFadeBottom {
+    position: sticky;
+    bottom: -0.5rem;
+    height: 24px;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(to bottom, transparent, var(--bg-secondary));
+}
+
+.selectorGrid {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    align-items: center;
+    justify-items: center;
+    max-width: clamp(330px, 85vw, 900px);
+}
+
+.selectorItem {
+    position: relative;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.selectorItem:focus,
+.selectorItem:hover,
+.selectorItem.active {
+    background: var(--bg-hover);
+    filter: brightness(1.3);
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.selectorItemInner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scheduleTrigger {
+    padding: 0 0.2rem;
+    border: 1px solid transparent;
+}
+
+.scheduleTrigger.work {
+    /* background-color: rgba(41, 59, 80, 0.5); */
+    border-color: rgba(80, 125, 180, 0.8);
+}
+
+/* .scheduleTrigger.work:hover {
+    background-color: rgba(52, 77, 103, 0.75);
+} */
+
+.scheduleTrigger.break {
+    /* background-color: rgba(41, 70, 56, 0.5); */
+    border-color: rgba(80, 155, 110, 0.8);
+}
+
+/* .scheduleTrigger.break:hover {
+    background-color: rgb(53, 91, 71, 0.75);
+} */

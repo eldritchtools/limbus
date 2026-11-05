@@ -1,6 +1,6 @@
-import { DEFAULT_GEAR_COST_GROWTH } from "./constants";
+import { DEFAULT_GEAR_COST_GROWTH, MAX_AGENT_GIFTS } from "./constants";
 import { resolveGearStatEffects } from "./effects";
-import { isAgentOnExpedition } from "./expeditions";
+import { isAgentOnExpedition } from "./util";
 
 
 export function getAgentEffectiveStats(data, state, agent) {
@@ -25,6 +25,23 @@ export function getAgentEffectiveStats(data, state, agent) {
     return stats;
 }
 
+export function getAgentGearEffectList(data, agent) {
+    const list = [];
+
+    const weapon = data.weapons[agent.weapon];
+    if (weapon && weapon.desc) list.push(weapon.desc);
+
+    const armor = data.armor[agent.armor];
+    if (armor && armor.desc) list.push(armor.desc);
+
+    agent.gifts.forEach(id => {
+        const gift = data.gifts[id];
+        if (gift && gift.effect_desc) list.push(gift.effect_desc);
+    })
+
+    return list;
+}
+
 export function getSubjectGearUnlocks(data, subjectId) {
     const unlocks = [];
 
@@ -46,7 +63,7 @@ export function getOwnedCopies(state, type, id) {
 }
 
 export function getPurchaseLimit(data, state, type, id) {
-    if (!["weapons", "armor"].includes(type)) return 0;
+    if (!["weapons", "armor", "gifts"].includes(type)) return 0;
 
     const gear = data[type][id];
     let limit = 0;
@@ -59,13 +76,13 @@ export function getPurchaseLimit(data, state, type, id) {
 }
 
 export function getGearCost(data, state, type, id) {
-    if (!["weapons", "armor"].includes(type)) return undefined;
+    if (!["weapons", "armor", "gifts"].includes(type)) return undefined;
 
     const gear = data[type][id];
     return Math.round(gear.price * (gear.price_growth ?? DEFAULT_GEAR_COST_GROWTH) ** getOwnedCopies(state, type, id));
 }
 
-function getEquippedCopies(state, type, id) {
+export function getEquippedCopies(state, type, id) {
     let count = 0;
 
     for (const agent of Object.values(state.agents)) {
@@ -126,7 +143,7 @@ export function equipGear(data, state, agentId, type, id) {
             if (agent.armor === id) return null;
             break;
         case "gifts":
-            if (agent.gifts.includes(id) || agent.gifts.length >= MAX_GIFTS_PER_AGENT) return null;
+            if (agent.gifts.includes(id) || agent.gifts.length >= MAX_AGENT_GIFTS) return null;
             break;
         default:
             break;
@@ -188,4 +205,11 @@ export function unequipGear(data, state, agentId, type, id) {
     }
 
     return nextState;
+}
+
+export function gearTypeToText(type) {
+    if (type === "weapons") return "Weapon";
+    if (type === "armor") return "Armor";
+    if (type === "gifts") return "Gift";
+    return "";
 }

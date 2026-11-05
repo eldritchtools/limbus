@@ -1,17 +1,19 @@
-import React, { useMemo, useState } from "react";
+import { PencilIcon } from "@heroicons/react/24/solid";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { StatTable } from "./components";
 import { HP_PER_LEVEL, START_HP, START_WE, WE_PER_LEVEL } from "./constants";
-import { findAgentExpedition } from "./expeditions";
 import { findAgentDepartment } from "./facility";
-import { getAgentEffectiveStats } from "./gear";
+import { gearTypeToText, getAgentEffectiveStats, getEquippedCopies, getOwnedCopies } from "./gear";
 import { getAgentHireCost, getMaxStartLevel, getRerollCost } from "./hiring";
 import { GiftSprite } from "./icons";
 import styles from "./idleSim.module.css";
-import { agentXpToNext, sum, toCurrencyStr } from "./util";
+import { getIdleSimTooltipProps } from "./idleSimTooltip";
+import { agentXpToNext, findAgentExpedition, sum, toCurrencyStr } from "./util";
 import Icon from "../components/icons/Icon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import NumberInput from "../components/objects/NumberInput";
+import { uiColors } from "../lib/colors";
 import { affinities } from "../lib/constants";
 
 function HiringScreen({ idleSim }) {
@@ -59,32 +61,59 @@ function AgentsScreen({ idleSim }) {
     const assignments = useMemo(() =>
         Object.fromEntries(Object.values(idleSim.state.agents).map(({ id }) => {
             const department = findAgentDepartment(idleSim.state, id);
-            if (department) return [id, department.name];
+            if (department) return [id, department.label];
             const expedition = findAgentExpedition(idleSim.state, id);
             if (expedition) return [id, idleSim.data.expeditions[expedition.expedition_id].name];
             return [id, "Idle"];
         })),
         [idleSim.state, idleSim.data]);
 
-    const handleSelectAgent = id => {
-        if (idleSim.uiState.agent === id) idleSim.updateUiState({ agent: null });
-        else idleSim.updateUiState({ agent: id })
-    }
-
     const [statToggle, setStatToggle] = useState(false);
     const [pointsSpent, setPointsSpent] = useState(null);
     const [assignGear, setAssignGear] = useState(null);
+    const assignGearType = useMemo(() => assignGear ? assignGear.split("-")[0] : null, [assignGear]);
+    const [currentGear, setCurrentGear] = useState(null);
     const [selectedGear, setSelectedGear] = useState(null);
+
+    const [editingName, setEditingName] = useState(false);
+    const [name, setName] = useState("");
+
+    const equippable = useMemo(() => {
+        if (!assignGearType) return null;
+        return Object.keys(idleSim.state.inventory[assignGearType])
+            .filter(id => getEquippedCopies(idleSim.state, assignGearType, id) < getOwnedCopies(idleSim.state, assignGearType, id));
+    }, [idleSim.state, assignGearType])
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setStatToggle(false);
+        setAssignGear(null);
+        setSelectedGear(null);
+    }, [idleSim.uiState.agent]);
+
+    const gearData = assignGearType && selectedGear ? idleSim.data[assignGearType][selectedGear] : null;
+
+    const handleSelectAgent = id => {
+        if (idleSim.uiState.agent === id) idleSim.updateUiState({ agent: null });
+        else {
+            idleSim.updateUiState({ agent: id });
+            setEditingName(false);
+        }
+    }
 
     return <>
         <div style={{ display: "flex" }}>
-            <button onClick={() => idleSim.updateUiState({ hiring: true })}>Hire New Agent</button>
+            <button onClick={() => idleSim.updateUiState({ hiring: true })}>{idleSim.state.hiring ? "Resume Hiring" : "Hire New Agent"}</button>
         </div>
         {Object.values(idleSim.state.agents).map(agent => {
             const stats = getAgentEffectiveStats(idleSim.data, idleSim.state, agent);
 
             return <React.Fragment key={agent.id}>
-                <div className={styles.clickableTile} onClick={() => handleSelectAgent(agent.id)}>
+                <div className={styles.clickableTile} onClick={() => handleSelectAgent(agent.id)} style={{ position: "relative", width: "100%", maxWidth: "600px" }}>
+                    {agent.unspent_points &&
+                        <div style={{ position: "absolute", width: "10px", height: "10px", background: uiColors.red, top: "5px", right: "5px", borderRadius: "50%", zIndex: 5 }} />
+                    }
+
                     <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{agent.name}</span>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -107,7 +136,23 @@ function AgentsScreen({ idleSim }) {
                 </div>
                 {idleSim.uiState.agent === agent.id &&
                     <div style={{ display: "flex", flexDirection: "column", border: "1px var(--primary-border-color) solid", borderRadius: "0.5rem", padding: "0.5rem", boxSizing: "border-box" }}>
-                        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{agent.name}</span>
+                        <div style={{ display: "flex", gap: "0.2rem" }}>
+                            {editingName ? <>
+                                <input value={name} onChange={e => setName(e.target.value)} />
+                                <button onClick={() => { setEditingName(false); idleSim.renameAgent(agent.id, name); }} style={{ padding: "2px" }}>
+                                    ✔
+                                </button>
+                                <button onClick={() => { setEditingName(false); setName(""); }} style={{ padding: "2px" }}>
+                                    ✘
+                                </button>
+                            </> : <>
+                                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{agent.name}</span>
+                                <button onClick={() => { setEditingName(true); setName(agent.name); }} style={{ padding: "2px" }}>
+                                    <PencilIcon style={{ width: "16px", height: "16px" }} />
+                                </button>
+                            </>
+                            }
+                        </div>
                         <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
                             <div style={{ display: "flex", flexDirection: "column" }}>
                                 <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
@@ -149,7 +194,7 @@ function AgentsScreen({ idleSim }) {
                                             {agent.unspent_points > 0 && <>
                                                 <div />
                                                 {affinities.map((x, i) =>
-                                                    <button key={`${x}-up`} disabled={pointsSpent[i] <= 0}
+                                                    <button key={`${x}-down`} disabled={pointsSpent[i] <= 0}
                                                         style={{ padding: "0 4px" }}
                                                         onClick={() => setPointsSpent(p => p.map((x, j) => i === j ? x - 1 : x))}
                                                     >∨</button>)
@@ -169,32 +214,88 @@ function AgentsScreen({ idleSim }) {
                                 }
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                                <div style={{ display: "flex", flexDirection: "column" }}>
-                                    <div className={styles.clickableTile} style={{ alignItems: "center", justifyContent: "center" }} onClick={() => setAssignGear("weapons")}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: "0.2rem" }}>
+                                <div style={{ display: "flex", gap: "0.2rem" }}>
+                                    <div className={styles.clickableTile} style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+                                        onClick={() => {
+                                            if (assignGearType === "weapons") { setAssignGear(null); return; }
+                                            setAssignGear("weapons"); setSelectedGear(agent.weapon); setCurrentGear(agent.weapon);
+                                        }}
+                                        {...(agent.weapon ? getIdleSimTooltipProps("weapons", agent.weapon) : {})}
+                                    >
                                         <Icon path={"offense level"} size={32} />
                                         {agent.weapon ? idleSim.data.weapons[agent.weapon].name : "None"}
                                     </div>
-                                    <div className={styles.clickableTile} style={{ alignItems: "center", justifyContent: "center" }} onClick={() => setAssignGear("armor")}>
+                                    <div className={styles.clickableTile} style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+                                        onClick={() => {
+                                            if (assignGearType === "armor") { setAssignGear(null); return; }
+                                            setAssignGear("armor"); setSelectedGear(agent.armor); setCurrentGear(agent.armor);
+                                        }}
+                                        {...(agent.armor ? getIdleSimTooltipProps("armor", agent.armor) : {})}
+                                    >
                                         <Icon path={"defense level"} size={32} />
                                         {agent.armor ? idleSim.data.armor[agent.armor].name : "None"}
                                     </div>
                                 </div>
-                                {Array.from({ length: 5 }, (x, i) =>
-                                    <div key={i} className={styles.clickableTile} style={{ width: "64px", height: "64px", alignItems: "center", justifyContent: "center" }} onClick={() => setAssignGear(`gifts-${i}`)}>
-                                        {agent.gifts[i] ?
-                                            <GiftSprite width={64} height={64} src={idleSim.data.gifts[agent.gifts[i]].src} /> :
-                                            "None"
-                                        }
-                                    </div>
-                                )}
+                                <div style={{ display: "flex", gap: "0.2rem" }}>
+                                    {Array.from({ length: 5 }, (x, i) =>
+                                        <div key={i} className={styles.clickableTile} style={{ width: "64px", height: "64px", alignItems: "center", justifyContent: "center" }}
+                                            onClick={() => {
+                                                if (assignGearType === "gifts") { setAssignGear(null); return; }
+                                                setAssignGear(`gifts-${i}`); setSelectedGear(agent.gifts[i]); setCurrentGear(agent.gifts[i]);
+                                            }}
+                                            {...(agent.gifts[i] ? getIdleSimTooltipProps("gifts", agent.gifts[i]) : {})}
+                                        >
+                                            {agent.gifts[i] ?
+                                                <GiftSprite width={64} height={64} src={idleSim.data.gifts[agent.gifts[i]].src} /> :
+                                                "None"
+                                            }
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         {/* agent.statuses */}
                         {
                             assignGear && <>
                                 <div style={{ width: "100%", border: "1px var(--primary-border-color) solid", margin: "2px 0" }} />
-                                <span>Assigning {assignGear}</span>
+                                {equippable.length > 0 || currentGear ?
+                                    <div style={{ display: "flex", gap: "0.2rem", height: "100%" }}>
+                                        <div style={{ display: "flex", flexDirection: "column", maxHeight: "600px", overflowY: "auto", overflowX: "hidden", paddingRight: "0.2rem", borderRight: "1px var(--primary-border-color) solid" }}>
+                                            {currentGear && <div className={styles.clickableTile} onClick={() => setSelectedGear(currentGear)}>
+                                                {idleSim.data[assignGearType][currentGear].name}
+                                            </div>}
+                                            {equippable.map(id => <div key={id} className={styles.clickableTile} onClick={() => setSelectedGear(id)}>
+                                                {idleSim.data[assignGearType][id].name}
+                                            </div>)}
+                                        </div>
+
+                                        {assignGearType === "gifts" && selectedGear &&
+                                            <GiftSprite width={100} height={100} src={idleSim.data.gifts[selectedGear].src} />
+                                        }
+
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                                            {selectedGear && <>
+                                                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{gearData.name}</span>
+                                                {assignGearType !== "gifts" && <StatTable data={gearData} />}
+                                                <span style={{ maxWidth: "450px" }}>{gearData.desc}</span>
+                                                <div className={styles.clickableTile} style={{ alignSelf: "center", marginTop: "0.5rem" }}
+                                                    onClick={() => {
+                                                        if (selectedGear === currentGear) idleSim.unequipGear(agent.id, assignGearType, selectedGear);
+                                                        else idleSim.equipGear(agent.id, assignGearType, selectedGear);
+                                                        setAssignGear(null); setSelectedGear(null);
+                                                    }}
+                                                >
+                                                    {selectedGear === currentGear ? "Unequip" : "Equip"}
+                                                </div>
+                                            </>}
+                                        </div>
+
+                                    </div> :
+                                    <div style={{ textAlign: "center", padding: "0.5rem" }}>
+                                        No Available {gearTypeToText(assignGearType)}
+                                    </div>
+                                }
                             </>
                         }
                     </div>
@@ -205,7 +306,7 @@ function AgentsScreen({ idleSim }) {
 }
 
 export default function AgentsTab({ idleSim }) {
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         {idleSim.uiState.hiring ?
             <HiringScreen idleSim={idleSim} /> :
             <AgentsScreen idleSim={idleSim} />

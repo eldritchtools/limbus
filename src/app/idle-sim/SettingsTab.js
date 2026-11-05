@@ -12,8 +12,8 @@ export default function SettingsTab({ idleSim }) {
             </span>
 
             <DropdownButton
-                value={idleSim.getSetting("permadeath")}
-                setValue={x => idleSim.setSetting("permadeath", x)}
+                value={idleSim.getSetting("permadeath") ? "true" : "false"}
+                setValue={x => idleSim.setSetting("permadeath", x === "true")}
                 options={{ false: "Disabled", true: "Enabled" }}
             />
         </div>
