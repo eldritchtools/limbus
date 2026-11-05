@@ -262,6 +262,30 @@ export default function AchievementsPage() {
         [achievementsPre, achievementsLoading]
     );
 
+    const [sectionCompletion, totalCompletion] = useMemo(() => {
+        if (!tracking) return [{ num: 0, clear: 0 }, { num: 0, clear: 0 }];
+        let sectionClear = 0;
+        let sectionNum = 0;
+        let totalClear = 0;
+        let totalNum = 0;
+
+        Object.entries(achievements).forEach(([section, list]) => {
+            list.forEach(achievement => {
+                const count = Array.isArray(achievement.points) ? achievement.points.length : 1;
+                const clearCount = tracking[achievement.id] ?? 0;
+
+                if (section === activeTab) {
+                    sectionNum += count;
+                    sectionClear += clearCount;
+                }
+                totalNum += count;
+                totalClear += clearCount;
+            })
+        })
+
+        return [{ num: sectionNum, clear: sectionClear }, { num: totalNum, clear: totalClear }]
+    }, [achievements, tracking, activeTab]);
+
     useEffect(() => {
         if (achievementsLoading || Object.keys(achievementsMapped).length === 0 || loaded) return;
 
@@ -443,7 +467,6 @@ export default function AchievementsPage() {
         {achievementsLoading || dataLoading ?
             <LoadingContentPageTemplate /> :
             <>
-
                 <div style={{ overflowX: "auto", maxWidth: "100%" }}>
                     <h2 style={{ display: "flex", margin: "0 0 10px", padding: 0, gap: "1rem", alignItems: "center", justifyContent: "center", width: "max-content" }}>
                         {Object.entries(achievements).map(([category]) =>
@@ -466,6 +489,17 @@ export default function AchievementsPage() {
                         </div>
                     </h2>
                 </div>
+
+                {activeTab !== "rewards" &&
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                        {sectionCompletion.num > 0 && <span>
+                            {activeTab}: {sectionCompletion.clear}/{sectionCompletion.num} ({(100 * sectionCompletion.clear / sectionCompletion.num).toFixed(2)}%)
+                        </span>}
+                        <span>
+                            Total: {totalCompletion.clear}/{totalCompletion.num} ({(100 * totalCompletion.clear / totalCompletion.num).toFixed(2)}%)
+                        </span>
+                    </div>
+                }
 
                 {
                     activeTab === "rewards" ?

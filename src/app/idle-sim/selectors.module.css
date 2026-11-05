@@ -47,6 +47,8 @@
 .selectorGrid {
     display: grid;
     grid-template-columns: repeat(5, auto);
+    align-items: center;
+    justify-items: center;
     max-width: clamp(330px, 85vw, 900px);
 }
 
@@ -75,21 +77,24 @@
 }
 
 .scheduleTrigger {
-    border: none;
+    padding: 0 0.2rem;
+    border: 1px solid transparent;
 }
 
 .scheduleTrigger.work {
-    background-color: rgba(41, 59, 80, 0.5);
+    /* background-color: rgba(41, 59, 80, 0.5); */
+    border-color: rgba(80, 125, 180, 0.8);
 }
 
-.scheduleTrigger.work:hover {
-    background-color: rgb(52, 77, 103, 0.75);
-}
+/* .scheduleTrigger.work:hover {
+    background-color: rgba(52, 77, 103, 0.75);
+} */
 
 .scheduleTrigger.break {
-    background-color: rgb(41, 70, 56, 0.5);
+    /* background-color: rgba(41, 70, 56, 0.5); */
+    border-color: rgba(80, 155, 110, 0.8);
 }
 
-.scheduleTrigger.break:hover {
+/* .scheduleTrigger.break:hover {
     background-color: rgb(53, 91, 71, 0.75);
-}
+} */

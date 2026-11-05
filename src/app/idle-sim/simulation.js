@@ -10,7 +10,7 @@ import { constructEnemyState } from "./expeditions";
 import { getAgentEffectiveStats, } from "./gear";
 import { getSetting } from "./settings";
 import { resolveDamageStatuses } from "./statuses";
-import { resolveSubjectPostWorkEffects } from "./subjects";
+import { resolveSubjectPostWorkEffects, resolveSubjectWorkEffects } from "./subjects";
 import { isAgentOnExpedition, researchXpToNext, sum } from "./util";
 
 function clamp(value, min, max) {
@@ -92,6 +92,8 @@ function doWork(data, state, agent, subject, report) {
     if (addResearchXp(research, subject, mult.subject_xp)) {
         report.events.push({ type: "research_level_up", subject_id: subject.id, level: research.research_level });
     }
+
+    resolveSubjectWorkEffects(data, state, outcome, agent, subject);
 
     return {
         action: "work",
@@ -253,7 +255,7 @@ function generateExpeditionRewards(state, rewards, list = []) {
 
     for (const drop of rewards.drops ?? []) {
         if (Math.random() < drop.chance) {
-            list.push({ type: "drop", dropType: drop.type, dropId: drop.id });
+            list.push({ type: "drop", drop_type: drop.type, drop_id: drop.id });
         }
     }
 
@@ -304,9 +306,7 @@ function resolveExpeditions(data, state) {
     state.expeditions = state.expeditions.filter(expedition => !expedition.finished);
 
     for (const expedition of done) {
-        delete expedition.enemy_state;
         delete expedition.finished;
-        delete expedition.wave;
         delete expedition.ticks;
     }
 }

@@ -1,18 +1,20 @@
-import React, { useMemo } from "react";
+import { PencilIcon } from "@heroicons/react/24/solid";
+import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
 import { MAX_CYCLE_LENGTH } from "./constants";
-import { getAgentEffectiveStats } from "./gear";
+import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
 import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { AgentMenuSelector, ScheduleMenuSelector, SubjectMenuSelector } from "./selectors";
+import { getOutcomeChances } from "./simulation";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 
 function DepartmentScreen({ idleSim }) {
     const [department, subjects, agents, agentStats] = useMemo(() => {
         const department = idleSim.state.departments[idleSim.uiState.department];
-        const subjects = department.subject_ids.map(id => id ? idleSim.data.subjects[id] : null);
+        const subjects = department.subject_ids.map(id => id ? { ...idleSim.data.subjects[id], ...idleSim.state.subjects[id] } : null);
 
         const agents = department.agent_ids.map(id => id ? idleSim.state.agents[id] : null);
         const agentStats = agents.map(agent => agent ? getAgentEffectiveStats(idleSim.data, idleSim.state, agent) : null);
@@ -20,20 +22,45 @@ function DepartmentScreen({ idleSim }) {
         return [department, subjects, agents, agentStats];
     }, [idleSim.data, idleSim.state, idleSim.uiState]);
 
+    const [editingLabel, setEditingLabel] = useState(false);
+    const [label, setLabel] = useState("");
+
     return <>
         <button onClick={() => idleSim.updateUiState({ department: null })}>Go Back</button>
-        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
+        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}></span>
+        <div style={{ display: "flex", gap: "0.2rem" }}>
+            {editingLabel ? <>
+                <input value={label} onChange={e => setLabel(e.target.value)} />
+                <button onClick={() => { setEditingLabel(false); idleSim.renameDepartment(idleSim.uiState.department, label); }} style={{ padding: "2px" }}>
+                    ✔
+                </button>
+                <button onClick={() => { setEditingLabel(false); setLabel(""); }} style={{ padding: "2px" }}>
+                    ✘
+                </button>
+            </> : <>
+                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
+                <button onClick={() => { setEditingLabel(true); setLabel(department.label); }} style={{ padding: "2px" }}>
+                    <PencilIcon style={{ width: "16px", height: "16px" }} />
+                </button>
+            </>
+            }
+        </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
             <div className={styles.tile} style={{ gap: "0.5rem" }}>
                 {subjects.map((subject, i) => subject ?
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
                         <span style={{ fontWeight: "bold" }}>{subject.name}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                            <span>Lv. {subject.research_level}</span>
+                            <span>WE Req: {subject.we_req}</span>
+                            <span>SP Cost: {subject.sp_cost}</span>
+                        </div>
                         <div style={{ display: "flex" }}>
                             <EnemySprite width={96} height={96} src={subject.src} />
                             <StatTable data={subject} />
                         </div>
-                        {subject.desc && <span>{subject.desc}</span>}
+                        {subject.desc && <span style={{ maxWidth: "400px" }}>{subject.desc}</span>}
                     </React.Fragment> :
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
@@ -47,8 +74,17 @@ function DepartmentScreen({ idleSim }) {
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
                         <span style={{ fontWeight: "bold" }}>{agent.name}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                            <span>Lv. {agent.level}</span>
+                            <span>HP: {agent.hp}/{agent.max_hp}</span>
+                            <span>SP: {agent.sp}</span>
+                            <span>WE: {agentStats[i].work_efficiency}</span>
+                        </div>
                         <div style={{ display: "flex" }}>
                             <StatTable data={agentStats[i]} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", maxWidth: "400px" }}>
+                            {getAgentGearEffectList(idleSim.data, agent)}
                         </div>
                     </React.Fragment> :
                     <React.Fragment key={i}>
@@ -57,6 +93,23 @@ function DepartmentScreen({ idleSim }) {
                     </React.Fragment>
                 )}
             </div>
+        </div>
+
+        <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Estimated Success Rate</span>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${subjects.filter(Boolean).length + 1}, auto)`, gap: "0.5rem" }}>
+            <div />
+            {subjects.filter(Boolean).map(subject => <EnemySprite key={subject.id} width={64} height={64} src={subject.src} />)}
+            {agents.filter(Boolean).map(agent => <React.Fragment key={agent.id}>
+                <span>{agent.name}</span>
+                {subjects.filter(Boolean).map(subject => {
+                    const chances = getOutcomeChances(idleSim.data, idleSim.state, agent, subject);
+                    return <span key={subject.id}>
+                        <span style={{ color: "#3c9d5d" }}>{Math.floor(chances.good * 100)}%</span>/
+                        <span style={{ color: "#d4b43a" }}>{Math.floor(chances.avg * 100)}%</span>/
+                        <span style={{ color: "#c0463c" }}>{Math.floor(chances.bad * 100)}%</span>
+                    </span>
+                })}
+            </React.Fragment>)}
         </div>
 
         <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Schedule</span>
@@ -99,6 +152,7 @@ function ListScreen({ idleSim }) {
         });
 
         idleSim.state.expeditions.forEach(exp => exp.agent_ids.forEach(id => assignedAgents.add(id)));
+        idleSim.state.finished_expeditions.forEach(exp => exp.agent_ids.forEach(id => assignedAgents.add(id)));
         idleSim.state.pending_events.forEach(ev => ev.agent_ids.forEach(id => assignedAgents.add(id)));
 
         return [

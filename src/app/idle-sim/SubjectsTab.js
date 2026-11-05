@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
 import { OUTCOMES } from "./constants";
+import { gearTypeToText, getSubjectGearUnlocks } from "./gear";
 import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { researchXpToNext } from "./util";
@@ -13,13 +14,15 @@ function Subject({ idleSim }) {
     const subjectData = idleSim.data.subjects[subjectId];
     const subjectState = idleSim.state.subjects[subjectId];
 
+    const unlocks = subjectState ? getSubjectGearUnlocks(idleSim.data, subjectId) : null;
+
     return <>
         <button onClick={() => idleSim.updateUiState({ subject: null })}>Go Back</button>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", maxWidth: "400px" }}>
                 <EnemySprite width={250} height={250} src={subjectData.src} style={{ filter: subjectState ? "" : "brightness(0)" }} />
                 <span style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>{subjectState ? subjectData.name : "???"}</span>
-                {subjectState &&
+                {subjectState && <>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 100px)", gap: "0.5rem", alignItems: "center", justifyItems: "center" }}>
                         <span>WE Req:</span>
                         <span>Res Lvl:</span>
@@ -43,20 +46,34 @@ function Subject({ idleSim }) {
                             <span>{researchXpToNext(subjectState.research_level)}</span>
                         </div>
                     </div>
+
+                    <span>{subjectData.desc}</span>
+                </>
                 }
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {subjectState ?
+                {subjectState &&
                     <>
                         <span style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>Stats</span>
                         <StatTable data={subjectData} />
                         <span style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>Unlocks</span>
-                        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.2rem" }}>
-
-                        </div>
-                    </> :
-                    <>
-                        <span style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>How to Obtain</span>
+                        {unlocks && unlocks.length > 0 ?
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, auto)", gap: "0.5rem", textAlign: "center" }}>
+                                <div />
+                                <span>Lv</span>
+                                <span>Type</span>
+                                <span>Name</span>
+                                <span>#</span>
+                                {getSubjectGearUnlocks(idleSim.data, subjectId).map((unlock, i) => <React.Fragment key={i}>
+                                    <div>{subjectState.research_level >= unlock.level ? "✔" : ""}</div>
+                                    <span>{unlock.level}</span>
+                                    <span>{gearTypeToText(unlock.type)}</span>
+                                    <span>{unlock.name}</span>
+                                    <span>x{unlock.copies}</span>
+                                </React.Fragment>)}
+                            </div> :
+                            <span style={{ textAlign: "center" }}>None</span>
+                        }
                     </>
                 }
             </div>
@@ -78,7 +95,7 @@ function SubjectsGrid({ idleSim, subjectsList }) {
 }
 
 export default function SubjectsTab({ idleSim }) {
-    const [filter, setFilter] = useState("owned");
+    const [filter, setFilter] = useState("all");
 
     const subjectsList = useMemo(() => {
         if (filter === "owned")

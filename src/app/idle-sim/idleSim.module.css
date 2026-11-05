@@ -27,3 +27,8 @@
     background: var(--bg-hover);
     cursor: pointer;
 }
+
+.clickableTile.disabled {
+    background: transparent;
+    filter: brightness(0.5);
+}

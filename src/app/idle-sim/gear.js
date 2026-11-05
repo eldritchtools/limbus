@@ -25,6 +25,23 @@ export function getAgentEffectiveStats(data, state, agent) {
     return stats;
 }
 
+export function getAgentGearEffectList(data, agent) {
+    const list = [];
+
+    const weapon = data.weapons[agent.weapon];
+    if (weapon && weapon.desc) list.push(weapon.desc);
+
+    const armor = data.armor[agent.armor];
+    if (armor && armor.desc) list.push(armor.desc);
+
+    agent.gifts.forEach(id => {
+        const gift = data.gifts[id];
+        if (gift && gift.effect_desc) list.push(gift.effect_desc);
+    })
+
+    return list;
+}
+
 export function getSubjectGearUnlocks(data, subjectId) {
     const unlocks = [];
 
@@ -65,7 +82,7 @@ export function getGearCost(data, state, type, id) {
     return Math.round(gear.price * (gear.price_growth ?? DEFAULT_GEAR_COST_GROWTH) ** getOwnedCopies(state, type, id));
 }
 
-function getEquippedCopies(state, type, id) {
+export function getEquippedCopies(state, type, id) {
     let count = 0;
 
     for (const agent of Object.values(state.agents)) {
@@ -188,4 +205,11 @@ export function unequipGear(data, state, agentId, type, id) {
     }
 
     return nextState;
+}
+
+export function gearTypeToText(type) {
+    if (type === "weapons") return "Weapon";
+    if (type === "armor") return "Armor";
+    if (type === "gifts") return "Gift";
+    return "";
 }

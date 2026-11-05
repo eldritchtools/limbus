@@ -1,9 +1,9 @@
-import { COUNTED_EVENT_TYPES, NOTABLE_EVENT_TYPES } from "./constants";
+import { COUNTED_EVENT_TYPES, MIN_TICKS, NOTABLE_EVENT_TYPES } from "./constants";
 
 const entryTypeOf = (entry) => {
     if (entry.action === "work") return entry.outcome;
     if (entry.action === "break") return "break";
-    return entry.statuses?.[0] ?? "down";
+    return entry.statuses?.[0]?.type ?? "down";
 };
 
 export function summarizeReports(reports, from, to) {
@@ -52,4 +52,40 @@ export function summarizeReports(reports, from, to) {
     }
 
     return { from, ticks, totals, agents, subjects, events };
+}
+
+export function getReportRange(state, arrivalTick, choice) {
+    const to = state.game_tick - 1;
+    const oldest = state.reports[0]?.tick ?? to;
+    let from = choice === "arrival" ? arrivalTick : choice === "all" ? oldest : to - choice + 1;
+    from = Math.max(from, oldest);
+    from = Math.min(from, to - MIN_TICKS + 1);
+    return [from, to];
+}
+
+const EVENT_TEXT = {
+    died: data => `${data.agentName} died`,
+    incapacitated: data => `${data.agentName} was incapacitated`,
+    panic: data => `${data.agentName} panicked`,
+    level_up: data => `Agent ${data.agentName} leveled up (level ${data.event.level})`,
+    research_level_up: data => `Subject ${data.subjectName} leveled up (level ${data.event.level})`
+};
+
+export function getReportEventText(data, state, event) {
+    const tempData = {
+        agentName: state.agents[event.agent_id]?.name ?? `Agent ${event.agent_id}`,
+        subjectName: data.subjects[event.subject_id]?.name,
+        event
+    }
+
+    const h = state.game_tick - 1 - event.tick;
+
+    return {
+        time: (h >= 24 && h % 24 !== 0) ? `${Math.floor(h / 24)}d ${h % 24}h` : h >= 24 ? `${h / 24}d` : `${h}h`,
+        text: EVENT_TEXT[event.type]?.(tempData) ?? event.type
+    }
+
+    // { summary.events.notable.map((e, i) => <div key={i}>{EVENT_TEXT[e.type](e)} <small>{ago(e.tick)}</small></div>) }
+    // <small>{[["level_up", "level-ups"], ["research_level_up", "research level-ups"], ["recovered", "recoveries"]]
+    //     .filter(([k]) => summary.events.counts[k]).map(([k, label]) => `${summary.events.counts[k]} ${label}`).join(" · ")}</small>
 }

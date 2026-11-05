@@ -2,8 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { assignAgentPoints, renameAgent } from "./agents";
 import { AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL } from "./constants";
-import { assignAgent, assignSubject, renameDepartment, setCycleLength, setScheduleBlock, unassignAgent, unassignSubject } from "./facility";
+import { chooseEventOption, dismissEvent } from "./events";
+import { claimExpedition, startExpedition } from "./expeditions";
+import { assignAgent, assignSubject, buildNewDepartment, renameDepartment, setCycleLength, setScheduleBlock, unassignAgent, unassignSubject } from "./facility";
+import { buyGear, equipGear, unequipGear } from "./gear";
 import { chooseCandidate, rerollCandidates, startHiring } from "./hiring";
+import { claimQuest } from "./quests";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
 import { getSetting, setSetting } from "./settings";
 import { simulateTick, simulateUntil } from "./simulation";
@@ -32,11 +36,13 @@ export default function useIdleSim() {
     }, [rawData, rawDataLoading]);
     const { user, loading: authLoading } = useAuth();
 
+    const [arrivalTick, setArrivalTick] = useState(null);
     const [state, setState] = useState(null);
     const [uiState, setUiState] = useState({ tab: "reports" });
     const [revision, setRevision] = useState(null);
     const [loaded, setLoaded] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [lastSaved, setLastSaved] = useState(null);
     const [error, setError] = useState(null);
 
     const stateRef = useRef(null);
@@ -71,6 +77,7 @@ export default function useIdleSim() {
             revisionRef.current = result.revision;
             clockOffsetRef.current = getClockOffset(result.serverTime);
             setRevision(result.revision);
+            setLastSaved(new Date());
 
             if (stateRef.current === stateToSave) {
                 dirtyRef.current = false;
@@ -91,7 +98,8 @@ export default function useIdleSim() {
         try {
             const result = user ? await loadDBGame() : await loadLocalGame();
             clockOffsetRef.current = getClockOffset(result.serverTime);
-            const initialState = {...createInitialState(result.serverTick), ...result.state};
+            const initialState = { ...createInitialState(result.serverTick), ...result.state };
+            setArrivalTick(initialState.game_tick);
             const nextState = simulateUntil(data, initialState, result.serverTick);
 
             updateState(nextState);
@@ -186,15 +194,23 @@ export default function useIdleSim() {
             unassignAgent: agentId => { updateState(unassignAgent(stateRef.current, agentId)) },
             assignSubject: (subjectId, departmentIndex, subjectIndex) => { updateState(assignSubject(data, stateRef.current, subjectId, departmentIndex, subjectIndex)) },
             unassignSubject: subjectId => { updateState(unassignSubject(stateRef.current, subjectId)) },
-            setCycleLength: (departmentIndex, cycleLength) => { updateState(setCycleLength(state, departmentIndex, cycleLength)) },
-            setScheduleBlock: (departmentIndex, agentId, block, subjectId) => { updateState(setScheduleBlock(data, state, departmentIndex, agentId, block, subjectId)) }
-
+            setCycleLength: (departmentIndex, cycleLength) => { updateState(setCycleLength(stateRef.current, departmentIndex, cycleLength)) },
+            setScheduleBlock: (departmentIndex, agentId, block, subjectId) => { updateState(setScheduleBlock(data, stateRef.current, departmentIndex, agentId, block, subjectId)) },
+            startExpedition: (expeditionId, agentIds) => { updateState(startExpedition(data, stateRef.current, expeditionId, agentIds)); },
+            claimExpedition: id => { updateState(claimExpedition(data, stateRef.current, id)); },
+            chooseEventOption: (id, optionIndex) => { updateState(chooseEventOption(data, stateRef.current, id, optionIndex)); },
+            dismissEvent: id => { updateState(dismissEvent(stateRef.current, id)); },
+            buyGear: (type, id) => { updateState(buyGear(data, stateRef.current, type, id)); },
+            equipGear: (agentId, type, id) => { updateState(equipGear(data, stateRef.current, agentId, type, id)); },
+            unequipGear: (agentId, type, id) => { updateState(unequipGear(data, stateRef.current, agentId, type, id)); },
+            buildNewDepartment: () => { updateState(buildNewDepartment(stateRef.current)); },
+            claimQuest: questId => { updateState(claimQuest(data, stateRef.current, questId)); }
         }
     }, [data, state, updateState])
 
     return {
-        uiState, setUiState, updateUiState,
-        state, data, loaded, saving, error,
+        uiState, setUiState, updateUiState, arrivalTick,
+        state, data, loaded, saving, error, lastSaved,
         updateState, loadGame, saveGame, resetGame, forceTick,
         ...functions
     };

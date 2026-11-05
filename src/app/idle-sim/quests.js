@@ -1,3 +1,5 @@
+import { toCurrencyStr } from "./util";
+
 const QUEST_CONDITIONS = {
     none: () => true,
     agent_count: (state, c) => Object.keys(state.agents).length >= c.min,
@@ -11,7 +13,6 @@ const QUEST_CONDITIONS = {
     research_level: (state, c) => Object.values(state.subjects).some(s => s.research_level >= c.min),
     expedition_count: (state, c) => state.expeditions.length + state.cleared_expeditions.length >= c.min,
     expedition_cleared_count: (state, c) => state.cleared_expeditions.length >= c.min,
-
 };
 
 export function isQuestClaimed(state, questId) {
@@ -48,4 +49,11 @@ export function claimQuest(data, state, questId) {
         nextState.inventory.weapons[quest.reward.weapon] = (nextState.inventory.weapons[quest.reward.weapon] ?? 0) + 1
 
     return nextState;
+}
+
+export function questRewardText(data, reward) {
+    const list = [];
+    if (reward.currency) list.push(toCurrencyStr(reward.currency));
+    if (reward.weapon) list.push(data.weapons[reward.weapon].name);
+    return list
 }

@@ -29,6 +29,28 @@ export function getAffinityIndex(affinity) {
     return affinities.findIndex(x => x === affinity);
 }
 
+export function formatNumber(value) {
+    if (Math.abs(value) < 1000) return String(Number(value.toPrecision(3)));
+
+    const units = ["k", "m", "b", "t"];
+    const tier = Math.floor(Math.log10(Math.abs(value)) / 3) - 1;
+    const scaled = value / Math.pow(1000, tier + 1);
+
+    return `${Number(scaled.toPrecision(3))}${units[tier] || ""}`;
+}
+
+export function numberCompare(a, b, comp = "lt") {
+    switch (comp) {
+        case "lt": return a < b;
+        case "le": return a <= b;
+        case "gt": return a > b;
+        case "ge": return a >= b;
+        case "eq": return a === b;
+        case "ne": return a !== b;
+        default: return false;
+    }
+}
+
 export function checkConditions(data, state, conditionsTable, conditions, op = "and") {
     if (!conditions) return true;
 

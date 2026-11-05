@@ -4,6 +4,7 @@ import * as Select from "@radix-ui/react-select";
 import { useMemo, useRef, useState } from "react";
 
 import { EnemySprite } from "./icons";
+import { getIdleSimTooltipProps } from "./idleSimTooltip";
 import styles from "./selectors.module.css";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch } from "../lib/filter";
@@ -43,11 +44,16 @@ function Selector({ value, setValue, options, optionFilter, buildOption, default
 
                 <Select.Viewport>
                     <div className={styles.selectorGrid} style={{ gridTemplateColumns: `repeat(${rowItems}, auto)` }}>
-                        {filtered.map(option => <Select.Item key={option.id} value={option.id} className={styles.selectorItem}>
+                        {filtered.map(option => <Select.Item key={option.id} value={option.id} className={styles.selectorItem} style={{ height: "100%" }}>
                             {buildOption(option)}
                         </Select.Item>)}
-                        {value ? <Select.Item key={"cancel"} value={null} className={styles.selectorItem}>
-                            <div className={styles.selectorItemInner} style={{ width: `${optionWidth}px`, height: "100%", justifyContent: "center", color: uiColors.red, fontSize: "3rem", fontWeight: "bold" }}>
+                        {value ? <Select.Item key={"cancel"} value={null} className={styles.selectorItem} style={{ height: "100%" }}>
+                            <div className={styles.selectorItemInner}
+                                style={{
+                                    width: `${optionWidth}px`, height: "100%", justifyContent: "center",
+                                    color: uiColors.red, fontWeight: "bold"
+                                }}
+                            >
                                 ✕
                             </div>
                         </Select.Item> : null}
@@ -63,7 +69,10 @@ export function AgentMenuSelector({ value, setValue, options }) {
     const optionFilter = (filter, opt) => checkFilterMatch(filter, opt.name);
 
     const buildOption = (option, triggerItem = false) => {
-        return <div className={styles.selectorItemInner} style={{ width: triggerItem ? "96px" : "200px", wordBreak: "break-word" }}>
+        return <div className={styles.selectorItemInner}
+            style={{ width: triggerItem ? "96px" : "200px", wordBreak: "break-word", height: "100%", justifyContent: "center" }}
+            {...getIdleSimTooltipProps("agent", option.id)}
+        >
             {option.name}
         </div>
     }
@@ -83,7 +92,9 @@ export function SubjectMenuSelector({ value, setValue, options }) {
     const optionFilter = (filter, opt) => checkFilterMatch(filter, opt.name);
 
     const buildOption = (option, triggerItem = false) => {
-        return <div className={styles.selectorItemInner} style={{ width: "96px" }}>
+        return <div className={styles.selectorItemInner} style={{ width: "96px" }}
+            {...getIdleSimTooltipProps("subject", option.id)}
+        >
             <EnemySprite width={96} height={96} src={option.src} />
             {!triggerItem && option.name}
         </div>
