@@ -123,9 +123,10 @@ function ExpeditionTileOngoing({ idleSim, expedition }) {
         {expedition.enemy_state.map((enemy, i) => {
             const { x, y, h } = ENEMY_LAYOUTS[expedition.enemy_state.length][i];
             const enemyData = idleSim.data.enemies[enemy.id];
+            const size = `${h * 100 * (enemyData.boss ? 1.35 : 1)}%`;
             return <div key={`${i}-${enemy.id}`} style={{
                 position: "absolute", left: `${(x0 + x * (x1 - x0)) * 100}%`, top: `${y * 100}%`,
-                height: `${h * 100 * (enemyData.boss ? 1.35 : 1)}%`, transform: "translate(-50%, -100%)", zIndex: Math.round(y * 100)
+                width: size, height: size, transform: "translate(-50%, -100%)", zIndex: Math.round(y * 100)
             }}
                 {...getIdleSimTooltipProps("enemy", enemy.id)}
             >
@@ -235,10 +236,12 @@ export default function ExpeditionTab({ idleSim }) {
 
     if (dispatching) {
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "800px", gap: "0.5rem" }}>
-            <button onClick={() => { setDispatching(false); setDispatchingId(null); setAgents(new Array(5).fill(null)) }}>Go Back</button>
-            {Object.keys(idleSim.data.expeditions).map(id => {
+            <button onClick={() => { setDispatching(false); setDispatchingId(null); setAgents(new Array(5).fill(null)); }}>Go Back</button>
+            {Object.keys(idleSim.data.expeditions).sort((a, b) => Number(a.split("-")[1]) - Number(b.split("-")[1])).map(id => {
                 const unlocked = checkExpeditionUnlocked(idleSim.data, idleSim.state, id);
-                const canDispatch = unlocked && agents.filter(Boolean).length > 0 && agents.length <= MAX_EXPEDITION_AGENTS;
+                const canDispatch = unlocked && 
+                    agents.filter(Boolean).length > 0 && agents.length <= MAX_EXPEDITION_AGENTS && 
+                    idleSim.state.currency >= idleSim.data.expeditions[id].cost;
 
                 return <React.Fragment key={id}>
                     {
@@ -272,7 +275,10 @@ export default function ExpeditionTab({ idleSim }) {
                                 </React.Fragment>
                             })}
                         </div>
-                        <button disabled={!canDispatch} onClick={() => { idleSim.startExpedition(dispatchingId, agents.filter(Boolean)); setDispatching(false); }}>
+                        <button disabled={!canDispatch} onClick={() => {
+                            idleSim.startExpedition(dispatchingId, agents.filter(Boolean)); setDispatching(false);
+                            setDispatchingId(null); setAgents(new Array(5).fill(null));
+                        }}>
                             Start Expedition
                         </button>
                     </>}

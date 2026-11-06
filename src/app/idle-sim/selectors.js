@@ -114,13 +114,13 @@ export function SubjectMenuSelector({ value, setValue, options }) {
 export function ScheduleMenuSelector({ value, setValue, options }) {
     const buildOption = (option, triggerItem = false) => {
         if (triggerItem) {
-            return <div className={styles.selectorItemInner} style={{ display: "flex", flexDirection: "row", width: "150px" }}>
-                <EnemySprite width={32} height={32} src={option.src} />
+            return <div className={styles.selectorItemInner} style={{ display: "flex", flexDirection: "row", width: "150px", minHeight: "40px" }}>
+                <EnemySprite key={option.id} width={32} height={32} src={option.src} />
                 <span style={{ flex: 1 }}>{option.name}</span>
             </div>
         } else {
             return <div className={styles.selectorItemInner} style={{ width: "96px" }}>
-                <EnemySprite width={96} height={96} src={option.src} />
+                <EnemySprite key={option.id} width={96} height={96} src={option.src} />
                 {option.name}
             </div>
         }

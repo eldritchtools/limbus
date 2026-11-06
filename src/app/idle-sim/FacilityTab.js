@@ -2,7 +2,7 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { MAX_CYCLE_LENGTH } from "./constants";
+import { MAX_CYCLE_LENGTH, SP_EFFICIENCY_SWING } from "./constants";
 import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
 import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
@@ -10,6 +10,7 @@ import { AgentMenuSelector, ScheduleMenuSelector, SubjectMenuSelector } from "./
 import { getOutcomeChances } from "./simulation";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 function DepartmentScreen({ idleSim }) {
     const [department, subjects, agents, agentStats] = useMemo(() => {
@@ -24,6 +25,7 @@ function DepartmentScreen({ idleSim }) {
 
     const [editingLabel, setEditingLabel] = useState(false);
     const [label, setLabel] = useState("");
+    const [sp, setSp] = useState("current");
 
     return <>
         <button onClick={() => idleSim.updateUiState({ department: null })}>Go Back</button>
@@ -95,18 +97,37 @@ function DepartmentScreen({ idleSim }) {
             </div>
         </div>
 
-        <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Estimated Success Rate</span>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${subjects.filter(Boolean).length + 1}, auto)`, gap: "0.5rem" }}>
+        <span
+            className="hover-text"
+            style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}
+            {...getGeneralTooltipProps(`The success rate of an agent is based on their effective work efficiency vs the work efficiency requirement of the subject. The effective work efficiency of an agent is computed as their base WE plus the sum of their offense ratings multiplied by the corresponding defense ratings of the subject. SP gives an up to 25% increase or decrease in the final effective work efficiency based on its value.`)}
+        >
+            Estimated Success Rate
+        </span>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            Simulated SP:
+            <select value={sp} onChange={e => setSp(e.target.value)}>
+                <option value={"current"}>Current SP</option>
+                <option value={0}>0 SP</option>
+                <option value={45}>45 SP</option>
+                <option value={-45}>-45 SP</option>
+            </select>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${subjects.filter(Boolean).length + 1}, auto)`, gap: "0.5rem", textAlign: "center" }}>
             <div />
             {subjects.filter(Boolean).map(subject => <EnemySprite key={subject.id} width={64} height={64} src={subject.src} />)}
             {agents.filter(Boolean).map(agent => <React.Fragment key={agent.id}>
                 <span>{agent.name}</span>
                 {subjects.filter(Boolean).map(subject => {
-                    const chances = getOutcomeChances(idleSim.data, idleSim.state, agent, subject);
+                    const usedAgent = sp === "current" ? agent : { ...agent, sp }
+                    const chances = getOutcomeChances(idleSim.data, idleSim.state, usedAgent, subject);
+                    const good = Math.round(chances.good * 100);
+                    const bad = Math.min(Math.round(chances.bad * 100), 100 - good);
+                    const avg = 100 - good - bad;
                     return <span key={subject.id}>
-                        <span style={{ color: "#3c9d5d" }}>{Math.floor(chances.good * 100)}%</span>/
-                        <span style={{ color: "#d4b43a" }}>{Math.floor(chances.avg * 100)}%</span>/
-                        <span style={{ color: "#c0463c" }}>{Math.floor(chances.bad * 100)}%</span>
+                        <span style={{ color: "#3c9d5d" }}>{good}%</span>/
+                        <span style={{ color: "#d4b43a" }}>{avg}%</span>/
+                        <span style={{ color: "#c0463c" }}>{bad}%</span>
                     </span>
                 })}
             </React.Fragment>)}

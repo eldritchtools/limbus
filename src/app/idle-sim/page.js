@@ -6,13 +6,13 @@ import FacilityTab from "./FacilityTab";
 import styles from "./idleSim.module.css";
 import { IdleSimTooltip } from "./idleSimTooltip";
 import InventoryTab from "./InventoryTab";
+import ManualTab from "./ManualTab";
 import QuestBar from "./QuestBar";
 import ReportsTab from "./ReportTab";
 import SettingsTab from "./SettingsTab";
 import SubjectsTab from "./SubjectsTab";
 import useIdleSim from "./useIdleSim";
 import { toCurrencyStr } from "./util";
-import DragContainer from "../components/objects/DragContainer";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 export default function IdleSimPage() {
@@ -48,13 +48,46 @@ export default function IdleSimPage() {
 
         <div style={{ overflowX: "auto", maxWidth: "100%" }}>
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem", width: "max-content" }}>
-                <div className={`tab-header ${tab === "reports" ? "active" : ""}`} onClick={() => setTab("reports")}>Reports</div>
-                <div className={`tab-header ${tab === "facility" ? "active" : ""}`} onClick={() => setTab("facility")}>Facility</div>
-                <div className={`tab-header ${tab === "agents" ? "active" : ""}`} onClick={() => setTab("agents")}>Agents</div>
-                <div className={`tab-header ${tab === "subjects" ? "active" : ""}`} onClick={() => setTab("subjects")}>Research Subjects</div>
-                <div className={`tab-header ${tab === "inventory" ? "active" : ""}`} onClick={() => setTab("inventory")}>Inventory</div>
-                <div className={`tab-header ${tab === "expedition" ? "active" : ""}`} onClick={() => setTab("expedition")}>Expedition</div>
-                <div className={`tab-header ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}>Settings</div>
+                <div className={`tab-header ${tab === "reports" ? "active" : ""}`} onClick={() => setTab("reports")}
+                    {...getGeneralTooltipProps("Check how efficiently your facility is running.\nView a summary of work results, events, and XP and Ahn earned.")}
+                >
+                    Reports
+                </div>
+                <div className={`tab-header ${tab === "facility" ? "active" : ""}`} onClick={() => setTab("facility")}
+                    {...getGeneralTooltipProps("Manage your facility.\nAssign subjects and agents to departments and plan out their schedules.")}
+                >
+                    Facility
+                </div>
+                <div className={`tab-header ${tab === "agents" ? "active" : ""}`} onClick={() => setTab("agents")}
+                    {...getGeneralTooltipProps("Manage your agents.\nHire agents, equip them with gear, and assign stat points from leveling up.")}
+                >
+                    Agents
+                </div>
+                <div className={`tab-header ${tab === "subjects" ? "active" : ""}`} onClick={() => setTab("subjects")}
+                    {...getGeneralTooltipProps("View your available research subjects.\nCheck their stats, mechanics, current research levels and what they can unlock.")}
+                >
+                    Research Subjects
+                </div>
+                <div className={`tab-header ${tab === "inventory" ? "active" : ""}`} onClick={() => setTab("inventory")}
+                    {...getGeneralTooltipProps("View your available gear.\nCheck their stats and mechanics. Also buy purchaseable gear that you have unlocked.")}
+                >
+                    Inventory
+                </div>
+                <div className={`tab-header ${tab === "expedition" ? "active" : ""}`} onClick={() => setTab("expedition")}
+                    {...getGeneralTooltipProps("Spend money to send agents out on expeditions.\nSuccessful expeditions can give XP, gear, and unlock new Research Subjects.")}
+                >
+                    Expedition
+                </div>
+                <div className={`tab-header ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}
+                    {...getGeneralTooltipProps("Adjust some optional game settings.")}
+                >
+                    Settings
+                </div>
+                <div className={`tab-header ${tab === "manual" ? "active" : ""}`} onClick={() => setTab("manual")}
+                    {...getGeneralTooltipProps("View details for how the game works.")}
+                >
+                    Manual
+                </div>
             </div>
         </div>
 
@@ -66,6 +99,7 @@ export default function IdleSimPage() {
             {tab === "inventory" && <InventoryTab idleSim={idleSim} />}
             {tab === "expedition" && <ExpeditionTab idleSim={idleSim} />}
             {tab === "settings" && <SettingsTab idleSim={idleSim} />}
+            {tab === "manual" && <ManualTab />}
         </>}
 
         <IdleSimTooltip idleSim={idleSim} />

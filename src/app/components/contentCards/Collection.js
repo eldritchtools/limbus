@@ -44,7 +44,7 @@ export default function Collection({ collection, complete = true }) {
             {collection.items.length > 0 ?
                 <DragContainer style={{ paddingLeft: "1rem" }}>
                     <div className={styles.track} style={{ display: "flex" }}>
-                        {collection.items.map(item =>
+                        {collection.items.filter(x => x.data).map(item =>
                             item.type === "build" ?
                                 <HoverBlocker key={item.data.id} setBlockHover={setBlockHover}>
                                     <BuildEntry build={item.data} size={"S"} complete={false} />
