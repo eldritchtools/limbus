@@ -89,8 +89,8 @@ export function dismissEvent(state, id) {
 export function eventEffectToText(data, effect) {
     switch (effect.type) {
         case "drop":
-            if (effect.granted) return `Gained a ${data[effect.drop_type][effect.id].name} (${gearTypeToText(effect.drop_type)}).`
-            else return `Failed to gain a ${data[effect.drop_type][effect.id].name} (${gearTypeToText(effect.drop_type)}) due to having the max allowed copies.`
+            if (effect.granted) return `Gained a ${gearTypeToText(effect.drop_type)}: ${data[effect.drop_type][effect.id].name}`
+            else return `Failed to gain a ${gearTypeToText(effect.drop_type)} due to having the max allowed copies: ${data[effect.drop_type][effect.id].name}`
         default:
             return "";
     }

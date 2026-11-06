@@ -117,6 +117,11 @@ export default function ReportsTab({ idleSim }) {
     const [from, to] = getReportRange(idleSim.state, interval);
     const summary = useMemo(() => summarizeReports(idleSim.state.reports, from, to), [idleSim.state.reports, from, to]);
 
+    if (Object.keys(summary.agents).length === 0 && Object.keys(summary.subjects).length === 0)
+        return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", maxWidth: "1600px" }}>
+            Nothing to report yet! Have agents work on subjects to begin seeing reports here.
+        </div>
+
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", maxWidth: "1600px" }}>
         <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
             Time Interval:
