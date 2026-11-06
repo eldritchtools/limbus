@@ -32,3 +32,19 @@
     background: transparent;
     filter: brightness(0.5);
 }
+
+.agentTile.incapacitated {
+    background: rgba(107, 29, 29, 0.4);
+}
+
+.agentTile.incapacitated:hover {
+    background: rgba(107, 29, 29, 0.8);
+}
+
+.agentTile.panic {
+    background: rgba(138, 79, 179, 0.4);
+}
+
+.agentTile.panic:hover {
+    background: rgba(138, 79, 179, 0.8);
+}

@@ -2,7 +2,7 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { HP_PER_LEVEL, START_HP, START_WE, WE_PER_LEVEL } from "./constants";
+import { CATCHUP_LEVEL_GAP, HP_PER_LEVEL, MIN_SP, START_HP, START_WE, WE_PER_LEVEL } from "./constants";
 import { findAgentDepartment } from "./facility";
 import { gearTypeToText, getAgentEffectiveStats, getEquippedCopies, getOwnedCopies } from "./gear";
 import { getAgentHireCost, getMaxStartLevel, getRerollCost } from "./hiring";
@@ -13,6 +13,7 @@ import { agentXpToNext, findAgentExpedition, sum, toCurrencyStr } from "./util";
 import Icon from "../components/icons/Icon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import NumberInput from "../components/objects/NumberInput";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
 import { affinities } from "../lib/constants";
 
@@ -22,7 +23,7 @@ function HiringScreen({ idleSim }) {
 
     if (hiring) {
         return <>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <span>Choose an agent:</span>
                 <button
                     style={{ display: "flex", flexDirection: "column", textAlign: "center" }}
@@ -48,7 +49,14 @@ function HiringScreen({ idleSim }) {
     }
 
     return <>
-        <span>Starting Level: <NumberInput min={1} max={getMaxStartLevel(idleSim.state)} value={level} onChange={setLevel} style={{ width: "3ch" }} /></span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+            <span className="hover-text"
+                {...getGeneralTooltipProps(`You can hire agents up to ${CATCHUP_LEVEL_GAP} levels below your highest leveled agent. Higher leveled agents cost more to hire.`)}
+            >
+                Starting Level:
+            </span>
+            <NumberInput min={1} max={getMaxStartLevel(idleSim.state)} value={level} onChange={setLevel} style={{ width: "3ch" }} />
+        </div>
         <span>Cost: {toCurrencyStr(getAgentHireCost(idleSim.state, level))}</span>
         <div style={{ display: "flex", gap: "0.5rem" }}>
             <button onClick={() => idleSim.updateUiState({ hiring: false })}>Cancel</button>
@@ -107,10 +115,11 @@ function AgentsScreen({ idleSim }) {
         </div>
         {Object.values(idleSim.state.agents).map(agent => {
             const stats = getAgentEffectiveStats(idleSim.data, idleSim.state, agent);
+            const className = `${styles.clickableTile} ${styles.agentTile} ${agent.hp <= 0 ? styles.incapacitated : agent.sp <= MIN_SP ? styles.panic : null}`
 
             return <React.Fragment key={agent.id}>
-                <div className={styles.clickableTile} onClick={() => handleSelectAgent(agent.id)} style={{ position: "relative", width: "100%", maxWidth: "600px" }}>
-                    {agent.unspent_points &&
+                <div className={className} onClick={() => handleSelectAgent(agent.id)} style={{ position: "relative", width: "100%", maxWidth: "600px" }}>
+                    {agent.unspent_points > 0 &&
                         <div style={{ position: "absolute", width: "10px", height: "10px", background: uiColors.red, top: "5px", right: "5px", borderRadius: "50%", zIndex: 5 }} />
                     }
 
@@ -255,7 +264,7 @@ function AgentsScreen({ idleSim }) {
                                 </div>
                             </div>
                         </div>
-                        {/* agent.statuses */}
+
                         {
                             assignGear && <>
                                 <div style={{ width: "100%", border: "1px var(--primary-border-color) solid", margin: "2px 0" }} />

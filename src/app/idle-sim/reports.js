@@ -54,10 +54,10 @@ export function summarizeReports(reports, from, to) {
     return { from, ticks, totals, agents, subjects, events };
 }
 
-export function getReportRange(state, arrivalTick, choice) {
+export function getReportRange(state, ticks) {
     const to = state.game_tick - 1;
     const oldest = state.reports[0]?.tick ?? to;
-    let from = choice === "arrival" ? arrivalTick : choice === "all" ? oldest : to - choice + 1;
+    let from = to - ticks + 1;
     from = Math.max(from, oldest);
     from = Math.min(from, to - MIN_TICKS + 1);
     return [from, to];

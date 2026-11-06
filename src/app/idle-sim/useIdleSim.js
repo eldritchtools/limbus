@@ -21,7 +21,7 @@ export default function useIdleSim() {
         if (rawDataLoading) return [null, true];
         const data = { ...rawData };
 
-        const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5 };
+        const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5, effects: [] };
         data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, id, ...subject }]));
 
         const defaultGear = { unlocks: [] };
@@ -36,7 +36,6 @@ export default function useIdleSim() {
     }, [rawData, rawDataLoading]);
     const { user, loading: authLoading } = useAuth();
 
-    const [arrivalTick, setArrivalTick] = useState(null);
     const [state, setState] = useState(null);
     const [uiState, setUiState] = useState({ tab: "reports" });
     const [revision, setRevision] = useState(null);
@@ -99,7 +98,6 @@ export default function useIdleSim() {
             const result = user ? await loadDBGame() : await loadLocalGame();
             clockOffsetRef.current = getClockOffset(result.serverTime);
             const initialState = { ...createInitialState(result.serverTick), ...result.state };
-            setArrivalTick(initialState.game_tick);
             const nextState = simulateUntil(data, initialState, result.serverTick);
 
             updateState(nextState);
@@ -209,7 +207,7 @@ export default function useIdleSim() {
     }, [data, state, updateState])
 
     return {
-        uiState, setUiState, updateUiState, arrivalTick,
+        uiState, setUiState, updateUiState,
         state, data, loaded, saving, error, lastSaved,
         updateState, loadGame, saveGame, resetGame, forceTick,
         ...functions

@@ -236,7 +236,7 @@ export default function ExpeditionTab({ idleSim }) {
     if (dispatching) {
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "800px", gap: "0.5rem" }}>
             <button onClick={() => { setDispatching(false); setDispatchingId(null); setAgents(new Array(5).fill(null)) }}>Go Back</button>
-            {Object.keys(idleSim.data.expeditions).map(id => {
+            {Object.keys(idleSim.data.expeditions).sort((a, b) => Number(a.split("-")[1]) - Number(b.split("-")[1])).map(id => {
                 const unlocked = checkExpeditionUnlocked(idleSim.data, idleSim.state, id);
                 const canDispatch = unlocked && agents.filter(Boolean).length > 0 && agents.length <= MAX_EXPEDITION_AGENTS;
 
