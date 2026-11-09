@@ -16,6 +16,7 @@ export function assignAgentPoints(state, agentId, points) {
 }
 
 export function canWork(agent) {
+    if (agent.hp <= 0) return false;
     if (agent.statuses.find(x => ["incapacitated", "panic"].includes(x.type))) return false;
     return true;
 }

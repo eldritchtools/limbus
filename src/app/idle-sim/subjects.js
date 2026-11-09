@@ -1,5 +1,9 @@
 import { checkConditions, numberCompare } from "./util";
 
+const VARS = {
+    working_agent_level: (data, state) => state.agent.level
+}
+
 // const WORK_STAT_EFFECTS = {
 // };
 
@@ -7,23 +11,35 @@ import { checkConditions, numberCompare } from "./util";
 // }
 
 const WORK_CONDITIONS = {
+    comp_var: (data, state, condition) => {
+        const val = VARS[condition.var](data, state);
+        if (val === undefined) return false;
+        return numberCompare(val, condition.target, condition.comp);
+    },
     work_result: (data, state, condition) => state.outcome === condition.value,
-    working_agent_level: (data, state, condition) => numberCompare(state.agent.level, condition.value, condition.comp),
     random: (data, state, condition) => Math.random() < condition.chance
 };
 
 const WORK_EFFECTS = {
-    incapacitate_working_agent: (data, state, effect) => state.agent.hp = 0
+    incapacitate_working_agent: (data, state, effect) => {
+        state.agent.hp = 0
+    },
+    hp_damage_working_agent: (data, state, effect) => {
+        state.agent.hp -= effect.value
+    },
+    sp_damage_working_agent: (data, state, effect) => {
+        state.agent.sp -= effect.value
+    }
 };
 
 export function resolveSubjectWorkEffects(data, state, outcome, agent, subject) {
     const processingState = { state, outcome, agent, subject };
 
     for (const effect of subject.effects) {
+        const trueEffects = effect.effects.filter(effect => effect.type in WORK_EFFECTS);
+        if (trueEffects.length === 0) continue;
         if (!checkConditions(data, processingState, WORK_CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
-        for (const trueEffect of effect.effects) {
-            WORK_EFFECTS[trueEffect.type]?.(data, processingState, trueEffect);
-        }
+        for (const trueEffect of trueEffects) WORK_EFFECTS[trueEffect.type]?.(data, processingState, trueEffect);
     }
 }
 
@@ -53,10 +69,10 @@ export function resolveSubjectPostWorkEffects(data, state, report) {
             const processingState = { state, report, ids: { departmentIndex: i, subjectId } };
 
             for (const effect of subject.effects) {
+                const trueEffects = effect.effects.filter(effect => effect.type in POST_WORK_EFFECTS);
+                if (trueEffects.length === 0) continue;
                 if (!checkConditions(data, processingState, POST_WORK_CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
-                for (const trueEffect of effect.effects) {
-                    POST_WORK_EFFECTS[trueEffect.type]?.(data, processingState, trueEffect);
-                }
+                for (const trueEffect of trueEffects) POST_WORK_EFFECTS[trueEffect.type]?.(data, processingState, trueEffect);
             }
         }
     }

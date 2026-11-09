@@ -4,15 +4,15 @@ import { getAffinityIndex } from "./util";
 const CONDITIONS = {
     agent_any_offense: (data, state, agents, condition) => {
         return agents.some(agent => {
-            const stats = getAgentEffectiveStats(data, state, agent);
-            return condition.affinities.some(affinity => stats.offense[getAffinityIndex(affinity)] >= condition.value);
+            const stats = getAgentEffectiveStats(data, state, agent, false);
+            return condition.affinities.some(affinity => stats.offense[getAffinityIndex(affinity)] >= condition.target);
         });
     }
 }
 
 const CONDITIONS_TEXT = {
     agent_any_offense: (data, condition) => {
-        return `An agent must have at least ${condition.value} offense rating for at least one of the following affinities: ${condition.affinities.join(", ")}.`
+        return `An agent must have at least ${condition.target} offense rating for at least one of the following affinities: ${condition.affinities.join(", ")}.`
     }
 }
 
@@ -73,7 +73,9 @@ export function chooseEventOption(data, state, id, optionIndex) {
 
     if (nextState.currency < 0) return null;
 
-    nextState.pending_events.find(event => event.id === id).result = { option_index: optionIndex, effects: result.filter(Boolean) };
+    const event = nextState.pending_events.find(event => event.id === id);
+    event.result = { option_index: optionIndex, effects: result.filter(Boolean) };
+    event.agent_ids = [];
     return nextState;
 }
 

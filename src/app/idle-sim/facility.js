@@ -1,4 +1,4 @@
-import { DEPARTMENT_BASE_COST, DEPARTMENT_COST_GROWTH, MAX_CYCLE_LENGTH, MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS } from "./constants";
+import { DEPARTMENT_BASE_COST, DEPARTMENT_COST_GROWTH, MAX_CYCLE_LENGTH, MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS, MAX_DEPARTMENTS } from "./constants";
 import { isAgentOnExpedition } from "./util";
 
 export function findAgentDepartment(state, agentId) {
@@ -123,6 +123,7 @@ export function getBuildDepartmentCost(state) {
 }
 
 export function buildNewDepartment(state) {
+    if (state.departments.length >= MAX_DEPARTMENTS) return null;
     const cost = getBuildDepartmentCost(state);
     if (state.currency < cost) return null;
 

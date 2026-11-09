@@ -116,10 +116,11 @@ export function rewardToText(data, state, reward) {
     switch (reward.type) {
         case "xp":
             return `Agents gained ${reward.value} xp.`;
-        case "drop":
+        case "drop": {
             const item = data[reward.drop_type][reward.drop_id];
             if (getOwnedCopies(state, reward.drop_type, reward.drop_id) >= item.max_copies) return null;
             return `Gained ${gearTypeToText(reward.drop_type)}: ${item.name}.`;
+        }
         case "subject":
             const subject = data.subjects[reward.id];
             return `Unlocked Research Subject: ${subject.name}`;

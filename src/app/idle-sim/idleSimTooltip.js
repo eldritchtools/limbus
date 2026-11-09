@@ -3,6 +3,7 @@
 import { StatTable } from "./components";
 import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
 import { EnemySprite, GiftSprite } from "./icons";
+import { formatSp } from "./util";
 import TooltipTemplate from "../components/tooltips/TooltipTemplate";
 
 const TOOLTIP_ID = "idle-sim-tooltip";
@@ -10,19 +11,19 @@ const TOOLTIP_ID = "idle-sim-tooltip";
 function IdleSimTooltipContent({ idleSim, type, id }) {
     if (type === "agent") {
         const agent = idleSim.state.agents[Number(id)];
-        const effectiveStats = getAgentEffectiveStats(idleSim.data, idleSim.state, agent);
+        const effectiveStats = getAgentEffectiveStats(idleSim.data, idleSim.state, agent, false);
         const effectList = getAgentGearEffectList(idleSim.data, agent);
 
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
             {agent.name}
             <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                 <span>Lv. {agent.level}</span>
-                <span>HP: {agent.hp}/{agent.max_hp}</span>
-                <span>SP: {agent.sp}</span>
+                <span>HP: {Math.round(agent.hp)}/{agent.max_hp}</span>
+                <span>SP: {formatSp(agent.sp)}</span>
                 <span>WE: {effectiveStats.work_efficiency}</span>
             </div>
             <StatTable data={effectiveStats} />
-            {effectList}
+            {effectList.map((x, i) => <span key={i} style={{ alignSelf: "start" }}>{x}</span>)}
         </div>
     }
 
@@ -89,7 +90,7 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
 
 export function IdleSimTooltip({ idleSim }) {
     return <TooltipTemplate id={TOOLTIP_ID} contentFunc={data => {
-        if(!data) return;
+        if (!data) return;
         const [type, id] = data.split("|");
         return <IdleSimTooltipContent idleSim={idleSim} type={type} id={id} />
     }} />

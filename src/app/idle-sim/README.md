@@ -495,10 +495,10 @@ Content is described by a **design level T**, the agent level it is built for. A
 | Subject SP cost                      | Does not scale with level, since SP and break recovery are fixed. It is a difficulty tier (Section 6.4).   |
 | Subject reward multiplier            | Authored on top for special mechanics. It multiplies XP as well as currency.                               |
 | Enemy HP, all waves combined         | About 8 ticks of the recommended team's damage, `8 × n × (30 + 3.75T) × G`                                 |
-| Enemy offense on the field per tick  | About 5% of the recommended team's combined HP, `0.05 × n × (95 + 5T) × G`                                 |
-| Expedition cost                      | `32 × n ×` the requirement, about a fifth of what the team would earn working for the same time           |
-| Expedition XP per agent              | `1.8 ×` the requirement                                                                                    |
-| Equipment base price                 | Weapon `540 ×` and armor `720 ×` the requirement (about 1.5 and 2 days of one agent's income)            |
+| Enemy offense on the field per tick  | About 10% of the recommended team's combined HP, `0.1 × n × (95 + 5T) × G`                                 |
+| Expedition cost                      | `80 x` the requirement                                                                                     |
+| Expedition XP per agent              | `5 x` the requirement                                                                                      |
+| Equipment base price                 | Weapon `450 ×` and armor `600 ×` the requirement (about 1.2 and 1.6 days of one agent's income)            |
 
 Here `n` is the expedition's recommended team size and `T` its recommended level, which set its difficulty.
 

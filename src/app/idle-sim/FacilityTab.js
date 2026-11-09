@@ -2,23 +2,26 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { MAX_CYCLE_LENGTH, SP_EFFICIENCY_SWING } from "./constants";
+import { MAX_CYCLE_LENGTH } from "./constants";
 import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
 import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { AgentMenuSelector, ScheduleMenuSelector, SubjectMenuSelector } from "./selectors";
 import { getOutcomeChances } from "./simulation";
+import { formatSp } from "./util";
 import { HorizontalDivider } from "../components/objects/Dividers";
+import DropdownButton from "../components/objects/DropdownButton";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
+import { uiColors } from "../lib/colors";
 
-function DepartmentScreen({ idleSim }) {
+function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent, handleAssignSubject }) {
     const [department, subjects, agents, agentStats] = useMemo(() => {
         const department = idleSim.state.departments[idleSim.uiState.department];
         const subjects = department.subject_ids.map(id => id ? { ...idleSim.data.subjects[id], ...idleSim.state.subjects[id] } : null);
 
         const agents = department.agent_ids.map(id => id ? idleSim.state.agents[id] : null);
-        const agentStats = agents.map(agent => agent ? getAgentEffectiveStats(idleSim.data, idleSim.state, agent) : null);
+        const agentStats = agents.map(agent => agent ? getAgentEffectiveStats(idleSim.data, idleSim.state, agent, false) : null);
 
         return [department, subjects, agents, agentStats];
     }, [idleSim.data, idleSim.state, idleSim.uiState]);
@@ -28,20 +31,23 @@ function DepartmentScreen({ idleSim }) {
     const [sp, setSp] = useState("current");
 
     return <>
-        <button onClick={() => idleSim.updateUiState({ department: null })}>Go Back</button>
-        <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}></span>
-        <div style={{ display: "flex", gap: "0.2rem" }}>
+        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
             {editingLabel ? <>
                 <input value={label} onChange={e => setLabel(e.target.value)} />
-                <button onClick={() => { setEditingLabel(false); idleSim.renameDepartment(idleSim.uiState.department, label); }} style={{ padding: "2px" }}>
+                <button onClick={() => { setEditingLabel(false); idleSim.renameDepartment(idleSim.uiState.department, label); }} style={{ padding: "2px", border: "none" }}>
                     ✔
                 </button>
-                <button onClick={() => { setEditingLabel(false); setLabel(""); }} style={{ padding: "2px" }}>
+                <button onClick={() => { setEditingLabel(false); setLabel(""); }} style={{ padding: "2px", border: "none" }}>
                     ✘
                 </button>
             </> : <>
-                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
-                <button onClick={() => { setEditingLabel(true); setLabel(department.label); }} style={{ padding: "2px" }}>
+                <DropdownButton
+                    value={idleSim.uiState.department}
+                    setValue={x => idleSim.updateUiState({ department: x })}
+                    options={Object.fromEntries(idleSim.state.departments.map((dept, i) => [i, dept.label]))}
+                    styleOverride={{ border: "none", fontWeight: "bold", fontSize: "1.2rem" }}
+                />
+                <button onClick={() => { setEditingLabel(true); setLabel(department.label); }} style={{ padding: "2px", border: "none" }}>
                     <PencilIcon style={{ width: "16px", height: "16px" }} />
                 </button>
             </>
@@ -52,21 +58,42 @@ function DepartmentScreen({ idleSim }) {
                 {subjects.map((subject, i) => subject ?
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
-                        <span style={{ fontWeight: "bold" }}>{subject.name}</span>
+                        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                            <SubjectMenuSelector
+                                value={subject}
+                                setValue={x => handleAssignSubject(subject.id, idleSim.uiState.department, x, i)}
+                                options={[subject, ...freeSubjects]}
+                                styleOverride={{ border: "none", fontWeight: "bold" }}
+                                textOnly={true}
+                            />
+
+                            <button style={{ border: "none" }} onClick={() => idleSim.setUiState({ tab: "subjects", subject: subject.id })}>
+                                ↗
+                            </button>
+                            <button style={{ border: "none", color: uiColors.red }} onClick={() => idleSim.unassignSubject(subject.id)}>
+                                ✕
+                            </button>
+                        </div>
                         <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                             <span>Lv. {subject.research_level}</span>
                             <span>WE Req: {subject.we_req}</span>
                             <span>SP Cost: {subject.sp_cost}</span>
                         </div>
                         <div style={{ display: "flex" }}>
-                            <EnemySprite width={96} height={96} src={subject.src} />
+                            <EnemySprite key={subject.id} width={96} height={96} src={subject.src} />
                             <StatTable data={subject} />
                         </div>
                         {subject.desc && <span style={{ maxWidth: "400px" }}>{subject.desc}</span>}
                     </React.Fragment> :
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
-                        <span key={i} style={{ fontWeight: "bold" }}>Unassigned</span>
+                        <SubjectMenuSelector
+                            value={null}
+                            setValue={x => handleAssignSubject(null, idleSim.uiState.department, x, i)}
+                            options={freeSubjects}
+                            styleOverride={{ border: "none", fontWeight: "bold" }}
+                            textOnly={true}
+                        />
                     </React.Fragment>
                 )}
             </div>
@@ -75,23 +102,44 @@ function DepartmentScreen({ idleSim }) {
                 {agents.map((agent, i) => agent ?
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
-                        <span style={{ fontWeight: "bold" }}>{agent.name}</span>
+                        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                            <AgentMenuSelector
+                                value={agent}
+                                setValue={x => handleAssignAgent(agent.id, idleSim.uiState.department, x, i)}
+                                options={[agent, ...freeAgents]}
+                                styleOverride={{ border: "none", fontWeight: "bold" }}
+                                textOnly={true}
+                            />
+
+                            <button style={{ border: "none" }} onClick={() => idleSim.setUiState({ tab: "agents", agent: agent.id })}>
+                                ↗
+                            </button>
+                            <button style={{ border: "none", color: uiColors.red }} onClick={() => idleSim.unassignAgent(agent.id)}>
+                                ✕
+                            </button>
+                        </div>
                         <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                             <span>Lv. {agent.level}</span>
-                            <span>HP: {agent.hp}/{agent.max_hp}</span>
-                            <span>SP: {agent.sp}</span>
+                            <span>HP: {Math.round(agent.hp)}/{agent.max_hp}</span>
+                            <span>SP: {formatSp(agent.sp)}</span>
                             <span>WE: {agentStats[i].work_efficiency}</span>
                         </div>
                         <div style={{ display: "flex" }}>
                             <StatTable data={agentStats[i]} />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", maxWidth: "400px" }}>
-                            {getAgentGearEffectList(idleSim.data, agent)}
+                            {getAgentGearEffectList(idleSim.data, agent).map((x, i) => <span key={i}>{x}</span>)}
                         </div>
                     </React.Fragment> :
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
-                        <span key={i} style={{ fontWeight: "bold" }}>Unassigned</span>
+                        <AgentMenuSelector
+                            value={null}
+                            setValue={x => handleAssignAgent(null, idleSim.uiState.department, x, i)}
+                            options={freeAgents}
+                            styleOverride={{ border: "none", fontWeight: "bold" }}
+                            textOnly={true}
+                        />
                     </React.Fragment>
                 )}
             </div>
@@ -100,7 +148,7 @@ function DepartmentScreen({ idleSim }) {
         <span
             className="hover-text"
             style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}
-            {...getGeneralTooltipProps(`The success rate of an agent is based on their effective work efficiency vs the work efficiency requirement of the subject. The effective work efficiency of an agent is computed as their base WE plus the sum of their offense ratings multiplied by the corresponding defense ratings of the subject. SP gives an up to 25% increase or decrease in the final effective work efficiency based on its value.`)}
+            {...getGeneralTooltipProps(`The success rate of an agent is based on their effective work efficiency vs the work efficiency requirement of the subject. The effective work efficiency of an agent is computed as their base WE plus the sum of their offense ratings multiplied by the corresponding defense ratings of the subject. SP gives an up to 25% increase or decrease in the final effective work efficiency based on its value. Special effects on gear are not taken into account for these numbers.`)}
         >
             Estimated Success Rate
         </span>
@@ -162,7 +210,42 @@ function DepartmentScreen({ idleSim }) {
     </>
 }
 
-function ListScreen({ idleSim }) {
+function ListScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent, handleAssignSubject }) {
+    return <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, 600px)", gap: "0.5rem", maxWidth: "100%" }}>
+        {idleSim.state.departments.map((department, i) => {
+            return <div key={i} className={styles.tile} style={{ gap: "0.2rem", width: "600px" }}>
+                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
+                <div style={{ display: "flex", gap: "0.1rem" }}>
+                    {department.subject_ids.map((subjectId, j) =>
+                        <SubjectMenuSelector
+                            key={`${j}-${subjectId}`}
+                            value={subjectId ? idleSim.data.subjects[subjectId] : null}
+                            setValue={x => handleAssignSubject(subjectId, i, x, j)}
+                            options={freeSubjects}
+                        />
+                    )}
+                </div>
+                <div style={{ display: "flex", gap: "0.1rem" }}>
+                    {department.agent_ids.map((agentId, j) =>
+                        <AgentMenuSelector
+                            key={`${j}-${agentId}`}
+                            value={agentId ? idleSim.state.agents[agentId] : null}
+                            setValue={x => handleAssignAgent(agentId, i, x, j)}
+                            options={freeAgents}
+                        />
+                    )}
+                </div>
+                <div>
+                    <button onClick={() => idleSim.updateUiState({ department: i })}>
+                        Edit Details/Assign Schedule
+                    </button>
+                </div>
+            </div>
+        })}
+    </div>
+}
+
+export default function FacilityTab({ idleSim }) {
     const [freeAgents, freeSubjects] = useMemo(() => {
         const assignedAgents = new Set();
         const assignedSubjects = new Set();
@@ -194,45 +277,14 @@ function ListScreen({ idleSim }) {
         else idleSim.assignAgent(newAgent, departmentIndex, agentIndex);
     }
 
-    return <>
-        {idleSim.state.departments.map((department, i) => {
-            return <div key={i} className={styles.tile} style={{ gap: "0.2rem", width: "600px" }}>
-                <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{department.label}</span>
-                <div style={{ display: "flex", gap: "0.1rem" }}>
-                    {department.subject_ids.map((subjectId, j) =>
-                        <SubjectMenuSelector
-                            key={`${j}-${subjectId}`}
-                            value={subjectId ? idleSim.data.subjects[subjectId] : null}
-                            setValue={x => handleAssignSubject(subjectId, i, x, j)}
-                            options={freeSubjects}
-                        />
-                    )}
-                </div>
-                <div style={{ display: "flex", gap: "0.1rem" }}>
-                    {department.agent_ids.map((agentId, j) =>
-                        <AgentMenuSelector
-                            key={`${j}-${agentId}`}
-                            value={agentId ? idleSim.state.agents[agentId] : null}
-                            setValue={x => handleAssignAgent(agentId, i, x, j)}
-                            options={freeAgents}
-                        />
-                    )}
-                </div>
-                <div>
-                    <button onClick={() => idleSim.updateUiState({ department: i })}>
-                        Edit Details/Assign Schedule
-                    </button>
-                </div>
-            </div>
-        })}
-    </>
-}
+    const props = {
+        idleSim, freeAgents, freeSubjects, handleAssignAgent, handleAssignSubject
+    }
 
-export default function FacilityTab({ idleSim }) {
-    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+    return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", width: "100%" }}>
         {idleSim.uiState.department || idleSim.uiState.department === 0 ?
-            <DepartmentScreen idleSim={idleSim} /> :
-            <ListScreen idleSim={idleSim} />
+            <DepartmentScreen {...props} /> :
+            <ListScreen {...props} />
         }
     </div>;
 }

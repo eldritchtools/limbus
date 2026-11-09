@@ -11,7 +11,8 @@ const QUEST_CONDITIONS = {
     research_started: (state) =>
         Object.values(state.subjects).some(s => s.research_xp > 0 || s.research_level > 0),
     research_level: (state, c) => Object.values(state.subjects).some(s => s.research_level >= c.min),
-    expedition_count: (state, c) => state.expeditions.length + state.cleared_expeditions.length >= c.min,
+    expedition_count: (state, c) => 
+        state.expeditions.length + state.finished_expeditions.length + state.pending_events.length + state.cleared_expeditions.length >= c.min,
     expedition_cleared_count: (state, c) => state.cleared_expeditions.length >= c.min,
 };
 

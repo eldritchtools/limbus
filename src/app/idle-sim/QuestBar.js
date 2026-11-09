@@ -25,7 +25,7 @@ export default function QuestBar({ idleSim }) {
                 const done = quests.ready.includes(id);
                 return <div key={id} style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontWeight: "bold" }}>{quest.name}</span> {!done}
+                        <span style={{ fontWeight: "bold" }}>{quest.name}</span>
                         <span style={{ fontSize: "0.8rem" }}>{quest.description}</span>
                         <span style={{ fontSize: "0.8rem" }}>Reward: {questRewardText(idleSim.data, quest.reward).join(", ")}</span>
                     </div>

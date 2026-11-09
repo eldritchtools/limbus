@@ -9,7 +9,7 @@ import styles from "./selectors.module.css";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch } from "../lib/filter";
 
-function Selector({ value, setValue, options, optionFilter, buildOption, defaultDisplay, rowItems = 5, optionWidth = 100, triggerClass }) {
+function Selector({ value, setValue, options, optionFilter, buildOption, defaultDisplay, rowItems = 5, optionWidth = 100, triggerClass, styleOverride = {} }) {
     const [filter, setFilter] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
@@ -25,7 +25,7 @@ function Selector({ value, setValue, options, optionFilter, buildOption, default
     }
 
     return <Select.Root value={value ? value.id : null} onValueChange={v => setValue(v)} open={isOpen} onOpenChange={handleOpenChange}>
-        <Select.Trigger className={`${styles.selectorTrigger} ${triggerClass}`} ref={triggerRef} >
+        <Select.Trigger className={`${styles.selectorTrigger} ${triggerClass}`} ref={triggerRef} style={styleOverride} >
             {value ? buildOption(value, true) : defaultDisplay}
         </Select.Trigger>
 
@@ -65,10 +65,19 @@ function Selector({ value, setValue, options, optionFilter, buildOption, default
     </Select.Root>;
 }
 
-export function AgentMenuSelector({ value, setValue, options }) {
+export function AgentMenuSelector({ value, setValue, options, textOnly = false, styleOverride = {} }) {
     const optionFilter = (filter, opt) => checkFilterMatch(filter, opt.name);
 
     const buildOption = (option, triggerItem = false) => {
+        if (textOnly) {
+            return <div className={styles.selectorItemInner}
+                style={{ width: triggerItem ? "auto" : "200px", wordBreak: "break-word", height: "100%", justifyContent: "center" }}
+                {...getIdleSimTooltipProps("agent", option.id)}
+            >
+                {option.name}
+            </div>
+        }
+
         return <div className={styles.selectorItemInner}
             style={{ width: triggerItem ? "96px" : "200px", wordBreak: "break-word", height: "100%", justifyContent: "center" }}
             {...getIdleSimTooltipProps("agent", option.id)}
@@ -77,22 +86,35 @@ export function AgentMenuSelector({ value, setValue, options }) {
         </div>
     }
 
-    return <Selector value={value} setValue={setValue} options={options}
+    const defaultOption = textOnly ?
+        <div className={styles.selectorItemInner}>
+            Unassigned
+        </div> :
+        <div className={styles.selectorItemInner} style={{ width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {"+ Agent"}
+        </div>
+
+    return <Selector value={value} setValue={setValue} options={options} styleOverride={styleOverride}
         rowItems={2} optionWidth={200}
         optionFilter={optionFilter} buildOption={buildOption}
-        defaultDisplay={
-            <div className={styles.selectorItemInner} style={{ width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {"+ Agent"}
-            </div>
-        }
+        defaultDisplay={defaultOption}
     />
 }
 
-export function SubjectMenuSelector({ value, setValue, options }) {
+export function SubjectMenuSelector({ value, setValue, options, textOnly = false, styleOverride = {} }) {
     const optionFilter = (filter, opt) => checkFilterMatch(filter, opt.name);
 
     const buildOption = (option, triggerItem = false) => {
-        return <div className={styles.selectorItemInner} style={{ width: "96px" }}
+        if (textOnly) {
+            return <div className={styles.selectorItemInner} style={{ width: triggerItem ? undefined : "96px" }}
+                {...(triggerItem ? {} : getIdleSimTooltipProps("subject", option.id))}
+            >
+                {!triggerItem && <EnemySprite width={96} height={96} src={option.src} />}
+                {option ? option.name : "Unassigned"}
+            </div>
+        }
+
+        return <div className={styles.selectorItemInner} style={{ width: triggerItem ? undefined : "96px" }}
             {...getIdleSimTooltipProps("subject", option.id)}
         >
             <EnemySprite width={96} height={96} src={option.src} />
@@ -100,14 +122,18 @@ export function SubjectMenuSelector({ value, setValue, options }) {
         </div>
     }
 
-    return <Selector value={value} setValue={setValue} options={options}
+    const defaultOption = textOnly ?
+        <div className={styles.selectorItemInner}>
+            Unassigned
+        </div> :
+        <div className={styles.selectorItemInner} style={{ width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {"+ Subject"}
+        </div>
+
+    return <Selector value={value} setValue={setValue} options={options} styleOverride={styleOverride}
         optionWidth={100}
         optionFilter={optionFilter} buildOption={buildOption}
-        defaultDisplay={
-            <div className={styles.selectorItemInner} style={{ width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {"+ Subject"}
-            </div>
-        }
+        defaultDisplay={defaultOption}
     />
 }
 

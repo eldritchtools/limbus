@@ -5,11 +5,11 @@ import {
     SP_COMBAT_SWING, MAX_EXPEDITION_TICKS,
 } from "./constants";
 import { resolveGearDamageEffects, resolveGearExpeditionEffects } from "./effects";
-import { resolveEnemyDamageStatEffects, resolveEnemyDamageEffects, resolveEnemyTickEndEffects } from "./enemies";
+import { resolveEnemyDamageStatEffects, resolveEnemyDamageEffects, resolveEnemyTickEndEffects, resolveEnemyPreDeathEffects } from "./enemies";
 import { constructEnemyState } from "./expeditions";
 import { getAgentEffectiveStats, } from "./gear";
 import { getSetting } from "./settings";
-import { resolveDamageStatuses } from "./statuses";
+import { resolveDamageStatStatuses, resolveDamageStatuses, resolveTickEndStatuses } from "./statuses";
 import { resolveSubjectPostWorkEffects, resolveSubjectWorkEffects } from "./subjects";
 import { isAgentOnExpedition, researchXpToNext, sum } from "./util";
 
@@ -156,7 +156,7 @@ function resolveDepartment(data, state, department, departmentIndex, report) {
 }
 
 function getDamage(offense, defense, attackerState, defenderState) {
-    const { offense: newOffense, defense: newDefense } = resolveDamageStatuses(offense, defense, attackerState, defenderState);
+    const { offense: newOffense, defense: newDefense } = resolveDamageStatStatuses(offense, defense, attackerState, defenderState);
     let damage = 0;
     for (let i = 0; i < newOffense.length; i++) damage += newOffense[i] * newDefense[i];
     return damage;
@@ -208,15 +208,23 @@ function resolveExpedition(data, state, expedition) {
                 damageToAgent
             );
 
-            damageToEnemies[e] += dte;
-            damageToAgents[a] += dta;
+            const dte_fin = resolveDamageStatuses(dte, agents[a], { ...enemy, ...expedition.enemy_state[e] });
+            const dta_fin = resolveDamageStatuses(dta, { ...enemy, ...expedition.enemy_state[e] }, agents[a]);
+
+            damageToEnemies[e] += dte_fin;
+            damageToAgents[a] += dta_fin;
         });
     });
 
     let defeated = 0;
     expedition.enemy_state.forEach((enemy, e) => {
         enemy.hp -= damageToEnemies[e];
-        if (enemy.hp <= 0) defeated += 1;
+        if (enemy.hp <= 0) {
+            resolveEnemyPreDeathEffects(data, { state, enemy });
+            if (enemy.hp <= 0) {
+                defeated += 1;
+            }
+        }
     })
 
     expedition.enemy_state = expedition.enemy_state.filter(enemy => enemy.hp > 0);
@@ -227,7 +235,7 @@ function resolveExpedition(data, state, expedition) {
 
     expedition.ticks += 1;
 
-    resolveEnemyTickEndEffects(data, { state, enemyState: expedition.enemy_state });
+    resolveEnemyTickEndEffects(data, { state, enemyState: expedition.enemy_state, agents });
     resolveGearExpeditionEffects(data, { state, enemyState: expedition.enemy_state, agents, defeated });
 
     const cleared = expedition.enemy_state.length === 0;
@@ -346,7 +354,10 @@ function removeAgent(state, agent, report) {
 
 function finishTick(state, tick, report) {
     const dead = [];
-    const onExpedition = new Set(state.expeditions.flatMap(expedition => expedition.agent_ids));
+    const onExpedition = new Set();
+    state.expeditions.forEach(exp => exp.agent_ids.forEach(id => onExpedition.add(id)));
+    state.finished_expeditions.forEach(exp => exp.agent_ids.forEach(id => onExpedition.add(id)));
+    state.pending_events.forEach(ev => ev.agent_ids.forEach(id => onExpedition.add(id)));
 
     for (const agent of Object.values(state.agents)) {
         agent.hp = clamp(agent.hp, 0, agent.max_hp);
@@ -390,6 +401,8 @@ function runTick(data, state) {
     resolveExpeditions(data, state);
 
     restUnassignedAgents(state);
+    resolveTickEndStatuses(Object.values(state.agents));
+
     finishTick(state, tick, report);
 
     state.reports.push(report);

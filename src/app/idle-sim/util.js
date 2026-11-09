@@ -9,6 +9,10 @@ export function toCurrencyStr(val) {
     return `${val} Ahn`;
 }
 
+export function formatSp(val) {
+    return Number(val.toFixed(2));
+}
+
 export function agentXpToNext(level) {
     return Math.round(120 * level ** 1.15);
 }

@@ -6,7 +6,7 @@ export default function SettingsTab({ idleSim }) {
         <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", alignItems: "center" }}>
             <span
                 className="hover-text" style={{ textAlign: "end" }}
-                {...getGeneralTooltipProps("If enabled, agents who hit 0 HP die instead of being incapacitated for 24 hours.")}
+                {...getGeneralTooltipProps("If enabled, agents who hit 0 HP die instead of being incapacitated for 24 hours. This includes agents that are currently incapacitated.")}
             >
                 Permadeath
             </span>
