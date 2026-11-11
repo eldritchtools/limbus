@@ -34,7 +34,7 @@ function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent
     return <>
         <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
             {editingLabel ? <>
-                <input value={label} onChange={e => setLabel(e.target.value)} />
+                <input value={label} onChange={e => { if (e.target.value.length <= 50) setLabel(e.target.value) }} />
                 <button onClick={() => { setEditingLabel(false); idleSim.renameDepartment(idleSim.uiState.department, label); }} style={{ padding: "2px", border: "none" }}>
                     ✔
                 </button>
