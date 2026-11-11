@@ -114,6 +114,7 @@ const TICK_END_EFFECTS = {
     },
     buff_target: (data, state, effect) => {
         if (effect.target === "random") {
+            if(state.agents.length === 0) return;
             const agent = state.agents[Math.floor(Math.random() * state.agents.length)];
             applyStatus(data, state.state, agent, effect.status );
         } else if (effect.target === "all") {
