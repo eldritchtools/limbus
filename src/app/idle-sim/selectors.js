@@ -3,9 +3,10 @@
 import * as Select from "@radix-ui/react-select";
 import { useMemo, useRef, useState } from "react";
 
-import { EnemySprite } from "./icons";
+import { EnemySprite, GiftSprite } from "./icons";
 import { getIdleSimTooltipProps } from "./idleSimTooltip";
 import styles from "./selectors.module.css";
+import Icon from "../components/icons/Icon";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch } from "../lib/filter";
 
@@ -94,7 +95,9 @@ export function AgentMenuSelector({ value, setValue, options, textOnly = false, 
             {"+ Agent"}
         </div>
 
-    return <Selector value={value} setValue={setValue} options={options} styleOverride={styleOverride}
+    return <Selector value={value}
+        setValue={v => setValue(v ? Number(v) : null)}
+        options={options} styleOverride={styleOverride}
         rowItems={2} optionWidth={200}
         optionFilter={optionFilter} buildOption={buildOption}
         defaultDisplay={defaultOption}
@@ -160,5 +163,42 @@ export function ScheduleMenuSelector({ value, setValue, options }) {
                 {"Break"}
             </div>
         }
+    />
+}
+
+export function GearMenuSelector({ value, setValue, type, options, styleOverride = {} }) {
+    const buildOption = (option, triggerItem = false) => {
+        return <div key={option.id} className={styles.selectorItemInner}
+            style={{
+                flexDirection: "row", alignItems: "center", justifyContent: "center",
+                border: "none", width: triggerItem ? "auto" : "200px"
+            }}
+            {...getIdleSimTooltipProps(type, option.id)}
+        >
+            {triggerItem && (
+                type === "weapons" ? <Icon path={"offense level"} size={32} /> :
+                    type === "armor" ? <Icon path={"defense level"} size={32} /> :
+                        <GiftSprite width={64} height={64} src={value.src} />
+            )}
+            {(type !== "gifts" || !triggerItem) && <span>{option.name}</span>}
+        </div>
+    }
+
+    const defaultOption =
+        type === "weapons" ? <div style={{ display: "flex", alignItems: "center" }}>
+            <Icon path={"offense level"} size={32} />
+            <span style={{ fontSize: "0.9rem", opacity: 0.8 }}>None</span>
+        </div> :
+            type === "armor" ? <div style={{ display: "flex", alignItems: "center" }}>
+                <Icon path={"defense level"} size={32} />
+                <span style={{ fontSize: "0.9rem", opacity: 0.8 }}>None</span>
+            </div> :
+                <div>
+                    <span style={{ fontSize: "0.9rem", opacity: 0.8 }}>None</span>
+                </div>
+
+    return <Selector value={value} setValue={setValue} options={options}
+        rowItems={2} optionWidth={200} buildOption={buildOption}
+        defaultDisplay={defaultOption} styleOverride={styleOverride}
     />
 }

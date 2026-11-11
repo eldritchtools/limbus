@@ -61,10 +61,7 @@ export default function IntroScreen({ idleSim }) {
     }}>
         <div className={styles.tile} style={{ width: "100%", textAlign: "center", gap: "0.3rem", padding: "1.2rem" }}>
             <span style={{ fontSize: "1.6rem", fontWeight: "bold", letterSpacing: "1px" }}>
-                L.C.B. Facility Terminal
-            </span>
-            <span>
-                Idle Facility Management Simulation
+                L.C. Idle Management Simulator
             </span>
         </div>
 
@@ -77,16 +74,16 @@ export default function IntroScreen({ idleSim }) {
         <div className={styles.tile} style={{ width: "100%", alignItems: "stretch", gap: "0.6rem", padding: "1.2rem" }}>
             <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>Operational Disclaimers</span>
             <div>
-                • <strong>Idle Real-Time Simulation:</strong> This game advances at a fixed rate of <strong>1 real-life hour = 1 simulation tick</strong>. It is designed to be checked periodically rather than played continuously.
+                • <strong>Real Time Pacing:</strong> Time advances at a fixed rate of <strong>1 real world hour = 1 simulation tick</strong>. The facility simulates up to <strong>7 days (168 hours)</strong> of offline progress while you are away. This game is designed to be checked periodically, not played continuously.
             </div>
             <div>
-                • <strong>Offline Simulation:</strong> The facility continues running while you are away (up to <strong>7 days / 168 hours</strong> offline max).
+                • <strong>Mandatory Breaks:</strong> Agents assigned to continuous work will rapidly deteriorate. Department schedules must balance work with regular breaks to recover HP and SP and avoid long incapacitation lockouts.
             </div>
             <div>
-                • <strong>SP & HP Management:</strong> Agents assigned back-to-back work will quickly deteriorate. Scheduled breaks restore 20% Max HP and 15 SP. Panic occurs at -45 SP (12h lockout), and Incapacitation occurs at 0 HP (24h lockout).
+                • <strong>Data & Persistence:</strong> Registered account progress is saved to the cloud and syncs across devices. Guest progress is stored locally in your browser and will be lost if site data or cache is cleared.
             </div>
             <div>
-                • <strong>Permadeath:</strong> Permadeath is disabled by default. If enabled in Settings, agents reaching 0 HP are permanently deleted instead of incapacitated.
+                • <strong>Game Manual:</strong> Detailed explanations of mechanics and formulas can be found in the <strong>Manual</strong> tab.
             </div>
         </div>
 

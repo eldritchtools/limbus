@@ -1,18 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { uiColors } from "../lib/colors";
 import { ASSETS_ROOT } from "../paths";
 import { canWork } from "./agents";
 import { StatTable } from "./components";
 import { MAX_EXPEDITION_AGENTS } from "./constants";
-import { canChooseEventOption, eventEffectToText, eventOptionConditionText } from "./events";
-import { checkExpeditionUnlocked, expeditionRequirementsText, rewardToText } from "./expeditions";
-import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
+import { eventEffectToText, eventOptionConditionText } from "./events";
+import { checkExpeditionUnlocked, expeditionRequirementsText, getExpeditionCost, rewardToText } from "./expeditions";
+import { getAgentEffectiveStats, getAgentGearEffectList, getEquippedCopies, getOwnedCopies } from "./gear";
 import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { getIdleSimTooltipProps } from "./idleSimTooltip";
-import { AgentMenuSelector } from "./selectors";
+import { AgentMenuSelector, GearMenuSelector } from "./selectors";
 import { formatSp, toCurrencyStr } from "./util";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
@@ -125,6 +125,13 @@ function ExpeditionTileOngoing({ idleSim, expedition }) {
                     Confirm
                 </div>
             </div>
+
+            <div className={styles.clickableTile}
+                onClick={() => idleSim.updateUiState({ dispatching: true, dispatchingId: expedition.expedition_id, agents: expedition.agent_ids })}
+                style={{ position: "absolute", bottom: "2px", right: "2px" }}
+            >
+                Repeat Expedition
+            </div>
         </ExpeditionTileBase>
     }
 
@@ -228,7 +235,7 @@ function ExpeditionTileEvent({ idleSim, event }) {
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: "0.2rem", position: "absolute", right: "4px", maxWidth: "30%", maxHeight: "90%", top: "20%", overflowY: "auto", overflowX: "hidden" }}>
             {eventData.options.map((option, i) => {
-                const available = canChooseEventOption(idleSim.data, idleSim.state, event, option);
+                const available = event.eligible_options.includes(option.id);
                 return <div key={i}
                     className={`${styles.clickableTile} ${!available ? styles.disabled : ""}`}
                     onClick={available ? () => { idleSim.chooseEventOption(event.id, i) } : null}
@@ -237,6 +244,13 @@ function ExpeditionTileEvent({ idleSim, event }) {
                     <span style={overlayTextStyle}>{option.label}</span>
                 </div>
             })}
+        </div>
+
+        <div className={styles.clickableTile}
+            onClick={() => idleSim.dismissEvent(event.id)}
+            style={{ position: "absolute", bottom: "2px", right: "2px" }}
+        >
+            Dismiss
         </div>
     </ExpeditionTileBase>
 }
@@ -250,24 +264,51 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
 
         idleSim.state.departments.forEach(dept => dept.agent_ids.forEach(id => assignedAgents.add(id)));
         idleSim.state.expeditions.forEach(exp => exp.agent_ids.forEach(id => assignedAgents.add(id)));
-        idleSim.state.finished_expeditions.forEach(exp => exp.agent_ids.forEach(id => assignedAgents.add(id)));
-        idleSim.state.pending_events.forEach(ev => ev.agent_ids.forEach(id => assignedAgents.add(id)));
 
         return Object.values(idleSim.state.agents).filter(a => !assignedAgents.has(a.id) && canWork(a));
     },
         [idleSim.state, agents]
     );
 
+    useEffect(() => {
+        if (idleSim.uiState.agents)
+            setAgents(p => p.map((x, i) => {
+                const id = idleSim.uiState.agents[i];
+                if(!id) return x;
+                if(!freeAgents.some(a => a.id === id)) return x;
+                return id;
+            }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const chosenAgents = agents.filter(Boolean).map(id => idleSim.state.agents[id]);
-    const canAfford = idleSim.state.currency >= data.cost;
+    const totalCost = getExpeditionCost(data, agents.filter(Boolean).length);
+    const canAfford = idleSim.state.currency >= totalCost;
     const canDispatch = canAfford && chosenAgents.length > 0 && chosenAgents.length <= MAX_EXPEDITION_AGENTS;
     const isFirstClear = !idleSim.state.cleared_expeditions.includes(expeditionId);
+
+    const toOpt = useCallback((type, id) => {
+        if (!id) return null;
+        return { id, ...idleSim.data[type][id] };
+    }, [idleSim.data]);
+
+    const equippable = useMemo(() => {
+        const getEquippable = type => Object.keys(idleSim.state.inventory[type])
+            .filter(id => getEquippedCopies(idleSim.state, type, id) < getOwnedCopies(idleSim.state, type, id))
+            .map(id => toOpt(type, id));
+
+        return {
+            "weapons": getEquippable("weapons"),
+            "armor": getEquippable("armor"),
+            "gifts": getEquippable("gifts")
+        }
+    }, [idleSim.state, toOpt]);
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "850px", gap: "0.5rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
             <button onClick={onBack}>Go Back</button>
             <span style={{ fontSize: "1.1rem", fontWeight: "bold" }}>
-                Cost: <span style={{ color: canAfford ? null : uiColors.red }}>{toCurrencyStr(data.cost)}</span>
+                Cost: <span style={{ color: canAfford ? null : uiColors.red }}>{toCurrencyStr(`${data.base_cost} + ${data.agent_cost}/Agent`)}</span>
             </span>
         </div>
 
@@ -329,13 +370,19 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
                 Assign Agents ({chosenAgents.length} / {MAX_EXPEDITION_AGENTS})
             </span>
 
-            <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", rowGap: "0.4rem", columnGap: "0.6rem", alignItems: "center" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", rowGap: "0.4rem", columnGap: "0.6rem", alignItems: "center" }}>
                 {agents.map((agentId, i) => {
                     const agent = idleSim.state.agents[agentId];
+
+                    const handleSetGear = (type, x, old) => {
+                        if (old) idleSim.unequipGear(agent.id, type, old);
+                        idleSim.equipGear(agent.id, type, x);
+                    }
+
                     return <React.Fragment key={i}>
                         <AgentMenuSelector
                             value={agent}
-                            setValue={x => setAgents(p => p.map((v, j) => (j === i ? (x ? Number(x) : null) : v)))}
+                            setValue={x => setAgents(p => p.map((v, j) => (j === i ? x : v)))}
                             options={freeAgents}
                             textOnly={true}
                         />
@@ -345,6 +392,28 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
                                     <span><strong>{agent.name}</strong> (Lv. {agent.level})</span>
                                     <span>HP: {Math.round(agent.hp)}/{agent.max_hp}</span>
                                     <span>SP: {formatSp(agent.sp)}</span>
+                                </div>
+                                <div style={{ display: "flex", gap: "2px" }}>
+                                    <GearMenuSelector
+                                        value={toOpt("weapons", agent.weapon)} setValue={x => handleSetGear("weapons", x, agent.weapon)}
+                                        type={"weapons"} options={equippable.weapons}
+                                        styleOverride={{ flex: 5 }}
+                                    />
+                                    <GearMenuSelector
+                                        value={toOpt("armor", agent.armor)} setValue={x => handleSetGear("armor", x, agent.armor)}
+                                        type={"armor"} options={equippable.armor}
+                                        styleOverride={{ flex: 5 }}
+                                    />
+                                    {
+                                        Array.from({ length: 5 }, (x, i) =>
+                                            <GearMenuSelector
+                                                key={`gift-${i}`}
+                                                value={toOpt("gifts", agent.gifts[i])}
+                                                setValue={x => handleSetGear("gifts", x, agent.gifts[i])}
+                                                type={"gifts"} options={equippable.gifts}
+                                                styleOverride={{ flex: 2 }}
+                                            />)
+                                    }
                                 </div>
                                 <StatTable data={getAgentEffectiveStats(idleSim.data, idleSim.state, agent, false)} />
                                 {getAgentGearEffectList(idleSim.data, agent).map((eff, k) => <span key={k}>{eff}</span>)}
@@ -365,7 +434,7 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
                 }}
                 style={{ fontWeight: "bold", cursor: canDispatch ? "pointer" : "not-allowed" }}
             >
-                {!canAfford ? "Insufficient Ahn" : chosenAgents.length === 0 ? "Assign at least 1 agent" : `Start Expedition (${toCurrencyStr(data.cost)})`}
+                {!canAfford ? "Insufficient Ahn" : chosenAgents.length === 0 ? "Assign at least 1 agent" : `Start Expedition (${toCurrencyStr(totalCost)})`}
             </button>
         </div>
     </div>
@@ -406,7 +475,7 @@ function ExpeditionSelectScreen({ idleSim, onSelectExpedition, onBack }) {
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", flex: 1 }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{data.name}</span>
-                                <span style={{ fontWeight: "bold" }}>{toCurrencyStr(data.cost)}</span>
+                                <span style={{ fontWeight: "bold" }}>{toCurrencyStr(`${data.base_cost} + ${data.agent_cost}/Agent`)}</span>
                             </div>
 
                             <div style={{ display: "flex", justifyContent: "space-between", width: "100%", textAlign: "center" }}>

@@ -20,8 +20,17 @@ const CONDITIONS = {
         return numberCompare(val, condition.target, condition.comp);
     },
     random: (data, state, condition) => Math.random() < condition.chance,
-    tick_mod: (data, state, condition) => (state.game_tick ?? state.state?.game_tick) % condition.value === 0,
-    on_kill: (data, state, condition) => state.defeated > 0
+    tick_mod: (data, state, condition) => {
+        const tick = state.game_tick ?? state.state?.game_tick;
+        return tick % condition.value === (condition.offset ?? 0);
+    },
+    on_kill: (data, state, condition) => state.enemyDefeated > 0,
+    target_has_buff: (data, state, condition) => {
+        if (!state.enemyState || state.enemyIndex === undefined) return false;
+        const enemy = state.enemyState[state.enemyIndex];
+        if (!enemy) return false;
+        return (enemy.statuses ?? []).some(st => st.id === condition.id);
+    }
 };
 
 function compileEffects(data, agent) {
@@ -95,16 +104,21 @@ export function resolveGearDamageEffects(data, state, stats, initDamageToEnemy, 
 
 const EXPEDITION_EFFECTS = {
     heal_hp: (data, state, effect) => {
-        state.agent.hp += effect.value
-    },
-    bonus_damage: (data, state, effect) => {
-        state.agent.statuses.push({ "type": "bonus_damage", "affinity": effect.affinity, "value": effect.value, "until": state.state.game_tick + effect.ticks })
+        state.agent.hp += effect.value;
     },
     buff_self: (data, state, effect) => {
-        applyStatus(state.state, state.agent, effect.status);
+        applyStatus(data, state.state, state.agent, effect.status);
     },
     buff_target: (data, state, effect) => {
-        state.enemyState.forEach(enemy => applyStatus(state.state, enemy, effect.status));
+        if (effect.target === "random") {
+            if (state.enemyState.length === 0) return;
+            const enemy = state.enemyState[Math.floor(Math.random() * state.enemyState.length)];
+            applyStatus(data, state.state, enemy, effect.status);
+        } else if (effect.target === "all") {
+            for (const enemy of state.enemyState) {
+                applyStatus(data, state.state, enemy, effect.status);
+            }
+        }
     }
 }
 

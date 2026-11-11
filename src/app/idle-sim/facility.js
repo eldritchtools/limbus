@@ -118,24 +118,14 @@ export function setCycleLength(state, departmentIndex, cycleLength) {
     return nextState;
 }
 
-export function getBuildDepartmentCost(state) {
-    return Math.round(DEPARTMENT_BASE_COST * DEPARTMENT_COST_GROWTH ** (state.departments.length - 1));
-}
-
 export function buildNewDepartment(state) {
-    if (state.departments.length >= MAX_DEPARTMENTS) return null;
-    const cost = getBuildDepartmentCost(state);
-    if (state.currency < cost) return null;
-
-    const nextState = structuredClone(state);
-    nextState.currency -= cost;
-    nextState.departments.push({
-        label: `Department ${nextState.departments.length + 1}`,
+    state.departments.push({
+        label: `Department ${state.departments.length + 1}`,
         cycle_length: 8,
         cycle_block: 0,
         agent_ids: Array.from({ length: MAX_DEPARTMENT_AGENTS }, () => null),
         subject_ids: Array.from({ length: MAX_DEPARTMENT_SUBJECTS }, () => null),
         schedule: {},
     });
-    return nextState;
+    return state;
 }

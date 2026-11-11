@@ -13,6 +13,11 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
         const agent = idleSim.state.agents[Number(id)];
         const effectiveStats = getAgentEffectiveStats(idleSim.data, idleSim.state, agent, false);
         const effectList = getAgentGearEffectList(idleSim.data, agent);
+        const statuses = agent.statuses.map((x, i) => {
+            const st = idleSim.data.statuses[x.id];
+            if (!st) return null;
+            return `${st.name} (${x.value})`
+        }).filter(Boolean);
 
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
             {agent.name}
@@ -24,6 +29,10 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
             </div>
             <StatTable data={effectiveStats} />
             {effectList.map((x, i) => <span key={i} style={{ alignSelf: "start" }}>{x}</span>)}
+            {statuses.length > 0 && <>
+                <span>Statuses:</span>
+                {statuses.join(", ")}
+            </>}
         </div>
     }
 
@@ -40,7 +49,11 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
                 <span>SP Cost: {data.sp_cost}</span>
             </div>
             <StatTable data={data} />
-            {data.desc}
+            <span>{data.desc}</span>
+            {(data.statuses ?? []).map(st => {
+                const status = idleSim.data.statuses[st];
+                return <span key={st} style={{ fontSize: "0.7rem" }}>{status.name}: {status.desc}</span>
+            })}
         </div>
     }
 
@@ -48,10 +61,14 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
         const enemy = idleSim.data.enemies[id];
 
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
-            {enemy.name}
+            <span>{enemy.name}</span>
             <EnemySprite key={id} width={150} height={150} src={enemy.src} />
             <StatTable data={enemy} />
-            {enemy.desc}
+            <span>{enemy.desc}</span>
+            {(enemy.statuses ?? []).map(st => {
+                const status = idleSim.data.statuses[st];
+                return <span key={st} style={{ fontSize: "0.7rem" }}>{status.name}: {status.desc}</span>
+            })}
         </div>
     }
 
@@ -61,7 +78,11 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
             {data.name}
             <StatTable data={data} />
-            {data.desc}
+            <span>{data.desc}</span>
+            {(data.statuses ?? []).map(st => {
+                const status = idleSim.data.statuses[st];
+                return <span key={st} style={{ fontSize: "0.7rem" }}>{status.name}: {status.desc}</span>
+            })}
         </div>
     }
 
@@ -71,7 +92,11 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
             {data.name}
             <StatTable data={data} />
-            {data.desc}
+            <span>{data.desc}</span>
+            {(data.statuses ?? []).map(st => {
+                const status = idleSim.data.statuses[st];
+                return <span key={st} style={{ fontSize: "0.7rem" }}>{status.name}: {status.desc}</span>
+            })}
         </div>
     }
 
@@ -81,7 +106,11 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
             {data.name}
             <GiftSprite width={100} height={100} src={data.src} />
-            {data.desc}
+            <span>{data.desc}</span>
+            {(data.statuses ?? []).map(st => {
+                const status = idleSim.data.statuses[st];
+                return <span key={st} style={{ fontSize: "0.7rem" }}>{status.name}: {status.desc}</span>
+            })}
         </div>
     }
 

@@ -109,6 +109,10 @@ function Item({ idleSim, tab }) {
                     <span style={{ textAlign: "center" }}>
                         {itemData.desc}
                     </span>
+                    {(itemData.statuses ?? []).map(st => {
+                        const status = idleSim.data.statuses[st];
+                        <span key={st} style={{ fontSize: "0.85rem" }}>{status.name}: {status.desc}</span>
+                    })}
                 </> :
                     <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.5rem", padding: "0.5rem" }}>
                         <span style={{ fontWeight: "bold", textAlign: "center" }}>How to Unlock</span>
@@ -130,7 +134,7 @@ function Item({ idleSim, tab }) {
                                             <span style={{ fontWeight: "bold" }}>???</span>;
 
                                         return <li key={i}>
-                                            Research {nameComp} to Lv. {unlock.level} (+{unlock.copies} copies)
+                                            Research {nameComp} to Lv. {unlock.level} (+{unlock.copies} {unlock.copies === 1 ? "copy" : "copies"})
                                         </li>
                                     })}
                                 </ul>

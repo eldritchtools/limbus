@@ -73,7 +73,7 @@ const EVENT_TEXT = {
 
 export function getReportEventText(data, state, event) {
     const tempData = {
-        agentName: state.agents[event.agent_id]?.name ?? `Agent ${event.agent_id}`,
+        agentName: state.agents[event.agent_id]?.name ?? event.name ?? `Agent ${event.agent_id}`,
         subjectName: data.subjects[event.subject_id]?.name,
         event
     }

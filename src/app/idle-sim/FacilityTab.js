@@ -2,13 +2,14 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import React, { useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { MAX_CYCLE_LENGTH } from "./constants";
+import { MAX_CYCLE_LENGTH, OUTCOMES } from "./constants";
 import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
 import { EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { AgentMenuSelector, ScheduleMenuSelector, SubjectMenuSelector } from "./selectors";
 import { getOutcomeChances } from "./simulation";
-import { formatSp } from "./util";
+import { getSubjectPayout } from "./subjects";
+import { formatNumber, formatSp } from "./util";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import DropdownButton from "../components/objects/DropdownButton";
 import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
@@ -145,68 +146,85 @@ function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent
             </div>
         </div>
 
-        <span
-            className="hover-text"
-            style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}
-            {...getGeneralTooltipProps(`The success rate of an agent is based on their effective work efficiency vs the work efficiency requirement of the subject. The effective work efficiency of an agent is computed as their base WE plus the sum of their offense ratings multiplied by the corresponding defense ratings of the subject. SP gives an up to 25% increase or decrease in the final effective work efficiency based on its value. Special effects on gear are not taken into account for these numbers.`)}
-        >
-            Estimated Success Rate
-        </span>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-            Simulated SP:
-            <select value={sp} onChange={e => setSp(e.target.value)}>
-                <option value={"current"}>Current SP</option>
-                <option value={0}>0 SP</option>
-                <option value={45}>45 SP</option>
-                <option value={-45}>-45 SP</option>
-            </select>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${subjects.filter(Boolean).length + 1}, auto)`, gap: "0.5rem", textAlign: "center" }}>
-            <div />
-            {subjects.filter(Boolean).map(subject => <EnemySprite key={subject.id} width={64} height={64} src={subject.src} />)}
-            {agents.filter(Boolean).map(agent => <React.Fragment key={agent.id}>
-                <span>{agent.name}</span>
-                {subjects.filter(Boolean).map(subject => {
-                    const usedAgent = sp === "current" ? agent : { ...agent, sp }
-                    const chances = getOutcomeChances(idleSim.data, idleSim.state, usedAgent, subject);
-                    const good = Math.round(chances.good * 100);
-                    const bad = Math.min(Math.round(chances.bad * 100), 100 - good);
-                    const avg = 100 - good - bad;
-                    return <span key={subject.id}>
-                        <span style={{ color: "#3c9d5d" }}>{good}%</span>/
-                        <span style={{ color: "#d4b43a" }}>{avg}%</span>/
-                        <span style={{ color: "#c0463c" }}>{bad}%</span>
-                    </span>
-                })}
-            </React.Fragment>)}
-        </div>
+        {subjects.filter(Boolean).length > 0 && agents.filter(Boolean).length > 0 ? <>
+            <span
+                className="hover-text"
+                style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}
+                {...getGeneralTooltipProps(`Estimated success rates do not count additional effects or mechanics on agents or subjects. Estimated payout rates do not account for downtime due to incapacitations or panics. More details on the rates can be found in the Manual.`)}
+            >
+                Estimated Success Rate
+            </span>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                Simulated SP:
+                <select value={sp} onChange={e => setSp(e.target.value)}>
+                    <option value={"current"}>Current SP</option>
+                    <option value={0}>0 SP</option>
+                    <option value={45}>45 SP</option>
+                    <option value={-45}>-45 SP</option>
+                </select>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(${subjects.filter(Boolean).length + 1}, auto)`, gap: "0.5rem", textAlign: "center", alignItems: "center", justifyItems: "center" }}>
+                <div />
+                {subjects.filter(Boolean).map(subject => <EnemySprite key={subject.id} width={64} height={64} src={subject.src} />)}
+                {agents.filter(Boolean).map(agent => <React.Fragment key={agent.id}>
+                    <span>{agent.name}</span>
+                    {subjects.filter(Boolean).map(subject => {
+                        const usedAgent = sp === "current" ? agent : { ...agent, sp }
+                        const chances = getOutcomeChances(idleSim.data, idleSim.state, usedAgent, subject);
+                        const good = Math.round(chances.good * 100);
+                        const bad = Math.min(Math.round(chances.bad * 100), 100 - good);
+                        const avg = 100 - good - bad;
 
-        <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Schedule</span>
-        <div style={{ display: "flex", gap: "0.2rem", marginBottom: "0.5rem", alignItems: "center" }}>
-            Cycle Length: <NumberInputWithButtons min={1} max={MAX_CYCLE_LENGTH}
-                value={department.cycle_length} setValue={x => idleSim.setCycleLength(idleSim.uiState.department, x)} />
-        </div>
+                        const basePayout = getSubjectPayout(idleSim.data, subject.id, "avg").currency;
+                        let estPayout = 0;
 
-        <div style={{ display: "grid", gridTemplateColumns: `auto auto repeat(${agents.filter(Boolean).length}, 150px)`, gap: "0.2rem", overflowX: "auto", alignItems: "center", justifyItems: "center" }}>
-            <div />
-            <div />
-            {agents.map((agent, i) => agent &&
-                <span key={`name-${i}`} style={{ fontWeight: "bold" }}>{agent.name}</span>
-            )}
-            {
-                Array.from({ length: department.cycle_length }, (_, i) => <React.Fragment key={`block-${i}`}>
-                    <span>{department.cycle_block === i ? "▶" : ""}</span>
-                    <span style={{ fontSize: "1.2rem", fontWeight: "bold", padding: "4px" }}>{i + 1}</span>
-                    {agents.map((agent, j) => agent &&
-                        <ScheduleMenuSelector key={`sch-${i}-${j}`}
-                            value={department.schedule[agent.id][i]}
-                            setValue={x => idleSim.setScheduleBlock(idleSim.uiState.department, agent.id, i, x)}
-                            options={subjects.filter(Boolean)}
-                        />
-                    )}
-                </React.Fragment>)
-            }
-        </div>
+                        Object.entries(chances).forEach(([outcome, chance]) => {
+                            const mult = OUTCOMES[outcome];
+                            estPayout += basePayout * mult.reward * chance;
+                        })
+
+                        return <div key={subject.id} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <span>
+                                <span style={{ color: "#3c9d5d" }}>{good}%</span>/
+                                <span style={{ color: "#d4b43a" }}>{avg}%</span>/
+                                <span style={{ color: "#c0463c" }}>{bad}%</span>
+                            </span>
+                            <span style={{ fontSize: "0.8rem" }}>~{formatNumber(estPayout)} Ahn/hr</span>
+                            <span style={{ fontSize: "0.8rem" }}>~{formatNumber(estPayout / 100)} XP/hr</span>
+                        </div>
+                    })}
+                </React.Fragment>)}
+            </div>
+
+            <span style={{ fontWeight: "bold", fontSize: "1.2rem", marginTop: "0.5rem" }}>Schedule</span>
+            <div style={{ display: "flex", gap: "0.2rem", marginBottom: "0.5rem", alignItems: "center" }}>
+                Cycle Length: <NumberInputWithButtons min={1} max={MAX_CYCLE_LENGTH}
+                    value={department.cycle_length} setValue={x => idleSim.setCycleLength(idleSim.uiState.department, x)} />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: `auto auto repeat(${agents.filter(Boolean).length}, 150px)`, gap: "0.2rem", overflowX: "auto", alignItems: "center", justifyItems: "center" }}>
+                <div />
+                <div />
+                {agents.map((agent, i) => agent &&
+                    <span key={`name-${i}`} style={{ fontWeight: "bold" }}>{agent.name}</span>
+                )}
+                {
+                    Array.from({ length: department.cycle_length }, (_, i) => <React.Fragment key={`block-${i}`}>
+                        <span>{department.cycle_block === i ? "▶" : ""}</span>
+                        <span style={{ fontSize: "1.2rem", fontWeight: "bold", padding: "4px" }}>{i + 1}</span>
+                        {agents.map((agent, j) => agent &&
+                            <ScheduleMenuSelector key={`sch-${i}-${j}`}
+                                value={department.schedule[agent.id][i]}
+                                setValue={x => idleSim.setScheduleBlock(idleSim.uiState.department, agent.id, i, x)}
+                                options={subjects.filter(Boolean)}
+                            />
+                        )}
+                    </React.Fragment>)
+                }
+            </div>
+        </> :
+            <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>Assign at least 1 subject and 1 agent.</span>
+        }
     </>
 }
 

@@ -78,6 +78,10 @@ function Subject({ idleSim }) {
                     )}
 
                     <span>{subjectData.desc}</span>
+                    {(subjectData.statuses ?? []).map(st => {
+                        const status = idleSim.data.statuses[st];
+                        <span key={st} style={{ fontSize: "0.85rem" }}>{status.name}: {status.desc}</span>
+                    })}
                 </> :
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", padding: "1rem 0" }}>
                         {source && source.unlocked ?
@@ -126,14 +130,16 @@ function Subject({ idleSim }) {
             }
         </div>
 
-        <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
-            <span style={{ fontWeight: "bold" }}>Facility Assignment: </span>
-            {assignment >= 0 ?
-                <button style={{ border: "none" }} onClick={() => idleSim.setUiState({ tab: "facility", department: assignment })}>
-                    {idleSim.state.departments[assignment]?.label} ↗
-                </button> : "Unassigned"
-            }
-        </div>
+        {subjectState &&
+            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
+                <span style={{ fontWeight: "bold" }}>Facility Assignment: </span>
+                {assignment >= 0 ?
+                    <button style={{ border: "none" }} onClick={() => idleSim.setUiState({ tab: "facility", department: assignment })}>
+                        {idleSim.state.departments[assignment]?.label} ↗
+                    </button> : "Unassigned"
+                }
+            </div>
+        }
     </>
 }
 

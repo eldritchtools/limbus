@@ -14,6 +14,11 @@ Everything outside Section 12 is settled design unless a line is marked **Open:*
 
 The game is divided into the following tabs, plus a persistent quest panel.
 
+### 1.0 Terminal & Top Utility Bar
+
+* **Terminal Screen (`IntroScreen`):** A dedicated boot screen shown on startup while facility records are synchronized in the background. It displays operational disclaimers (idle pacing, mandatory break rules), a changelog of recent updates, and a **Facility Catch-up Report Card** summarizing offline progress (hours simulated, revenue, agent XP, and notable incidents). Players can reopen this screen at any time via the "Notices" button in the top bar.
+* **Top Utility Bar:** A persistent header above the main interface displaying current Ahn, last saved time, a manual save trigger, and a button to initiate or resume hiring.
+
 ### 1.1 Reports
 
 A history of recent simulation activity. With one tick per hour and offline catch-up, reviewing what happened is the main way players experience the game.
@@ -45,6 +50,11 @@ Lists the player's equipment and the equipment that can be unlocked, and is wher
 
 Players spend currency to send agents on expeditions consisting of successive enemy encounters.
 
+The interface uses a 3-screen progression:
+1. **Operations Hub:** Displays active expeditions, finished expeditions waiting to be claimed, and pending events.
+2. **Sector Selection:** Displays all available and locked expeditions, their costs, recommended levels, recommended team counts, and recommended sin affinities.
+3. **Mission Prep:** A dedicated pre-deployment info screen for a selected expedition showing wave-by-wave enemy compositions (sprites, names, max HP), recommended affinities, team selection, and launch confirmation.
+
 Expeditions provide agent experience, E.G.O gifts, new subjects, and sometimes events that offer a choice of extra rewards.
 
 ### 1.7 Settings
@@ -57,7 +67,7 @@ Contains game options, including:
 
 ### 1.8 Manual
 
-A static help page in place of an interactive tutorial. It shows the game's real numbers and may embed read-only copies of real display components (a schedule grid, a report timeline, an agent card) with sample data.
+A static reference guide and tutorial handbook presented in a split layout (topic index on the left, documentation on the right). It provides plain-language explanations of game systems, rules of thumb for managers, and an expandable drawer containing exact mathematical formulas and LaTeX equations for min-maxers.
 
 ### 1.9 Quest Panel
 
@@ -68,7 +78,7 @@ A collapsible panel that stays on screen. See Section 9.
 Each player owns a single facility containing multiple departments.
 
 * A new player starts with one department.
-* Additional departments are built by spending currency, and each costs more than the last. Departments cannot be removed.
+* Additional departments are awarded by completing major story campaign milestones.
 * Each department holds up to five agents and four subjects.
 
 Agents and subjects are assigned to departments. Agents can only perform scheduled work on subjects in their own department. An agent belongs to at most one department, and a subject is assigned to at most one department. Assigning one that is already elsewhere moves it, and moving an agent clears their schedule.
@@ -142,9 +152,18 @@ Each agent also has the following current state:
 | Current HP | The agent's remaining health, displayed as a whole number rounded up.               |
 | Current SP | The agent's current sanity, from -45 to +45, displayed to two decimals. Agents start at +45. |
 | Equipment  | The agent's equipped weapon, armor, and E.G.O gifts.                                |
-| Status     | Whether the agent is incapacitated and/or in panic, and when each ends (Section 6.5). |
+| Statuses   | Active condition lockouts, temporary combat modifiers, or persistent traits.        |
 
 All formulas in this document use an agent's *derived* stats, meaning their base stats with equipment applied (Section 3.4).
+
+#### Status Model Architecture
+All statuses track two primary identifiers:
+* **`id` (Mechanical Identity):** Identifies the specific effect or lookup table entry.
+* **`type` (Lifecycle Category):** Enforces how and when the status is evaluated and cleared:
+  * `"incapacitated"`: $0\text{ HP}$. 24-hour work lockout; restores full HP upon recovery.
+  * `"panic"`: $-45\text{ SP}$. 12-hour work lockout; restores $0\text{ SP}$ upon recovery. (Includes variants such as Corrosion).
+  * `"combat"`: Active combat-only statuses. Automatically stripped from participating agents the moment combat concludes (expeditions or facility breaches).
+  * `"persistent"`: Cross-mode statuses that persist across facility and combat until explicitly cured or expired.
 
 ### 3.2 Leveling
 
@@ -156,7 +175,12 @@ Each level-up:
 * Increases work efficiency by 3.
 * Grants 3 points that the player can allocate to offense ratings.
 
-The XP needed to go from level L to L+1 is `120 × L^1.15`, rounded. Excess XP carries over, so one gain can grant several levels. The level cap starts at 30 and is intended to be raised later. XP comes from work (Section 6.2) and expeditions (Section 8.3).
+The XP needed to go from level L to L+1 follows a piecewise curve, rounded to the nearest integer:
+
+* L < 30: 40 × (L − 0.7)^1.4
+* L >= 30: 100 × (L − 0.7)^1.15
+
+This accelerates early progression across the introductory Cantos (1–3) so agents reach the Level 30 milestone in approximately 45 days of idle work (or 3 to 4 weeks with expeditions), while preserving the 1.15 exponent for long-term content expansions (L >= 30). Excess XP carries over, so one gain can grant several levels. The level cap starts at 30 and is intended to be raised later. XP comes from work (Section 6.2) and expeditions (Section 8.3).
 
 ### 3.3 Hiring
 
@@ -196,7 +220,7 @@ Agents have three equipment categories. Weapons and armor are separate item type
 
 Effects from weapons, armor, and gifts all have the same precedence, and how an effect combines with others depends on its type.
 
-**Corrosion.** Some weapons and armor will carry a panic modifier called corrosion that changes what happens when the wearer panics.
+**Corrosion.** Certain weapons and armor carry a panic modifier called Corrosion. Mechanically, Corrosion is categorized under `type: "panic"`. It shares the same trigger (hitting minimum $-45\text{ SP}$) and work-lockout penalty as standard panic, but equipped gear can alter the recovery duration and trigger alternate behavior.
 
 Each copy of an item can be worn by one agent at a time. Gear cannot be changed for agents who are on an expedition or waiting on an event (Section 8.4). Acquisition is described in Section 7.
 
@@ -222,7 +246,7 @@ Enemies are defined separately from subjects (Section 8.5).
 
 Each subject has a research level, starting at 0, and accumulated research XP. This represents the facility's familiarity with the subject, not a change in the subject's own strength.
 
-Research XP is earned through facility work and depends only on the outcome: good gives 2, average gives 1, and bad gives 0. The XP needed to go from level n to n+1 is `(n + 1) × 25`. Every subject uses this same curve, and subjects differ in their maximum level and in what unlocks at which level, so their difficulty and time horizon come from those numbers.
+Research XP is earned through facility work and depends only on the outcome: good gives 2, average gives 1, and bad gives 0. The XP needed to go from level n to n+1 is `(n + 1) × 20`. Every subject uses this same curve, and subjects differ in their maximum level and in what unlocks at which level, so their difficulty and time horizon come from those numbers.
 
 Increasing a subject's research level:
 
@@ -323,7 +347,7 @@ The two are independent and can overlap. An agent who reaches both limits at onc
 
 An agent who is incapacitated or in panic does not work, rest, or recover.
 
-**Permadeath (setting).** When enabled, an agent whose HP reaches 0 is removed permanently instead of being incapacitated. SP collapse still only causes panic.
+**Permadeath (setting).** When enabled, an agent whose HP reaches 0 is removed permanently instead of being incapacitated. SP collapse still only causes panic. **Enabling permadeath eliminates any agents currently incapacitated at 0 HP.**
 
 ## 7. Facility Progression and Equipment Acquisition
 
@@ -351,7 +375,7 @@ Expeditions let players spend currency to send agents on missions outside the fa
 
 An expedition is a series of **waves**. Each wave is a group of enemies that fight at the same time. A wave starts the tick after the previous one is cleared.
 
-* Each expedition has a recommended team size (1 to 5) and a recommended level. The player picks the agents to send (at least 1, at most 5) and pays the cost up front.
+* Each expedition has a recommended team size (1 to 5) and a recommended level. The player picks the agents to send (at least 1, at most 5) and pays the cost up front. Note that the cost of each expedition is a combination of a base fee and a fee per agent included.
 * Agents on an expedition must not be in a department, must not be incapacitated or in panic, and cannot already be on another expedition. The player cannot assign them to a department, change their gear, or spend their points until they come back. Several expeditions can run at the same time with different agents.
 * Expeditions are gauntlets. There are no breaks between waves, so HP carries over and there is no healing. Expedition agents do not rest.
 
@@ -363,6 +387,7 @@ Expeditions run in the same tick loop as the facility, with one tick being one r
 * An agent's damage is scaled by their SP: ±25% at ±45 SP. There is no SP loss per tick unless an enemy's special effect causes it. Enemy damage is not scaled by SP.
 * Agents at 0 HP stop fighting, but they are not incapacitated until the expedition ends. They are then handled as in Section 6.5 (incapacitated, or removed with permadeath).
 * A wave is cleared when all its enemies are at 0 HP. When the last wave is cleared, the expedition succeeds. If the last agent falls first, it fails. If both happen on the same tick, the clear takes priority.
+* An expedition fails if all agents reach 0 HP or if it exceeds 48 ticks without clearing all waves. Failed expeditions grant no rewards.
 
 ### 8.3 Rewards
 
@@ -380,7 +405,7 @@ An expedition can have events, each with a chance of triggering when it is clear
 An event waits for the player and never interrupts the expedition itself.
 
 * An event presents a choice of options, each with effects such as currency, agent XP, healing, or equipment drops. Some options have conditions and cannot be chosen if the conditions are not met. The base expedition reward is always given, and event options add to it. Rewards the player should have to choose between belong in the options.
-* The agents who went are locked until the player chooses (no gear changes, point spending, or reassignment, and no resting), so options cannot be unlocked by changing gear or waiting.
+* When the final wave is cleared, eligibility for triggered event options is evaluated immediately based on the agents' state at that moment. The participating agents are released back to the facility immediately and may begin recovering their HP and SP. The event remains pending in the Expeditions tab for the player to review and claim at their convenience.
 * After choosing, the event shows the effects that were applied until the player dismisses it. A dropped item that was already at its maximum is shown as not granted. The agents are released as soon as the choice is made.
 
 ### 8.5 Enemies
@@ -411,19 +436,25 @@ The game uses real-time hourly ticks and saves player progress.
 
 ## 11. Development Status
 
-**Implemented and tested (core logic):** the tick loop, work resolution, rewards, damage, breaks, incapacitation, panic, permadeath, leveling and research, hiring with catch-up, facility actions, equipment and unlocks, expeditions, events, quests, reports, and saving.
+**Implemented and tested:**
+* Core simulation loop (ticks, work resolution, rewards, damage, breaks, offline catch-up).
+* Department cycles, scheduling, and multi-agent shift rules.
+* Agent leveling, hiring, and catch-up hiring math.
+* User interface for all tabs:
+  * Front Terminal Screen (`IntroScreen`) with offline catch-up summaries and notices.
+  * Top utility bar with quick hiring and department construction.
+  * Facility management, Department editor, and Schedule grid.
+  * Agent roster, landscape inspector, stat point allocator, and gear drawer.
+  * 3-screen Expedition interface (Hub $\rightarrow$ Selection $\rightarrow$ Mission Prep with wave intel).
+  * Research Subjects catalog and Inventory shop/inspectors.
+  * Reports timeline, aggregation range picker, and Notable Events log.
+  * Settings and collapsible Quest bar.
+  * Manual tab with layout, player handbook, and expandable LaTeX formulas.
 
 **Remaining:**
-
-1. **User interface** for every tab and the quest panel.
-2. **Content:** real expeditions and enemies, events, equipment for the later subjects, and quest text.
-3. **The manual.**
-4. **The reports interval and timeline view.**
-5. **Save migrations**, written when the first update needs one.
-
-## 12. Open Design Questions
-
-* What is the final price of an additional department?
+1. Content authoring: subjects, enemies, expedition waves, gear, narrative events, and quest progression trees.
+2. Content balancing (following Appendix B and C guidelines).
+3. Save migrations (when game save schema evolves).
 
 ## Appendix A: Baseline Numbers
 
@@ -434,8 +465,8 @@ These are the current starting values. The starting content is easier than these
 | Tick                      | 1 hour, with a maximum of 168 offline ticks                                                |
 | Agent at level 1          | 100 HP, 25 work efficiency, offense 3 with three affinities at 5                           |
 | Level-up                  | +5 HP, +3 work efficiency, +3 points, level cap 30                                         |
-| Agent XP per level        | `120 × L^1.15`                                                                             |
-| Research                  | Starts at level 0. XP per level `(n + 1) × 25`, with 2 / 1 / 0 XP per good / average / bad result, +1% work efficiency per level |
+| Agent XP per level        | Piecewise: `40 × (L − 0.7)^1.4` for L < 30; `100 × (L − 0.7)^1.15` for L >= 30             |
+| Research                  | Starts at level 0. XP per level `(n + 1) × 20`, with 2 / 1 / 0 XP per good / average / bad result, +1% work efficiency per level |
 | SP range                  | −45 to +45, with a ±25% effect on work efficiency and on expedition damage                 |
 | Outcome odds              | 40 / 40 / 20 (good / average / bad) at ratio 1.0 and 0 SP                                  |
 | Outcome rewards / damage  | Good ×1.25 / ×0.75, average ×1 / ×1, bad ×0.5 / ×1.5                                       |
@@ -496,9 +527,9 @@ Content is described by a **design level T**, the agent level it is built for. A
 | Subject reward multiplier            | Authored on top for special mechanics. It multiplies XP as well as currency.                               |
 | Enemy HP, all waves combined         | About 8 ticks of the recommended team's damage, `8 × n × (30 + 3.75T) × G`                                 |
 | Enemy offense on the field per tick  | About 10% of the recommended team's combined HP, `0.1 × n × (95 + 5T) × G`                                 |
-| Expedition cost                      | `80 x` the requirement                                                                                     |
+| Expedition cost                      | About `80 x` the requirement typically split 50:50 between base and per agent costs                        |
 | Expedition XP per agent              | `5 x` the requirement                                                                                      |
-| Equipment base price                 | Weapon `450 ×` and armor `600 ×` the requirement (about 1.2 and 1.6 days of one agent's income)            |
+| Equipment base price                 | Weapon `450 ×`, armor `600 ×`, and gift `300 ×` the requirement (about 1.2, 1.6, and 0.8 days of one agent's income)            |
 
 Here `n` is the expedition's recommended team size and `T` its recommended level, which set its difficulty.
 
@@ -510,4 +541,6 @@ Example values (expeditions shown for a recommended team of two; they scale in p
 | 10  | 1.19 | 124         | 12              | 49K                  | 1.3K     | 17                     | 7.9K            | 67K          |
 | 30  | 1.57 | 351         | 27              | 138K                 | 3.6K     | 38                     | 22K             | 189K         |
 
-**Pacing.** Roughly, a single agent working design-level subjects at 6 work blocks per 8 spends about 3.5 days per level around level 10 and about 4.5 days per level around level 30, which is about 100 days to level 30. Subjects with a reward multiplier level agents faster.
+**Pacing.** A single agent working design-level subjects at 6 work blocks per 8 spends about 1 day per level early on, about 2.6 days per level around level 10, about 3.8 days per level around level 20, and about 4.5 days per level at level 30. This brings an agent to the launch cap (level 30) in roughly 45 days of baseline work (or ~3 to 4 weeks when participating in expeditions).
+
+For post-launch content (L >= 30), each 5-level Canto milestone takes approximately 23 to 26 days of progression, maintaining a steady cadence of ~4.5 to 5.5 days per level all the way to long-term endgame caps. Subjects with a reward multiplier level agents faster.

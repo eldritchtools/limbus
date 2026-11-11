@@ -2,7 +2,7 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { StatTable } from "./components";
-import { MIN_SP } from "./constants";
+import { MAX_AGENT_LEVEL, MIN_SP } from "./constants";
 import { findAgentDepartment } from "./facility";
 import { gearTypeToText, getAgentEffectiveStats, getEquippedCopies, getOwnedCopies } from "./gear";
 import { GiftSprite } from "./icons";
@@ -54,7 +54,7 @@ function AgentDetails({ idleSim, agent }) {
 
         <div style={{ display: "flex", gap: "0.2rem", justifyContent: "center" }}>
             {editingName ? <>
-                <input value={name} onChange={e => setName(e.target.value)} />
+                <input value={name} onChange={e => {if(e.target.value.length <= 50) setName(e.target.value)}} />
                 <button onClick={() => { setEditingName(false); idleSim.renameAgent(agent.id, name); }} style={{ padding: "2px", border: "none" }}>
                     ✔
                 </button>
@@ -74,7 +74,7 @@ function AgentDetails({ idleSim, agent }) {
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ display: "flex", gap: "1rem", justifyContent: "space-between" }}>
                     <span>Level: {agent.level}</span>
-                    <span>XP: {agent.xp} / {agentXpToNext(agent.level)} </span>
+                    <span>XP: {agent.xp} / {agent.level === MAX_AGENT_LEVEL ? 0 : agentXpToNext(agent.level)} </span>
                 </div>
 
                 <div style={{ height: 3, width: "100%", background: "rgba(0,0,0,0.4)", borderRadius: 2, overflow: "hidden" }}>
@@ -140,7 +140,7 @@ function AgentDetails({ idleSim, agent }) {
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: "0.2rem" }}>
                 <div style={{ display: "flex", gap: "0.2rem" }}>
-                    <div className={styles.clickableTile} style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+                    <div className={styles.clickableTile} style={{ flex: 1, flexDirection: "row", alignItems: "center", width: "160px" }}
                         onClick={() => {
                             if (assignGearType === "weapons") { setAssignGear(null); return; }
                             setAssignGear("weapons"); setSelectedGear(agent.weapon); setCurrentGear(agent.weapon);
@@ -150,7 +150,7 @@ function AgentDetails({ idleSim, agent }) {
                         <Icon path={"offense level"} size={32} />
                         {agent.weapon ? idleSim.data.weapons[agent.weapon].name : "None"}
                     </div>
-                    <div className={styles.clickableTile} style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+                    <div className={styles.clickableTile} style={{ flex: 1, flexDirection: "row", alignItems: "center", width: "160px" }}
                         onClick={() => {
                             if (assignGearType === "armor") { setAssignGear(null); return; }
                             setAssignGear("armor"); setSelectedGear(agent.armor); setCurrentGear(agent.armor);
@@ -304,11 +304,18 @@ function AgentsScreen({ idleSim }) {
                     statusTag = <span style={{ fontSize: "0.9rem", fontWeight: "bold" }}>Incapacitated ({hours}h)</span>;
                 } else if (isPanic) {
                     const hours = panicStatus ? Math.max(0, panicStatus.until - idleSim.state.game_tick) : 0;
-                    statusTag = <span style={{ fontSize: "0.9rem", fontWeight: "bold" }}>Panicked ({hours}h)</span>;
+                    const label = panicStatus.id === "corrosion" ? "Corroded" : "Panicked";
+                    statusTag = <span style={{ fontSize: "0.9rem", fontWeight: "bold" }}>{label} ({hours}h)</span>;
                 }
 
                 const xpToNext = agentXpToNext(agent.level);
                 const xpPercent = Math.min(100, Math.round((agent.xp / xpToNext) * 100));
+
+                const statuses = agent.statuses.map((x, i) => {
+                    const st = idleSim.data.statuses[x.id];
+                    if (!st) return null;
+                    return `${st.name} (${x.value})`
+                }).filter(Boolean);
 
                 return <div key={agent.id} className={className} onClick={() => handleSelectAgent(agent.id)} style={{ position: "relative", width: "100%", maxWidth: "600px" }}>
                     {agent.unspent_points > 0 &&
@@ -338,11 +345,16 @@ function AgentsScreen({ idleSim }) {
 
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
                             <span>Assignment:</span>
-                            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100px" }}>
                                 {assignments[agent.id]}
                             </div>
                         </div>
                     </div>
+
+                    {statuses.length > 0 && <>
+                        <span>Statuses:</span>
+                        {statuses.join(", ")}
+                    </>}
                 </div>
             })}
         </div>

@@ -32,7 +32,8 @@ const CONDITIONS = {
         const enemy = state.enemy ?? state.enemyState[state.enemyIndex];
         enemy.turns_alive = (enemy.turns_alive ?? 0) + 1;
         return enemy.turns_alive >= condition.value;
-    }
+    },
+    on_kill: (data, state, condition) => state.agentDefeated > 0
 };
 
 const DAMAGE_STAT_EFFECTS = {
@@ -58,6 +59,15 @@ const DAMAGE_EFFECTS = {
     bonus_damage: (stats, damage, effect) => {
         if (effect.op === "mul") damage.damageToAgent *= 1 + effect.value;
         else damage.damageToAgent += effect.value;
+    },
+    bonus_damage_taken: (stats, damage, effect) => {
+        if (effect.op === "mul") damage.damageToEnemy *= 1 + effect.value;
+        else damage.damageToEnemy += effect.value;
+    },
+    reflect_damage: (stats, damage, effect) => {
+        for (let i = 0; i < stats.agent.offense.length; i++) {
+            damage.damageToAgent += stats.agent.offense[i] * stats.agent.defense[i] * (effect.value ?? 1);
+        }
     }
 };
 
@@ -76,7 +86,7 @@ export function resolveEnemyDamageEffects(data, state, stats, initDamageToEnemy,
 
 const PRE_DEATH_EFFECTS = {
     buff_self: (data, state, effect) => {
-        applyStatus(state.state, state.enemy, effect.status);
+        applyStatus(data, state.state, state.enemy, effect.status);
     },
     heal_hp: (data, state, effect) => {
         state.enemy.hp += effect.value;
@@ -99,10 +109,27 @@ const TICK_END_EFFECTS = {
     sp_damage: (data, state, effect) => {
         state.agents.forEach(agent => { agent.sp -= effect.value });
     },
-    buff_target_single: (data, state, effect) => {
+    buff_self: (data, state, effect) => {
+        applyStatus(data, state.state, state.enemy, effect.status);
+    },
+    buff_target: (data, state, effect) => {
         if (effect.target === "random") {
             const agent = state.agents[Math.floor(Math.random() * state.agents.length)];
-            applyStatus(state.state, agent, effect.status);
+            applyStatus(data, state.state, agent, effect.status );
+        } else if (effect.target === "all") {
+            for (const agent of state.agents) {
+                applyStatus(data, state.state, agent, effect.status );
+            }
+        }
+    },
+    buff_ally: (data, state, effect) => {
+        if (effect.target === "random") {
+            const enemy = state.enemyState[Math.floor(Math.random() * state.enemyState.length)];
+            applyStatus(data, state.state, enemy, effect.status );
+        } else if (effect.target === "all") {
+            for (const enemy of state.enemyState) {
+                applyStatus(data, state.state, enemy, effect.status );
+            }
         }
     },
     incapacitate_all_agents: (data, state, effect) => {
@@ -117,7 +144,7 @@ export function resolveEnemyTickEndEffects(data, state) {
             const trueEffects = effect.effects.filter(effect => effect.type in TICK_END_EFFECTS);
             if (trueEffects.length === 0) continue;
             if (!checkConditions(data, { ...state, enemy }, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
-            for (const trueEffect of trueEffects) TICK_END_EFFECTS[trueEffect.type]?.(data, state, trueEffect);
+            for (const trueEffect of trueEffects) TICK_END_EFFECTS[trueEffect.type]?.(data, {...state, enemy}, trueEffect);
         }
     }
 }

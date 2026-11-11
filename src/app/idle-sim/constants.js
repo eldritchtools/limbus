@@ -25,13 +25,9 @@ export const NOTABLE_EVENT_TYPES = new Set(["died", "incapacitated", "panic", "l
 export const COUNTED_EVENT_TYPES = new Set(["recovered"]);
 
 // Facility
-export const MAX_DEPARTMENTS = 2;
 export const MAX_DEPARTMENT_AGENTS = 5;
 export const MAX_DEPARTMENT_SUBJECTS = 4;
 export const MAX_CYCLE_LENGTH = 48;
-
-export const DEPARTMENT_BASE_COST = 150_000;
-export const DEPARTMENT_COST_GROWTH = 2.5;
 
 // Agents
 export const MAX_AGENT_LEVEL = 30;

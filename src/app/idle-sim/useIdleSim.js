@@ -25,7 +25,7 @@ export default function useIdleSim() {
         const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5, effects: [] };
         data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, id, ...subject }]));
 
-        const defaultGear = { unlocks: [] };
+        const defaultGear = { max_copies: 5, unlocks: [] };
         data.weapons = Object.fromEntries(Object.entries(data.weapons).map(([id, weapon]) => [id, { ...defaultGear, ...weapon }]));
         data.armor = Object.fromEntries(Object.entries(data.armor).map(([id, armor]) => [id, { ...defaultGear, ...armor }]));
         data.gifts = Object.fromEntries(Object.entries(data.gifts).map(([id, gift]) => [id, { ...defaultGear, ...gift }]));
@@ -233,7 +233,6 @@ export default function useIdleSim() {
             buyGear: (type, id) => { updateState(buyGear(data, stateRef.current, type, id)); },
             equipGear: (agentId, type, id) => { updateState(equipGear(data, stateRef.current, agentId, type, id)); },
             unequipGear: (agentId, type, id) => { updateState(unequipGear(data, stateRef.current, agentId, type, id)); },
-            buildNewDepartment: () => { updateState(buildNewDepartment(stateRef.current)); },
             claimQuest: questId => { updateState(claimQuest(data, stateRef.current, questId)); }
         }
     }, [data, state, updateState, saveGame]);

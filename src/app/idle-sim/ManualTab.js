@@ -18,14 +18,16 @@ const SECTION_CONTENT = {
         guide: `
 ### Overview & Time
 
-Welcome manager! Your job is to hire agents, assign them to departments, schedule work with research subjects, and deploy teams on expeditions to recover equipment and new subjects.
+#### Simulation Ticks
+* Time progresses in real time: **1 real life hour = 1 simulation tick**.
+* Missed ticks are simulated upon login up to a maximum of **168 ticks (7 days)**.
 
-#### How Time Works
-* The game progresses in real time. Exactly **1 real-life hour = 1 simulation tick**.
-* Your facility continues running while you are offline. When you return, the game simulates any missed hours up to a maximum of **168 hours** (7 days).
-
-#### Currency (Ahn)
-Ahn is your primary resource. You earn Ahn whenever agents complete work blocks in the facility. Ahn is spent to recruit agents, purchase equipment copies, expand your facility with new departments, and fund expeditions.
+#### Ahn (Currency)
+Ahn is the game's primary currency. It is earned by completing work on research subjects in departments, and is spent on:
+* Hiring agents.
+* Constructing new departments.
+* Purchasing unlocked equipment.
+* Dispatching expeditions.
 `
     },
 
@@ -33,62 +35,50 @@ Ahn is your primary resource. You earn Ahn whenever agents complete work blocks 
         guide: `
 ### Facility & Schedules
 
-Your facility is divided into departments. Each department holds up to **5 agents** and **4 research subjects**. Agents can only work on subjects assigned to their own department.
+#### Departments
+* The facility starts with 1 department and can be expanded by purchasing additional departments with Ahn.
+* Each department holds up to **5 agents** and **4 research subjects**.
+* Agents can only be assigned to work on subjects located within their own department.
 
-#### Scheduling Work Cycles
-* Each department runs on an independent repeating cycle from **1 to 48 hours (blocks)**. When a cycle reaches its end, it automatically loops back to block 1.
-* In each block, an agent can either be assigned to **Work** on a specific subject, or take a **Break**.
+#### Schedules
+* Each department operates on an independent repeating cycle of **1 to 48 hour blocks**.
+* For each block, an agent can be set to **Work** on an assigned subject or take a **Break**.
 
-#### Break Recovery & Idle Agents
-Agents cannot work continuously without breaking down. Taking a break block restores **20% of Maximum HP** and **15 SP**. 
-
-Agents not assigned to any department and not deployed on an expedition rest automatically on every tick, recovering health and sanity at the standard break rate.
-
-#### Scheduling Strategy & Sustainability
-* **Case-by-Case Pacing:** A schedule of 6 work blocks and 2 break blocks per 8 hours is a good baseline, but it is not universal. Some subjects may have unusually high offense ratings (inflicting heavy HP damage) or unique passive conditions that will shred an agent's health regardless of how low the subject's SP cost is. Adjust your break ratios based on both HP damage and SP cost.
-* **Shift Cycling:** Agents do not need to be locked to a single subject. Rather than having one agent hog a punishing subject and quickly burn out, you can schedule multiple agents to alternate shifts on the difficult subject while working on safer subjects during their off-hours.
+#### Breaks & Idle Recovery
+* Scheduled breaks restore **20% of Maximum HP** and **15 SP**.
+* Agents unassigned to any department (and not on an expedition) rest automatically every tick, recovering at the standard break rate.
 `
     },
 
     work: {
         guide: `
-### Work & Success Rates
+### Work Resolution
 
-Completing a work block yields rewards for your facility and agents, while inflicting damage on the working agent:
-
-#### Rewards Earned
-* **Ahn:** Currency added to your facility funds, scaling with the subject's difficulty.
-* **Agent XP:** Experience granted to the working agent toward their next level.
-* **Research XP:** Familiarity experience granted to the subject toward its next research level.
-
-#### Damage Taken
-* **HP Damage:** Physical damage dealt to the agent based on the subject's offense ratings, mitigated by the agent's defense ratings.
-* **SP Damage:** Sanity damage dealt to the agent based on the subject's SP cost.
-
----
+When an agent completes a scheduled work block on a research subject, they earn rewards while sustaining damage:
+* **Ahn & Agent XP:** Payouts scale based on the subject's WE requirement and overall defenses.
+* **Research XP:** Contributes toward unlocking the subject's next research level.
+* **HP Damage:** Physical damage dealt by the subject's offense ratings, mitigated by the agent's defense multipliers.
+* **SP Damage:** Sanity damage inflicted based on the subject's flat SP cost.
 
 #### Outcome Modifiers
-Every work block resolves as a **Good**, **Average**, or **Bad** outcome, modifying those baseline earnings and damage:
-* **Good:** $+25\\%$ Ahn, $+25\\%$ Agent XP, agent takes $25\\%$ less damage, and the subject gains $+2$ Research XP.
-* **Average:** Standard Ahn and XP, standard damage, $+1$ Research XP.
-* **Bad:** $-50\\%$ Ahn, $-50\\%$ Agent XP, agent takes $+50\\%$ more damage, and $+0$ Research XP.
+Every work block concludes with one of three outcomes, scaling baseline rewards and damage:
+* **Good:** $\\times 1.25$ Ahn, $\\times 1.25$ Agent XP, $\\times 0.75$ damage taken, and $+2$ Research XP.
+* **Average:** Baseline rewards and damage taken, and $+1$ Research XP.
+* **Bad:** $\\times 0.5$ Ahn, $\\times 0.5$ Agent XP, $\\times 1.5$ damage taken, and $+0$ Research XP.
 
-#### What Determines Your Success Rate?
-Your success rate is determined by comparing your agent's **Effective Work Efficiency (WE)** against the subject's **WE Requirement**.
-
-1. **Offense Ratings Add to Work Efficiency:** An agent's Effective WE is not just their base efficiency—**their Offense ratings directly provide bonus Work Efficiency**. Each point of offense is multiplied by the subject's defense multiplier for that affinity:
-   * If an agent has 10 {kw:wrath} Offense, and the subject has $\\times 1.5$ {kw:wrath} Defense, that affinity grants **+15 bonus WE**.
-   * If an agent has 10 {kw:sloth} Offense against a subject with $\\times 0.5$ {kw:sloth} Defense, it only grants **+5 bonus WE**.
-2. **Sanity (SP) Snowball:** Sanity ranges from $-45$ to $+45$. High Sanity provides up to a **+25% bonus** to your final work efficiency ratio. Stressed agents (low SP) suffer up to a **-25% penalty**, which leads to more bad outcomes, higher damage, and further SP loss.
-3. **Research Familiarity:** Each level of research on a subject grants a permanent **+1% work efficiency bonus** to any agent working on it.
+#### Determining Success
+Outcome probabilities depend on comparing the agent's **Effective Work Efficiency (WE)** against the subject's **WE Requirement**. An agent's effective WE is their base WE modified by the following factors:
+* The agent's offense ratings contribute bonus WE. For each affinity, the agent's corresponding offense rating is multiplied by the subject's defense multiplier, then is added to their WE.
+* The agent's current SP modifies the final WE by up to $\\pm 25\\%$ ($+25\\%$ at $+45$ SP and $-25\\%$ at $-45$ SP)
+* Each research level on the subject permanently adds $+1\\%$ to the final WE for any agent working on it.
 `,
         formula: `
 #### Work Resolution Formulas
 
-**1. Effective Work Efficiency (WE)**
+**Effective Work Efficiency (WE)**
 $$ \\text{Effective WE} = \\text{Base WE} + \\sum_{i=1}^7 (\\text{Agent Offense}_i \\times \\text{Subject Defense}_i) $$
 
-**2. Efficiency Ratio & Outcome Probabilities**
+**Efficiency Ratio & Outcome Probabilities**
 $$ \\text{Ratio} = \\frac{\\text{Effective WE}}{\\text{Requirement}} \\times \\left(1 + \\frac{\\text{SP}}{45} \\times 0.25 + \\frac{\\text{Research Level}}{100}\\right) $$
 $$ d = \\text{Ratio} - 1 $$
 
@@ -96,9 +86,10 @@ $$ P(\\text{Good}) = \\text{clamp}(0.40 + 1.2 \\cdot d, \\, 0, \\, 0.95) $$
 $$ P(\\text{Bad}) = \\text{clamp}(0.20 - 1.2 \\cdot d, \\, 0, \\, 0.85) $$
 $$ P(\\text{Average}) = 1 - P(\\text{Good}) - P(\\text{Bad}) $$
 
-**3. Rewards & Damage**
+**Rewards & Damage**
 $$ \\text{Defense Factor} = \\text{clamp}(1.5 - 0.5 \\times \\text{Avg Subject Defense}, \\, 0.5, \\, 1.5) $$
-$$ \\text{Base Payout} = 20 \\times \\text{Requirement} \\times \\text{Defense Factor} \\times \\text{Reward Multiplier} $$
+$$ \\text{Base Payout} = 20 \\times \\text{WE Requirement} \\times \\text{Defense Factor} \\times \\text{Reward Multiplier} $$
+$$ \\text{Ahn} = \\text{Base Payout} \\times \\text{Outcome Multiplier} $$
 $$ \\text{Agent XP} = \\frac{\\text{Base Payout}}{100} \\times \\text{Outcome Multiplier} $$
 
 $$ \\text{HP Damage} = \\sum_{i=1}^7 (\\text{Subject Offense}_i \\times \\text{Agent Defense}_i) \\times \\text{Outcome Damage Mult} $$
@@ -108,32 +99,31 @@ $$ \\text{SP Damage} = \\text{Subject SP Cost} \\times \\text{Outcome Damage Mul
 
     agents: {
         guide: `
-### Agents & Progression
+### Agents
 
-Agents carry out department schedules and fight in expeditions.
+#### Stats & Leveling
+Agents gain XP from work and expeditions. Leveling up grants:
+* **+5 Maximum HP** (and restores 5 HP).
+* **+3 Work Efficiency**.
+* **3 Stat Points** to allocate to offense ratings.
 
-#### Leveling Up
-Agents gain experience from completing work and expeditions. When an agent levels up:
-* Maximum HP increases by **+5** (and restores 5 current HP).
-* Base Work Efficiency increases by **+3**.
-* You receive **3 stat points** to allocate freely to any sin offense affinity.
+#### Hiring
+* Base hiring cost increases per agent owned.
+* Each recruitment generates 3 candidates with 3 randomly boosted affinities (starting at 5 instead of 3). Rerolls cost 10% of the base hire price.
+* Agents can be hired at a higher starting level (up to 3 levels below the player's highest level agent) by paying Ahn for the skipped xp. Skipped stat points are randomly distributed (90% to boosted affinities, 10% to others).
 
-#### Hiring Agents
-* Hiring costs increase based on how many agents you currently own.
-* Each recruitment generates 3 random candidates. Candidates begin with three randomly boosted affinities (starting at 5 instead of 3). You can reroll candidates for 10% of the hire price.
-* **Catch-up Hiring:** You can hire agents starting above Level 1 (up to 3 levels below your highest-leveled agent) by paying extra Ahn for the skipped experience. Points for skipped levels are pre-allocated randomly (90% weighted toward boosted affinities).
-
-#### Incapacitation & Panic
-* **Incapacitation (0 HP):** An agent whose HP drops to 0 is knocked out for **24 ticks (hours)**, restoring to full HP upon recovery.
-* **Panic (-45 SP):** An agent whose sanity collapses to -45 panics for **12 ticks (hours)**, restoring to 0 SP upon recovery.
-* While incapacitated or panicked, an agent skips all work and breaks.
-* **Permadeath:** If enabled in Settings, agents reaching 0 HP die permanently instead of becoming incapacitated.
+#### Incapacitation, Panic & Permadeath
+* **Incapacitation (0 HP):** 24-tick lockout. Restored to maximum HP upon recovery.
+* **Panic (-45 SP):** 12-tick lockout. Restored to 0 SP upon recovery.
+* Incapacitated and panicked agents skip all scheduled work and breaks.
+* **Permadeath:** Setting toggle. When enabled, agents whose HP reaches 0 are permanently deleted instead of incapacitated.
 `,
         formula: `
 #### Agent Progression Formulas
 
-$$ \\text{XP Required for Level } L + 1 = \\text{round}(120 \\times L^{1.15}) $$
-*(Level cap: 30)*
+**XP Required for Level L + 1**
+$$ \\text{Level} < 30: \\text{round}(50 \\times (L - 0.7)^{1.4}) $$
+$$ \\text{Level} \\ge 30: \\text{round}(120 \\times (L - 0.7)^{1.15}) $$
 
 $$ \\text{Base Hire Cost} = 10{,}000 \\times 1.15^N \\quad (N = \\text{currently owned agents}) $$
 $$ \\text{Reroll Cost} = \\text{Base Hire Cost} \\times 0.10 $$
@@ -143,17 +133,17 @@ $$ \\text{Catch-up Surcharge} = \\text{Skipped XP} \\times 100\\text{ Ahn} $$
 
     gear: {
         guide: `
-### Equipment & Unlocks
+### Equipment
 
-Agents can equip three categories of equipment:
-1. **Weapons (1 per agent):** Provide multipliers for each of the 7 sin affinities, scaling the agent's base offense ratings.
-2. **Armor (1 per agent):** Provide defense multipliers against incoming damage. Without armor, an agent takes baseline $\\times 1.0$ damage across all affinities.
-3. **E.G.O Gifts (Up to 5 per agent):** Provide flat stat boosts, resistances, or combat effects. Gifts occupy a dynamic list of up to 5 items—they do not have rigid fixed slots, and equipping pushes into the next available slot.
+Agents have three equipment categories:
+* **Weapons (1 per agent):** Apply multipliers to the agent's base offense ratings across the seven affinities.
+* **Armor (1 per agent):** Set defense multipliers against incoming damage. Agents without armor take baseline $\\times 1.0$ damage across all affinities.
+* **E.G.O Gifts (Up to 5 per agent):** Provide passive effects, stat bonuses, or other unique effects. Duplicate gifts cannot be equipped on the same agent.
 
-#### Acquiring Gear
-* **Subject Research:** Raising a subject's research level unlocks purchase limits for weapons and armor in the Inventory tab.
-* **Expedition Drops:** Many weapons, armor, and gifts drop as rare rewards from expeditions.
-* Each copy of an item can only be worn by one agent at a time.
+#### Purchasing & Limits
+* Raising a subject's research level unlocks purchase limits for its associated weapons and armor in the Inventory.
+* Certain gear and gifts are drop only from expeditions.
+* Each purchased copy can be equipped by one agent at a time. The cost of each additional copy increases per copy owned.
 `,
         formula: `
 #### Equipment Cost Growth
@@ -166,14 +156,20 @@ $$ \\text{Price of Copy } (N + 1) = \\text{Base Price} \\times 1.25^N \\quad (N 
         guide: `
 ### Research Subjects
 
-Subjects are abnormalities, peccatula, and distortions studied in your facility. Working with them yields Ahn, agent XP, and research progress.
+Subjects represent abnormalities and other entities housed in departments. 
 
-#### Research Levels
-Every work block awards Research XP to the subject (+2 for Good, +1 for Average, 0 for Bad).
+#### Subject Stats
+* **Work Efficiency Requirement:** The baseline WE needed for favorable outcomes.
+* **SP Cost:** Base sanity damage inflicted per work block.
+* **Offense Ratings:** Affinity values used to calculate HP damage dealt to agents.
+* **Defense Multipliers:** Multipliers that modify agent offense into bonus Work Efficiency.
 
-Increasing a subject's research level provides two permanent facility benefits:
-1. **Familiarity Bonus:** Grants a permanent **+1% Work Efficiency bonus** per research level to all agents working on that subject.
-2. **Equipment Unlocks:** Unlocks purchase limits for weapons and armor associated with that subject in the Inventory tab.
+#### Research Progression
+Completing work awards Research XP to the subject (+2 for Good, +1 for Average, 0 for Bad).
+
+Advancing a subject's research level provides:
+* Permanent **+1% Work Efficiency** per research level to any agent working on that subject.
+* Unlocks purchase limits for weapons and armor in the Inventory tab.
 `,
         formula: `
 #### Subject Research Progression
@@ -187,21 +183,27 @@ $$ \\text{Research Efficiency Bonus} = +1\\% \\times \\text{Research Level} $$
         guide: `
 ### Expeditions & Combat
 
-Expeditions let you deploy a team of 1 to 5 agents outside the facility to battle through enemy waves.
+Expeditions dispatch teams of 1 to 5 agents outside the facility to fight gauntlets of enemies.
 
-#### Combat Mechanics
-* Combat resolves in the same hourly tick loop as the facility.
-* **Gauntlet:** There is no healing between waves; agents do not take breaks and HP carries over from wave to wave.
-* **Damage Distribution:** Damage is split evenly among opposing targets. Your agents divide their combined damage across all living enemies, and enemies divide their damage across all surviving agents.
-* **Sanity in Combat:** Agent damage scales with Sanity. High SP (+45) increases combat damage dealt by up to **+25%**, while low SP (-45) reduces damage dealt by up to **-25%**. Enemy damage does not scale with SP.
+#### Costs
+Launching an expedition costs a **Base Fee** plus a **Per Agent Fee**.
 
-#### Outcomes
-* **Clear:** Defeating all enemy waves completes the expedition, awarding participating agents XP, item drop chances, and first-clear bonuses (such as unlocking new research subjects).
-* **Failure:** Occurs if all agents reach 0 HP or if the expedition reaches 48 hours. Failed expeditions grant no rewards.
-* **Events:** Certain expeditions can trigger events upon clearing, presenting choices that can grant additional equipment or rewards.
+#### Combat Rules
+* Combat resolves in the same 1-hour tick loop as the facility.
+* HP carries over between waves. Deployed agents do not rest or heal between waves.
+* Damage is split evenly among opposing targets. All agents split their combined damage across all enemies, and all enemies split their damage across all agents.
+* Agent damage is scaled by SP by up to $\\pm 25\\%$ (at $+45$ and $-45$ SP). Enemy damage is not scaled by SP.
+
+#### Resolution & Events
+* **Clear:** Defeating all waves completes the expedition. Successful clears award XP to all participating agents, random item drops, and first clear bonuses.
+* **Failure:** An expedition fails if all agents hit 0 HP or if combat reaches **48 ticks (hours)**. Failed expeditions grant no rewards.
+* **Events:** Certain expeditions can trigger an event upon clearing. Option conditions are evaluated at the moment the expedition ends based on the team's state. Claiming rewards can be done at any time on the Expeditions Tab.
 `,
         formula: `
-#### Expedition Combat Formulas
+#### Expedition Formulas
+
+**Dispatch Cost**
+$$ \\text{Total Cost} = \\text{Base Fee} + (\\text{Per Agent Fee} \\times \\text{Agents Deployed}) $$
 
 **Agent Damage Dealt to Enemy**
 $$ \\text{Damage to Enemy} = \\frac{\\sum_{i=1}^7 (\\text{Agent Offense}_i \\times \\text{SP Mult} \\times \\text{Enemy Defense}_i)}{\\text{Number of Living Enemies}} $$
@@ -223,97 +225,52 @@ export default function ManualTab() {
 
     const handleSelectSection = (id) => {
         setSelectedSection(id);
-        setShowFormulas(false); // Reset formula toggle when switching topics
+        setShowFormulas(false);
     };
 
     const currentContent = SECTION_CONTENT[selectedSection];
 
-    return (
-        <div className={styles.tile} style={{
-            flexDirection: "row",
-            alignItems: "stretch",
-            width: "100%",
-            maxWidth: "1000px",
-            minHeight: "550px",
-            gap: "1rem",
-            padding: "0.75rem",
-            boxSizing: "border-box"
+    return <div className={styles.tile} style={{
+        flexDirection: "row", alignItems: "stretch", width: "100%", maxWidth: "1000px", minHeight: "550px",
+        gap: "1rem", padding: "0.75rem", boxSizing: "border-box"
+    }}>
+        <div style={{
+            display: "flex", flexDirection: "column", gap: "0.3rem", width: "220px", minWidth: "220px",
+            borderRight: "1px var(--primary-border-color) solid", paddingRight: "0.5rem"
         }}>
-            {/* Left Column: Topic List */}
-            <div style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.3rem",
-                width: "220px",
-                minWidth: "220px",
-                borderRight: "1px var(--primary-border-color) solid",
-                paddingRight: "0.5rem"
-            }}>
-                <span style={{ fontWeight: "bold", fontSize: "1.1rem", padding: "0.2rem 0.4rem", marginBottom: "0.2rem" }}>
-                    Manual Index
-                </span>
+            <span style={{ fontWeight: "bold", fontSize: "1.1rem", padding: "0.2rem 0.4rem", marginBottom: "0.2rem" }}>
+                Index
+            </span>
 
-                {SECTIONS.map(sec => {
-                    const isSelected = selectedSection === sec.id;
-                    return (
-                        <div
-                            key={sec.id}
-                            className={styles.clickableTile}
-                            style={{
-                                alignItems: "flex-start",
-                                padding: "0.5rem 0.6rem",
-                                background: isSelected ? "var(--bg-hover)" : undefined,
-                                borderColor: isSelected ? "var(--secondary-border-color)" : undefined
-                            }}
-                            onClick={() => handleSelectSection(sec.id)}
-                        >
-                            <span style={{ fontWeight: isSelected ? "bold" : "normal" }}>{sec.title}</span>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Right Column: Guide Content & Optional Formula Drawer */}
-            <div style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                padding: "0 0.5rem",
-                maxHeight: "750px",
-                overflowY: "auto",
-                overflowX: "hidden",
-                lineHeight: "1.5"
-            }}>
-                {/* Main Tutorial / Handbook Text */}
-                <MarkdownRenderer content={currentContent.guide} />
-
-                {/* Optional Expandable Formula Section */}
-                {currentContent.formula && (
-                    <div style={{
-                        marginTop: "1.2rem",
-                        borderTop: "1px var(--primary-border-color) solid",
-                        paddingTop: "0.75rem",
-                        paddingBottom: "1rem"
-                    }}>
-                        <button
-                            onClick={() => setShowFormulas(prev => !prev)}
-                            style={{
-                                padding: "0.4rem 1rem",
-                                cursor: "pointer",
-                                fontSize: "0.9rem"
-                            }}
-                        >
-                            {showFormulas ? "Hide Formulas & Math ▲" : "Show Formulas & Math ▼"}
-                        </button>
-
-                        {showFormulas && (
-                            <div style={{ marginTop: "0.75rem" }}>
-                                <MarkdownRenderer content={currentContent.formula} />
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
+            {SECTIONS.map(sec => {
+                const isSelected = selectedSection === sec.id;
+                return <div key={sec.id} className={styles.clickableTile}
+                    style={{
+                        alignItems: "flex-start", padding: "0.5rem 0.6rem",
+                        background: isSelected ? "var(--bg-hover)" : undefined,
+                        borderColor: isSelected ? "var(--secondary-border-color)" : undefined
+                    }}
+                    onClick={() => handleSelectSection(sec.id)}
+                >
+                    <span style={{ fontWeight: isSelected ? "bold" : "normal" }}>{sec.title}</span>
+                </div>;
+            })}
         </div>
-    );
+
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 0.5rem", lineHeight: "1.5" }}>
+            <MarkdownRenderer content={currentContent.guide} />
+
+            {currentContent.formula && (
+                <div style={{ marginTop: "1.2rem", borderTop: "1px var(--primary-border-color) solid", paddingTop: "0.75rem", paddingBottom: "1rem" }}>
+                    <button onClick={() => setShowFormulas(prev => !prev)} style={{ cursor: "pointer", fontSize: "0.9rem" }}>
+                        {showFormulas ? "Hide Formulas & Math ▲" : "Show Formulas & Math ▼"}
+                    </button>
+
+                    {showFormulas && <div style={{ marginTop: "0.75rem" }}>
+                        <MarkdownRenderer content={currentContent.formula} />
+                    </div>}
+                </div>
+            )}
+        </div>
+    </div>
 }

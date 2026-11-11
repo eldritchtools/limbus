@@ -27,7 +27,7 @@ export default function HiringTab({ idleSim }) {
             </div>
             {hiring.candidates.map((candidate, i) =>
                 <div key={i} className={styles.clickableTile} style={{ gap: "0.5rem" }}
-                    onClick={() => { idleSim.chooseCandidate(i); idleSim.updateUiState({ tab: "agents", agent: idleSim.state.next_agent_id - 1 }) }}
+                    onClick={() => { idleSim.chooseCandidate(i); idleSim.updateUiState({ tab: "agents", agent: idleSim.state.next_agent_id }) }}
                 >
                     <div style={{ display: "flex", gap: "1rem" }}>
                         <span>Level: {hiring.start_level}</span>

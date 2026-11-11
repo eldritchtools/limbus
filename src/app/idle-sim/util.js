@@ -5,6 +5,10 @@ export function sum(values) {
     return values.reduce((total, value) => total + value, 0);
 }
 
+export function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+}
+
 export function toCurrencyStr(val) {
     return `${val} Ahn`;
 }
@@ -14,11 +18,12 @@ export function formatSp(val) {
 }
 
 export function agentXpToNext(level) {
-    return Math.round(120 * level ** 1.15);
+    if (level < 30) return Math.round(40 * Math.pow(level - 0.7, 1.4));
+    return Math.round(100 * Math.pow(level - 0.7, 1.15));
 }
 
 export function researchXpToNext(level) {
-    return 25 * (level + 1);
+    return 20 * (level + 1);
 }
 
 export function getCurrentLocalTick(offsetMs = 0) {
@@ -68,20 +73,12 @@ export function checkConditions(data, state, conditionsTable, conditions, op = "
 }
 
 export function isAgentOnExpedition(state, agentId) {
-    return state.expeditions.some(expedition => expedition.agent_ids.includes(agentId)) ||
-        state.finished_expeditions.some(expedition => expedition.agent_ids.includes(agentId)) ||
-        state.pending_events.some(event => event.agent_ids.includes(agentId) && !event.result);
+    return state.expeditions.some(expedition => expedition.agent_ids.includes(agentId));
 }
 
 export function findAgentExpedition(state, agentId) {
     for (const expedition of state.expeditions) {
         if (expedition.agent_ids.includes(agentId)) return expedition;
-    }
-    for (const expedition of state.finished_expeditions) {
-        if (expedition.agent_ids.includes(agentId)) return expedition;
-    }
-    for (const event of state.pending_events) {
-        if (event.agent_ids.includes(agentId) && !event.result) return event;
     }
     return null;
 }

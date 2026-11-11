@@ -3,9 +3,7 @@
 import { useMemo } from "react";
 
 import AgentsTab from "./AgentsTab";
-import { MAX_DEPARTMENTS } from "./constants";
 import ExpeditionTab from "./ExpeditionTab";
-import { getBuildDepartmentCost } from "./facility";
 import FacilityTab from "./FacilityTab";
 import HiringTab from "./HiringTab";
 import styles from "./idleSim.module.css";
@@ -19,11 +17,12 @@ import SettingsTab from "./SettingsTab";
 import SubjectsTab from "./SubjectsTab";
 import useIdleSim from "./useIdleSim";
 import { toCurrencyStr } from "./util";
+import NitroAd from "../components/ads/NitroAd";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
 
 function DevPanel({ idleSim }) {
-    if (process.env.NODE_ENV !== "development") return;
+    if (process.env.NODE_ENV !== "development") return null;
     return <div className={styles.tile}>
         {idleSim.error &&
             <span>Error: {idleSim.error}</span>
@@ -48,19 +47,16 @@ export default function IdleSimPage() {
         return Object.values(idleSim.state.agents).some(agent => agent.unspent_points > 0);
     }, [idleSim]);
 
-    const [atMaxDepts, deptCost, canBuildDept] = useMemo(() => {
-        if (!idleSim.loaded) return [false, 0, false];
-
-        const atMaxDepts = idleSim.state.departments.length >= MAX_DEPARTMENTS;
-        const deptCost = getBuildDepartmentCost(idleSim.state);
-        const canBuildDept = !atMaxDepts && idleSim.state.currency >= deptCost;
-        return [atMaxDepts, deptCost, canBuildDept];
-    }, [idleSim]);
-
     if (idleSim.uiState.intro)
         return <IntroScreen idleSim={idleSim} />
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
+
+        <div style={{ width: "100%", textAlign: "center", fontSize: "1.6rem", fontWeight: "bold", letterSpacing: "1px", padding: "1rem 0" }}>
+            L.C. Idle Management Simulator
+        </div>
+
         <DevPanel idleSim={idleSim} />
 
         {idleSim.loaded && <>
@@ -84,21 +80,6 @@ export default function IdleSimPage() {
                         )}
                     >
                         {idleSim.state.hiring ? "Resume Hiring" : "Hire Agent"}
-                    </button>
-
-                    <button
-                        disabled={!canBuildDept}
-                        onClick={() => {
-                            idleSim.buildNewDepartment();
-                            idleSim.updateUiState({ tab: "facility", department: idleSim.state.departments.length });
-                        }}
-                        {...getGeneralTooltipProps(
-                            atMaxDepts
-                                ? `Department limit reached (${MAX_DEPARTMENTS} / ${MAX_DEPARTMENTS}).`
-                                : `Build a new department for ${toCurrencyStr(deptCost)}.\nEach department holds up to 5 agents and 4 subjects.`
-                        )}
-                    >
-                        {atMaxDepts ? "Max Departments Built" : `Build Dept (${toCurrencyStr(deptCost)})`}
                     </button>
 
                     <button onClick={() => idleSim.saveGame()}
