@@ -47,13 +47,19 @@ export const homepageLinks = [
         ]
     },
     {
-        category: "Minigames/Others",
+        category: "Minigames",
         links: [
             { href: "/artwork-guesser", title: "Artwork Guesser", icon: "TakePicture" },
             { href: "/voiceline-guesser", title: "Voiceline Guesser", icon: "Resonate" },
             { href: "/shadow-guesser", title: "Shadow Guesser", icon: "CutbondRyoshu" },
             { href: "/clash-arena", title: "Clash Arena", icon: "DuelEdge" },
             { href: "/community-trivia", title: "Community Trivia Quiz", icon: "MD6LimitBaseN" },
+            { href: "/idle-sim", title: "LC Idle Management Sim", icon: "ObservedPerson" },
+        ]
+    },
+    {
+        category: "Others",
+        links: [
             { href: "/about", title: "About", icon: "KnowledgeExplored" },
             { href: "/support", title: "Support", icon: "MagicalGirlAppear" },
             { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }

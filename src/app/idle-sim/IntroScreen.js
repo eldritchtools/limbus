@@ -77,7 +77,7 @@ export default function IntroScreen({ idleSim }) {
                 • <strong>Real Time Pacing:</strong> Time advances at a fixed rate of <strong>1 real world hour = 1 simulation tick</strong>. The facility simulates up to <strong>7 days (168 hours)</strong> of offline progress while you are away. This game is designed to be checked periodically, not played continuously.
             </div>
             <div>
-                • <strong>Mandatory Breaks:</strong> Agents assigned to continuous work will rapidly deteriorate. Department schedules must balance work with regular breaks to recover HP and SP and avoid long incapacitation lockouts.
+                • <strong>Work Scheduling:</strong> Agents assigned to work will gradually lose HP and SP. Department schedules must balance work with regular breaks to recover HP and SP and avoid incapacitations.
             </div>
             <div>
                 • <strong>Data & Persistence:</strong> Registered account progress is saved to the cloud and syncs across devices. Guest progress is stored locally in your browser and will be lost if site data or cache is cleared.

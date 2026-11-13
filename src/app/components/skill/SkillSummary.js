@@ -83,6 +83,9 @@ function EgoSkillSummary({ egos, type, threadspins, num }) {
         skillData[ego.id].passives.forEach((p, i) => {
             cards.push(<PassiveCard key={`passive-${i}`} passive={p} mini={true} label={"Passive"} />)
         })
+        skillData[ego.id].synergies.forEach((s, i) => {
+            cards.push(<PassiveCard key={`synergy-${i}`} passive={s} mini={true} label={"Synergy"} />)
+        })
     } else if (type === "egoa") {
         chosen.forEach(([ego, ts, rank], i) => {
             skillData[ego.id].awakeningSkills.forEach((skill, j) =>
@@ -99,6 +102,9 @@ function EgoSkillSummary({ egos, type, threadspins, num }) {
         chosen.forEach(([ego, ts, rank]) => {
             skillData[ego.id].passives.forEach(p =>
                 cards.push(<PassiveCard key={`passive-${rank}`} passive={p} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
+            )
+            skillData[ego.id].synergies.forEach(s =>
+                cards.push(<PassiveCard key={`synergy-${rank}`} passive={s} mini={true} label={constructSkillLabel(egoRanks[rank])} />)
             )
         })
     }

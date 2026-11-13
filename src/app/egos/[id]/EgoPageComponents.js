@@ -28,7 +28,9 @@ export function NotesTab({ notes }) {
     </div>
 }
 
-export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCorrosionSkills, passives, prePassives, compareMode, preuptie, serverText, skillBonuses }) {
+export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills, preCorrosionSkills, passives, prePassives, synergies, compareMode, preuptie, serverText, skillBonuses }) {
+    console.log(passives, synergies);
+
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "0.25rem" }}>
         <div className="title-text">Skills</div>
         <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
@@ -69,6 +71,19 @@ export function SkillsTab({ awakeningSkills, preAwakeningSkills, corrosionSkills
                     return <PassiveCard key={i}
                         passive={passive}
                         pre={compareMode ? prePassives[i] : null}
+                        noBorder={true}
+                        serverText={serverText}
+                    />
+                })}
+            </div> :
+            null
+        }
+        {synergies.length > 0 ?
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                <div className="title-text">Synergies</div>
+                {synergies.map((synergy, i) => {
+                    return <PassiveCard key={i}
+                        passive={synergy}
                         noBorder={true}
                         serverText={serverText}
                     />

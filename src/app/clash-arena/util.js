@@ -62,9 +62,9 @@ export function settingsToClient(key) {
     }
 }
 
-export function calculateSkillRange(skill, round, statusData, withExplanation = false, withResult = true) {
+export function calculateSkillRange(clashingData, skill, round, statusData, { withExplanation = false, withResult = true, team = [] } = {}) {
     const uniqueStatuses = Object.fromEntries(statusData.map(({ id, values }) => [id, values[round?.unique_statuses_tier ?? 0]]));
-    const modifiers = (skill.conditionals ?? []).map(x => evaluateConditional(x, round.self, round.target, uniqueStatuses));
+    const modifiers = (skill.conditionals ?? []).map(x => evaluateConditional(x, round.self, round.target, uniqueStatuses, { team }));
 
     const base = skill.base + modifierSum(modifiers, "base");
     const coin = skill.coin + modifierSum(modifiers, "coin");
@@ -75,7 +75,7 @@ export function calculateSkillRange(skill, round, statusData, withExplanation = 
     const max = min + coin * skill.coins;
 
     const result = { min: Math.max(Math.min(min, max), 0), max: Math.max(min, max), base: min, coin: coin };
-    if (withExplanation) result.modifiers = modifiers.map((x, i) => [...x, getExplanation(x, skill.conditionals[i], withResult)])
+    if (withExplanation) result.modifiers = modifiers.map((x, i) => [...x, getExplanation(clashingData, x, skill.conditionals[i], withResult, { team })])
 
     return result;
 }
@@ -98,9 +98,9 @@ export const alerts = {
 }
 
 export function biasText(bias) {
-    if(bias < -3) return "Strong low bias";
-    if(bias < 0) return "Low bias";
-    if(bias === 0) return "No bias";
-    if(bias < 4) return "High bias";
+    if (bias < -3) return "Strong low bias";
+    if (bias < 0) return "Low bias";
+    if (bias === 0) return "No bias";
+    if (bias < 4) return "High bias";
     return "Strong high bias";
 }

@@ -1,11 +1,11 @@
-export function resolveSkills(identity, skills, round) {
+export function resolveSkills(identity, skills, round, counts) {
     return (identity.modifiers || []).reduce((skills, modifier) => {
-        if (!modifierActive(modifier.condition, identity, round)) return skills;
+        if (!modifierActive(modifier.condition, identity, round, counts)) return skills;
         return applySkillEffect(modifier.effect, identity, skills);
     }, skills);
 }
 
-function modifierActive(condition, identity, round) {
+function modifierActive(condition, identity, round, counts) {
     if (condition.type === "status") {
         if (condition.owner === "unique") {
             const status_data = identity.statuses.find(x => x.id === condition.status)
@@ -37,6 +37,12 @@ function modifierActive(condition, identity, round) {
             .length;
 
         return count >= condition.value;
+    }
+
+    if (condition.type === "skills-left") {
+        const sum = counts[0] + counts[1] + counts[2];
+
+        return sum === condition.value;
     }
 
     return false;

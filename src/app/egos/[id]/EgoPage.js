@@ -198,7 +198,7 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
     const [compareMode, setCompareMode] = useState(false);
     const [skillData, setSkillData] = useState({ [uptie]: initSkillData });
 
-    const { awakeningSkills, corrosionSkills, passives } = skillData[uptie];
+    const { awakeningSkills, corrosionSkills, passives, synergies } = skillData[uptie];
     const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } =
         compareMode ? skillData[preuptie] : { awakeningSkills: null, corrosionSkills: null, passives: null }
 
@@ -370,7 +370,7 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
                 <SkillsTab
                     awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
                     corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
-                    passives={passives} prePassives={prePassives}
+                    passives={passives} prePassives={prePassives} synergies={synergies}
                     compareMode={compareMode} preuptie={preuptie}
                     skillBonuses={skillBonuses}
                 />

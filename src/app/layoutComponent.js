@@ -94,6 +94,7 @@ const paths = [
             { path: "/shadow-guesser", title: "Shadow Guesser" },
             { path: "/clash-arena", title: "Clash Arena" },
             { path: "/community-trivia", title: "Community Trivia Quiz" },
+            { path: "/idle-sim", title: "LC Idle Mangement Sim"}
         ]
     },
     {
@@ -124,7 +125,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 7;
+const ANNOUNCEMENT_NUMBER = 8;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -139,9 +140,9 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Hi! I&apos;ve introduced ads to the site to help cover hosting costs and allow me to continue spending time maintaining and improving the site. I&apos;m still figuring out where to place them and how many to have, so you&apos;ll see them move around or get added or removed while I figure out what works. Ideally, I want the ads to be enough for me to be able to keep the site running long term, while making sure they aren&apos;t obstructive to everyone&apos;s experience.
+                        Hi! I&apos;ve just launched a new minigame on the site: <NoPrefetchLink className="text-link" href={"/idle-sim"}>LC Idle Management Sim</NoPrefetchLink>. It&apos;s basically a mix of Lob Corp facility management and Limbus team building, but built as an idle game that you just check in on from time to time. Just an idea I thought would be fun to make. I&apos;ll continue adding content to it if people like it.
                         <br /><br />
-                        Feel free to submit suggestions through the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page if you have ideas or feel certain placements are problematic. There are also settings in the <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> page to customize or remove the ads. You&apos;re free to turn them off, but keeping them on is a free and easy way to support the site. Thanks!
+                        As usual, feel free to submit suggestions through the Discord or the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page if you decide to check it out. Thanks!
                     </span>
                 </div>
 

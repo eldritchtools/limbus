@@ -1,24 +1,24 @@
 "use client";
 
 import TooltipTemplate from "./TooltipTemplate";
-import { useData } from "../DataProvider";
 import Icon from "../icons/Icon";
 import SkillIcon from "../icons/SkillIcon";
 import NamePill from "../objects/NamePill";
 
+import { useClashingData } from "@/app/clash-arena/useClashBattle";
 import { calculateSkillRange } from "@/app/clash-arena/util";
 
 export const CLASH_ARENA_SKILL_TOOLTIP_ID = "clash-arena-skill-tooltip";
 
-function ClashArenaSkillTooltipContent({ identityId, skill, round }) {
-    const [clashingData, clashingDataLoading] = useData("clashing_data");
+function ClashArenaSkillTooltipContent({ identityId, skill, round, team }) {
+    const [clashingData, clashingDataLoading] = useClashingData();
 
     if (clashingDataLoading) return null;
 
     const skillData = clashingData[identityId][skill];
     const statusData = clashingData[identityId].statuses ?? [];
     if (round) {
-        const data = calculateSkillRange(skillData, round, statusData, true, true);
+        const data = calculateSkillRange(clashingData, skillData, round, statusData, { withExplanation: true, withResult: true, team });
 
         return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", gap: "0.2rem" }}>
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -49,7 +49,7 @@ function ClashArenaSkillTooltipContent({ identityId, skill, round }) {
         </div>
     } else {
         const emptySide = { statuses: [], hp: 100, sp: 0, speed: 1 };
-        const data = calculateSkillRange(skillData, { self: emptySide, target: emptySide, unique_statuses: 0 }, statusData, true, false);
+        const data = calculateSkillRange(clashingData, skillData, { self: emptySide, target: emptySide, unique_statuses: 0 }, statusData, { withExplanation: true, withResult: false, team });
 
         return <div style={{ display: "flex", flexDirection: "column", padding: "0.5rem", gap: "0.2rem" }}>
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -84,13 +84,13 @@ export default function ClashArenaSkillTooltip() {
         contentFunc={content => {
             if (!content) return;
             const data = JSON.parse(content);
-            return <ClashArenaSkillTooltipContent identityId={data.identityId} skill={data.skill} round={data.round} />
+            return <ClashArenaSkillTooltipContent {...data} />
         }}
     />
 }
 
-export function getClashArenaSkillTooltipProps(identityId, skill, round) {
-    const content = JSON.stringify({ identityId, skill, round });
+export function getClashArenaSkillTooltipProps(identityId, skill, round, team) {
+    const content = JSON.stringify({ identityId, skill, round, team });
     return {
         "data-tooltip-id": CLASH_ARENA_SKILL_TOOLTIP_ID,
         "data-tooltip-content": content

@@ -11,8 +11,23 @@ import useLocalState from "../lib/useLocalState";
 
 import { triggerGameCompleteGAEvent, triggerGameStartGAEvent } from "@/app/lib/gaEvents";
 
+export function useClashingData() {
+    const [clashingData, clashingDataLoading] = useData("clashing_data");
+    const [identities, identitiesLoading] = useData("identities_mini");
+
+    const data = useMemo(() => {
+        if(clashingDataLoading || identitiesLoading) return null;
+        return Object.fromEntries(Object.entries(clashingData).map(([id, dat]) => {
+            if(dat.type === "id") return [id, {...dat, name: identities[id].name}];
+            else return [id, dat];
+        }))
+    }, [clashingData, clashingDataLoading, identities, identitiesLoading]);
+
+    return [data, clashingDataLoading || identitiesLoading];
+}
+
 export function useClashBattle() {
-    const [clashingData, clashingDataLoading] = useData("clashing_data")
+    const [clashingData, clashingDataLoading] = useClashingData();
     const { room, clashBattle } = useRealtime();
     const { getCustomizationValue } = useSiteCustomization();
     const clientId = useRealtimeClientId();

@@ -83,7 +83,7 @@ export default async function Page({ params }) {
     const notesTab = skillData ? <NotesTab notes={skillData.notes} /> : null;
     const initSkillsTab = <SkillsTab
         awakeningSkills={skillData.awakeningSkills} corrosionSkills={skillData.corrosionSkills}
-        passives={skillData.passives} compareMode={false} serverText={true}
+        passives={skillData.passives} synergies={skillData.synergies} compareMode={false} serverText={true}
     />
 
     const sinnerId = egos[id].sinnerId;

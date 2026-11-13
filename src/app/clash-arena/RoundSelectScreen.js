@@ -25,7 +25,7 @@ export default function RoundSelectScreen({ clashBattle }) {
     const [skillData, skillRange] = useMemo(() => {
         if (!itemId || !skill) return [null, null];
         const skillData = clashBattle.clashingData[itemId][String(skill)]
-        const range = calculateSkillRange(skillData, clashBattle.round, clashBattle.clashingData[itemId].statuses ?? []);
+        const range = calculateSkillRange(clashBattle.clashingData, skillData, clashBattle.round, clashBattle.clashingData[itemId].statuses ?? [], { team: clashBattle.getPlayerIdentities() });
         return [skillData, range];
     }, [itemId, skill, clashBattle]);
 
@@ -168,15 +168,15 @@ export default function RoundSelectScreen({ clashBattle }) {
                                         </span>
                                     </div>
                                 </div> :
-                                resolveSkills(clashBattle.clashingData[id], [1, 2, 3, 4], clashBattle.round)
+                                resolveSkills(clashBattle.clashingData[id], [1, 2, 3, 4], clashBattle.round, clashBattle.skillCounts[id])
                                     .map((skill, index) => {
                                         if (index === 3 && counts[index] === 0) return;
                                         const skillData = clashBattle.clashingData[id][String(skill)];
-                                        const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? []);
+                                        const range = calculateSkillRange(clashBattle.clashingData, skillData, clashBattle.round, clashBattle?.clashingData[id]?.statuses ?? [], { team: clashBattle.getPlayerIdentities() });
                                         return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
                                             <div
                                                 className={`${styles.skillOption} ${counts[index] <= 0 ? styles.disabled : null}`}
-                                                {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round)}
+                                                {...getClashArenaSkillTooltipProps(id, skill, clashBattle.round, clashBattle.getPlayerIdentities())}
                                                 onClick={() => {
                                                     if (counts[index] === 0 || clashBattle.picked) return;
                                                     setItemId(id);
@@ -254,7 +254,7 @@ export default function RoundSelectScreen({ clashBattle }) {
                                         .map(skill => {
                                             const skillData = clashBattle.clashingData[playerEgo][skill];
                                             if (!skillData) return;
-                                            const range = calculateSkillRange(skillData, clashBattle.round, clashBattle?.clashingData[playerEgo]?.statuses ?? []);
+                                            const range = calculateSkillRange(clashBattle.clashingData, skillData, clashBattle.round, clashBattle.clashingData[playerEgo]?.statuses ?? [], { team: clashBattle.getPlayerIdentities() });
                                             return <div key={skill} style={{ display: "flex", flexDirection: "column", gap: "0.2rem", alignItems: "center" }}>
                                                 <div
                                                     className={`${styles.skillOption} ${clashBattle.egoUsed ? styles.disabled : null}`}
