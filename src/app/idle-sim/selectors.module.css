@@ -54,7 +54,6 @@
 
 .selectorItem {
     position: relative;
-    padding: 6px;
     border-radius: 4px;
     cursor: pointer;
     text-align: center;
@@ -74,6 +73,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 4px;
 }
 
 .scheduleTrigger {

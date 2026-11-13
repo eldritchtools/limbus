@@ -28,17 +28,11 @@ export default function ModeSelectScreen({ clashBattle }) {
         <span className="sub-text">Play with up to 100 players. Players draft simultaneously and can pick identities and E.G.O. already picked by other players. Blacklisting phases are unavailable in this mode.</span>
         <span className="sub-text">Note: Performance may be affected when many players are in the same room. The player limit may be adjusted in the future as necessary to maintain server stability.</span>
 
-        <span style={{ textAlign: "center", marginTop: "1rem" }}>Oct 23, 2026 Note</span>
+        <span style={{ textAlign: "center", marginTop: "1rem" }}>Nov 13, 2026 Note</span>
         <p style={{ maxWidth: "1280px", textAlign: "center" }}>
-            The formula used to assign point values to identities has been updated.
+            Identities that gained bonus skills were previously considered too strong due to bonus skill uses being recoverable after a few turns. I previously tried balancing this by giving them gradually increasing turn requirements to get a new skill use.
             <br /> <br />
-            Previously, point values were calculated based on estimated average clash values of their skills. This means S1s were weighed 3x as much as S3s since they had three times as many uses, so identities with weaker S1s had their averages pulled down, making them cost fewer points.
-            <br /> <br />
-            This made sense for games that lasted long enough for most of skills to be consumed. However, it quickly becomes a problem for shorter games where most S1s aren&apos;t even used. Most games currently being played fall under this category, which means S1s are having a disproportionately large impact on point values despite being largely irrelevant. To balance this, S1s, S2s, and S3s all now weigh the same in the calculation.
-            <br /> <br />
-            Additionally, identities that have skill modifiers (ascended skills and bonus skill uses) are currently too strong, so I have increased the bonuses that modifiers gave in the calculation, which should make the affected identities cost more points. Identities that generate bonus skill uses have also been adjusted to generate fewer bonus uses over longer games.
-            <br /> <br />
-            Hopefully, these changes will provide a more balanced experience for everyone.
+            Starting this update, I&apos;ve changed most of these identities to instead gain their bonus skill use after using a certain number of their skills. This means they only get a single bonus skill use and you have to consume their other skills first before unlocking it. Point costs have been adjusted to account for this, so some of these ids may be cheaper to draft.
         </p>
     </div>
 }

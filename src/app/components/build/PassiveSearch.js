@@ -10,7 +10,6 @@ import IdentityIcon from "../icons/IdentityIcon";
 import TierIcon from "../icons/TierIcon";
 import PassiveCard from "../skill/PassiveCard";
 
-import { romanMapping } from "@/app/lib/constants";
 import { paragraphScore } from "@/app/lib/scoring";
 import { replaceStatusesInString } from "@/app/lib/statusReplacement";
 import useLocalState from "@/app/lib/useLocalState";
@@ -50,7 +49,8 @@ export default function PassiveSearch({ setIdentityId, setEgoId }) {
             Object.entries(passives.ego).forEach(([id, list]) => {
                 if (searching) {
                     let score = 0;
-                    list.forEach(({ desc }) => {
+                    const checkList = [...list, ...(passives.ego_s[id] ?? [])];
+                    checkList.forEach(({ desc }) => {
                         const sc = paragraphScore(searchString, replaceStatusesInString(desc, statuses, skillTags));
                         if (sc > score) score = sc;
                     })
@@ -66,7 +66,7 @@ export default function PassiveSearch({ setIdentityId, setEgoId }) {
             .map(([id]) => {
                 if (id[0] === '1') {
                     return <div key={id} className={styles.card} onClick={() => setIdentityId(id)}>
-                        <div style={{ flex: 0 }}>
+                        <div style={{ flex: 0, alignSelf: "center" }}>
                             <IdentityIcon id={id} displayName={true} displayRarity={true} displayUptie={true} size={isMobile ? 72 : 128} />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -82,7 +82,7 @@ export default function PassiveSearch({ setIdentityId, setEgoId }) {
                     </div>
                 } else if (id[0] === '2') {
                     return <div key={id} className={styles.card} onClick={() => setEgoId(id)}>
-                        <div style={{ flex: 0 }}>
+                        <div style={{ flex: 0, alignSelf: "center" }}>
                             <EgoIcon id={id} type={"awaken"} displayName={true} displayRarity={true} size={isMobile ? 72 : 128} />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -90,6 +90,14 @@ export default function PassiveSearch({ setIdentityId, setEgoId }) {
                                 passives.ego[id].map((passive, i) =>
                                     <div key={i} style={{ display: "flex", alignItems: "center" }}>
                                         <TierIcon tier={i === 0 ? 2 : 5} />
+                                        <PassiveCard passive={passive} noBorder={true} />
+                                    </div>
+                                )
+                            }
+                            {
+                                (passives.ego_s[id] ?? []).map((passive, i) =>
+                                    <div key={i} style={{ display: "flex", alignItems: "center" }}>
+                                        <TierIcon tier={1} />
                                         <PassiveCard passive={passive} noBorder={true} />
                                     </div>
                                 )

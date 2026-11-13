@@ -5,29 +5,24 @@ import {
     SP_COMBAT_SWING, MAX_EXPEDITION_TICKS,
 } from "./constants";
 import { resolveGearDamageEffects, resolveGearExpeditionEffects } from "./effects";
-import { resolveEnemyDamageStatEffects, resolveEnemyDamageEffects, resolveEnemyTickEndEffects } from "./enemies";
+import { resolveEnemyDamageStatEffects, resolveEnemyDamageEffects, resolveEnemyTickEndEffects, resolveEnemyPreDeathEffects } from "./enemies";
+import { getEligibleEventOptions } from "./events";
 import { constructEnemyState } from "./expeditions";
 import { getAgentEffectiveStats, } from "./gear";
 import { getSetting } from "./settings";
-import { resolveDamageStatuses } from "./statuses";
-import { resolveSubjectPostWorkEffects, resolveSubjectWorkEffects } from "./subjects";
-import { isAgentOnExpedition, researchXpToNext, sum } from "./util";
-
-function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-}
-
-export function getEffectiveWE(data, state, agent, subject, stats = getAgentEffectiveStats(data, state, agent)) {
-    let result = stats.work_efficiency;
-    for (let i = 0; i < stats.offense.length; i++) {
-        result += stats.offense[i] * subject.defense[i];
-    }
-    return result;
-}
+import { resolveDamageStatStatuses, resolveDamageStatuses, resolveEnemyTickEndStatuses, resolveTickEndStatuses } from "./statuses";
+import { getSubjectPayout, resolveSubjectPostWorkEffects, resolveSubjectWorkEffects, resolveSubjectWorkStatEffects } from "./subjects";
+import { clamp, isAgentOnExpedition, researchXpToNext, sum } from "./util";
 
 export function getOutcomeChances(data, state, agent, subject, stats = getAgentEffectiveStats(data, state, agent)) {
-    const ratioBonus = 1 + (agent.sp / MAX_SP) * SP_EFFICIENCY_SWING + (state.subjects[subject.id].research_level / 100);
-    const ratio = getEffectiveWE(data, state, agent, subject, stats) / subject.we_req * ratioBonus;
+    const ratioBonus = 1 + (agent.sp / MAX_SP) * SP_EFFICIENCY_SWING + (subject.research_level / 100);
+
+    let ewe = agent.work_efficiency;
+    for (let i = 0; i < stats.offense.length; i++) {
+        ewe += stats.offense[i] * subject.defense[i];
+    }
+
+    const ratio = ewe * ratioBonus / subject.we_req;
     const d = ratio - 1;
 
     const good = clamp(0.4 + 1.2 * d, 0, 0.95);
@@ -40,11 +35,6 @@ export function rollOutcome(chances, roll = Math.random()) {
     if (roll < chances.good) return "good";
     if (roll < chances.good + chances.bad) return "bad";
     return "avg";
-}
-
-export function getDefenseFactor(subject) {
-    const averageDefense = sum(subject.defense) / subject.defense.length;
-    return clamp(1.5 - 0.5 * averageDefense, 0.5, 1.5);
 }
 
 function takeBreak(agent) {
@@ -67,37 +57,38 @@ function addResearchXp(research, subject, xp) {
     return research.research_level > startLevel;
 }
 
-function doWork(data, state, agent, subject, report) {
-    const stats = getAgentEffectiveStats(data, state, agent);
-    const outcome = rollOutcome(getOutcomeChances(data, state, agent, subject, stats));
+function doWork(data, state, agent, subjectId, report) {
+    const agentStats = getAgentEffectiveStats(data, state, agent);
+    const subjectData = data.subjects[subjectId];
+    const subjectState = state.subjects[subjectId];
+    const subjectStats = resolveSubjectWorkStatEffects(data, state, agent, subjectData, subjectState);
+    const outcome = rollOutcome(getOutcomeChances(data, state, agent, { research_level: subjectState.research_level, ...subjectStats }, agentStats));
     const mult = OUTCOMES[outcome];
 
-    const payoutBase = PAYOUT_PER_WE * subject.we_req * getDefenseFactor(subject) * subject.reward_mult;
-    const currency = Math.round(payoutBase * mult.reward);
-    const xp = Math.round(payoutBase / 100 * mult.reward);
+    const { currency, xp } = getSubjectPayout(data, subjectId, outcome);
 
     let damage = 0;
-    for (let i = 0; i < subject.offense.length; i++) {
-        damage += subject.offense[i] * stats.defense[i];
+    for (let i = 0; i < subjectStats.offense.length; i++) {
+        damage += subjectStats.offense[i] * agentStats.defense[i];
     }
     agent.hp -= damage * mult.damage;
-    agent.sp -= subject.sp_cost * mult.damage;
+    agent.sp -= subjectData.sp_cost * mult.damage;
     state.currency += currency;
 
     if (addAgentXp(agent, xp)) {
         report.events.push({ type: "level_up", agent_id: agent.id, level: agent.level });
     }
 
-    const research = state.subjects[subject.id];
-    if (addResearchXp(research, subject, mult.subject_xp)) {
-        report.events.push({ type: "research_level_up", subject_id: subject.id, level: research.research_level });
+    const research = state.subjects[subjectId];
+    if (addResearchXp(research, subjectData, mult.subject_xp)) {
+        report.events.push({ type: "research_level_up", subject_id: subjectId, level: research.research_level });
     }
 
-    resolveSubjectWorkEffects(data, state, outcome, agent, subject);
+    resolveSubjectWorkEffects(data, state, outcome, agent, subjectData);
 
     return {
         action: "work",
-        subject_id: subject.id,
+        subject_id: subjectId,
         outcome,
         currency,
         xp,
@@ -119,7 +110,7 @@ function recoverAgents(state, tick, report) {
         if (panic && tick >= panic.until) {
             agent.sp = 0;
             agent.statuses = agent.statuses.filter(x => x.type !== "panic");
-            report.events.push({ type: "recovered", agent_id: agent.id, from: "panic" });
+            report.events.push({ type: "recovered", agent_id: agent.id, from: panic.id ?? "panic" });
         }
     }
 }
@@ -141,7 +132,7 @@ function resolveDepartment(data, state, department, departmentIndex, report) {
 
             if (subject && state.subjects[subjectId] && department.subject_ids.includes(subjectId) && workers < subject.max_agents) {
                 workersBySubject[subjectId] = workers + 1;
-                entry = doWork(data, state, agent, subject, report);
+                entry = doWork(data, state, agent, subjectId, report);
             } else {
                 entry = takeBreak(agent);
             }
@@ -156,7 +147,7 @@ function resolveDepartment(data, state, department, departmentIndex, report) {
 }
 
 function getDamage(offense, defense, attackerState, defenderState) {
-    const { offense: newOffense, defense: newDefense } = resolveDamageStatuses(offense, defense, attackerState, defenderState);
+    const { offense: newOffense, defense: newDefense } = resolveDamageStatStatuses(offense, defense, attackerState, defenderState);
     let damage = 0;
     for (let i = 0; i < newOffense.length; i++) damage += newOffense[i] * newDefense[i];
     return damage;
@@ -208,27 +199,43 @@ function resolveExpedition(data, state, expedition) {
                 damageToAgent
             );
 
-            damageToEnemies[e] += dte;
-            damageToAgents[a] += dta;
+            const dte_fin = resolveDamageStatuses(dte, agents[a], { ...enemy, ...expedition.enemy_state[e] });
+            const dta_fin = resolveDamageStatuses(dta, { ...enemy, ...expedition.enemy_state[e] }, agents[a]);
+
+            damageToEnemies[e] += dte_fin;
+            damageToAgents[a] += dta_fin;
         });
     });
 
-    let defeated = 0;
+    let enemyDefeated = 0;
     expedition.enemy_state.forEach((enemy, e) => {
         enemy.hp -= damageToEnemies[e];
-        if (enemy.hp <= 0) defeated += 1;
+        if (enemy.hp <= 0) {
+            resolveEnemyPreDeathEffects(data, { state, enemy });
+            if (enemy.hp <= 0) {
+                enemyDefeated += 1;
+            }
+        }
     })
 
     expedition.enemy_state = expedition.enemy_state.filter(enemy => enemy.hp > 0);
 
+    let agentDefeated = 0;
     agents.forEach((agent, a) => {
+        if (agent.hp > 0 && damageToAgents[a] > agent.hp) agentDefeated += 1;
         agent.hp -= damageToAgents[a];
     });
 
     expedition.ticks += 1;
 
-    resolveEnemyTickEndEffects(data, { state, enemyState: expedition.enemy_state });
-    resolveGearExpeditionEffects(data, { state, enemyState: expedition.enemy_state, agents, defeated });
+    resolveEnemyTickEndStatuses(data, state, expedition.enemy_state);
+    for (const enemy of expedition.enemy_state) {
+        if (!enemy.statuses) continue;
+        enemy.statuses = enemy.statuses.filter(status => status.until === undefined || status.until > state.game_tick);
+    }
+
+    resolveEnemyTickEndEffects(data, { state, enemyState: expedition.enemy_state, agents, enemyDefeated, agentDefeated });
+    resolveGearExpeditionEffects(data, { state, enemyState: expedition.enemy_state, agents, enemyDefeated, agentDefeated });
 
     const cleared = expedition.enemy_state.length === 0;
     const anyAgentUp = agents.some(agent => agent.hp > 0);
@@ -274,6 +281,12 @@ function finishExpedition(data, state, expedition, result) {
 
     state.finished_expeditions.push(expedition);
 
+    for (const agentId of expedition.agent_ids) {
+        const agent = state.agents[agentId];
+        if (!agent) continue;
+        agent.statuses = agent.statuses.filter(st => st.type !== "combat");
+    }
+
     if (result === "failed") return;
 
     const expeditionData = data.expeditions[expedition.expedition_id];
@@ -294,6 +307,7 @@ function finishExpedition(data, state, expedition, result) {
             if (rand > 0) continue;
 
             expedition.event = event.id;
+            expedition.eligible_options = getEligibleEventOptions(data, state, expedition.agent_ids, event.id);
             break;
         }
     }
@@ -319,12 +333,6 @@ function restUnassignedAgents(state) {
     for (const expedition of state.expeditions) {
         for (const agentId of expedition.agent_ids) assigned.add(agentId);
     }
-    for (const expedition of state.finished_expeditions) {
-        for (const agentId of expedition.agent_ids) assigned.add(agentId);
-    }
-    for (const event of state.pending_events) {
-        for (const agentId of event.agent_ids) assigned.add(agentId);
-    }
 
     for (const agent of Object.values(state.agents)) {
         if (!assigned.has(agent.id) && !isAgentOnExpedition(state, agent.id) && canWork(agent) && agent.hp > 0) {
@@ -346,14 +354,15 @@ function removeAgent(state, agent, report) {
 
 function finishTick(state, tick, report) {
     const dead = [];
-    const onExpedition = new Set(state.expeditions.flatMap(expedition => expedition.agent_ids));
+    const onExpedition = new Set();
+    state.expeditions.forEach(exp => exp.agent_ids.forEach(id => onExpedition.add(id)));
 
     for (const agent of Object.values(state.agents)) {
         agent.hp = clamp(agent.hp, 0, agent.max_hp);
         agent.sp = clamp(agent.sp, MIN_SP, MAX_SP);
 
         agent.statuses = agent.statuses.filter(status =>
-            status.type === "incapacitated" || status.type === "panic" || status.until > tick);
+            status.type === "incapacitated" || status.type === "panic" || status.until === undefined || status.until > tick);
 
         if (onExpedition.has(agent.id)) continue;
 
@@ -362,13 +371,13 @@ function finishTick(state, tick, report) {
                 dead.push(agent);
                 continue;
             } else if (!isIncapacitated(agent)) {
-                agent.statuses.push({ type: "incapacitated", until: tick + 1 + INCAPACITATION_TICKS });
+                agent.statuses.push({ id: "incapacitated", type: "incapacitated", until: tick + 1 + INCAPACITATION_TICKS });
                 report.events.push({ type: "incapacitated", agent_id: agent.id });
             }
         }
 
         if (agent.sp <= MIN_SP && !isPanicked(agent)) {
-            agent.statuses.push({ type: "panic", until: tick + 1 + PANIC_TICKS });
+            agent.statuses.push({ id: "panic", type: "panic", until: tick + 1 + PANIC_TICKS });
             report.events.push({ type: "panic", agent_id: agent.id });
         }
     }
@@ -380,7 +389,7 @@ function runTick(data, state) {
     const tick = state.game_tick;
     const report = { tick, entries: [], events: [] };
 
-    recoverAgents(state, tick, report);
+    restUnassignedAgents(state);
 
     for (let i = 0; i < state.departments.length; i++) {
         resolveDepartment(data, state, state.departments[i], i, report);
@@ -389,8 +398,11 @@ function runTick(data, state) {
 
     resolveExpeditions(data, state);
 
-    restUnassignedAgents(state);
+    resolveTickEndStatuses(data, state, Object.values(state.agents));
+
     finishTick(state, tick, report);
+
+    recoverAgents(state, tick + 1, report);
 
     state.reports.push(report);
     if (state.reports.length > MAX_REPORTS) {
@@ -403,6 +415,8 @@ function runTick(data, state) {
 export function simulateTick(data, state) {
     const nextState = structuredClone(state);
     runTick(data, nextState);
+    if (Object.values(nextState.agents).some(a => isNaN(a.hp))) return null;
+    nextState.cleared_expeditions = nextState.cleared_expeditions.filter(x => x !== "X-14")
     return nextState;
 }
 

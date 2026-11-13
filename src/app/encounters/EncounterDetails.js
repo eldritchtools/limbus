@@ -10,6 +10,7 @@ import Icon from "../components/icons/Icon";
 import IdentityIcon from "../components/icons/IdentityIcon";
 import KeywordIcon from "../components/icons/KeywordIcon";
 import StatusIcon from "../components/icons/StatusIcon";
+import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import Status from "../components/objects/Status";
 import PassiveCard from "../components/skill/PassiveCard";
@@ -139,18 +140,18 @@ function TargetComponent({ target }) {
     </div>
 }
 
-function BuffComponent({ id }) {
-    const [statuses, statusesLoading] = useData("statuses");
-    if (statusesLoading || !(id in statuses)) return null;
-
-    return <div className="panel-container" style={{ width: "min(800px, 90vw)" }}>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "1rem", fontWeight: "bold" }}>
-            <StatusIcon status={statuses[id]} style={{ display: "inline-block", width: "1.5rem", height: "1.5rem", marginRight: "4px" }} />
-            <span>{statuses[id].name}</span>
-        </div>
-        <div style={{ display: "inline-block", lineHeight: "1.5", textWrap: "wrap", whiteSpace: "pre-wrap", textAlign: "start" }}>
-            <span>{statuses[id].desc}</span>
-        </div>
+function BuffComponent({ allyBuffs, enemyBuffs }) {
+    return <div className="panel-container" style={{ display: "grid", gridTemplateColumns: "auto minmax(100px, 600px)", alignItems: "center", gap: "0.5rem" }}>
+        <span style={{ textAlign: "end" }}>Ally Buffs:</span>
+        {allyBuffs.length > 0 ?
+            <MarkdownRenderer content={allyBuffs.map(x => `{st:${x}}`).join(", ")} /> :
+            <span style={{ opacity: 0.8 }}>None</span>
+        }
+        <span style={{ textAlign: "end" }}>Enemy Buffs:</span>
+        {enemyBuffs.length > 0 ? 
+            <MarkdownRenderer content={enemyBuffs.map(x => `{st:${x}}`).join(", ")} /> :
+            <span style={{ opacity: 0.8 }}>None</span>
+        }
     </div>;
 }
 
@@ -176,21 +177,27 @@ export default function EncounterDetails({ data }) {
     </div>
 
     let targetsData = data, battles = null, waves = null, phases = null;
+    const allyBuffs = [...(targetsData.allyBuffs ?? [])];
+    const enemyBuffs = [...(targetsData.enemyBuffs ?? [])];
     if ("battles" in targetsData && targetsData.battles[battle]) {
         battles = targetsData.battles.length;
         targetsData = targetsData.battles[battle];
+        allyBuffs.push(...(targetsData.allyBuffs ?? []));
+        enemyBuffs.push(...(targetsData.enemyBuffs ?? []));
     }
     if ("waves" in targetsData && targetsData.waves[wave]) {
         waves = targetsData.waves.length;
         targetsData = targetsData.waves[wave];
+        allyBuffs.push(...(targetsData.allyBuffs ?? []));
+        enemyBuffs.push(...(targetsData.enemyBuffs ?? []));
     }
     if ("phases" in targetsData && targetsData.phases[phase]) {
         phases = targetsData.phases.length;
         targetsData = targetsData.phases[phase];
+        allyBuffs.push(...(targetsData.allyBuffs ?? []));
+        enemyBuffs.push(...(targetsData.enemyBuffs ?? []));
     }
 
-    const allyBuffs = targetsData.allyBuffs ?? [];
-    const enemyBuffs = targetsData.enemyBuffs ?? [];
     const targets = targetsData.targets;
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "0.5rem" }}>
@@ -250,15 +257,7 @@ export default function EncounterDetails({ data }) {
                 </div>
             }
 
-            {allyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
-                <h3 style={{ margin: "0.2rem 0", textAlign: "center" }}>Ally Buffs</h3>
-                {allyBuffs.map(id => <BuffComponent key={id} id={id} />)}
-            </div> : null}
-
-            {enemyBuffs.length > 0 ? <div style={{ display: "flex", flexDirection: "column" }}>
-                <h3 style={{ margin: "0.2rem 0", textAlign: "center" }}>Enemy Buffs</h3>
-                {enemyBuffs.map(id => <BuffComponent key={id} id={id} />)}
-            </div> : null}
+            {(allyBuffs.length > 0 || enemyBuffs.length > 0) && <BuffComponent allyBuffs={allyBuffs} enemyBuffs={enemyBuffs} />}
 
             {targets &&
                 <div style={{ overflowX: "auto", overflowY: "hidden", maxWidth: "100%" }}>

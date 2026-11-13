@@ -82,23 +82,23 @@ function ComparisonCard({ ego, skillList, compareType }) {
                 Release Date: {ego.date}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(8, max-content)", gap: "0.2rem", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-            <div />
-            {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
-                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <KeywordIcon id={affinity} style={{ width: "32px" }} />
-                </div>
-            )}
-            <div style={{ textAlign: "end" }}>Cost:</div>
-            {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
-                !ego.cost[affinity] ?
-                    <span key={i + 7} style={{ color: "var(--disabled-text-color)" }}>x0</span> :
-                    <span key={i + 7}>x{ego.cost[affinity]}</span>
-            )}
-            <div style={{ textAlign: "end" }}>Res:</div>
-            {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
-                <span key={i + 14}><ColoredResistance resist={ego.resists[affinity]} /></span>
-            )}
-        </div>
+                <div />
+                {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
+                    <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <KeywordIcon id={affinity} style={{ width: "32px" }} />
+                    </div>
+                )}
+                <div style={{ textAlign: "end" }}>Cost:</div>
+                {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
+                    !ego.cost[affinity] ?
+                        <span key={i + 7} style={{ color: "var(--disabled-text-color)" }}>x0</span> :
+                        <span key={i + 7}>x{ego.cost[affinity]}</span>
+                )}
+                <div style={{ textAlign: "end" }}>Res:</div>
+                {["wrath", "lust", "sloth", "gluttony", "gloom", "pride", "envy"].map((affinity, i) =>
+                    <span key={i + 14}><ColoredResistance resist={ego.resists[affinity]} /></span>
+                )}
+            </div>
         </div>
 
         return <ComparisonCardBase ego={ego} content={content} />
@@ -111,7 +111,7 @@ function ComparisonCard({ ego, skillList, compareType }) {
                     <SkillCard skill={skill.data} mini={true} label={constructSkillLabel("awakening")} /> :
                     type === "cor" ?
                         <SkillCard skill={skill.data} mini={true} label={constructSkillLabel("corrosion")} /> :
-                        <PassiveCard passive={skill} mini={true} label={constructSkillLabel("passive")} />
+                        <PassiveCard passive={skill} mini={true} label={constructSkillLabel(type === "pas" ? "passive" : "synergy")} />
                 }
             </div>)}
         </div>
@@ -494,7 +494,12 @@ const getSkillList = (ego, t, skillData) => {
             ...getSkillList(ego, "awa", skillData),
             ...getSkillList(ego, "cor", skillData)
         ]
-    if (t === "pas") return skillData.passives.map(passive => ["pas", passive])
+    if (t === "pas")
+        return [
+            ...skillData.passives.map(passive => ["pas", passive]),
+            ...skillData.synergies.map(synergy => ["syn", synergy])
+        ]
+
     return []
 }
 

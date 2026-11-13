@@ -109,8 +109,8 @@ export function ModalProvider({ children }) {
         openModal("updateHistory", { date, title, path, old });
     }
 
-    const openChoiceEventModal = ({ choiceEvent }) => {
-        openModal("choiceEvent", { choiceEvent });
+    const openChoiceEventModal = ({ id, choiceEvent }) => {
+        openModal("choiceEvent", { id, choiceEvent });
     }
 
     const openSetFavoriteLinksModal = ({ currentList, setFavoriteLinks }) => {

@@ -1,6 +1,7 @@
 import Status from "../components/objects/Status";
+import { sinnerIdMapping } from "../lib/constants";
 
-export function evaluateConditional(conditional, self, target, uniqueStatuses) {
+export function evaluateConditional(conditional, self, target, uniqueStatuses, opts) {
     switch (conditional.type) {
         case "status": {
             const total = conditional.status.reduce((sum, status) => {
@@ -234,10 +235,18 @@ export function evaluateConditional(conditional, self, target, uniqueStatuses) {
 
             return [conditional.target, value];
         }
+
+        case "status-and-id-drafted": {
+            if ((opts.team ?? []).includes(String(conditional.id))) {
+                return evaluateConditional({ ...conditional, type: "status" }, self, target, uniqueStatuses, opts);
+            } else {
+                return [conditional.target, 0];
+            }
+        }
     }
 }
 
-export function getExplanation(modifier, conditional, withResult) {
+export function getExplanation(clashingData, modifier, conditional, withResult) {
     const displayStyle = {};
     const [, value] = modifier;
 
@@ -296,7 +305,7 @@ export function getExplanation(modifier, conditional, withResult) {
                 {conditional.value !== conditional.max && ` (max ${conditional.max})`}
                 {withResult ? `: +${value}` : null}
             </div>;
-            
+
         case "status-low":
             return <div style={displayStyle}>
                 {formatTarget(conditional)}
@@ -535,6 +544,38 @@ export function getExplanation(modifier, conditional, withResult) {
                 {formatTarget(conditional)}
                 {` for every ${conditional.per} sp`}
                 {conditional.owner === "self" ? " on self" : " on target"}
+                {withResult ? `: +${value}` : null}
+            </div>;
+
+        case "status-and-id-drafted": 
+            const sinnerId = Number(String(conditional.id).substring(1, 3));
+
+            return <div style={displayStyle}>
+                {formatTarget(conditional)}
+                {
+                    conditional.value === conditional.max ?
+                        ` at ${conditional.per}+ ` :
+                        ` for every ${conditional.per} `
+                }
+                {conditional.status.reduce((acc, status, i) => {
+                    const component =
+                        <span key={acc.length}>
+                            <Status id={status.status} />
+                            {status.owner === "unique" ?
+                                "" :
+                                <>
+                                    {status.type === "Potency" ? " Potency" : " Count"}
+                                    {status.owner === "self" ? " on self" : " on target"}
+                                </>
+                            }
+                        </span>
+
+                    if (acc.length > 0) acc.push(<span key={`${i}-space`}> + </span>)
+                    acc.push(component);
+                    return acc;
+                }, [])}
+                {conditional.value !== conditional.max && ` (max ${conditional.max})`}
+                {`. ${clashingData[conditional.id].name} ${sinnerIdMapping[sinnerId]} must be drafted`}
                 {withResult ? `: +${value}` : null}
             </div>;
     }

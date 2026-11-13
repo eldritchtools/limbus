@@ -8,6 +8,7 @@ import { assignAgent, assignSubject, buildNewDepartment, renameDepartment, setCy
 import { buyGear, equipGear, unequipGear } from "./gear";
 import { chooseCandidate, rerollCandidates, startHiring } from "./hiring";
 import { claimQuest } from "./quests";
+import { summarizeReports } from "./reports";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
 import { getSetting, setSetting } from "./settings";
 import { simulateTick, simulateUntil } from "./simulation";
@@ -24,7 +25,7 @@ export default function useIdleSim() {
         const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5, effects: [] };
         data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, id, ...subject }]));
 
-        const defaultGear = { unlocks: [] };
+        const defaultGear = { max_copies: 5, unlocks: [] };
         data.weapons = Object.fromEntries(Object.entries(data.weapons).map(([id, weapon]) => [id, { ...defaultGear, ...weapon }]));
         data.armor = Object.fromEntries(Object.entries(data.armor).map(([id, armor]) => [id, { ...defaultGear, ...armor }]));
         data.gifts = Object.fromEntries(Object.entries(data.gifts).map(([id, gift]) => [id, { ...defaultGear, ...gift }]));
@@ -37,12 +38,14 @@ export default function useIdleSim() {
     const { user, loading: authLoading } = useAuth();
 
     const [state, setState] = useState(null);
-    const [uiState, setUiState] = useState({ tab: "reports" });
+    const [uiState, setUiState] = useState({ intro: true, tab: "reports" });
     const [revision, setRevision] = useState(null);
     const [loaded, setLoaded] = useState(false);
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
     const [error, setError] = useState(null);
+
+    const [catchupSummary, setCatchupSummary] = useState(null);
 
     const stateRef = useRef(null);
     const dirtyRef = useRef(false);
@@ -53,10 +56,10 @@ export default function useIdleSim() {
     const userId = user?.id ?? null;
     const loadedForRef = useRef(undefined);
 
-    const updateState = useCallback(nextState => {
+    const updateState = useCallback((nextState, markDirty = true) => {
         if (!nextState) { console.warn("Action rejected"); return; }
         stateRef.current = nextState;
-        dirtyRef.current = true;
+        if (markDirty) dirtyRef.current = true;
         setState(nextState);
     }, []);
 
@@ -98,9 +101,19 @@ export default function useIdleSim() {
             const result = user ? await loadDBGame() : await loadLocalGame();
             clockOffsetRef.current = getClockOffset(result.serverTime);
             const initialState = { ...createInitialState(result.serverTick), ...result.state };
-            const nextState = simulateUntil(data, initialState, result.serverTick);
 
-            updateState(nextState);
+            const startTick = initialState.game_tick;
+            const nextState = simulateUntil(data, initialState, result.serverTick);
+            const ticksSimulated = nextState.game_tick - startTick;
+
+            if (ticksSimulated > 0 && result.state) {
+                const summary = summarizeReports(nextState.reports, startTick, nextState.game_tick - 1);
+                setCatchupSummary(summary);
+            } else {
+                setCatchupSummary(null);
+            }
+
+            updateState(nextState, false);
             revisionRef.current = result.revision;
             setRevision(result.revision);
             setLoaded(true);
@@ -128,6 +141,25 @@ export default function useIdleSim() {
             setError("Failed to reset game.");
         }
     }, [user, loadGame]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (dirtyRef.current) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (dirtyRef.current && stateRef.current) {
+                saveGame();
+            }
+        };
+    }, [saveGame]);
 
     const forceTick = useCallback(async () => {
         if (process.env.NODE_ENV !== "development") return;
@@ -184,7 +216,7 @@ export default function useIdleSim() {
             setSetting: (setting, value) => { updateState(setSetting(stateRef.current, setting, value)) },
             renameAgent: (agentId, name) => { updateState(renameAgent(stateRef.current, agentId, name)) },
             renameDepartment: (departmentIndex, name) => { updateState(renameDepartment(stateRef.current, departmentIndex, name)) },
-            startHiring: level => { updateState(startHiring(stateRef.current, level)) },
+            startHiring: level => { updateState(startHiring(stateRef.current, level)); saveGame(); },
             rerollCandidates: () => { updateState(rerollCandidates(stateRef.current)) },
             chooseCandidate: index => { updateState(chooseCandidate(stateRef.current, index)) },
             assignAgentPoints: (agentId, points) => { updateState(assignAgentPoints(stateRef.current, agentId, points)) },
@@ -201,13 +233,12 @@ export default function useIdleSim() {
             buyGear: (type, id) => { updateState(buyGear(data, stateRef.current, type, id)); },
             equipGear: (agentId, type, id) => { updateState(equipGear(data, stateRef.current, agentId, type, id)); },
             unequipGear: (agentId, type, id) => { updateState(unequipGear(data, stateRef.current, agentId, type, id)); },
-            buildNewDepartment: () => { updateState(buildNewDepartment(stateRef.current)); },
             claimQuest: questId => { updateState(claimQuest(data, stateRef.current, questId)); }
         }
-    }, [data, state, updateState])
+    }, [data, state, updateState, saveGame]);
 
     return {
-        uiState, setUiState, updateUiState,
+        catchupSummary, uiState, setUiState, updateUiState,
         state, data, loaded, saving, error, lastSaved,
         updateState, loadGame, saveGame, resetGame, forceTick,
         ...functions

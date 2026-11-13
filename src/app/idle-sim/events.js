@@ -4,15 +4,15 @@ import { getAffinityIndex } from "./util";
 const CONDITIONS = {
     agent_any_offense: (data, state, agents, condition) => {
         return agents.some(agent => {
-            const stats = getAgentEffectiveStats(data, state, agent);
-            return condition.affinities.some(affinity => stats.offense[getAffinityIndex(affinity)] >= condition.value);
+            const stats = getAgentEffectiveStats(data, state, agent, false);
+            return condition.affinities.some(affinity => stats.offense[getAffinityIndex(affinity)] >= condition.target);
         });
     }
 }
 
 const CONDITIONS_TEXT = {
     agent_any_offense: (data, condition) => {
-        return `An agent must have at least ${condition.value} offense rating for at least one of the following affinities: ${condition.affinities.join(", ")}.`
+        return `A participating agent must have at least ${condition.target} offense rating for at least one of the following affinities: ${condition.affinities.join(", ")}.`
     }
 }
 
@@ -28,19 +28,23 @@ const EFFECTS = {
     })
 };
 
-export function canChooseEventOption(data, state, event, option) {
-    if (!option) return false;
-
-    const agents = event.agent_ids
-        .map(id => state.agents[id])
-        .filter(Boolean);
-
-    for (const condition of (option.conditions ?? [])) {
-        const handler = CONDITIONS[condition.type];
-        if (!handler || !handler(data, state, agents, condition)) return false;
+export function getEligibleEventOptions(data, state, agentIds, eventId) {
+    const event = data.events[eventId];
+    const agents = agentIds.map(id => state.agents[id]).filter(Boolean);
+    const list = [];
+    for (const option of event.options) {
+        if (option.conditions) {
+            const valid = option.conditions.every(cond => {
+                const handler = CONDITIONS[cond.type];
+                if (!handler) return false;
+                return handler(data, state, agents, cond);
+            });
+            if (valid) list.push(option.id);
+        } else {
+            list.push(option.id);
+        }
     }
-
-    return true;
+    return list;
 }
 
 export function eventOptionConditionText(data, option) {
@@ -49,14 +53,14 @@ export function eventOptionConditionText(data, option) {
         const handler = CONDITIONS_TEXT[condition.type];
         if (handler) list.push(handler(data, condition))
     }
-    if(list.length === 0) list.push("None");
+    if (list.length === 0) list.push("None");
     return list;
 }
 
 export function chooseEventOption(data, state, id, optionIndex) {
     const pending = state.pending_events.find(event => event.id === id);
     const option = data.events[pending?.event_id]?.options[optionIndex];
-    if (!pending || pending.result || !option || !canChooseEventOption(data, state, pending, option)) return null;
+    if (!pending || pending.result || !option || !pending.eligible_options.includes(option.id)) return null;
 
     const nextState = structuredClone(state);
 
@@ -73,13 +77,15 @@ export function chooseEventOption(data, state, id, optionIndex) {
 
     if (nextState.currency < 0) return null;
 
-    nextState.pending_events.find(event => event.id === id).result = { option_index: optionIndex, effects: result.filter(Boolean) };
+    const event = nextState.pending_events.find(event => event.id === id);
+    event.result = { option_index: optionIndex, effects: result.filter(Boolean) };
+    event.agent_ids = [];
     return nextState;
 }
 
 export function dismissEvent(state, id) {
     const pending = state.pending_events.find(event => event.id === id);
-    if (!pending || !pending.result) return null;
+    if (!pending) return null;
 
     const nextState = structuredClone(state);
     nextState.pending_events = nextState.pending_events.filter(event => event.id !== id);

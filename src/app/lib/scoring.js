@@ -19,8 +19,8 @@ export function fuzzyScore(query, target) {
 }
 
 export function paragraphScore(query, text) {
-    const queryTokens = query.toLowerCase().trim().split(/\s+/);
-    const textTokens = text.toLowerCase().trim().split(/\s+/);
+    const queryTokens = query.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase().trim().split(/\s+/);
+    const textTokens = text.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase().trim().split(/\s+/);
 
     let matches = 0;
     for (const token of queryTokens) {

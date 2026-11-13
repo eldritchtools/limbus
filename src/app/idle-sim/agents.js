@@ -16,6 +16,7 @@ export function assignAgentPoints(state, agentId, points) {
 }
 
 export function canWork(agent) {
+    if (agent.hp <= 0) return false;
     if (agent.statuses.find(x => ["incapacitated", "panic"].includes(x.type))) return false;
     return true;
 }
@@ -43,7 +44,7 @@ export function addAgentXp(agent, xp) {
         agent.xp -= agentXpToNext(agent.level);
         agent.level += 1;
         agent.max_hp += HP_PER_LEVEL;
-        agent.hp += HP_PER_LEVEL;
+        if(agent.hp > 0) agent.hp += HP_PER_LEVEL;
         agent.work_efficiency += WE_PER_LEVEL;
         agent.unspent_points += POINTS_PER_LEVEL;
     }

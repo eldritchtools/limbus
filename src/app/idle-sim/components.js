@@ -5,7 +5,7 @@ import { ColoredResistance } from "../lib/colors";
 import { affinities } from "../lib/constants";
 
 export function StatTable({ data }) {
-    return <div style={{ display: "grid", gridTemplateColumns: "repeat(8, auto)", gap: "0.1rem", alignItems: "center", justifyItems: "center" }}>
+    return <div style={{ display: "grid", gridTemplateColumns: "repeat(8, auto)", gap: "0.2rem", alignItems: "center", justifyItems: "center" }}>
         <div />
         {affinities.map(x => <KeywordIcon key={x} id={x} size={32} />)}
         {data.offense && <>
@@ -17,7 +17,7 @@ export function StatTable({ data }) {
         {data.defense && <>
             <Icon path={"defense level"} size={32} />
             {data.defense.map((x, i) =>
-                <ColoredResistance key={`def-${i}`} resist={x} />
+                <ColoredResistance key={`def-${i}`} resist={Number(x.toFixed(2))} />
             )}
         </>}
     </div>

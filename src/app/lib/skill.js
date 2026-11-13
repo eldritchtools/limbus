@@ -15,6 +15,8 @@ export function constructSkillLabel(type, tier, index) {
             return "Corrosion";
         case "passive":
             return "Passive";
+        case "synergy":
+            return "Synergy";
         default:
             return type;
     }
@@ -56,6 +58,10 @@ function compileEgoPassives(skillData, threadspin) {
     if (threadspin < 2) return [];
     if (threadspin < 5 || skillData.passiveList.length < 2) return [skillData.passiveList[0]];
     return [skillData.passiveList[1]];
+}
+
+function compileEgoSynergies(skillData) {
+    return skillData.synergyList ?? [];
 }
 
 export function compileSkillData(type, ownerData, skillData, tier = 5) {
@@ -101,6 +107,7 @@ export function compileSkillData(type, ownerData, skillData, tier = 5) {
                 }
             ) ?? [],
             passives: compileEgoPassives(skillData, tier),
+            synergies: compileEgoSynergies(skillData),
             notes: skillData?.notes ?? {}
         }
     }

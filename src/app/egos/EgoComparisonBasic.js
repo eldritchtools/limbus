@@ -17,7 +17,9 @@ import { selectStyleVariable } from "../styles/selectStyle";
 
 function ComparisonCard({ ego }) {
     const [uptie, setUptie] = useState(ego.maxThreadspin ?? 4);
-    const { awakeningSkills, corrosionSkills, passives } = useSkillData("ego", ego.id, uptie);
+    const { awakeningSkills, corrosionSkills, passives, synergies } = useSkillData("ego", ego.id, uptie);
+
+    console.log(passives, synergies);
 
     const components = useMemo(() => {
         const list = [];
@@ -30,8 +32,11 @@ function ComparisonCard({ ego }) {
         passives.forEach((p, i) =>
             list.push(<PassiveCard key={`pas-${i}`} passive={p} mini={true} label={constructSkillLabel("passive")} />)
         );
+        (synergies ?? []).forEach((s, i) =>
+            list.push(<PassiveCard key={`syn-${i}`} passive={s} mini={true} label={constructSkillLabel("synergy")} />)
+        );
         return list;
-    }, [awakeningSkills, corrosionSkills, passives]);
+    }, [awakeningSkills, corrosionSkills, passives, synergies]);
 
     return <div className="panel-container" style={{ flex: "1", minWidth: "320px", maxWidth: "480px", gap: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: "0.5rem", width: "100%" }}>

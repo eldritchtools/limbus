@@ -11,6 +11,10 @@ export function constructEnemyState(data, expeditionId, wave) {
     return data.expeditions[expeditionId].waves[wave].map(enemyId => createEnemy(data, enemyId));
 }
 
+export function getExpeditionCost(expData, agents) {
+    return expData.base_cost + agents * expData.agent_cost;
+}
+
 const REQUIREMENTS = {
     expedition_cleared: (state, requirement) => state.cleared_expeditions.includes(requirement.id)
 }
@@ -50,7 +54,8 @@ export function startExpedition(data, state, expeditionId, agentIds) {
     if (!expedition || !Array.isArray(agentIds)) return null;
     if (agentIds.length < 1 || agentIds.length > MAX_EXPEDITION_AGENTS) return null;
     if (new Set(agentIds).size !== agentIds.length) return null;
-    if (state.currency < expedition.cost) return null;
+    const cost = getExpeditionCost(expedition, agentIds.length);
+    if (state.currency < cost) return null;
 
     for (const agentId of agentIds) {
         const agent = state.agents[agentId];
@@ -59,7 +64,7 @@ export function startExpedition(data, state, expeditionId, agentIds) {
     }
 
     const nextState = structuredClone(state);
-    nextState.currency -= expedition.cost;
+    nextState.currency -= cost;
     nextState.expeditions.push({
         id: state.next_expedition_id,
         expedition_id: expeditionId,
@@ -106,6 +111,7 @@ export function claimExpedition(data, state, id) {
             event_id: expedition.event,
             expedition_id: expedition.expedition_id,
             agent_ids: [...expedition.agent_ids],
+            eligible_options: expedition.eligible_options
         });
     }
 
@@ -116,10 +122,11 @@ export function rewardToText(data, state, reward) {
     switch (reward.type) {
         case "xp":
             return `Agents gained ${reward.value} xp.`;
-        case "drop":
+        case "drop": {
             const item = data[reward.drop_type][reward.drop_id];
             if (getOwnedCopies(state, reward.drop_type, reward.drop_id) >= item.max_copies) return null;
             return `Gained ${gearTypeToText(reward.drop_type)}: ${item.name}.`;
+        }
         case "subject":
             const subject = data.subjects[reward.id];
             return `Unlocked Research Subject: ${subject.name}`;

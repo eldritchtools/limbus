@@ -3,7 +3,7 @@ import { resolveGearStatEffects } from "./effects";
 import { isAgentOnExpedition } from "./util";
 
 
-export function getAgentEffectiveStats(data, state, agent) {
+export function getAgentEffectiveStats(data, state, agent, conditionals = true) {
     const stats = {
         work_efficiency: agent.work_efficiency,
         offense: [...agent.offense],
@@ -17,7 +17,7 @@ export function getAgentEffectiveStats(data, state, agent) {
     const armor = data.armor[agent.armor];
     if (armor) stats.defense = [...armor.defense];
 
-    resolveGearStatEffects(data, state, agent, stats);
+    resolveGearStatEffects(data, state, agent, stats, conditionals);
 
     stats.offense = stats.offense.map((v, i) => v * stats.off_mult[i]);
     delete stats.off_mult;
@@ -79,6 +79,7 @@ export function getGearCost(data, state, type, id) {
     if (!["weapons", "armor", "gifts"].includes(type)) return undefined;
 
     const gear = data[type][id];
+    if(!gear.price) return undefined;
     return Math.round(gear.price * (gear.price_growth ?? DEFAULT_GEAR_COST_GROWTH) ** getOwnedCopies(state, type, id));
 }
 
@@ -122,6 +123,7 @@ export function buyGear(data, state, type, id) {
     if (getOwnedCopies(state, type, id) >= getPurchaseLimit(data, state, type, id)) return null;
 
     const cost = getGearCost(data, state, type, id);
+    if (typeof cost !== "number" || isNaN(cost)) return null;
     if (state.currency < cost) return null;
 
     const nextState = structuredClone(state);

@@ -61,6 +61,24 @@ function getMaxEditDistance(answer) {
     return 2;
 }
 
+function tokenize(str) {
+    return str.match(/[a-z]+|\d+/gi) ?? [];
+}
+
+function hasDifferentNumbers(a, b) {
+    const romanRegex = /^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$/i;
+    const arabicRegex = /^\d+$/;
+
+    const extractNumbers = (str) => tokenize(str)
+        .map(token => token.toUpperCase())
+        .filter(token => arabicRegex.test(token) || romanRegex.test(token));
+
+    const tokensA = extractNumbers(a);
+    const tokensB = extractNumbers(b);
+
+    return JSON.stringify(tokensA) !== JSON.stringify(tokensB);
+}
+
 export function checkAnswer(answer, question) {
     if (question.answerType === "multiple_choice") return answer === question.answer;
 
@@ -73,6 +91,7 @@ export function checkAnswer(answer, question) {
     if (/^\d+$/.test(submitted)) return false;
 
     return acceptedAnswers.some(answer => {
+        if (hasDifferentNumbers(answer, submitted)) return false;
         if (/^\d+$/.test(answer)) return false;
 
         if (Math.abs(answer.length - submitted.length) > getMaxEditDistance(answer)) return false;

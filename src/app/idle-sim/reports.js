@@ -65,15 +65,15 @@ export function getReportRange(state, ticks) {
 
 const EVENT_TEXT = {
     died: data => `${data.agentName} died`,
-    incapacitated: data => `${data.agentName} was incapacitated`,
-    panic: data => `${data.agentName} panicked`,
-    level_up: data => `Agent ${data.agentName} leveled up (level ${data.event.level})`,
-    research_level_up: data => `Subject ${data.subjectName} leveled up (level ${data.event.level})`
+    incapacitated: data => `${data.agentName} was incapacitated (0 HP)`,
+    panic: data => `${data.agentName} panicked (-45 SP)`,
+    level_up: data => `${data.agentName} leveled up (level ${data.event.level})`,
+    research_level_up: data => `${data.subjectName} leveled up (level ${data.event.level})`
 };
 
 export function getReportEventText(data, state, event) {
     const tempData = {
-        agentName: state.agents[event.agent_id]?.name ?? `Agent ${event.agent_id}`,
+        agentName: state.agents[event.agent_id]?.name ?? event.name ?? `Agent ${event.agent_id}`,
         subjectName: data.subjects[event.subject_id]?.name,
         event
     }

@@ -43,6 +43,10 @@ function compileEgoPassives(skillData, threadspin) {
     return [skillData.passiveList[1]];
 }
 
+function compileEgoSynergies(skillData) {
+    return skillData.synergyList ?? [];
+}
+
 export function useSkillData(type, ids, tiers) {
     const list = useMemo(() => (Array.isArray(ids) ? ids : [ids]).filter(id => id), [ids]);
     const [skillData, skillDataLoading] = useDataMultiple(list.map(id => getPath(type, id)));
@@ -90,7 +94,7 @@ export function useSkillData(type, ids, tiers) {
             } else if (type === "ego") {
                 const path = getPath(type, id);
                 if (skillDataLoading || Object.keys(skillData[path]).length === 0)
-                    acc[id] = { awakeningSkills: [], corrosionSkills: [], passives: [] };
+                    acc[id] = { awakeningSkills: [], corrosionSkills: [], passives: [], synergies: [] };
                 else
                     acc[id] = {
                         awakeningSkills: skillData[path].awakeningSkills.map(x => {
@@ -104,6 +108,7 @@ export function useSkillData(type, ids, tiers) {
                             return { ...x, data: data };
                         }) ?? [],
                         passives: compileEgoPassives(skillData[path], tier),
+                        synergies: compileEgoSynergies(skillData[path]),
                         notes: skillData[path]?.notes ?? {}
                     }
             }

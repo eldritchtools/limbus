@@ -4,6 +4,7 @@ import { useBreakpoint } from "@eldritchtools/shared-components";
 import { useState } from "react";
 
 import { useData } from "../DataProvider";
+import { useModal } from "./ModalProvider";
 import Gift from "../gifts/Gift";
 import { GiftTagLabels } from "../gifts/GiftTags";
 import ChoiceEventIcon from "../icons/ChoiceEventIcon";
@@ -16,15 +17,16 @@ import { affinityColorMapping } from "@/app/lib/colors";
 
 export default function GiftModalContent({ id, enhanceRank, forceTriggersEffects }) {
     const { getCustomizationValue } = useSiteCustomization();
+    const { openChoiceEventModal } = useModal();
     const [enhanceLevel, setEnhanceLevel] = useState(enhanceRank);
     const [gifts, giftsLoading] = useData("gifts");
-    const {isMobile} = useBreakpoint();
+    const { isMobile } = useBreakpoint();
 
-    if(giftsLoading) return null;
-    
+    if (giftsLoading) return null;
+
     const gift = gifts[id];
     let level = Math.min(enhanceLevel, gift.descs.length - 1);
-    
+
     const triggersEffects = forceTriggersEffects === undefined ? getCustomizationValue("giftTriggersEffectsDisplay") : forceTriggersEffects;
 
     return <div style={{ display: "grid", gridTemplateRows: "auto 1fr", width: "100%", gap: "0.5rem", maxHeight: "80vh", overflow: "hidden" }}>
@@ -36,7 +38,7 @@ export default function GiftModalContent({ id, enhanceRank, forceTriggersEffects
                 <div>
                     <Gift gift={gift} includeTooltip={false} enhanceRank={enhanceLevel} expandable={false} />
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: isMobile ? "start" : "center", gap: "0.2rem"}}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: isMobile ? "start" : "center", gap: "0.2rem" }}>
                     <GiftTagLabels gift={gift} full={true} enhanceLevel={enhanceLevel} setEnhanceLevel={setEnhanceLevel} />
                 </div>
             </div>
@@ -59,7 +61,9 @@ export default function GiftModalContent({ id, enhanceRank, forceTriggersEffects
                             gift.events ?
                                 <div style={{ display: "flex", flexDirection: "column" }}>
                                     <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Events</span>
-                                    {gift.events.map(eventId => <ChoiceEventIcon key={eventId} id={eventId} scale={isMobile ? .3 : .5} displayName={true} />)}
+                                    {gift.events.map(eventId => <div key={eventId} style={{ cursor: "pointer" }} onClick={() => openChoiceEventModal({ id: eventId })}>
+                                        <ChoiceEventIcon id={eventId} scale={isMobile ? .3 : .5} displayName={true} />
+                                    </div>)}
                                 </div> : null
                         }
                         {
@@ -69,7 +73,7 @@ export default function GiftModalContent({ id, enhanceRank, forceTriggersEffects
                                         <span style={{ fontSize: "1.25rem", fontWeight: "bold", textAlign: "start" }}>Fusion Recipes</span>
                                         <div style={{ overflowX: "auto", overflowY: "hidden" }}>
                                             <div style={{ display: "flex", flexDirection: "column" }}>
-                                                {gift.recipes.map((recipe, i) => <FusionRecipe key={i} recipe={{ ingredients: recipe }} includeProduct={false} scale={isMobile ? .7 : 1}/>)}
+                                                {gift.recipes.map((recipe, i) => <FusionRecipe key={i} recipe={{ ingredients: recipe }} includeProduct={false} scale={isMobile ? .7 : 1} />)}
                                             </div>
                                         </div>
                                     </> : null}
@@ -86,8 +90,8 @@ export default function GiftModalContent({ id, enhanceRank, forceTriggersEffects
                     </div>
 
                     {
-                        triggersEffects && 
-                        <div className="sub-text" style={{display: "flex", flexDirection: "column"}}>
+                        triggersEffects &&
+                        <div className="sub-text" style={{ display: "flex", flexDirection: "column" }}>
                             <span>Triggers: {gift.triggers?.length > 0 ? gift.triggers.join(", ") : "None"}</span>
                             <span>Effects: {gift.effects?.length > 0 ? gift.effects.join(", ") : "None"}</span>
                         </div>
