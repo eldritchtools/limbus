@@ -198,6 +198,7 @@ function Item({ idleSim, tab }) {
                         <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", marginTop: "0.3rem" }}>
                             <span style={{ fontSize: "0.85rem" }}>Equip to:</span>
                             <AgentMenuSelector
+                                state={idleSim.state}
                                 value={null}
                                 setValue={x => idleSim.equipGear(x, tab, itemId)}
                                 options={eligibleAgents}

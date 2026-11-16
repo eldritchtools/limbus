@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { assignAgentPoints, renameAgent } from "./agents";
+import { assignAgentGroup, assignAgentPoints, assignAgentSprite, moveAgent, renameAgent } from "./agents";
 import { AUTOSAVE_INTERVAL, TICK_CHECK_INTERVAL } from "./constants";
 import { chooseEventOption, dismissEvent } from "./events";
 import { claimExpedition, startExpedition } from "./expeditions";
-import { assignAgent, assignSubject, buildNewDepartment, renameDepartment, setCycleLength, setScheduleBlock, unassignAgent, unassignSubject } from "./facility";
+import { assignAgent, assignSubject, renameDepartment, setCycleLength, setScheduleBlock, unassignAgent, unassignSubject } from "./facility";
 import { buyGear, equipGear, unequipGear } from "./gear";
 import { chooseCandidate, rerollCandidates, startHiring } from "./hiring";
 import { claimQuest } from "./quests";
@@ -12,7 +12,7 @@ import { summarizeReports } from "./reports";
 import { loadDBGame, loadLocalGame, resetDBGame, resetLocalGame, saveDBGame, saveLocalGame } from "./save";
 import { getSetting, setSetting } from "./settings";
 import { simulateTick, simulateUntil } from "./simulation";
-import { createInitialState, getCurrentLocalTick, getClockOffset } from "./util";
+import { createInitialState, getCurrentLocalTick, getClockOffset, createInitialDevState } from "./util";
 import { useData } from "../components/DataProvider";
 import { useAuth } from "../database/authProvider";
 
@@ -233,7 +233,12 @@ export default function useIdleSim() {
             buyGear: (type, id) => { updateState(buyGear(data, stateRef.current, type, id)); },
             equipGear: (agentId, type, id) => { updateState(equipGear(data, stateRef.current, agentId, type, id)); },
             unequipGear: (agentId, type, id) => { updateState(unequipGear(data, stateRef.current, agentId, type, id)); },
-            claimQuest: questId => { updateState(claimQuest(data, stateRef.current, questId)); }
+            claimQuest: questId => { updateState(claimQuest(data, stateRef.current, questId)); },
+
+            moveAgent: (id, offset) => { updateState(moveAgent(stateRef.current, id, offset)) },
+            assignAgentGroup: (id, group) => { updateState(assignAgentGroup(stateRef.current, id, group)) },
+            assignAgentSprite: (id, spriteId) => { updateState(assignAgentSprite(stateRef.current, id, spriteId)) },
+            resetDevState: () => { updateState(createInitialDevState(data, stateRef.current.game_tick)) }
         }
     }, [data, state, updateState, saveGame]);
 

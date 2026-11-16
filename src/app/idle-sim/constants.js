@@ -39,6 +39,7 @@ export const WE_PER_LEVEL = 3;
 export const MAX_SP = 45;
 export const MIN_SP = -45;
 export const MAX_AGENT_GIFTS = 5;
+export const DEFAULT_AGENT_SPRITE = "E-90004";
 
 // Gear
 export const DEFAULT_GEAR_COST_GROWTH = 1.25;

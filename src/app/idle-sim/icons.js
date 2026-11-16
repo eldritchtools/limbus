@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 
 import { ASSETS_ROOT } from "../paths"
+import { DEFAULT_AGENT_SPRITE } from "./constants";
 
 export function EnemySprite({ width, height, src, style = {} }) {
     const [finalSrc, setFinalSrc] = useState(Array.isArray(src) ? null : src);
@@ -29,5 +30,25 @@ export function GiftSprite({ width, height, src, style = {} }) {
         <img src={`${ASSETS_ROOT}/gifts/${src}.webp`} alt={""} title={""}
             style={{ ...style, maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
         />
+    </div>
+}
+
+function agentSpriteDetails(type, id) {
+    if (type === "E")
+        return [
+            `${ASSETS_ROOT}/enemy_sprites/${id}_idle.webp`,
+            { transform: "scaleX(-1)" }
+        ];
+
+    return ["", {}];
+}
+
+export function AgentSprite({ agent, width = 80, height = 140, style = {} }) {
+    const sprite = agent.sprite ?? DEFAULT_AGENT_SPRITE;
+    const [type, id] = sprite.split("-");
+    const [src, baseStyle] = agentSpriteDetails(type, id);
+
+    return <div style={{ width: `${width}px`, height: `${height}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <img src={src} alt={""} title={""} style={{ ...baseStyle, ...style, maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
     </div>
 }

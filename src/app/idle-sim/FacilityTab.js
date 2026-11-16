@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import { StatTable } from "./components";
 import { MAX_CYCLE_LENGTH, OUTCOMES } from "./constants";
 import { getAgentEffectiveStats, getAgentGearEffectList } from "./gear";
-import { EnemySprite } from "./icons";
+import { AgentSprite, EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { AgentMenuSelector, ScheduleMenuSelector, SubjectMenuSelector } from "./selectors";
 import { getOutcomeChances } from "./simulation";
@@ -105,6 +105,7 @@ function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent
                         {i !== 0 && <HorizontalDivider />}
                         <div style={{ display: "flex", gap: "0.2rem", alignItems: "center" }}>
                             <AgentMenuSelector
+                                state={idleSim.state}
                                 value={agent}
                                 setValue={x => handleAssignAgent(agent.id, idleSim.uiState.department, x, i)}
                                 options={[agent, ...freeAgents]}
@@ -125,7 +126,8 @@ function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent
                             <span>SP: {formatSp(agent.sp)}</span>
                             <span>WE: {agentStats[i].work_efficiency}</span>
                         </div>
-                        <div style={{ display: "flex" }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <AgentSprite agent={agent} width={60} height={90} />
                             <StatTable data={agentStats[i]} />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", maxWidth: "400px" }}>
@@ -135,6 +137,7 @@ function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent
                     <React.Fragment key={i}>
                         {i !== 0 && <HorizontalDivider />}
                         <AgentMenuSelector
+                            state={idleSim.state}
                             value={null}
                             setValue={x => handleAssignAgent(null, idleSim.uiState.department, x, i)}
                             options={freeAgents}
@@ -205,8 +208,10 @@ function DepartmentScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent
             <div style={{ display: "grid", gridTemplateColumns: `auto auto repeat(${agents.filter(Boolean).length}, 150px)`, gap: "0.2rem", overflowX: "auto", alignItems: "center", justifyItems: "center" }}>
                 <div />
                 <div />
-                {agents.map((agent, i) => agent &&
-                    <span key={`name-${i}`} style={{ fontWeight: "bold" }}>{agent.name}</span>
+                {agents.map((agent, i) => agent && <div key={`name-${i}`} style={{ display: "flex", flexDirection: "column" }}>
+                    <AgentSprite agent={agent} width={60} height={90} />
+                    <span style={{ fontWeight: "bold" }}>{agent.name}</span>
+                </div>
                 )}
                 {
                     Array.from({ length: department.cycle_length }, (_, i) => <React.Fragment key={`block-${i}`}>
@@ -246,6 +251,7 @@ function ListScreen({ idleSim, freeAgents, freeSubjects, handleAssignAgent, hand
                 <div style={{ display: "flex", gap: "0.1rem" }}>
                     {department.agent_ids.map((agentId, j) =>
                         <AgentMenuSelector
+                            state={idleSim.state}
                             key={`${j}-${agentId}`}
                             value={agentId ? idleSim.state.agents[agentId] : null}
                             setValue={x => handleAssignAgent(agentId, i, x, j)}

@@ -32,6 +32,7 @@ function DevPanel({ idleSim }) {
             <span>Game Tick: {idleSim.state?.game_tick}</span>
             <button onClick={() => idleSim.forceTick()}>Advance Game Time</button>
             <button onClick={() => idleSim.resetGame()}>Reset Game</button>
+            <button onClick={() => idleSim.resetDevState()}>Reset Dev State</button>
         </div>
     </div>
 }
@@ -42,10 +43,14 @@ export default function IdleSimPage() {
     const tab = idleSim.uiState.tab;
     const setTab = tab => idleSim.setUiState({ tab });
 
-    const agentsUnspentPoints = useMemo(() => {
-        if (!idleSim.loaded) return false;
-        return Object.values(idleSim.state.agents).some(agent => agent.unspent_points > 0);
+    const [agentsUnspentPoints, expeditionsCleared] = useMemo(() => {
+        if (!idleSim.loaded) return [false, false];
+        return [
+            Object.values(idleSim.state.agents).some(agent => agent.unspent_points > 0),
+            idleSim.state.finished_expeditions.length > 0 || idleSim.state.pending_events.length > 0
+        ];
     }, [idleSim]);
+
 
     if (idleSim.uiState.intro)
         return <IntroScreen idleSim={idleSim} />
@@ -123,9 +128,12 @@ export default function IdleSimPage() {
                 >
                     Inventory
                 </div>
-                <div className={`tab-header ${tab === "expedition" ? "active" : ""}`} onClick={() => setTab("expedition")}
+                <div className={`tab-header ${tab === "expedition" ? "active" : ""}`} onClick={() => setTab("expedition")} style={{ position: "relative" }}
                     {...getGeneralTooltipProps("Spend money to send agents out on expeditions.\nSuccessful expeditions can give XP, gear, and unlock new Research Subjects.")}
                 >
+                    {expeditionsCleared &&
+                        <div style={{ position: "absolute", width: "10px", height: "10px", background: uiColors.red, top: "0px", right: "-10px", borderRadius: "50%", zIndex: 5 }} />
+                    }
                     Expedition
                 </div>
                 <div className={`tab-header ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}
