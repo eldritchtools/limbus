@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import DaysSinceTable from "./DaysSinceTable";
 import Roadmap from "./Roadmap";
 import { kstToLocalTime } from "./timerFunc";
+import styles from "./Timers.module.css";
 import TimersTable from "./TimersTable";
 import { useData } from "../components/DataProvider";
+import ImageHandler from "../components/icons/ImageHandler";
+import { useModal } from "../components/modals/ModalProvider";
 import DragContainer from "../components/objects/DragContainer";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { keywords } from "../lib/constants";
@@ -16,6 +19,8 @@ export default function TimersPage() {
     const [egos, egosLoading] = useData("egos");
     const [timers, timersLoading] = useData("timers");
     const [show00, setShow00] = useState(false);
+    const [roadmap, roadmapLoading] = useData("roadmap");
+    const { openRoadmapImageModal } = useModal();
 
     const entries = useMemo(() => {
         if (identitiesLoading || egosLoading) return {};
@@ -113,8 +118,26 @@ export default function TimersPage() {
                     <TimersTable timers={timers} />
                 </DragContainer>
 
+                <div style={{height: "1rem"}} />
+
                 <h3 style={{ margin: 0 }}>Season Roadmap:</h3>
-                <Roadmap />
+                {!roadmapLoading && <>
+                    <Roadmap roadmap={roadmap} />
+
+                    <span className="sub-text">Slides with minimal or no information have been excluded.</span>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "0.5rem", width: "100%" }}>
+                        {
+                            roadmap.images.map((src, i) => <div key={src} className={styles.clickableImage}
+                                onClick={() => openRoadmapImageModal({ images: roadmap.images, index: i })}
+                            >
+                                <ImageHandler path={`${src}_sm.webp`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            </div>)
+                        }
+                    </div>
+                </>}
+
+                <div style={{height: "1rem"}} />
 
                 <h3 style={{ margin: 0 }}>Days Since (12PM KST • {local12} local):</h3>
                 <div>

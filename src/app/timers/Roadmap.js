@@ -1,14 +1,10 @@
 import { useMemo } from "react";
 
-import { useData } from "../components/DataProvider";
 import ImageHandler from "../components/icons/ImageHandler";
 import ZoomPanViewer from "../components/objects/ZoomPanViewer";
 
-export default function Roadmap() {
-    const [roadmap, roadmapLoading] = useData("roadmap");
-
+export default function Roadmap({ roadmap }) {
     const icons = useMemo(() => {
-        if (roadmapLoading) return [];
         const icons = [];
         const [width, height] = roadmap.size;
 
@@ -28,9 +24,8 @@ export default function Roadmap() {
             />);
         }));
         return icons;
-    }, [roadmapLoading, roadmap]);
+    }, [roadmap]);
 
-    if (roadmapLoading) return null;
     const [width, height] = roadmap.size;
 
     return <ZoomPanViewer width={width} height={height} initialScale={0.5}>

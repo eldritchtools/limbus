@@ -15,6 +15,7 @@ import ModalContainer from "./ModalContainer";
 import ModalNavigationWatcher from "./ModalNavigationWatcher";
 import PollResultModalContent from "./PollResultModalContent";
 import RatingModalContent from "./RatingModalContent";
+import RoadmapImageModalContent from "./RoadmapImageModalContent";
 import SelectBuildModalContent from "./SelectBuildModalContent";
 import SelectDeploymentModalContent from "./SelectDeploymentModalContent";
 import SelectGiftModalContent from "./SelectGiftModalContent";
@@ -46,7 +47,8 @@ const MODAL_COMPONENTS = {
     "pollResult": PollResultModalContent,
     "altOptions": AlternativeOptionsModalContent,
     "altOptionsEditable": AlternativeOptionsModalEditableContent,
-    "creatorTagVote": CreatorTagVoteModalContent
+    "creatorTagVote": CreatorTagVoteModalContent,
+    "roadmapImageModal": RoadmapImageModalContent
 };
 
 export function ModalProvider({ children }) {
@@ -150,6 +152,10 @@ export function ModalProvider({ children }) {
         openModal("creatorTagVote", { creator, onSubmitted });
     }
 
+    const openRoadmapImageModal = ({ images, index }) => {
+        openModal("roadmapImageModal", { images, index });
+    }
+
     const setModalBeforeClose = (id, beforeClose) => {
         setStack(prev =>
             prev.map(entry =>
@@ -195,6 +201,7 @@ export function ModalProvider({ children }) {
         openPollResultModal,
         openAltOptionsModal,
         openCreatorTagVoteModal,
+        openRoadmapImageModal,
         setModalBeforeClose,
         canNavigateAway,
         closeModal,
