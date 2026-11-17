@@ -24,3 +24,12 @@
         height: 75px;
     }
 }
+
+.clickableImage {
+    cursor: pointer;
+    transition: 0.2s ease all;
+}
+
+.clickableImage:hover {
+    filter: brightness(1.5);
+}
