@@ -43,7 +43,8 @@ function compileEgoPassives(skillData, threadspin) {
     return [skillData.passiveList[1]];
 }
 
-function compileEgoSynergies(skillData) {
+function compileEgoSynergies(skillData, threadspin) {
+    if (threadspin < 4) return [];
     return skillData.synergyList ?? [];
 }
 
@@ -108,7 +109,7 @@ export function useSkillData(type, ids, tiers) {
                             return { ...x, data: data };
                         }) ?? [],
                         passives: compileEgoPassives(skillData[path], tier),
-                        synergies: compileEgoSynergies(skillData[path]),
+                        synergies: compileEgoSynergies(skillData[path], tier),
                         notes: skillData[path]?.notes ?? {}
                     }
             }

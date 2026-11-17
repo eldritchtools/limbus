@@ -121,5 +121,6 @@ export function chooseCandidate(state, index) {
     nextState.agents[id] = agent;
     nextState.next_agent_id = id + 1;
     nextState.hiring = null;
+    if(nextState.agentsOrder) nextState.agentsOrder.push(String(id));
     return nextState;
 }

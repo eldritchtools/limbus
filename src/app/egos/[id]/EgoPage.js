@@ -199,8 +199,8 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
     const [skillData, setSkillData] = useState({ [uptie]: initSkillData });
 
     const { awakeningSkills, corrosionSkills, passives, synergies } = skillData[uptie];
-    const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives } =
-        compareMode ? skillData[preuptie] : { awakeningSkills: null, corrosionSkills: null, passives: null }
+    const { awakeningSkills: preAwakeningSkills, corrosionSkills: preCorrosionSkills, passives: prePassives, synergies: preSynergies } =
+        compareMode ? skillData[preuptie] : { awakeningSkills: null, corrosionSkills: null, passives: null, synergies: null }
 
     useEffect(() => {
         window.scrollTo({
@@ -370,7 +370,8 @@ export default function EgoPage({ id, egoData, initSkillData, notesTab, initSkil
                 <SkillsTab
                     awakeningSkills={awakeningSkills} preAwakeningSkills={preAwakeningSkills}
                     corrosionSkills={corrosionSkills} preCorrosionSkills={preCorrosionSkills}
-                    passives={passives} prePassives={prePassives} synergies={synergies}
+                    passives={passives} prePassives={prePassives} 
+                    synergies={synergies} preSynergies={preSynergies}
                     compareMode={compareMode} preuptie={preuptie}
                     skillBonuses={skillBonuses}
                 />

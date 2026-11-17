@@ -5,7 +5,6 @@ export function assignAgentPoints(state, agentId, points) {
     const agent = state.agents[agentId];
     if (!agent || points.length !== 7 || sum(points) > agent.unspent_points) return null;
     if (!points.every(x => Number.isInteger(x) && x >= 0)) return null;
-    if (isAgentOnExpedition(state, agentId)) return null;
 
     const nextState = structuredClone(state);
     const target = nextState.agents[agentId];
@@ -44,11 +43,61 @@ export function addAgentXp(agent, xp) {
         agent.xp -= agentXpToNext(agent.level);
         agent.level += 1;
         agent.max_hp += HP_PER_LEVEL;
-        if(agent.hp > 0) agent.hp += HP_PER_LEVEL;
+        if (agent.hp > 0) agent.hp += HP_PER_LEVEL;
         agent.work_efficiency += WE_PER_LEVEL;
         agent.unspent_points += POINTS_PER_LEVEL;
     }
 
     if (agent.level >= MAX_AGENT_LEVEL) agent.xp = 0;
     return agent.level > startLevel;
+}
+
+export function moveAgent(state, id, offset) {
+    const agentsOrder = state.agentsOrder ?? Object.keys(state.agents);
+    const index = agentsOrder.findIndex(k => k === String(id));
+
+    if (index === -1) return null;
+
+    const nextState = structuredClone(state);
+    let newAgentsOrder = nextState.agentsOrder ?? Object.keys(nextState.agents);
+
+    let other = index + offset;
+    if (other >= agentsOrder.length) {
+        newAgentsOrder = [newAgentsOrder[index], ...newAgentsOrder.slice(0, -1)];
+    } else if (other < 0) {
+        newAgentsOrder = [...newAgentsOrder.slice(1), newAgentsOrder[0]];
+    } else {
+        if (!agentsOrder[index] || !agentsOrder[other]) return null;
+        const tmp = newAgentsOrder[index];
+        newAgentsOrder[index] = newAgentsOrder[other];
+        newAgentsOrder[other] = tmp;
+    }
+
+    nextState.agentsOrder = newAgentsOrder;
+    return nextState;
+}
+
+export function assignAgentGroup(state, id, group) {
+    if (!(id in state.agents)) return null;
+    if (group !== null && typeof group !== 'string') return null;
+
+    const nextState = structuredClone(state);
+    const agent = nextState.agents[id];
+
+    if (group === null) delete agent.group;
+    else agent.group = group;
+
+    return nextState;
+}
+
+export function assignAgentSprite(state, agentId, spriteId) {
+    if (!(agentId in state.agents) || !spriteId) return null;
+
+    const nextState = structuredClone(state);
+    const agent = nextState.agents[agentId];
+
+    if(!agent) return null;
+
+    agent.sprite = spriteId;
+    return nextState;
 }

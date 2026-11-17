@@ -4,19 +4,52 @@ import { useData } from "../DataProvider";
 import BuildDisplayMenuCard from "./BuildDisplayMenuCard";
 import { radialChartColorMapping } from "../charts/radial/colorMapping";
 import RadialCategoryChart from "../charts/radial/RadialCategoryChart";
+import KeywordIcon from "../icons/KeywordIcon";
 import DropdownButton from "../objects/DropdownButton";
 import { getGeneralTooltipProps } from "../tooltips/GeneralTooltip";
 
+import { ColoredResistance } from "@/app/lib/colors";
 import { affinities, keywords } from "@/app/lib/constants";
 import { validateModifier } from "@/app/lib/keywordModifiers";
 import useLocalState from "@/app/lib/useLocalState";
+
+function WeaknessTable({ width, height, categories }) {
+    const numComp = category => {
+        return <div style={{ display: "flex", gap: "0.2rem", alignItems: "end" }}>
+            <span style={{ fontSize: "1.25rem", fontWeight: "bold" }}>{category.active}</span>
+            <span style={{ fontSize: "0.75rem", fontWeight: " bold", opacity: 0.7 }}>{category.backup}</span>
+        </div>
+    }
+
+    return <div style={{
+        display: "grid", gridTemplateColumns: "repeat(4, 1fr)", width: `${width}px`, height: `${height}px`,
+        alignItems: "center", justifyItems: "center", gap: "0.2rem"
+    }}>
+        <div />
+        <ColoredResistance resist={2} />
+        <ColoredResistance resist={1} />
+        <ColoredResistance resist={0.5} />
+        <KeywordIcon id={"slash"} />
+        {numComp(categories["s-f"])}
+        {numComp(categories["s-n"])}
+        {numComp(categories["s-e"])}
+        <KeywordIcon id={"pierce"} />
+        {numComp(categories["p-f"])}
+        {numComp(categories["p-n"])}
+        {numComp(categories["p-e"])}
+        <KeywordIcon id={"blunt"} />
+        {numComp(categories["b-f"])}
+        {numComp(categories["b-n"])}
+        {numComp(categories["b-e"])}
+    </div>
+}
 
 export default function Distribution({ build }) {
     const [mode, setMode] = useLocalState("buildDistributionType", "kw");
     const [auto, setAuto] = useLocalState("buildDistributionAuto", false);
     const [identities, identitiesLoading] = useData("identities");
     const [keywordModifiers, keywordModifiersLoading] = useData("identity_keyword_modifiers");
-    const finalMode = useMemo(() => ["kw", "sin", "skill"].includes(mode) ? mode : "kw", [mode]);
+    const finalMode = useMemo(() => ["kw", "sin", "skill", "weak"].includes(mode) ? mode : "kw", [mode]);
     const modeRef = useRef(finalMode);
 
     useEffect(() => {
@@ -32,6 +65,10 @@ export default function Distribution({ build }) {
                 modeRef.current = "skill";
             }
             else if (modeRef.current === "skill") {
+                setMode("weak");
+                modeRef.current = "weak";
+            }
+            else if (modeRef.current === "weak") {
                 setMode("kw");
                 modeRef.current = "kw";
             }
@@ -49,14 +86,26 @@ export default function Distribution({ build }) {
             Object.fromEntries(keywords.slice(0, 7).map(x => [x, [0, 0, 0]])) :
             finalMode === "sin" ?
                 Object.fromEntries(affinities.map(x => [x, [0, 0, 0]])) :
-                {
-                    "pierce": [0, 0, 0],
-                    "blunt": [0, 0, 0],
-                    "counter": [0, 0, 0],
-                    "evade": [0, 0, 0],
-                    "guard": [0, 0, 0],
-                    "slash": [0, 0, 0]
-                }
+                finalMode === "skill" ?
+                    {
+                        "pierce": [0, 0, 0],
+                        "blunt": [0, 0, 0],
+                        "counter": [0, 0, 0],
+                        "evade": [0, 0, 0],
+                        "guard": [0, 0, 0],
+                        "slash": [0, 0, 0]
+                    } :
+                    {
+                        "s-f": [0, 0, 0],
+                        "s-n": [0, 0, 0],
+                        "s-e": [0, 0, 0],
+                        "p-f": [0, 0, 0],
+                        "p-n": [0, 0, 0],
+                        "p-e": [0, 0, 0],
+                        "b-f": [0, 0, 0],
+                        "b-n": [0, 0, 0],
+                        "b-e": [0, 0, 0]
+                    }
 
         let count = 0;
         build.identityIds.forEach((id, i) => {
@@ -95,6 +144,11 @@ export default function Distribution({ build }) {
                 });
 
                 result[identity.defenseSkillTypes[0].type.type][deploymentTypeIndex] += 6;
+            } else if (finalMode === "weak") {
+                Object.entries(identity.resists).forEach(([t, v]) => {
+                    const sf = v > 1 ? "f" : v < 1 ? "e" : "n"
+                    result[`${t[0]}-${sf}`][deploymentTypeIndex] += 1;
+                })
             }
         })
 
@@ -123,6 +177,12 @@ export default function Distribution({ build }) {
                 backup: values[1],
                 inactive: values[2]
             }));
+        } else if (finalMode === "weak") {
+            categories = Object.fromEntries(Object.entries(result).map(([key, values]) => ([key, {
+                active: values[0],
+                backup: values[1],
+                inactive: values[2]
+            }])));
         }
 
         return [categories, count];
@@ -134,7 +194,7 @@ export default function Distribution({ build }) {
 
     if (identitiesLoading) return null;
 
-    return <BuildDisplayMenuCard>
+    return <BuildDisplayMenuCard width={"210px"} height={"255px"}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".2rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
                 <span className="hover-text" {...getGeneralTooltipProps("Bright sections are for active sinners, while dark sections are for backup sinners.\nFor Keywords, the yellow ring represents 5 identities.\nHovering over a section will show the exact numbers.\nAuto will automatically cycle through the different stats.")}>Team Stats:</span>
@@ -144,7 +204,8 @@ export default function Distribution({ build }) {
                     options={{
                         "kw": "Keywords",
                         "sin": "Sins",
-                        "skill": "Skill Types"
+                        "skill": "Skill Types",
+                        "weak": "Weakness"
                     }}
                     styleOverride={{ fontSize: "0.8rem", padding: "0.25rem" }}
                 />
@@ -172,7 +233,12 @@ export default function Distribution({ build }) {
                                 width={200} height={200} gap={0}
                                 categories={categories}
                             /> :
-                            null
+                            finalMode === "weak" ?
+                                <WeaknessTable
+                                    width={190} height={190}
+                                    categories={categories}
+                                />
+                                : null
                 )
             }
         </div>

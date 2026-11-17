@@ -14,6 +14,11 @@ const pages = [
         date: "2026-07-01",
         label: "Absolute Pride Resonance 2026",
         href: "apr-2026"
+    },
+    {
+        date: "2026-11-17",
+        label: "End of Season 7 Popularity Poll",
+        href: "pop-poll-s7"
     }
 ]
 

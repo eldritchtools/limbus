@@ -11,6 +11,7 @@ import SocialsEditor from "../components/socials/SocialsEditor";
 import { socialsData } from "../components/socials/userSocials";
 import { useAuth } from "../database/authProvider";
 import { getSupabase } from "../database/connection";
+import { fetchDiscordAccount, setDiscordNotificationsEnabled, unlinkDiscordAccount } from "../database/discord";
 import { fetchPatreonAccount, setPatreonDisplayPreference, unlinkPatreonAccount } from "../database/patreon";
 import { updateUser, updateUserAvatar } from "../database/users";
 
@@ -27,6 +28,7 @@ export default function EditProfilePage() {
     const [updating, setUpdating] = useState(false);
     const [message, setMessage] = useState("");
     const [patreon, setPatreon] = useState(null);
+    const [discord, setDiscord] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -43,7 +45,13 @@ export default function EditProfilePage() {
                 if (patreonData) setPatreon(patreonData);
             }
 
+            const fetchDiscord = async () => {
+                const discordData = await fetchDiscordAccount(user.id);
+                if (discordData) setDiscord(discordData);
+            }
+
             fetchPatreon();
+            fetchDiscord();
         }
     }, [user, profile]);
 
@@ -108,6 +116,8 @@ export default function EditProfilePage() {
         await updateUser(user.id, flair.trim(), description, socials);
         if (patreon)
             setPatreonDisplayPreference(patreon.display_preference);
+        if (discord)
+            setDiscordNotificationsEnabled(discord.notifications_enabled);
         setUpdating(false);
         setMessage("Updated!");
 
@@ -120,27 +130,43 @@ export default function EditProfilePage() {
         setAvatarId(id);
     }
 
-    const connectPatreon = async () => {
+    const callConnectAPIRoute = async (type) => {
         const { data: { session } } = await getSupabase().auth.getSession();
         if (!session) return;
 
-        const response = await fetch("/api/patreon/connect", {
+        const response = await fetch(`/api/${type}/connect`, {
             method: "POST",
             headers: { Authorization: `Bearer ${session.access_token}` }
         });
 
         if (!response.ok) {
-            console.error("Failed to start Patreon connection");
+            console.error(`Failed to start ${type} connection`);
             return;
         }
 
         const { url } = await response.json();
         window.location.href = url;
+
+    }
+
+    const connectPatreon = async () => {
+        callConnectAPIRoute("patreon");
+    };
+
+    const connectDiscord = async () => {
+        callConnectAPIRoute("discord");
     };
 
     const handleUnlinkPatreonAccount = async () => {
         if (unlinkPatreonAccount()) {
             setPatreon(null);
+            return true;
+        }
+    };
+
+    const handleUnlinkDiscordAccount = async () => {
+        if (unlinkDiscordAccount()) {
+            setDiscord(null);
             return true;
         }
     };
@@ -176,8 +202,34 @@ export default function EditProfilePage() {
                     <span className="sub-text">Add links if you want people to find you elsewhere. These will be displayed on your profile and your builds.</span>
                     <SocialsEditor socials={socials} setSocials={setSocials} />
 
+                    <h4 style={headerStyle}>Discord Notifications</h4>
+                    <span className="sub-text">You can link your Discord account to receive Discord DMs whenever you receive a notification on the site. This is separate from creating an account through Discord OAuth, so only users who explicitly choose to link their accounts will receive these notifications. To receive DMs, you must join our Discord server and allow DMs from our Discord bot. This integration only covers site notifications and does not include followed threads. <strong>Warning:</strong> Linking your account will redirect you to Discord authentication which will discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
+                    {discord ?
+                        <div>
+                            <div>
+                                Discord connected
+                            </div>
+                            <label>
+                                <input type="checkbox" checked={discord.notifications_enabled}
+                                    onChange={e => setDiscord({ ...discord, notifications_enabled: e.target.checked })}
+                                />
+                                <span>Notifications Enabled</span>
+                            </label>
+                            <div>
+                                <button className="text-link" onClick={() => handleUnlinkDiscordAccount()}>
+                                    Unlink Discord
+                                </button>
+                            </div>
+                        </div> :
+                        <div>
+                            <button className="text-link" onClick={() => connectDiscord()}>
+                                Link Discord
+                            </button>
+                        </div>
+                    }
+
                     <h4 style={headerStyle}>Support</h4>
-                    <span className="sub-text">If you support the site on Patreon, you can link your account to control whether and how your name is shown on the Support page. This is optional. By default, Patreon supporters will be shown on the Support page using their Patreon name. Note that linking your account may discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
+                    <span className="sub-text">If you support the site on Patreon, you can link your account to control whether and how your name is shown on the Support page. This is optional. By default, Patreon supporters will be shown on the Support page using their Patreon name. <strong>Warning:</strong> Linking your account will redirect you to Patreon authentication which will discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
                     {patreon ?
                         <div>
                             <div>

@@ -5,24 +5,26 @@ import { CATCHUP_LEVEL_GAP, HP_PER_LEVEL, START_HP, START_WE, WE_PER_LEVEL } fro
 import { getAgentHireCost, getMaxStartLevel, getRerollCost } from "./hiring";
 import styles from "./idleSim.module.css";
 import { toCurrencyStr } from "./util";
-import NumberInput from "../components/objects/NumberInput";
+import NumberInputWithButtons from "../components/objects/NumberInputWithButtons";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 export default function HiringTab({ idleSim }) {
     const hiring = idleSim.state.hiring;
     const [level, setLevel] = useState(1);
-    const max = getMaxStartLevel(idleSim.state)
+    const max = getMaxStartLevel(idleSim.state);
 
     if (hiring) {
+        const rerollCost = getRerollCost(idleSim.state, hiring.start_level);
         return <>
             <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                 <span>Choose an agent:</span>
                 <button
                     style={{ display: "flex", flexDirection: "column", textAlign: "center" }}
                     onClick={() => idleSim.rerollCandidates()}
+                    disabled={idleSim.state.currency < rerollCost}
                 >
                     <span>Reroll Candidates</span>
-                    <span>{toCurrencyStr(getRerollCost(idleSim.state, hiring.start_level))}</span>
+                    <span>{toCurrencyStr(rerollCost)}</span>
                 </button>
             </div>
             {hiring.candidates.map((candidate, i) =>
@@ -40,18 +42,20 @@ export default function HiringTab({ idleSim }) {
         </>
     }
 
+    const cost = getAgentHireCost(idleSim.state, level);
+
     return <>
         <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
             <span className="hover-text"
                 {...getGeneralTooltipProps(`You can hire agents up to ${CATCHUP_LEVEL_GAP} levels below your highest leveled agent. Higher leveled agents cost more to hire.`)}
             >
-                Starting Level (max {max}):
+                Starting Level (max {max})
             </span>
-            <NumberInput min={1} max={max} value={level} onChange={setLevel} style={{ width: "3ch" }} />
         </div>
-        <span>Cost: {toCurrencyStr(getAgentHireCost(idleSim.state, level))}</span>
+        <NumberInputWithButtons min={1} max={max} value={level} setValue={setLevel} style={{ width: "3ch" }} />
+        <span>Cost: {toCurrencyStr(cost)}</span>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button onClick={() => idleSim.startHiring(level)}>Hire Agent</button>
+            <button onClick={() => idleSim.startHiring(level)} disabled={idleSim.state.currency < cost}>Hire Agent</button>
         </div>
     </>
 }

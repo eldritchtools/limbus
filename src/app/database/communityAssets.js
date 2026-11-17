@@ -16,7 +16,7 @@ export async function updateCommunityAsset(id, prefix, keywords) {
 }
 
 export async function searchCommunityAssets(query, type, includeKeywords=false, limit = 50) {
-    return callRPC("search_community_assets_v2", { p_query: query, p_type: type, p_include_keywords: includeKeywords, p_limit: limit });
+    return callRPC("search_community_assets_v3", { p_query: query, p_type: type, p_include_keywords: includeKeywords, p_limit: limit });
 }
 
 export async function getCommunityAsset(id) {

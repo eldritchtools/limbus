@@ -9,7 +9,7 @@ import { MAX_EXPEDITION_AGENTS } from "./constants";
 import { eventEffectToText, eventOptionConditionText } from "./events";
 import { checkExpeditionUnlocked, expeditionRequirementsText, getExpeditionCost, rewardToText } from "./expeditions";
 import { getAgentEffectiveStats, getAgentGearEffectList, getEquippedCopies, getOwnedCopies } from "./gear";
-import { EnemySprite } from "./icons";
+import { AgentSprite, EnemySprite } from "./icons";
 import styles from "./idleSim.module.css";
 import { getIdleSimTooltipProps } from "./idleSimTooltip";
 import { AgentMenuSelector, GearMenuSelector } from "./selectors";
@@ -274,8 +274,8 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
         if (idleSim.uiState.agents)
             setAgents(p => p.map((x, i) => {
                 const id = idleSim.uiState.agents[i];
-                if(!id) return x;
-                if(!freeAgents.some(a => a.id === id)) return x;
+                if (!id) return x;
+                if (!freeAgents.some(a => a.id === id)) return x;
                 return id;
             }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -321,7 +321,7 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
                 <span style={{ ...overlayTextStyle, fontSize: "1.4rem", fontWeight: "bold" }}>{data.name}</span>
                 <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", ...overlayTextStyle }}>
                     <span>Recommended Level: <strong>{data.rec_level}</strong></span>
-                    <span>Recommended Agents: <strong>{data.rec_agents}</strong></span>
+                    <span>Recommended Min Agents: <strong>{data.rec_agents}</strong></span>
                     <span>Waves: <strong>{data.waves.length}</strong></span>
                 </div>
                 <div style={{ display: "flex", gap: "2rem", alignItems: "center", marginTop: "0.4rem", ...overlayTextStyle }}>
@@ -380,12 +380,16 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
                     }
 
                     return <React.Fragment key={i}>
-                        <AgentMenuSelector
-                            value={agent}
-                            setValue={x => setAgents(p => p.map((v, j) => (j === i ? x : v)))}
-                            options={freeAgents}
-                            textOnly={true}
-                        />
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            {agent && <AgentSprite agent={agent} width={50} height={75} />}
+                            <AgentMenuSelector
+                                state={idleSim.state}
+                                value={agent}
+                                setValue={x => setAgents(p => p.map((v, j) => (j === i ? x : v)))}
+                                options={freeAgents}
+                                textOnly={true}
+                            />
+                        </div>
                         {agent ?
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", background: "rgba(0,0,0,0.2)", padding: "0.4rem", borderRadius: "0.3rem" }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem" }}>
@@ -480,7 +484,7 @@ function ExpeditionSelectScreen({ idleSim, onSelectExpedition, onBack }) {
 
                             <div style={{ display: "flex", justifyContent: "space-between", width: "100%", textAlign: "center" }}>
                                 <span>Recommended Level: <strong>{data.rec_level}</strong></span>
-                                <span>Recommended Agents: <strong>{data.rec_agents}</strong></span>
+                                <span>Recommended Min Agents: <strong>{data.rec_agents}</strong></span>
                                 <span>Waves: <strong>{data.waves.length}</strong></span>
                             </div>
 

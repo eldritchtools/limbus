@@ -1,4 +1,4 @@
-import { MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS, STARTER_SUBJECT_IDS, TICK_DURATION } from "./constants";
+import { HP_PER_LEVEL, MAX_AGENT_LEVEL, MAX_DEPARTMENT_AGENTS, MAX_DEPARTMENT_SUBJECTS, MAX_SP, START_HP, START_WE, STARTER_SUBJECT_IDS, TICK_DURATION, WE_PER_LEVEL } from "./constants";
 import { affinities } from "../lib/constants";
 
 export function sum(values) {
@@ -110,6 +110,60 @@ export function createInitialState(serverTick) {
         expeditions: [],
         finished_expeditions: [],
         cleared_expeditions: [],
+        pending_events: [],
+        reports: [],
+        settings: {}
+    };
+}
+
+export function createInitialDevState(data, serverTick) {
+    return {
+        game_tick: 0,
+        latest_simulated_tick: serverTick,
+        currency: 10_000_000,
+        inventory: {
+            weapons: Object.fromEntries(Object.entries(data.weapons).map(([id, weapon]) => [id, weapon.max_copies ?? 5])),
+            armor: Object.fromEntries(Object.entries(data.armor).map(([id, armor]) => [id, armor.max_copies ?? 5])),
+            gifts: Object.fromEntries(Object.entries(data.gifts).map(([id, gift]) => [id, gift.max_copies ?? 5]))
+        },
+        claimed_quests: [...Object.keys(data.quests)],
+        hiring: null,
+        next_agent_id: 2,
+        agents: {
+            1: {
+                id: 1,
+                name: "Default",
+                level: MAX_AGENT_LEVEL,
+                xp: 0,
+                unspent_points: 0,
+                max_hp: START_HP + (MAX_AGENT_LEVEL - 1) * HP_PER_LEVEL,
+                work_efficiency: START_WE + (MAX_AGENT_LEVEL - 1) * WE_PER_LEVEL,
+                offense: new Array(7).fill(100),
+                hp: START_HP + (MAX_AGENT_LEVEL - 1) * HP_PER_LEVEL,
+                sp: MAX_SP,
+                statuses: [],
+                weapon: null,
+                armor: null,
+                gifts: [],
+            }
+        },
+        subjects: Object.fromEntries(
+            Object.entries(data.subjects).map(([id,]) => [id, { research_level: 0, research_xp: 0 }])
+        ),
+        departments: [
+            {
+                label: "Department 1",
+                cycle_length: 8,
+                cycle_block: 0,
+                agent_ids: Array.from({ length: MAX_DEPARTMENT_AGENTS }, () => null),
+                subject_ids: Array.from({ length: MAX_DEPARTMENT_SUBJECTS }, () => null),
+                schedule: {}
+            },
+        ],
+        next_expedition_id: 1,
+        expeditions: [],
+        finished_expeditions: [],
+        cleared_expeditions: [...Object.keys(data.expeditions)],
         pending_events: [],
         reports: [],
         settings: {}

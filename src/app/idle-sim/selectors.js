@@ -3,14 +3,16 @@
 import * as Select from "@radix-ui/react-select";
 import { useMemo, useRef, useState } from "react";
 
-import { EnemySprite, GiftSprite } from "./icons";
+import { DEFAULT_AGENT_SPRITE } from "./constants";
+import { AgentSprite, EnemySprite, GiftSprite } from "./icons";
 import { getIdleSimTooltipProps } from "./idleSimTooltip";
 import styles from "./selectors.module.css";
+import { useData } from "../components/DataProvider";
 import Icon from "../components/icons/Icon";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch } from "../lib/filter";
 
-function Selector({ value, setValue, options, optionFilter, buildOption, defaultDisplay, rowItems = 5, optionWidth = 100, triggerClass, styleOverride = {} }) {
+function Selector({ value, setValue, options, optionFilter, buildOption, defaultDisplay, rowItems = 5, optionWidth = 100, triggerClass, menuNotes, styleOverride = {} }) {
     const [filter, setFilter] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
@@ -32,6 +34,8 @@ function Selector({ value, setValue, options, optionFilter, buildOption, default
 
         <Select.Portal>
             <Select.Content className={styles.selectorContent} position="popper">
+                {menuNotes}
+
                 {optionFilter &&
                     <div style={{ paddingBottom: "0.2rem" }}>
                         <input
@@ -66,8 +70,9 @@ function Selector({ value, setValue, options, optionFilter, buildOption, default
     </Select.Root>;
 }
 
-export function AgentMenuSelector({ value, setValue, options, textOnly = false, styleOverride = {} }) {
+export function AgentMenuSelector({ state, value, setValue, options, textOnly = false, styleOverride = {} }) {
     const optionFilter = (filter, opt) => checkFilterMatch(filter, opt.name);
+    const showGroups = options.some(x => x.group);
 
     const buildOption = (option, triggerItem = false) => {
         if (textOnly) {
@@ -75,7 +80,9 @@ export function AgentMenuSelector({ value, setValue, options, textOnly = false, 
                 style={{ width: triggerItem ? "auto" : "200px", wordBreak: "break-word", height: "100%", justifyContent: "center" }}
                 {...getIdleSimTooltipProps("agent", option.id)}
             >
+                {!triggerItem && <AgentSprite agent={option} width={50} height={75} />}
                 {option.name}
+                {!triggerItem && showGroups && <span style={{ fontSize: "0.8rem", opacity: 0.6 }}>{option.group ?? "Unassigned"}</span>}
             </div>
         }
 
@@ -83,7 +90,9 @@ export function AgentMenuSelector({ value, setValue, options, textOnly = false, 
             style={{ width: triggerItem ? "96px" : "200px", wordBreak: "break-word", height: "100%", justifyContent: "center" }}
             {...getIdleSimTooltipProps("agent", option.id)}
         >
+            {option && <AgentSprite agent={option} width={50} height={75} />}
             {option.name}
+            {!triggerItem && showGroups && <span style={{ fontSize: "0.8rem", opacity: 0.6 }}>{option.group ?? "Unassigned"}</span>}
         </div>
     }
 
@@ -95,9 +104,22 @@ export function AgentMenuSelector({ value, setValue, options, textOnly = false, 
             {"+ Agent"}
         </div>
 
+    const optionsSorted = useMemo(() =>
+        options.sort((a, b) => {
+            const ga = a.group ?? "";
+            const gb = b.group ?? "";
+            if (ga === gb) {
+                const order = state.agentsOrder ?? Object.keys(state.agents);
+                return order.findIndex(x => x === String(a.id)) - order.findIndex(x => x === String(b.id));
+            }
+            return ga.localeCompare(gb);
+        }),
+        [state, options]
+    )
+
     return <Selector value={value}
         setValue={v => setValue(v ? Number(v) : null)}
-        options={options} styleOverride={styleOverride}
+        options={optionsSorted} styleOverride={styleOverride}
         rowItems={2} optionWidth={200}
         optionFilter={optionFilter} buildOption={buildOption}
         defaultDisplay={defaultOption}
@@ -200,5 +222,32 @@ export function GearMenuSelector({ value, setValue, type, options, styleOverride
     return <Selector value={value} setValue={setValue} options={options}
         rowItems={2} optionWidth={200} buildOption={buildOption}
         defaultDisplay={defaultOption} styleOverride={styleOverride}
+    />
+}
+
+export function AgentSpriteSelector({ idleSim, value, setValue }) {
+    const [spriteUnlock, loading] = useData("idle_sim/sprite_unlocks");
+
+    const options = useMemo(() => {
+        if (loading) return [];
+        const options = [];
+
+        Object.entries(spriteUnlock.enemy).forEach(([exp, ids]) => {
+            if (exp === "default" || idleSim.state.cleared_expeditions.includes(exp))
+                ids.forEach(id => options.push({ id: `E-${id}` }))
+        });
+
+        return options;
+    }, [idleSim.state.cleared_expeditions, spriteUnlock, loading]);
+
+    const buildOption = (option, triggerItem) => {
+        return <div style={{ width: "80px", height: "140px", padding: "0.2rem" }}>
+            <AgentSprite agent={{ sprite: option.id ?? DEFAULT_AGENT_SPRITE }} />
+        </div>
+    }
+
+    return <Selector value={{ id: value }} setValue={setValue} options={options}
+        buildOption={buildOption} defaultDisplay={buildOption(DEFAULT_AGENT_SPRITE)}
+        menuNotes={<span style={{ fontSize: "0.8rem", opacity: "0.7", textAlign: "center" }}>More sprites are unlocked through Expedition progress.</span>}
     />
 }

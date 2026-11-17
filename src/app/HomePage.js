@@ -18,11 +18,11 @@ import { HomepageTimers } from "./timers/TimersTable";
 
 
 function PopularityPoll() {
-    return <NoPrefetchLink href="/popularity-poll" className="text-link">
+    return <NoPrefetchLink href="/archive/pop-poll-s7" className="text-link">
         <div className="panel-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
             {/* <BannerIcon path={"season_7"} style={{ width: "80%" }} /> */}
             <span>
-                Responses for the end-of-season 7 popularity poll have been closed. You can view the results here. A separate summary will be released in the future.
+                The Season 7 Popularity Poll results have been summarized and moved to the archive. You can access it through the Archive page or by clicking here. This announcement will be removed after a few weeks.
             </span>
         </div>
     </NoPrefetchLink>

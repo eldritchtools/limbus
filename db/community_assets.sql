@@ -13,11 +13,11 @@ CREATE TABLE community_assets (
 
 CREATE INDEX community_assets_search_emote_idx
 ON community_assets USING GIN (search_vector)
-WHERE type = 'emote'::community_asset_type AND is_deleted = false;;
+WHERE type = 'emote'::community_asset_type AND is_deleted = false;
 
 CREATE INDEX community_assets_search_sticker_idx
 ON community_assets USING GIN (search_vector)
-WHERE type = 'sticker'::community_asset_type AND is_deleted = false;;
+WHERE type = 'sticker'::community_asset_type AND is_deleted = false;
 
 CREATE INDEX community_assets_created_at_idx
 ON community_assets (type, created_at DESC)
@@ -142,7 +142,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION search_community_assets_v2(
+CREATE OR REPLACE FUNCTION search_community_assets_v3(
   p_query TEXT,
   p_type community_asset_type DEFAULT NULL,
   p_include_keywords BOOLEAN DEFAULT FALSE,
@@ -155,8 +155,21 @@ RETURNS TABLE (
 ) AS $$
 DECLARE
   q TSQUERY;
+  q_any TSQUERY;
+  word TEXT;
 BEGIN
   q := plainto_tsquery('english', p_query);
+
+  FOREACH word IN ARRAY regexp_split_to_array(p_query, '\s+')
+  LOOP
+    IF word <> '' THEN
+      IF q_any IS NULL THEN
+        q_any := plainto_tsquery('english', word);
+      ELSE
+        q_any := q_any || plainto_tsquery('english', word);
+      END IF;
+    END IF;
+  END LOOP;
 
   RETURN QUERY
   SELECT
@@ -165,18 +178,22 @@ BEGIN
     CASE WHEN p_include_keywords THEN a.keywords ELSE NULL END
   FROM community_assets a
   WHERE
-    a.search_vector @@ q
+    (
+      a.search_vector @@ q_any
+      OR a.prefix ILIKE p_query || '%'
+      OR a.prefix ILIKE '%' || p_query || '%'
+    )
     AND NOT a.is_deleted
     AND (p_type IS NULL OR a.type = p_type)
   ORDER BY
     (
-      ts_rank(a.search_vector, q)
-      + CASE
-          WHEN a.prefix ILIKE p_query THEN 0.35
-          WHEN a.prefix ILIKE p_query || '%' THEN 0.2
-          WHEN a.prefix ILIKE '%' || p_query || '%' THEN 0.05
-          ELSE 0
-        END
+      CASE
+        WHEN a.prefix ILIKE p_query THEN 1.0
+        WHEN a.prefix ILIKE p_query || '%' THEN 0.6
+        WHEN a.prefix ILIKE '%' || p_query || '%' THEN 0.3
+        ELSE 0
+      END
+      + ts_rank(a.search_vector, q)
     ) DESC
   LIMIT p_limit;
 END;
