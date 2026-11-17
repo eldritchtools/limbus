@@ -12,7 +12,7 @@ import Icon from "../components/icons/Icon";
 import { uiColors } from "../lib/colors";
 import { checkFilterMatch } from "../lib/filter";
 
-function Selector({ value, setValue, options, optionFilter, buildOption, defaultDisplay, rowItems = 5, optionWidth = 100, triggerClass, styleOverride = {} }) {
+function Selector({ value, setValue, options, optionFilter, buildOption, defaultDisplay, rowItems = 5, optionWidth = 100, triggerClass, menuNotes, styleOverride = {} }) {
     const [filter, setFilter] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
@@ -34,6 +34,8 @@ function Selector({ value, setValue, options, optionFilter, buildOption, default
 
         <Select.Portal>
             <Select.Content className={styles.selectorContent} position="popper">
+                {menuNotes}
+
                 {optionFilter &&
                     <div style={{ paddingBottom: "0.2rem" }}>
                         <input
@@ -246,5 +248,6 @@ export function AgentSpriteSelector({ idleSim, value, setValue }) {
 
     return <Selector value={{ id: value }} setValue={setValue} options={options}
         buildOption={buildOption} defaultDisplay={buildOption(DEFAULT_AGENT_SPRITE)}
+        menuNotes={<span style={{ fontSize: "0.8rem", opacity: "0.7", textAlign: "center" }}>More sprites are unlocked through Expedition progress.</span>}
     />
 }
