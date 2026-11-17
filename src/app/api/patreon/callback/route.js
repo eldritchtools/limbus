@@ -83,8 +83,6 @@ export async function GET(request) {
     const identity = await identityResponse.json();
     const patreonUserId = identity.data?.id;
 
-    console.log(patreonUserId);
-
     if (!patreonUserId) {
         console.log("Patreon callback: no Patreon user ID");
 

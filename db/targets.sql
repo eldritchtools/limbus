@@ -9,10 +9,12 @@ CREATE TYPE target_type_enum AS ENUM (
 
 CREATE TABLE fixed_pages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  slug TEXT UNIQUE NOT NULL
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT
 );
 
-INSERT INTO fixed_pages (slug) VALUES ('daily-random');
+INSERT INTO fixed_pages (slug, title) VALUES ('daily-random', 'Daily Random Team');
+INSERT INTO fixed_pages (slug, title) VALUES ('upcoming', 'Release History');
 
 CREATE TYPE encounter_category_enum AS ENUM (
   'story',
