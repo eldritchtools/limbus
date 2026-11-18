@@ -1,4 +1,5 @@
-import { callRPC, convertParams, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { getSupabase } from "./connection";
+import { callRPC, convertParams, paginateParams, pinComment, unpinComment, withRetry } from "./supabaseTemplates";
 import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {
@@ -76,4 +77,17 @@ export async function unpinBuildComment(buildId) {
 
 export async function getSavedBuilds(user_id, page = 1, pageSize = null) {
     return callRPC("get_saved_builds_v5", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.builds.defaultPageSize))
+}
+
+export async function fetchBuildViewCount(id) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("builds")
+            .select("view_count")
+            .eq('id', id)
+            .maybeSingle()
+
+        if (error) throw error;
+        return data?.view_count ?? null;
+    });
 }

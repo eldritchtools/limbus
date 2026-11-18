@@ -102,3 +102,16 @@ export async function rejectCollectionSubmissionsForTarget(collection_id, target
         { p_collection_id: collection_id, p_target_type: target_type, p_target_id: target_id }
     );
 }
+
+export async function fetchCollectionViewCount(id) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("collections")
+            .select("view_count")
+            .eq('id', id)
+            .maybeSingle()
+
+        if (error) throw error;
+        return data?.view_count ?? null;
+    });
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import CommentSection from "./CommentSection";
 import NitroAd from "../ads/NitroAd";
@@ -21,8 +21,11 @@ import SocialsDisplay from "../socials/SocialsDisplay";
 import UsernameWithTime from "../user/UsernameWithTime";
 
 import { useAuth } from "@/app/database/authProvider";
+import { fetchBuildViewCount } from "@/app/database/builds";
+import { fetchCollectionViewCount } from "@/app/database/collections";
 import { keywordIdMapping } from "@/app/database/keywordIds";
 import { isLocalId } from "@/app/database/localDB";
+import { fetchMdPlanViewCount } from "@/app/database/mdPlans";
 import { contentConfig } from "@/app/lib/contentConfig";
 
 
@@ -37,6 +40,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const router = useRouter();
+    const [viewCount, setViewCount] = useState(null);
 
     useEffect(() => {
         if (!content && pathname && searchParams) {
@@ -52,6 +56,18 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
             }
         }
     }, [content, pathname, searchParams]);
+
+    useEffect(() => {
+        if (!user || user.id !== content.user_id) return;
+
+        const fetchViewCount = async () => {
+            if (targetType === "build") setViewCount(await fetchBuildViewCount(targetId));
+            if (targetType === "md_plan") setViewCount(await fetchMdPlanViewCount(targetId));
+            if (targetType === "collection") setViewCount(await fetchCollectionViewCount(targetId));
+        }
+
+        fetchViewCount();
+    }, [user, content, targetType, targetId]);
 
     // useEffect(() => {
     //     if (content) document.title = `${content.title} | Limbus Company Tools`;
@@ -134,7 +150,7 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
             <div style={{ display: "flex", alignItems: "center" }}>
                 {user && user.id === content.user_id ?
                     <div>
-                        <ViewSolid text={`${content.view_count !== null ? content.view_count.toLocaleString() : "-"} views`} />
+                        <ViewSolid text={`${viewCount !== null ? viewCount.toLocaleString() : "-"} views`} />
                     </div>
                     : null
                 }
