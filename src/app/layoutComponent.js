@@ -94,7 +94,7 @@ const paths = [
             { path: "/shadow-guesser", title: "Shadow Guesser" },
             { path: "/clash-arena", title: "Clash Arena" },
             { path: "/community-trivia", title: "Community Trivia Quiz" },
-            { path: "/idle-sim", title: "LC Idle Mangement Sim"}
+            { path: "/idle-sim", title: "LC Idle Mangement Sim" }
         ]
     },
     {
@@ -108,7 +108,7 @@ const paths = [
             { path: "/terms", title: "Terms of Service" }
         ]
     },
-    { path: "/support", title: "Support the Site" }
+    { path: "/support", title: <div style={{ textAlign: "center" }}>♥ Support the Site</div> }
 ]
 
 const description = <span>

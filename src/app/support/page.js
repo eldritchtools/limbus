@@ -46,7 +46,7 @@ export default async function SupportPage() {
                 ]} expandedDefault={true} button={true} />
             </div>
             <span style={{ lineHeight: "1.3" }}>
-                The site also uses ads to help cover its running and maintenance costs. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes options to customize or disable them. If you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
+                The site also uses ads to help cover its running and maintenance costs. The <NoPrefetchLink className="text-link" href="/site-customization">Site Customization</NoPrefetchLink>&nbsp;page includes some options to customize or disable them. If you don&apos;t mind seeing them, leaving them enabled is an easy way to support the site without spending any money, especially if you tend to keep the site open for long periods of time.
             </span>
 
             <h2 style={{ fontSize: "1.25rem", margin: 0, alignSelf: "center" }}>Other Support</h2>

@@ -203,7 +203,7 @@ export default function EditProfilePage() {
                     <SocialsEditor socials={socials} setSocials={setSocials} />
 
                     <h4 style={headerStyle}>Discord Notifications</h4>
-                    <span className="sub-text">You can link your Discord account to receive Discord DMs whenever you receive a notification on the site. This is separate from creating an account through Discord OAuth, so only users who explicitly choose to link their accounts will receive these notifications. To receive DMs, you must join our Discord server and allow DMs from our Discord bot. This integration only covers site notifications and does not include followed threads. <strong>Warning:</strong> Linking your account will redirect you to Discord authentication which will discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
+                    <span className="sub-text">You can link your Discord account to receive Discord DMs whenever you receive a notification on the site. This is separate from creating an account through Discord OAuth, so only users who explicitly choose to link their accounts will receive these notifications. To receive DMs, you must join our Discord server so that our bot can DM you. You may also have to allow DMs from other users in the server. This integration only covers site notifications and does not include followed threads. <strong>Warning:</strong> Linking your account will redirect you to Discord authentication which will discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
                     {discord ?
                         <div>
                             <div>

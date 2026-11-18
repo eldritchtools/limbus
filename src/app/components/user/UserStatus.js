@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 
 import styles from "./UserStatus.module.css";
 import Avatar from "../icons/Avatar";
+import { useModal } from "../modals/ModalProvider";
 import NoPrefetchLink from "../NoPrefetchLink";
 import { HorizontalDivider } from "../objects/Dividers";
 import Follow from "../objects/Follow";
@@ -44,7 +45,7 @@ async function fetchNotifications(userId, setNotifs, setUnreadNotifsCount, setFo
 }
 
 function UserStatus() {
-    const { user, profile, loading, logout } = useAuth();
+    const { user, profile, loading } = useAuth();
     const router = useRouter();
     const [notifs, setNotifs] = useState([]);
     const [unreadNotifsCount, setUnreadNotifsCount] = useState(0);
@@ -53,6 +54,7 @@ function UserStatus() {
     const [tab, setTab] = useLocalState("notificationsTab", "notif");
     const [notifsOpen, setNotifsOpen] = useState(false);
     const popoverRef = useRef(null);
+    const { openLogoutModal } = useModal();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -113,7 +115,9 @@ function UserStatus() {
                 </div>
                 {user ?
                     <div style={{ display: "flex", alignItems: "end" }}>
-                        <button onClick={() => logout()} className={styles.logInOut} style={{ flex: 1 }}>Logout</button>
+                        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <button onClick={() => openLogoutModal()} className={styles.logInOut}>Logout</button>
+                        </div>
                         <div style={{ position: "relative" }} ref={popoverRef}>
                             <button onClick={() => setNotifsOpen(p => !p)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", fontSize: "1rem" }}>
                                 🔔
