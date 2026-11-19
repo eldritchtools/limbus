@@ -65,9 +65,16 @@ function takeNItems(rng, n, array) {
     return array.slice(0, n);
 }
 
-function applyIds(rng, idsPerSinner) {
+function applyIds(identities, rng, idsPerSinner) {
     return Object.entries(idsPerSinner).reduce((acc, [sinnerId, list]) => {
-        acc[sinnerId - 1] = list[Math.floor(rng() * list.length)];
+        if (acc[sinnerId - 1] !== null) return acc;
+        const id = list[Math.floor(rng() * list.length)]
+        acc[sinnerId - 1] = id;
+        if (identities[id].identityGroup)
+            identities[id].identityGroup.forEach(x => {
+                acc[identities[x].sinnerId - 1] = x;
+            });
+            
         return acc;
     }, Array.from({ length: 12 }, () => null));
 }
@@ -79,13 +86,13 @@ function generateTeam(identities, offset = 0) {
     if (day === 0) {
         // Sun: full random
         const idsPerSinner = splitIdsPerSinner(Object.values(identities));
-        return [applyIds(rng, idsPerSinner), date, day];
+        return [applyIds(identities, rng, idsPerSinner), date, day];
     } else if (day % 2 === 0) {
         // TThS: Keyword randomization
         const kwCount = 1 + Math.floor(rng() * 2);
         const kws = takeNItems(rng, kwCount, keywords.slice(0, 7));
         const idsPerSinner = splitIdsPerSinner(Object.values(identities).filter(id => (id.skillKeywordList ?? []).some(x => kws.includes(x))));
-        return [applyIds(rng, idsPerSinner), date, day];
+        return [applyIds(identities, rng, idsPerSinner), date, day];
     } else {
         // MWF: Tag randomization
         const tags = {};
@@ -107,7 +114,7 @@ function generateTeam(identities, offset = 0) {
                 } else idsPerSinner[identity.sinnerId] = [identity.id];
             })
         }
-        return [applyIds(rng, idsPerSinner), date, day];
+        return [applyIds(identities, rng, idsPerSinner), date, day];
     }
 }
 

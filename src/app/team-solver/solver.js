@@ -40,15 +40,17 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
     const getIdentityKeywords = identity => {
         const list = [...(identity.skillKeywordList ?? [])];
 
-        if(identity.id in keywordModifiers) {
+        if (identity.id in keywordModifiers) {
             keywordModifiers[identity.id].forEach(x => {
-                if("allowInSolver" in x && !x.allowInSolver) return;
+                if ("allowInSolver" in x && !x.allowInSolver) return;
                 list.push(x.keyword);
             });
         }
 
         return list;
     }
+
+    const identityGroups = Object.fromEntries(identityOptions.filter(x => x.identityGroup).map(x => [x.id, x.identityGroup]));
 
     identityOptions.forEach(identity => {
         if (!(identity.sinnerId in identitiesPerSinner)) return;
@@ -74,7 +76,7 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
             }
         });
 
-        if(matches === 0) return;
+        if (matches === 0) return;
 
         matchCountPerSinner[identity.sinnerId][matches - 1]++;
 
@@ -99,7 +101,7 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
             }
         });
 
-        if(matches === 0) return;
+        if (matches === 0) return;
 
         matchCountPerSinner[identity.sinnerId][matches - 1]++;
 
@@ -201,7 +203,12 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
         let newSolution = null;
 
         if (solver.needed.every(x => x <= 0)) {
-            newSolution = [...solver.solution];
+            const valid = solver.solution.every(id => {
+                if ((identityGroups[id] ?? []).some(oId => !solver.solution.includes(oId))) return false;
+                return true;
+            });
+
+            if (valid) newSolution = [...solver.solution];
             popId(solver);
         } else if (solver.needed.some(x => x > solver.remain)) {
             popId(solver);
@@ -241,7 +248,7 @@ function solve({ identityOptions, fixedIdentityIds, enabledSinnerIds, placeholde
                     solutions.add(k);
                     solver.solutionsAllowed--;
                     const resultOutput = result.map(id => {
-                        if(`${id}`[0] === "p") {
+                        if (`${id}`[0] === "p") {
                             const phIndex = Number(id.split("-")[1]);
                             return placeholders[phIndex];
                         } else {

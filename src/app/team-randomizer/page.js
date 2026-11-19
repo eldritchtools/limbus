@@ -104,8 +104,30 @@ export default function TeamRandomizerPage() {
     );
 
     const handleSetFixedIdentityIdAt = (index, id) => {
-        setFixedIdentityIds(p => p.map((v, i) => i === index ? id : v));
-        setIdentityIds(p => p.map((v, i) => i === index ? id : v));
+        const assignIdentityId = prev => {
+            const newList = [...prev];
+
+            const prevIdentity = identities[prev[index]];
+            if (prevIdentity?.identityGroup)
+                prevIdentity.identityGroup.map(oId => {
+                    const oIndex = identities[oId].sinnerId - 1;
+                    newList[oIndex] = null;
+                });
+
+            newList[index] = id;
+
+            const newIdentity = identities[id];
+            if (newIdentity?.identityGroup)
+                newIdentity.identityGroup.map(oId => {
+                    const oIndex = identities[oId].sinnerId - 1;
+                    newList[oIndex] = oId;
+                });
+
+            return newList;
+        }
+
+        setFixedIdentityIds(p => assignIdentityId(p));
+        setIdentityIds(p => assignIdentityId(p));
     };
 
     const handleSetFixedEgoIdAt = (index, rank, id) => {
@@ -154,12 +176,48 @@ export default function TeamRandomizerPage() {
                 wbState.list.filter(x => `${x}`[0] === "1") :
                 Object.keys(identities).filter(x => !wbState.list.includes(x));
 
-            const randomizedIds = fixedIdentityIds.map((x, i) => {
-                if (x) return x;
-                const options = idOptions.filter(id => identities[id].sinnerId === i + 1);
-                if (options.length === 0) return null;
-                return options[Math.floor(Math.random() * options.length)];
-            });
+            const result = [...fixedIdentityIds];
+
+            const assign = (result, id) => {
+                const group = [id, ...(identities[id]?.identityGroup ?? [])];
+                for (const member of group) {
+                    const index = identities[member].sinnerId - 1;
+                    if (!idOptions.includes(member) || (result[index] && result[index] !== member)) return null;
+                }
+
+                const next = [...result];
+                for (const member of group) next[identities[member].sinnerId - 1] = member;
+                return next;
+            };
+
+            let randomizedIds = null;
+            for (let attempt = 0; attempt < 100; attempt++) {
+                let current = [...result];
+
+                while (current.some(x => !x)) {
+                    const candidates = current.map((value, index) => {
+                        if (value) return null;
+
+                        const options = idOptions.filter(id => identities[id].sinnerId === index + 1);
+                        const validOptions = options.map(id => assign(current, id)).filter(Boolean);
+
+                        return { index, validOptions };
+                    })
+                        .filter(Boolean)
+                        .sort((a, b) => a.validOptions.length - b.validOptions.length);
+
+                    if (!candidates.length || !candidates[0].validOptions.length) {
+                        break;
+                    }
+
+                    const options = candidates[0].validOptions;
+                    current = options[Math.floor(Math.random() * options.length)];
+                }
+
+                if (current.every(Boolean)) {
+                    randomizedIds = current;
+                }
+            }
 
             setIdentityIds(randomizedIds);
         }
