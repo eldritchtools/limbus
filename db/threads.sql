@@ -157,6 +157,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION mark_all_threads_read()
+RETURNS void AS $$
+BEGIN
+  UPDATE thread_subscriptions ts
+  SET
+    last_seen_comment_count = s.comment_count,
+    last_seen_at = now()
+  FROM thread_activity s
+  WHERE ts.user_id = auth.uid()
+    AND s.target_type = ts.target_type
+    AND s.target_id = ts.target_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 ALTER TABLE thread_activity ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "read thread_activity"

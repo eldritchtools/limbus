@@ -36,3 +36,15 @@ export async function getUnreadNotificationsCount(userId) {
 export async function getNotificationBellData(userId) {
     return callRPC("get_user_bell_v1", {p_user_id: userId});
 }
+
+export async function setAllNotificationsRead(userId) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from('notifications')
+            .update({ is_read: true })
+            .eq('user_id', userId)
+
+        if (error) throw error;
+        return data;
+    });
+}

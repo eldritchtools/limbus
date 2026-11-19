@@ -33,3 +33,7 @@ export async function checkFollowThread(userId, targetType, targetId) {
         return data;
     });
 }
+
+export async function markAllThreadsRead() {
+    return callRPC("mark_all_threads_read", {});
+}
