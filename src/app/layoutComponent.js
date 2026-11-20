@@ -84,7 +84,8 @@ const paths = [
             { path: "/team-randomizer", title: "Team Randomizer" },
             { path: "/floor-planner", title: "Floor Planner" },
             { path: "/extraction-simulator", title: "Extraction Simulator" },
-            { path: "/team-draft", title: "Team Draft" }
+            { path: "/team-draft", title: "Team Draft" },
+            { path: "/lunacy-calc", title: "Lunacy Calculator" }
         ]
     },
     {

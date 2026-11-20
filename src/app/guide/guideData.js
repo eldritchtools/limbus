@@ -379,6 +379,14 @@ export const guideData = [
                     "Before starting, you can change a number of settings for how drafting works. Each setting has more details on hover that you can check in the settings menu.",
                     "You can use the white/black list to limit the identities and E.G.O that can appear. The blacklist can be easily populated if you have your Company set."
                 ]
+            },
+            {
+                title: "Lunacy Calculator",
+                description: "Calculate your projected Lunacy based on unclaimed rewards and recurring sources of income.",
+                details: [
+                    "A tool that lets you compute how much Lunacy you will have by a certain date given recurring sources of income and rewards across the game that you may have not claimed yet.",
+                    "One-time rewards include sources from story progression, luxcavation clears, reflectrials, ongoing events, and the paid battle pass. Recurring rewards are the weekly MD Lunacy, maintenance Lunacy, and rewards from Identity Upties. The tool also allows you to set the number of daily refreshes you'd be doing."
+                ]
             }
         ],
     },
@@ -435,6 +443,15 @@ export const guideData = [
                     "Submitted questions are periodically reviewed for accuracy.",
                     "You can select between Curated and Community datasets. Curated questions are only those that have been accepted during review, while Community questions also includes questions that have not yet been reviewed. Rejected questions are excluded from both datasets.",
                     "Anyone logged into an account can submit questions through the submit tab on the page. While playing, the contributor's username is shown to give credit for the question."
+                ]
+            },
+            {
+                title: "LC Idle Management Sim",
+                description: "Manage your own Limbus Company Facility in an idle management simulator game.",
+                details: [
+                    "Idle management simulator game inspired by Lobotomy Corp and Limbus Company.",
+                    "Players hire agents, assign them schedules working on research subjects like abnormalities and distortions, equip them with gear, assign them stats, and send them on expeditions.",
+                    "More details can be found on the page itself as there would be too many things to mention for this section."
                 ]
             }
         ]

@@ -1,0 +1,49 @@
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: var(--bg-input);
+    color: var(--secondary-text-color);
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: 0.2s ease all;
+    margin: 0;
+}
+
+.option:hover:not(:disabled) {
+    background: var(--bg-hover);
+    color: var(--primary-text-color);
+}
+
+.option.active.claimed {
+    background: #294333;
+    color: #a1d5ae;
+}
+
+.option.active.unclaimed {
+    background: var(--bg-hover);
+    color: var(--primary-text-color);
+}
+
+.option.active.excluded {
+    background: var(--bg-hover);
+    color: var(--secondary-text-color);
+}
+
+.option:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

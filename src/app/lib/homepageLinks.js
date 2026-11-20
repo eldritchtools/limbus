@@ -1,4 +1,5 @@
 import styles from "./homepageLinks.module.css";
+import Icon from "../components/icons/Icon";
 import StatusIcon from "../components/icons/StatusIcon";
 import NoPrefetchLink from "../components/NoPrefetchLink";
 
@@ -43,7 +44,8 @@ export const homepageLinks = [
             { href: "/team-randomizer", title: "Team Randomizer", icon: "MRR5BaseN" },
             { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" },
             { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass" },
-            { href: "/team-draft", title: "Team Draft", icon: "HanafudaThree" }
+            { href: "/team-draft", title: "Team Draft", icon: "HanafudaThree" },
+            { href: "/lunacy-calc", title: "Lunacy Calculator", oIcon: "lunacy"}
         ]
     },
     {
@@ -72,11 +74,14 @@ homepageLinks.forEach(({ links }) => {
     links.forEach(link => homepageLinksMapping[link.href] = link);
 })
 
-function LinkComponent({ href, title, icon, clickable }) {
+function LinkComponent({ href, title, icon, oIcon, clickable }) {
     if (clickable)
         return <NoPrefetchLink className="text-link" href={href} style={{ textDecoration: "none", display: "flex", alignItems: "center", maxWidth: "100%" }}>
             {icon ? <div className={styles.homepageLinkIcon}>
                 <StatusIcon id={icon} />
+            </div> : null}
+            {oIcon ? <div className={styles.homepageLinkIcon}>
+                <Icon path={oIcon} size={32} />
             </div> : null}
             <span style={{ flex: 1, textWrap: "wrap", textAlign: "start" }}>{title}</span>
         </NoPrefetchLink>

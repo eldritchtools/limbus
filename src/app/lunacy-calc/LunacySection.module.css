@@ -1,0 +1,74 @@
+.section {
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 4px 8px;
+    border-bottom: 1px var(--secondary-border-color) solid;
+}
+
+.sectionHeaderTitle {
+    font-size: 1.2rem; 
+    font-weight: bold;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+    padding: 3px 8px;
+    border-bottom: 1px solid var(--tertiary-border-color);
+}
+
+.table th {
+    color: #888;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.table td {
+    text-align: center;
+}
+
+.table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table th:first-child,
+.table td:first-child {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.table th:last-child,
+.table td:last-child {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.numberInput {
+    border: none;
+    width: 2ch; 
+    text-align: center; 
+    padding: 2px 4px;
+}

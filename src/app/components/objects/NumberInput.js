@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function NumberInput({ min = null, max = null, value, onChange, allowEmpty = false, style = {}, disabled }) {
+export default function NumberInput({ min = null, max = null, value, onChange, allowEmpty = false, style = {}, className, disabled }) {
     const [local, setLocal] = useState(value.toString());
 
     useEffect(() => {
@@ -9,7 +9,7 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
 
     const parse = (str, force) => {
         if (str === "" || str === "-") {
-            if(min !== null && force) return min;
+            if (min !== null && force) return min;
             return null;
         }
         const n = Number(str);
@@ -43,23 +43,22 @@ export default function NumberInput({ min = null, max = null, value, onChange, a
         onChange(num);
     };
 
-    const newStyle = {...(disabled ? {filter: "brightness(0.5)"} : {}), ...style};
+    const newStyle = { ...(disabled ? { filter: "brightness(0.5)" } : {}), ...style };
 
-    return (
-        <input
-            type="number"
-            value={local}
-            onChange={e => handleChange(e.target.value)}
-            onBlur={commit}
-            onKeyDown={e => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    commit();
-                    e.target.blur();
-                }
-            }}
-            style={newStyle}
-            disabled={disabled}
-        />
-    );
+    return <input
+        className={className}
+        type="number"
+        value={local}
+        onChange={e => handleChange(e.target.value)}
+        onBlur={commit}
+        onKeyDown={e => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                commit();
+                e.target.blur();
+            }
+        }}
+        style={newStyle}
+        disabled={disabled}
+    />;
 }

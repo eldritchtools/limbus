@@ -10,7 +10,7 @@ const singleStores = ["achievements", "companies"];
 const unsyncedStores = [
     "keywordSolver", "teamSolver", "teamRandomizer", "trainingCalc", "siteCustomization", 
     "mdPlanTracking", "universalTracking", "giftsTracking", "teamDraft", "dailyQuizzes", 
-    "guessers", "clashBattle", "idleSim"
+    "guessers", "clashBattle", "idleSim", "lunacyCalc"
 ];
 
 db.version(1).stores(
