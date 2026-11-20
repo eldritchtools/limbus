@@ -563,7 +563,6 @@ export default function LunacyCalculatorPage() {
             return count;
         };
 
-        console.log(startDate, endDate);
         const weeks = countThursdays(startDate, endDate);
         const days = countDays(startDate, endDate);
         const recurringTotal = (MD_LUNACY + MAINTENANCE_LUNACY) * weeks - REFRESH_LUNACY(dailyRefresh) * days + upties * UPTIE_LUNACY;
