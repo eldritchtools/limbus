@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./LunacySection.module.css";
 import ThreeStateToggle from "./ThreeStateToggle";
 import { useData } from "../components/DataProvider";
+import DropdownButton from "../components/objects/DropdownButton";
 import NumberInput from "../components/objects/NumberInput";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import PageHeader from "../components/pageTemplates/PageHeader";
@@ -115,6 +116,44 @@ function SummarySection({ computations, current, setCurrent, other, setOther }) 
 }
 
 function RecurringSection({ startDate, endDate, dailyRefresh, upties, total, weeks, days, setStartDate, setEndDate, setDailyRefresh, setUpties }) {
+    const [timers, timersLoading] = useData("timers");
+
+    const quickSetOptions = useMemo(() => {
+        if (timersLoading) return {};
+
+        const yesterday = value => {
+            const [year, month, day] = value.split("-").map(Number);
+            const date = new Date(Date.UTC(year, month - 1, day));
+            date.setUTCDate(date.getUTCDate() - 1);
+
+            const newYear = date.getFullYear();
+            const newMonth = String(date.getMonth() + 1).padStart(2, "0");
+            const newDay = String(date.getDate()).padStart(2, "0");
+
+            return `${newYear}-${newMonth}-${newDay}`;
+        };
+
+        const options = {};
+
+        const addOption = item => {
+            if (startDate.localeCompare(item.startDate) < 0) {
+                if (!(item.startDate in options)) options[item.startDate] = `${item.startDate}: ${item.name} (Start)`;
+            }
+
+            if (item.endDate) {
+                const end = yesterday(item.endDate);
+                if (startDate.localeCompare(end) < 0) {
+                    if (!(end in options)) options[end] = `${end}: ${item.name} (End)`;
+                }
+            }
+        }
+
+        addOption(timers.banners.main);
+        timers.banners.others.forEach(x => addOption(x));
+
+        return options;
+    }, [timers, timersLoading, startDate]);
+
     return <div className={styles.section}>
         <div className={styles.sectionHeader}>
             <span className={styles.sectionHeaderTitle}>Recurring Sources/Costs</span>
@@ -128,6 +167,9 @@ function RecurringSection({ startDate, endDate, dailyRefresh, upties, total, wee
         <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
             <label>Start Date: <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></label>
             <label>End Date: <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></label>
+            {!timersLoading &&
+                <DropdownButton value={null} setValue={x => setEndDate(x)} options={quickSetOptions} defaultDisplay={"≡"} />
+            }
         </div>
 
         <div className={styles.tableWrapper}>
