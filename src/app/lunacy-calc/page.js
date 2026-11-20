@@ -96,7 +96,7 @@ function SummarySection({ computations, current, setCurrent, other, setOther }) 
                     <tr>
                         <td>Others</td>
                         <td>
-                            <NumberInput className={styles.numberInput} style={{ width: "8ch" }} min={0}
+                            <NumberInput className={styles.numberInput} style={{ width: "8ch" }}
                                 value={other} onChange={v => setOther(v)} />
                         </td>
                     </tr>
