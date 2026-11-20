@@ -95,7 +95,7 @@ const paths = [
             { path: "/shadow-guesser", title: "Shadow Guesser" },
             { path: "/clash-arena", title: "Clash Arena" },
             { path: "/community-trivia", title: "Community Trivia Quiz" },
-            { path: "/idle-sim", title: "LC Idle Mangement Sim" }
+            { path: "/idle-sim", title: "LC Idle Management Sim" }
         ]
     },
     {
