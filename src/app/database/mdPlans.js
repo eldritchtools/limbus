@@ -1,4 +1,5 @@
-import { callRPC, convertParams, paginateParams, pinComment, unpinComment } from "./supabaseTemplates";
+import { getSupabase } from "./connection";
+import { callRPC, convertParams, paginateParams, pinComment, unpinComment, withRetry } from "./supabaseTemplates";
 import { contentConfig } from "../lib/contentConfig";
 
 const searchParams = {
@@ -70,4 +71,17 @@ export async function unpinMdPlanComment(planId) {
 
 export async function getSavedMdPlans(user_id, page = 1, pageSize = null) {
     return callRPC("get_saved_md_plans_v4", paginateParams({ p_user_id: user_id }, page, pageSize ?? contentConfig.md_plans.defaultPageSize));
+}
+
+export async function fetchMdPlanViewCount(id) {
+    return await withRetry(async () => {
+        const { data, error } = await getSupabase()
+            .from("md_plans")
+            .select("view_count")
+            .eq('id', id)
+            .maybeSingle()
+
+        if (error) throw error;
+        return data?.view_count ?? null;
+    });
 }

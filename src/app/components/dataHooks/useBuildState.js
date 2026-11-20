@@ -26,8 +26,30 @@ export default function useBuildState() {
     const [skillReplaces, setSkillReplaces] = useState({});
 
     const setIdentityIdAt = useCallback((index, id) => {
-        setIdentityIds(prev => prev.map((x, i) => i === index ? id : x));
-    }, []);
+        if (identitiesLoading) return;
+
+        setIdentityIds(prev => {
+            const newList = [...prev];
+
+            const prevIdentity = identities[prev[index]];
+            if (prevIdentity?.identityGroup)
+                prevIdentity.identityGroup.map(oId => {
+                    const oIndex = identities[oId].sinnerId - 1;
+                    newList[oIndex] = null;
+                });
+
+            newList[index] = id;
+
+            const newIdentity = identities[id];
+            if (newIdentity?.identityGroup)
+                newIdentity.identityGroup.map(oId => {
+                    const oIndex = identities[oId].sinnerId - 1;
+                    newList[oIndex] = oId;
+                });
+
+            return newList;
+        });
+    }, [identities, identitiesLoading]);
 
     const setIdentityId = useCallback(id => {
         if (identitiesLoading) return;
@@ -71,7 +93,7 @@ export default function useBuildState() {
     }, []);
 
     const addAltOption = useCallback((index, id) => {
-        setAltOptions(prev => prev.map((x, i) => i === index ? [ ...x, {id: id, desc: ""} ] : x));
+        setAltOptions(prev => prev.map((x, i) => i === index ? [...x, { id: id, desc: "" }] : x));
     }, []);
 
     const removeAltOption = useCallback((index, id) => {
@@ -79,7 +101,7 @@ export default function useBuildState() {
     }, []);
 
     const setAltOptionDesc = useCallback((index, id, desc) => {
-        setAltOptions(prev => prev.map((x, i) => i === index ? x.map(v => v.id === id ? {...v, desc: desc} : v) : x));
+        setAltOptions(prev => prev.map((x, i) => i === index ? x.map(v => v.id === id ? { ...v, desc: desc } : v) : x));
     }, []);
 
     const unpackExtraOpts = useCallback(extraOpts => {
@@ -125,7 +147,7 @@ export default function useBuildState() {
         else if (build.activeSinners) setActiveSinners(build.activeSinners);
         else setActiveSinners(7);
 
-        if(build.decodedExtraOpts) {
+        if (build.decodedExtraOpts) {
             unpackExtraOpts(build.decodedExtraOpts);
         } else {
             const extraOpts = decodeBuildExtraOpts(build.extra_opts ?? build.extraOpts ?? null);
@@ -152,7 +174,7 @@ export default function useBuildState() {
 
     return {
         identityIds, setIdentityIdAt, setIdentityId, setIdentityIds,
-        egoIds, setEgoIdAt, setEgoId, setEgoIds, 
+        egoIds, setEgoIdAt, setEgoId, setEgoIds,
         deploymentOrder, setDeploymentOrder,
         activeSinners, setActiveSinners,
         teamCode, setTeamCode,

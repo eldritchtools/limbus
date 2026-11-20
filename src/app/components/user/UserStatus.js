@@ -5,13 +5,15 @@ import { useState, useEffect, useRef } from "react";
 
 import styles from "./UserStatus.module.css";
 import Avatar from "../icons/Avatar";
+import { useModal } from "../modals/ModalProvider";
 import NoPrefetchLink from "../NoPrefetchLink";
 import { HorizontalDivider } from "../objects/Dividers";
 import Follow from "../objects/Follow";
 import Notification from "../objects/Notification";
 
 import { useAuth } from "@/app/database/authProvider";
-import { getNotificationBellData } from "@/app/database/notifications";
+import { getNotificationBellData, setAllNotificationsRead } from "@/app/database/notifications";
+import { markAllThreadsRead } from "@/app/database/threads";
 import { uiColors } from "@/app/lib/colors";
 import useLocalState from "@/app/lib/useLocalState";
 
@@ -44,7 +46,7 @@ async function fetchNotifications(userId, setNotifs, setUnreadNotifsCount, setFo
 }
 
 function UserStatus() {
-    const { user, profile, loading, logout } = useAuth();
+    const { user, profile, loading } = useAuth();
     const router = useRouter();
     const [notifs, setNotifs] = useState([]);
     const [unreadNotifsCount, setUnreadNotifsCount] = useState(0);
@@ -53,6 +55,7 @@ function UserStatus() {
     const [tab, setTab] = useLocalState("notificationsTab", "notif");
     const [notifsOpen, setNotifsOpen] = useState(false);
     const popoverRef = useRef(null);
+    const { openLogoutModal } = useModal();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -74,6 +77,18 @@ function UserStatus() {
         const unread = follows.find(f => f.target_type === follow.target_type && f.target_id === follow.target_id).unread_count > 0;
         setFollows(p => p.map(f => f.target_type === follow.target_type && f.target_id === follow.target_id ? follow : f));
         if (unread) setUnreadFollowsCount(p => p - 1);
+    }
+
+    const handleMarkAllNotifsRead = async () => {
+        await setAllNotificationsRead(user.id);
+        setNotifs(p => p.map(n => ({ ...n, is_read: true })))
+        setUnreadNotifsCount(0);
+    }
+
+    const handleMarkAllFollowsRead = async () => {
+        await markAllThreadsRead();
+        setFollows(p => p.map(f => ({ ...f, unread_count: 0 })))
+        setUnreadFollowsCount(0);
     }
 
     useEffect(() => {
@@ -113,7 +128,9 @@ function UserStatus() {
                 </div>
                 {user ?
                     <div style={{ display: "flex", alignItems: "end" }}>
-                        <button onClick={() => logout()} className={styles.logInOut} style={{ flex: 1 }}>Logout</button>
+                        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <button onClick={() => openLogoutModal()} className={styles.logInOut}>Logout</button>
+                        </div>
                         <div style={{ position: "relative" }} ref={popoverRef}>
                             <button onClick={() => setNotifsOpen(p => !p)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", fontSize: "1rem" }}>
                                 🔔
@@ -158,7 +175,16 @@ function UserStatus() {
                                         }
                                     </div>
                                     <div style={{ borderTop: "1px solid #444", padding: "8px", textAlign: "center" }}>
-                                        <NoPrefetchLink href="/notifications" style={{ color: "#4da3ff", textDecoration: "none", fontSize: "0.9rem" }}>View all notifications</NoPrefetchLink>
+                                        <NoPrefetchLink href="/notifications" className="text-link" style={{ textDecoration: "none", fontSize: "0.8rem" }}>View all notifications</NoPrefetchLink>
+                                    </div>
+                                    <div style={{ borderTop: "1px solid #444", padding: "8px", textAlign: "center" }}>
+                                        <button
+                                            className="text-link"
+                                            style={{ border: "none", padding: 0, margin: 0, fontSize: "0.8rem", background: "none" }}
+                                            onClick={tab === "notif" ? handleMarkAllNotifsRead : handleMarkAllFollowsRead}
+                                        >
+                                            Mark all read
+                                        </button>
                                     </div>
                                 </div> : null}
                         </div>

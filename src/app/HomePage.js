@@ -72,6 +72,8 @@ export default async function HomePage() {
                 The community features let you share team builds and Mirror Dungeon plans, rate and review Identities and E.G.O, discover creators, and showcase your in-game collection. Visit the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to personalize your profile or site experience.
                 <br /> <br />
                 Use the links below to explore the site. The <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink>&nbsp;also provides a more detailed overview of the site&apos;s pages and features.
+                <br /> <br />
+                If you enjoy using Limbus Company Tools and would like to help with its continued development and maintenance, consider <NoPrefetchLink className="text-link" href={"/support"}>supporting the project</NoPrefetchLink>!
             </p>
             <PopularityPoll />
             <LinksMenu />

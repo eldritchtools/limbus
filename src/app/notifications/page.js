@@ -35,7 +35,7 @@ export default function NotificationsPage() {
             <div className={`tab-header ${tab === "notif" ? "active" : ""}`} onClick={() => setTab("notif")}>Notifications</div>
             <div className={`tab-header ${tab === "follow" ? "active" : ""}`} onClick={() => setTab("follow")}>Followed Threads</div>
         </div>
-        <div className="panel-container" style={{ width: "min(100%, 1200px)" }}>
+        <div className="panel-container" style={{ width: "min(100%, 1200px)", marginTop: "1rem" }}>
             {tab === "notif" ?
                 (notifs.length === 0 ?
                     <div style={{ textAlign: "center", padding: "15px", color: "var(--secondary-text-color)" }}>No notifications</div> :

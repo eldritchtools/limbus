@@ -11,6 +11,7 @@ import DeleteContentModalContent from "./DeleteContentModalContent";
 import GiftModalContent from "./GiftModalContent";
 import ImageCarouselModalContent from "./ImageCarouselModalContent";
 import ImageModalContent from "./ImageModalContent";
+import LogoutModalContent from "./LogoutModalContent";
 import ModalContainer from "./ModalContainer";
 import ModalNavigationWatcher from "./ModalNavigationWatcher";
 import PollResultModalContent from "./PollResultModalContent";
@@ -28,6 +29,7 @@ import UpdateHistoryModalContent from "./UpdateHistoryModalContent";
 const ModalContext = createContext();
 
 const MODAL_COMPONENTS = {
+    "logout": LogoutModalContent,
     "gift": GiftModalContent,
     "status": StatusModalContent,
     "selectBuild": SelectBuildModalContent,
@@ -73,6 +75,10 @@ export function ModalProvider({ children }) {
 
     const openModal = (type, props = {}) => {
         setStack(prev => [...prev, { modalId: stack.length, type, props, beforeClose: null }]);
+    }
+
+    const openLogoutModal = ({}) => {
+        openModal("logout", {});
     }
 
     const openGiftModal = ({ id, enhanceRank = 0, forceTriggersEffects }) => {
@@ -182,6 +188,7 @@ export function ModalProvider({ children }) {
     }
 
     const exportFunctions = {
+        openLogoutModal,
         openGiftModal,
         openStatusModal,
         openSelectBuildModal,
