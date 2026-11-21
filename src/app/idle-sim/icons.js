@@ -40,6 +40,12 @@ function agentSpriteDetails(type, id) {
             { transform: "scaleX(-1)" }
         ];
 
+    if (type === "I")
+        return [
+            `${ASSETS_ROOT}/identities/${id}_sprite_idle.webp`,
+            {}
+        ]
+
     return ["", {}];
 }
 
