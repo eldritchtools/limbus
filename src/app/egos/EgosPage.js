@@ -148,7 +148,10 @@ function EgoList({
             Object.values(egos),
             combinedFilters,
             ego => {
-                if (companyFilter && company && !company.has(ego.id)) return false;
+                if (companyFilter && company) {
+                    if (companyFilter === "include" && !company.has(ego.id)) return false;
+                    if (companyFilter === "exclude" && company.has(ego.id)) return false;
+                }
                 return searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames));
             },
             strictFiltering
@@ -302,6 +305,11 @@ export default function EgosPage({ initEgos, compare }) {
         ]
     }, [egos, egosLoading, statuses, statusesLoading]);
 
+    const handleSetCompanyFilter = setting => {
+        if (setting === companyFilter) setCompanyFilter(false);
+        else setCompanyFilter(setting);
+    }
+
     return <>
         <PageHeader
             title={"E.G.Os"}
@@ -355,11 +363,13 @@ export default function EgosPage({ initEgos, compare }) {
                         isMulti={true}
                         excludeMode={seasonsExcluding}
                     />
-                    <span style={{ textAlign: "end" }}>Display Type:</span>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "end" }}>
+                        <span className="hover-text" {...getGeneralTooltipProps("Additional details like skills and passives can be viewed on the Cards and Full Details display types by turning on Advanced Compare Mode and changing the compare target.")}>Display Type:</span>
+                    </div>
                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                         <label>
                             <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                            Icons Only
+                            Icons
                         </label>
                         <label>
                             <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
@@ -367,7 +377,7 @@ export default function EgosPage({ initEgos, compare }) {
                         </label>
                         <label>
                             <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                            Full Details
+                            Table
                         </label>
                     </div>
                     <div />
@@ -386,11 +396,12 @@ export default function EgosPage({ initEgos, compare }) {
                         </label>
                     </div>
                     <div />
-                    <div>
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                            <input type="checkbox" checked={companyFilter} onChange={e => setCompanyFilter(e.target.checked)} />
-                            Apply Company Filter
-                        </label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
+                        <button style={{ background: companyFilter === "include" ? "var(--bg-hover)" : null, padding: "0 2px", }}
+                            onClick={() => handleSetCompanyFilter("include")} {...getGeneralTooltipProps("Include")}>✓</button>
+                        <button style={{ background: companyFilter === "exclude" ? "var(--bg-hover)" : null, padding: "0 2px" }}
+                            onClick={() => handleSetCompanyFilter("exclude")} {...getGeneralTooltipProps("Exclude")}>−</button>
+                        Company Filter
                     </div>
                     <div />
                     <div>

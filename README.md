@@ -37,7 +37,6 @@ The project aims to provide a comprehensive set of tools and resources for the L
 
 These projects are used alongside this repository:
 
-- [Limbus Assets](https://github.com/eldritchtools/limbus-assets)
 - [Limbus Realtime](https://github.com/eldritchtools/limbus-realtime)
 
 These projects were eventually merged into this repository:

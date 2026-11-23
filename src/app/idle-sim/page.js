@@ -52,7 +52,6 @@ export default function IdleSimPage() {
         ];
     }, [idleSim]);
 
-
     if (idleSim.uiState.intro)
         return <IntroScreen idleSim={idleSim} />
 

@@ -159,7 +159,7 @@ function resolveExpedition(data, state, expedition) {
 
     const agents = expedition.agent_ids
         .map(id => state.agents[id])
-        .filter(agent => agent && agent.hp > 0);
+        .filter(agent => agent && agent.hp > 0 && agent.sp > MIN_SP);
 
     const agentStats = agents.map(agent => {
         const stats = getAgentEffectiveStats(data, state, agent);
@@ -211,7 +211,7 @@ function resolveExpedition(data, state, expedition) {
     expedition.enemy_state.forEach((enemy, e) => {
         enemy.hp -= damageToEnemies[e];
         if (enemy.hp <= 0) {
-            resolveEnemyPreDeathEffects(data, { state, enemy });
+            resolveEnemyPreDeathEffects(data, { state, enemy, enemyState: expedition.enemy_state });
             if (enemy.hp <= 0) {
                 enemyDefeated += 1;
             }
@@ -234,11 +234,13 @@ function resolveExpedition(data, state, expedition) {
         enemy.statuses = enemy.statuses.filter(status => status.until === undefined || status.until > state.game_tick);
     }
 
+    expedition.enemy_state = expedition.enemy_state.filter(enemy => !enemy.remove);
+
     resolveEnemyTickEndEffects(data, { state, enemyState: expedition.enemy_state, agents, enemyDefeated, agentDefeated });
     resolveGearExpeditionEffects(data, { state, enemyState: expedition.enemy_state, agents, enemyDefeated, agentDefeated });
 
     const cleared = expedition.enemy_state.length === 0;
-    const anyAgentUp = agents.some(agent => agent.hp > 0);
+    const anyAgentUp = agents.some(agent => agent.hp > 0 && agent.sp > MIN_SP);
     let result = null;
 
     if (cleared && wave === expeditionData.waves.length - 1) {
@@ -416,7 +418,6 @@ export function simulateTick(data, state) {
     const nextState = structuredClone(state);
     runTick(data, nextState);
     if (Object.values(nextState.agents).some(a => isNaN(a.hp))) return null;
-    nextState.cleared_expeditions = nextState.cleared_expeditions.filter(x => x !== "X-14")
     return nextState;
 }
 

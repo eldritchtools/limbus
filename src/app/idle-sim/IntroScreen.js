@@ -3,6 +3,8 @@ import React from "react";
 import styles from "./idleSim.module.css";
 import { getReportEventText } from "./reports";
 import { formatNumber, toCurrencyStr } from "./util";
+import { useData } from "../components/DataProvider";
+import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 function FacilityStatus({ idleSim }) {
     const summary = idleSim.catchupSummary;
@@ -55,6 +57,8 @@ function FacilityStatus({ idleSim }) {
 }
 
 export default function IntroScreen({ idleSim }) {
+    const [updates, updatesLoading] = useData("idle_sim/updates");
+
     return <div style={{
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: "850px", minHeight: "80vh",
         margin: "0 auto", gap: "1.2rem", padding: "1rem", boxSizing: "border-box"
@@ -84,6 +88,24 @@ export default function IntroScreen({ idleSim }) {
             </div>
             <div>
                 • <strong>Game Manual:</strong> Detailed explanations of mechanics and formulas can be found in the <strong>Manual</strong> tab.
+            </div>
+        </div>
+
+        <div className={styles.tile} style={{ width: "100%" }}>
+            <h3 style={{ margin: 0 }}>Updates</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", alignItems: "center", width: "100%", gap: ".2rem" }}>
+                {updatesLoading ? [] :
+                    updates.map((update, i) => <React.Fragment key={i}>
+                        <span className="sub-text">{update.date}</span>
+                        <div>
+                            <span className="text-link"
+                                style={{ marginLeft: "0.3rem", textAlign: "start", fontWeight: "normal" }}
+                                {...getGeneralTooltipProps(update.text)}>
+                                {update.title}
+                            </span>
+                        </div>
+                    </React.Fragment>)
+                }
             </div>
         </div>
 

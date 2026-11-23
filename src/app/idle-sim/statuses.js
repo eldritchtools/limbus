@@ -22,7 +22,7 @@ export function applyStatus(data, state, targetState, status) {
         targetState.statuses.push({
             type: status.type ?? statusType ?? "combat",
             ...status,
-            until: status.ticks ? state.game_tick + status.ticks : undefined
+            until: status.ticks ? (state.game_tick ?? state.state.game_tick) + status.ticks : undefined
         });
     }
 }
@@ -93,6 +93,9 @@ const DEFENDER_DAMAGE_STATUSES = {
         if (status.affinity) return damage;
         if (status.op === "mul") return damage * (1 + status.value);
         else if (status.op === "add") return damage + status.value;
+    },
+    Karma: (damage, status, attackerState, defenderState) => {
+        return damage * (1 + status.value / 100);
     }
 }
 
@@ -131,6 +134,13 @@ const TICK_END_STATUSES = {
         owner.hp -= status.value;
         status.value = Math.floor(status.value / 2);
         if (status.value === 0) owner.statuses = owner.statuses.filter(st => st.id !== "Poison");
+    },
+    Shock: (data, state, status, owner) => {
+        owner.hp -= status.value;
+        owner.statuses = owner.statuses.filter(st => st.id !== "Shock");
+    },
+    Karma: (data, state, status, owner) => {
+        if (status.value >= 108) owner.remove = true;
     }
 }
 

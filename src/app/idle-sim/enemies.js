@@ -1,12 +1,16 @@
 import { createEnemy } from "./expeditions";
+import { getAgentEffectiveStats } from "./gear";
 import { applyStatus } from "./statuses";
-import { checkConditions, getAffinityIndex, numberCompare } from "./util";
+import { checkConditions, evaluateTarget, getAffinityIndex, numberCompare } from "./util";
 
 const VARS = {
     hp_percent: (data, state) => {
         const enemy = state.enemy ?? state.enemyState[state.enemyIndex];
         if (!enemy) return undefined;
         return enemy.hp / data.enemies[enemy.id].max_hp;
+    },
+    enemies_count: (data, state) => {
+        return state.enemyState.length;
     }
 }
 
@@ -18,27 +22,39 @@ const CONDITIONS = {
         return numberCompare(val, condition.target, condition.comp);
     },
     random: (data, state, condition) => Math.random() < condition.chance,
+    tick_mod: (data, state, condition) => {
+        const tick = state.game_tick ?? state.state?.game_tick;
+        return tick % condition.value === (condition.offset ?? 0);
+    },
     no_allies: (data, state, condition) => state.enemyState.length === 1,
-    on_first_death: (data, state, condition) => {
+    on_death: (data, state, condition) => {
         const enemy = state.enemy ?? state.enemyState[state.enemyIndex];
-        if (enemy.deaths >= 1) return false;
-        if (enemy.hp <= 0) {
-            enemy.deaths = (enemy.deaths ?? 0) + 1;
-            return true;
-        }
-        return false;
+        return enemy.hp <= 0;
     },
     turns_alive: (data, state, condition) => {
         const enemy = state.enemy ?? state.enemyState[state.enemyIndex];
-        enemy.turns_alive = (enemy.turns_alive ?? 0) + 1;
-        return enemy.turns_alive >= condition.value;
+        enemy.first_tick ??= state.state.game_tick;
+        return state.state.game_tick - enemy.first_tick + 1 >= condition.value;
     },
-    on_kill: (data, state, condition) => state.agentDefeated > 0
+    on_kill: (data, state, condition) => state.agentDefeated > 0,
+    agent_any_offense: (data, state, condition) => {
+        return state.agents.some(agent => {
+            const stats = getAgentEffectiveStats(data, state, agent, false);
+            return condition.affinities.some(affinity => numberCompare(stats.offense[getAffinityIndex(affinity)], condition.target, condition.comp));
+        });
+    },
+    once: (data, state, condition) => {
+        const enemy = state.enemy ?? state.enemyState[state.enemyIndex];
+        if ((enemy.flags ?? {})[condition.id]) return false;
+        enemy.flags = { ...(enemy.flags ?? {}), [condition.id]: true }
+        return true;
+    }
 };
 
 const DAMAGE_STAT_EFFECTS = {
-    add_damage_stat: (index, enemyStats, effect) => {
-        enemyStats[index].offense[getAffinityIndex(effect.affinity)] += effect.value;
+    add_damage_stat: (index, state, enemyStats, effect) => {
+        const value = effect.valuePer ? (effect.valuePer * state.enemyState.filter(x => x.id === effect.id).length) : effect.value;
+        enemyStats[index].offense[getAffinityIndex(effect.affinity)] += value;
     }
 };
 
@@ -50,7 +66,7 @@ export function resolveEnemyDamageStatEffects(data, state, enemyStats) {
             if (trueEffects.length === 0) continue;
             if (!checkConditions(data, { ...state, enemy }, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
 
-            for (const trueEffect of trueEffects) DAMAGE_STAT_EFFECTS[trueEffect.type]?.(i, enemyStats, trueEffect);
+            for (const trueEffect of trueEffects) DAMAGE_STAT_EFFECTS[trueEffect.type]?.(i, { ...state, enemy }, enemyStats, trueEffect);
         }
     }
 }
@@ -90,6 +106,20 @@ const PRE_DEATH_EFFECTS = {
     },
     heal_hp: (data, state, effect) => {
         state.enemy.hp += effect.value;
+    },
+    heal_hp_per_enemy: (data, state, effect) => {
+        state.enemy.hp += effect.valuePer * state.enemyState.filter(x => x.id === effect.id).length;
+    },
+    set_hp_percent: (data, state, effect) => {
+        state.enemy.hp = data.enemies[state.enemy.id].max_hp * effect.value;
+    },
+    fixed_damage_ally: (data, state, effect) => {
+        if (effect.target.startsWith("id:")) {
+            const id = effect.target.slice(3);
+            for (const enemy of state.enemyState) {
+                if (enemy.id === id) enemy.hp -= effect.value;
+            }
+        }
     }
 };
 
@@ -107,34 +137,51 @@ const TICK_END_EFFECTS = {
         state.enemyState.push(createEnemy(data, effect.id));
     },
     sp_damage: (data, state, effect) => {
-        state.agents.forEach(agent => { agent.sp -= effect.value });
+        const targets = evaluateTarget(state.agents, effect.target);
+        for (const agent of targets) {
+            agent.sp -= effect.value;
+        }
+    },
+    sp_damage_per_enemy: (data, state, effect) => {
+        const sp = effect.valuePer * state.enemyState.filter(x => x.id === effect.id).length;
+        const targets = evaluateTarget(state.agents, effect.target);
+        for (const agent of targets) {
+            agent.sp -= sp;
+        }
     },
     buff_self: (data, state, effect) => {
         applyStatus(data, state.state, state.enemy, effect.status);
     },
     buff_target: (data, state, effect) => {
-        if (effect.target === "random") {
-            if(state.agents.length === 0) return;
-            const agent = state.agents[Math.floor(Math.random() * state.agents.length)];
-            applyStatus(data, state.state, agent, effect.status );
-        } else if (effect.target === "all") {
-            for (const agent of state.agents) {
-                applyStatus(data, state.state, agent, effect.status );
-            }
+        const target = effect.target === "highest_hp_agent" ? "highest_hp" : effect.target;
+        const targets = evaluateTarget(state.agents, target);
+        for (const agent of targets) {
+            applyStatus(data, state.state, agent, effect.status);
         }
     },
     buff_ally: (data, state, effect) => {
-        if (effect.target === "random") {
-            const enemy = state.enemyState[Math.floor(Math.random() * state.enemyState.length)];
-            applyStatus(data, state.state, enemy, effect.status );
-        } else if (effect.target === "all") {
-            for (const enemy of state.enemyState) {
-                applyStatus(data, state.state, enemy, effect.status );
+        if (effect.target === "random_except_self") {
+            const options = state.enemyState.filter(x => x.id !== state.enemy.id);
+            const targets = evaluateTarget(options, "random");
+            for (const enemy of targets) {
+                applyStatus(data, state.state, enemy, effect.status);
+            }
+        } else {
+            const targets = evaluateTarget(state.enemyState, effect.target);
+            for (const enemy of targets) {
+                applyStatus(data, state.state, enemy, effect.status);
             }
         }
     },
     incapacitate_all_agents: (data, state, effect) => {
         state.agents.forEach(agent => { agent.hp = 0; })
+    },
+    fixed_damage: (data, state, effect) => {
+        const target = effect.target === "highest_hp_agent" ? "highest_hp" : effect.target;
+        const targets = evaluateTarget(state.agents, target);
+        for (const agent of targets) {
+            agent.hp -= effect.value;
+        }
     }
 };
 
@@ -143,9 +190,13 @@ export function resolveEnemyTickEndEffects(data, state) {
         const enemy = state.enemyState[i];
         for (const effect of data.enemies[enemy.id].effects ?? []) {
             const trueEffects = effect.effects.filter(effect => effect.type in TICK_END_EFFECTS);
-            if (trueEffects.length === 0) continue;
-            if (!checkConditions(data, { ...state, enemy }, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) continue;
-            for (const trueEffect of trueEffects) TICK_END_EFFECTS[trueEffect.type]?.(data, {...state, enemy}, trueEffect);
+            const falseEffects = (effect.falseEffects ?? []).filter(effect => effect.type in TICK_END_EFFECTS);
+            if (trueEffects.length === 0 && falseEffects.length === 0) continue;
+            if (checkConditions(data, { ...state, enemy }, CONDITIONS, effect.conditions, effect.conditionOp ?? "and")) {
+                for (const trueEffect of trueEffects) TICK_END_EFFECTS[trueEffect.type]?.(data, { ...state, enemy }, trueEffect);
+            } else {
+                for (const trueEffect of falseEffects) TICK_END_EFFECTS[trueEffect.type]?.(data, { ...state, enemy }, trueEffect);
+            }
         }
     }
 }

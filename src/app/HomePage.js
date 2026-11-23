@@ -4,7 +4,6 @@ import CommunityPoll from "./CommunityPoll";
 import MdPlan from "./components/contentCards/MdPlan";
 import TeamBuild from "./components/contentCards/TeamBuild";
 import { fetchData } from "./components/DataFetcherServer";
-import BannerIcon from "./components/icons/BannerIcon";
 import EgoIcon from "./components/icons/EgoIcon";
 import IdentityIcon from "./components/icons/IdentityIcon";
 import NoPrefetchLink from "./components/NoPrefetchLink";
