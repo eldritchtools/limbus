@@ -12,6 +12,7 @@ import MarkdownRenderer from "../components/markdown/MarkdownRenderer";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import ThemePackWithFloors from "../components/objects/ThemePackWithFloors";
 import PageHeader from "../components/pageTemplates/PageHeader";
+import IconsSelector from "../components/selectors/IconsSelector";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { checkFilterMatch } from "../lib/filter";
 import useLocalState from "../lib/useLocalState";
@@ -171,6 +172,7 @@ export default function ThemePacksPage() {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedFloors, setSelectedFloors] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
+    const [filters, setFilters] = useState([]);
 
     const [forceOpen, setForceOpen] = useLocalState("themePacksForceOpen", false);
 
@@ -209,15 +211,26 @@ export default function ThemePacksPage() {
     }, [floorPacksData, floorPacksLoading]);
 
     const components = useMemo(() =>
-        themePacksLoading ? [] :
+        (themePacksLoading || giftsLoading) ? [] :
             Object.entries(themePacksData).filter(([id, themePack]) => {
                 if (selectedCategories.length !== 0 && !selectedCategories.some(selectedCategory => themePack.category.includes(selectedCategory))) return false;
                 if (selectedFloors.length !== 0 && !selectedFloors.some(selectedFloor => checkFloorMatch(selectedFloor, id))) return false;
                 if (selectedTags.length !== 0 && !selectedTags.some(selectedTag => themePack.tags.includes(selectedTag))) return false;
                 if (searchString.length !== 0 && !checkFilterMatch(searchString, includeGifts ? filterStrings[id] : themePack.name)) return false;
+                if (filters.length > 0) {
+                    for (const filter of filters) {
+                        if (filter[0] === "-") {
+                            if (!themePack.exclusive_gifts) continue;
+                            if (themePack.exclusive_gifts.some(giftId => filter.slice(1) === giftsData[giftId].keyword)) return false;
+                        } else {
+                            if (!themePack.exclusive_gifts) return false;
+                            if (!themePack.exclusive_gifts.some(giftId => filter === giftsData[giftId].keyword)) return false;
+                        }
+                    }
+                }
                 return true;
             }).map(([id, themePack]) => <ThemePack key={id} id={id} themePack={themePack} isSmall={!isDesktop} openOverride={forceOpen} />)
-        , [themePacksData, themePacksLoading, searchString, filterStrings, selectedCategories, selectedFloors, selectedTags, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
+        , [themePacksData, themePacksLoading, giftsData, giftsLoading, searchString, filters, filterStrings, selectedCategories, selectedFloors, selectedTags, checkFloorMatch, includeGifts, isDesktop, forceOpen]);
 
     return <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center", gap: "1rem", justifyContent: "start" }}>
         <PageHeader
@@ -228,49 +241,52 @@ export default function ThemePacksPage() {
                 <br /><br />
                 Expand a Theme Pack to view its exclusive E.G.O Gifts and see its possible boss encounters. You can also expand all Theme Packs currently shown in the catalogue at once.
             </>}
-            maxAds={1}
         >
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-                <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                    <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name..."} />
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                    <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
+                        <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name..."} />
+                        <label>
+                            <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
+                            <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
+                                className="hover-text"
+                            >
+                                Include Exclusive Gifts
+                            </span>
+                        </label>
+                    </div>
+                    <span
+                        className="hover-text" style={{ textAlign: "end" }}
+                        {...getGeneralTooltipProps("Strict hierarchical categorization of Theme Packs based on how the game organizes them. Use Tags for a broader style of filtering.")}
+                    >
+                        Filter Categories:
+                    </span>
+                    <CategorySelector
+                        selected={selectedCategories}
+                        setSelected={setSelectedCategories}
+                        categories={categories}
+                    />
+                    <span style={{ textAlign: "end" }}>Filter Floors:</span>
+                    <FloorSelector
+                        selected={selectedFloors}
+                        setSelected={setSelectedFloors}
+                        floors={floorPacksLoading ? {} : floorPacksData}
+                    />
+                    <span style={{ textAlign: "end" }}>Filter Tags:</span>
+                    <TagSelector
+                        selected={selectedTags}
+                        setSelected={setSelectedTags}
+                        tags={tags}
+                    />
+                    <div />
                     <label>
-                        <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
-                        <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
-                            className="hover-text"
-                        >
-                            Include Exclusive Gifts
-                        </span>
+                        <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
+                        <span>Show details for all theme packs</span>
                     </label>
                 </div>
-                <span
-                    className="hover-text" style={{ textAlign: "end" }}
-                    {...getGeneralTooltipProps("Strict hierarchical categorization of Theme Packs based on how the game organizes them. Use Tags for a broader style of filtering.")}
-                >
-                    Filter Categories:
-                </span>
-                <CategorySelector
-                    selected={selectedCategories}
-                    setSelected={setSelectedCategories}
-                    categories={categories}
-                />
-                <span style={{ textAlign: "end" }}>Filter Floors:</span>
-                <FloorSelector
-                    selected={selectedFloors}
-                    setSelected={setSelectedFloors}
-                    floors={floorPacksLoading ? {} : floorPacksData}
-                />
-                <span style={{ textAlign: "end" }}>Filter Tags:</span>
-                <TagSelector
-                    selected={selectedTags}
-                    setSelected={setSelectedTags}
-                    tags={tags}
-                />
-                <div />
-                <label>
-                    <input type="checkbox" checked={forceOpen} onChange={e => setForceOpen(e.target.checked)} />
-                    <span>Show details for all theme packs</span>
-                </label>
+
+                <IconsSelector type={"column"} categories={["status"]} values={filters} setValues={setFilters} />
             </div>
         </PageHeader>
 

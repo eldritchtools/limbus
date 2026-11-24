@@ -11,9 +11,7 @@ import "./styles/toggle-text.css";
 import { Layout } from "@eldritchtools/shared-components";
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
-import { FaBan } from "react-icons/fa";
 
-import NitroAd from "./components/ads/NitroAd";
 import ChatWrapper from "./components/chat/ChatWrapper";
 import { DataProvider } from "./components/DataProvider";
 import { ModalProvider } from "./components/modals/ModalProvider";
@@ -158,16 +156,6 @@ function Announcement() {
     </div>;
 }
 
-// function NoAiIcon() {
-//     return <div
-//         style={{ display: "flex", position: "relative", "alignItems": "center", justifyContent: "center", paddingLeft: "1rem" }}
-//         {...getGeneralTooltipProps("This website is human-authored. No AI-generated code is used on this site.")}
-//     >
-//         <span style={{ position: "absolute", fontSize: "18px", fontWeight: "bold" }}>AI</span>
-//         <FaBan style={{ position: "absolute", width: "36px", height: "36px", color: "#bb0000", rotate: "90deg" }} />
-//     </div>
-// }
-
 export default function LayoutComponent({ lastUpdated, children }) {
     return <NavigationLoadingProvider>
         <AuthProvider>
@@ -187,16 +175,11 @@ export default function LayoutComponent({ lastUpdated, children }) {
                                     paths={paths}
                                     LinkComponent={NoPrefetchLink}
                                     headerCenterOverride={<TitleSearch />}
-                                    // additionalSidebarIcons={<NoAiIcon />}
                                     sidebarTopComponent={<UserStatus />}
                                     footerTopComponent={<FooterNavigation />}
                                     sidebarBottomComponent={<div style={{ display: "flex", flexDirection: "column", textAlign: "center", marginTop: "0.5rem" }}>
                                         <span className="sub-text">This website is human-authored. No AI-generated code is used on this site.</span>
-                                        <NitroAd id={"sidebar-ad"} height={600} style={{ margin: ".5rem" }} />
                                     </div>}
-                                    footerLeftComponent={<NitroAd id={"footer-left-ad"} height={220} style={{ marginRight: "2rem", boxSizing: "border-box" }} mediaTypes={["desktop"]} adLevel={"high"} />}
-                                    footerRightComponent={<NitroAd id={"footer-right-ad"} height={220} style={{ marginLeft: "2rem", boxSizing: "border-box" }} mediaTypes={["desktop"]} adLevel={"high"} />}
-                                    footerBottomComponent={<NitroAd id={"footer-bottom-ad"} height={90} style={{ marginLeft: "2rem", boxSizing: "border-box" }} />}
                                 >
                                     <Announcement />
                                     {children}

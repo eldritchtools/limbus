@@ -114,7 +114,6 @@ export default function MDEventsPage() {
                 <br /><br />
                 Each event shows its possible Gift rewards and any affinities that receive a bonus or handicap when the event includes a check. Expand an event to view its description and all of its choices, including branching options and the details of their checks, requirements, and outcomes.
             </>}
-            maxAds={1}
         >
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                 <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>

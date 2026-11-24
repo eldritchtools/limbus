@@ -17,7 +17,6 @@ import SettingsTab from "./SettingsTab";
 import SubjectsTab from "./SubjectsTab";
 import useIdleSim from "./useIdleSim";
 import { toCurrencyStr } from "./util";
-import NitroAd from "../components/ads/NitroAd";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
 
@@ -56,8 +55,6 @@ export default function IdleSimPage() {
         return <IntroScreen idleSim={idleSim} />
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
-
         <div style={{ width: "100%", textAlign: "center", fontSize: "1.6rem", fontWeight: "bold", letterSpacing: "1px", padding: "1rem 0" }}>
             L.C. Idle Management Simulator
         </div>

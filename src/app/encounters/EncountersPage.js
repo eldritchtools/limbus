@@ -172,7 +172,6 @@ export default function EncountersPage() {
                 <br /> <br />
                 Refraction Railway and Reflectrial encounters also include a Clear Records leaderboard where players can submit their own clears. Submissions can include screenshots, details about the teams or run, and an optional video, allowing players to share how they approached the encounter and compare their results with other submissions.
             </>}
-            maxAds={1}
         >
             {!encountersLoading &&
                 <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>

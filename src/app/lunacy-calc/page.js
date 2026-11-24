@@ -647,7 +647,6 @@ export default function LunacyCalculatorPage() {
                 Each section or item for one-time rewards can be marked as claimed, unclaimed, or excluded, so you adjust the exact amount of Lunacy you can still obtain. For recurring sources, you can set the start and end date, and it will automatically calculate your expected income. You can also set your daily refreshes to automatically deduct Lunacy from your total.
             </>}
             wide={true}
-            maxAds={1}
         />
 
         <div style={{ width: "100%", maxWidth: "800px" }}>

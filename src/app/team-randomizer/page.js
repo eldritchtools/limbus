@@ -304,7 +304,6 @@ export default function TeamRandomizerPage() {
                 Generated teams include a team code that can be copied directly into the game. You can also copy the generated team into a Team Build to save or share it.
             </>}
             wide={true}
-            maxAds={1}
         />
         {
             identitiesLoading || egosLoading || initializing ?

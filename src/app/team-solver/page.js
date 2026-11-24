@@ -315,7 +315,6 @@ export default function TeamSolverPage() {
                 The solver offers Balanced, Faster, and Variety search modes depending on whether you want to balance search time with the variety of results. The solver may take longer when requirements are strict. If solutions exist, the first results will usually appear relatively quickly, with additional teams found over time. Only Identities that match at least one of your requirements will be considered.
             </>}
             wide={true}
-            maxAds={3}
         >
             {!identitiesLoading && !keywordModDataLoading && !initializing && <>
                 <h3 style={{ margin: 0 }}>Solver Settings</h3>

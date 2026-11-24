@@ -89,7 +89,6 @@ export default function GMSExplorerPage() {
                 <br /> <br />
                 Any corrections or suggestions can be submitted through the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page.
             </>}
-            maxAds={1}
         >
             <div style={{ display: "flex", marginBottom: "1rem", gap: "1rem" }}>
                 <div className={`tab-header ${searchParams.tab === "map" && "active"}`} onClick={() => handleSetTab("map")}>Map</div>

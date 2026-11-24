@@ -169,7 +169,6 @@ export default function FusionsPage() {
                 <br /><br />
                 Each recipe shows the required Gifts, whether it can be obtained in Normal or Hard Mirror Dungeon, and any Theme Packs you need to visit to obtain its ingredients.
             </>}
-            maxAds={1}
         >
             <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "0.5rem", alignItems: "center" }}>

@@ -419,7 +419,6 @@ export default function RankingsPage({ tab, username }) {
                 <br /> <br />
                 The rankings represent community opinion rather than the official views of Limbus Company Tools. Ratings are subjective and may be influenced by differences in playstyle, personal preferences, trends, memes, and jokes, so the community average should not be treated as an objective measure of an Identity or E.G.O&apos;s quality.
             </>}
-            maxAds={2}
         >
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>

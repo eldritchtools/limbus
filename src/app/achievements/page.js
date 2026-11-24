@@ -436,7 +436,6 @@ export default function AchievementsPage() {
                 <br /><br />
                 Progress is automatically saved after a few seconds of inactivity.
             </>}
-            maxAds={1}
         >
             <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
                 <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>

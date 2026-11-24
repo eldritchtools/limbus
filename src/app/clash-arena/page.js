@@ -9,7 +9,6 @@ import RoundRevealScreen from "./RoundRevealScreen";
 import RoundSelectScreen from "./RoundSelectScreen";
 import SetupScreen from "./SetupScreen";
 import { useClashBattle } from "./useClashBattle";
-import NitroAd from "../components/ads/NitroAd";
 import { useAuth } from "../database/authProvider";
 
 function ClashArenaPageContent() {
@@ -43,7 +42,6 @@ function ClashArenaPageContent() {
 
 export default function ClashArenaPage() {
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
         <ClashArenaPageContent />
     </div>
 }

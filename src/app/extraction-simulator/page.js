@@ -451,7 +451,6 @@ export default function ExtractionSimulatorPage() {
                 Results may differ slightly from the game due to possible differences in how randomization is implemented.
             </>}
             wide={true}
-            maxAds={1}
         />
         {timersLoading || identitiesLoading || egosLoading || announcersLoading ?
             <LoadingContentPageTemplate /> :

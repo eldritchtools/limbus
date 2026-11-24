@@ -190,7 +190,6 @@ export default function BuildsPage({ activeBuilds }) {
                 <br /><br />
                 Each build provides the team&apos;s Identities, E.G.O, deployment order, stats, and other information. Builds may also include a description, images, and a linked video.
             </>}
-            maxAds={2}
         >
             <BuildsSearchComponent createLink={true} searchFunc={triggerSearch} />
         </PageHeader>

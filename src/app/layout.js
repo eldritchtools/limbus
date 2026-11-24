@@ -2,7 +2,6 @@ import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 import ChunkErrorHandler from "./ChunkErrorHandler";
-import NitroSetup from "./components/ads/NitroSetup";
 import { fetchMeta } from "./components/DataFetcherServer";
 import LayoutComponent from "./layoutComponent";
 import { gaId } from "./lib/gaEvents";
@@ -39,7 +38,6 @@ export default async function RootLayout({ children }) {
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="icon" href="/favicon.ico" />
                 <JsonLd data={schema} />
-                <NitroSetup />
             </head>
             <body style={{ display: "flex", flexDirection: "column" }}>
                 {gaId && <GoogleAnalytics gaId={gaId} />}

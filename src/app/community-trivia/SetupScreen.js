@@ -33,7 +33,6 @@ function GameTab({ settings, setSettings, onStart, onReset }) {
                 <br /> <br />
                 If you have questions of your own, you can submit them in the Submit tab above. To keep things organized, please avoid submitting questions through other channels.
             </>}
-            showAd={false}
         ></PageHeader>
 
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>
@@ -142,7 +141,6 @@ function SubmitTab() {
                 <br /> <br />
                 To help avoid duplicates, you can search existing submissions below to see if a similar question has already been submitted.
             </>}
-            showAd={false}
         ></PageHeader>
 
         <Question question={question} setQuestion={setQuestion} editable={true} />
@@ -211,7 +209,6 @@ function ReviewTab() {
             mainDesc={<>
                 You can review and edit your pending questions here. Accepted and rejected questions can no longer be edited.
             </>}
-            showAd={false}
         ></PageHeader>
 
         <select value={selected} onChange={e => { setMessage(""); setSelected(Number(e.target.value)) }}>

@@ -72,7 +72,6 @@ export default function MdPlansPage({ activeMdPlans }) {
                 <br /><br />
                 Plans can be searched and filtered using the available tags to help you find a run that suits what you&apos;re looking for.
             </>}
-            maxAds={1}
         >
             <PlansSearchComponent createLink={true} searchFunc={triggerSearch} />
         </PageHeader>

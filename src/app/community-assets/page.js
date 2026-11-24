@@ -321,7 +321,6 @@ export default function CommunityAssetsPage() {
                 <br /><br />
                 Before uploading, search for existing assets to help avoid duplicates.
             </>}
-            showAd={false}
         />
 
         <div style={{ display: "flex", gap: "1rem" }}>

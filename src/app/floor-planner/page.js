@@ -249,7 +249,6 @@ export default function FloorPlannerPage() {
                 Floor Plans can be exported directly into a full MD Plan, where you can add the team, starting buffs, and other details before saving or sharing the plan.
             </>}
             wide={true}
-            maxAds={1}
         >
             <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
                 <label>
