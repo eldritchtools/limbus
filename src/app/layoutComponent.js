@@ -101,13 +101,13 @@ const paths = [
             { path: "/about", title: "About" },
             { path: "/feedback", title: "Feedback / Contact" },
             { path: "/guide", title: "Manager's Guide" },
+            { path: "/acknowledgements", title: "Acknowledgements" },
             { path: "/archive", title: "Archive" },
             { path: "/update-history", title: "Update History" },
             { path: "/privacy", title: "Privacy Policy" },
             { path: "/terms", title: "Terms of Service" }
         ]
-    },
-    { path: "/support", title: <div style={{ textAlign: "center" }}>♥ Support the Site</div> }
+    }
 ]
 
 const description = <span>

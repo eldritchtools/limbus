@@ -15,6 +15,7 @@ import { getIdleSimTooltipProps } from "./idleSimTooltip";
 import { AgentMenuSelector, GearMenuSelector } from "./selectors";
 import { formatSp, toCurrencyStr } from "./util";
 import KeywordIcon from "../components/icons/KeywordIcon";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 const overlayTextStyle = { color: "#ddd", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000" };
@@ -504,9 +505,19 @@ function ExpeditionSelectScreen({ idleSim, onSelectExpedition, onBack }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
-            {Object.keys(idleSim.data.expeditions)
-                .sort((a, b) => Number(a.split("-")[1]) - Number(b.split("-")[1]))
-                .map(id => <ExpeditionSelectable key={id} idleSim={idleSim} id={id} onSelectExpedition={onSelectExpedition} />)}
+            {Object.entries(idleSim.data.expedition_groups).map(([id, grp]) => <div key={id} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div className={styles.clickableTile} style={{ border: "none", fontSize: "1.2rem", fontWeight: "bold", padding: "0.2rem 0" }}
+                    onClick={() => {
+                        if (idleSim.uiState.expedition_group === id) idleSim.updateUiState({ expedition_group: null });
+                        else idleSim.updateUiState({ expedition_group: id });
+                    }}
+                >
+                    {grp.label} ({grp.list.length})
+                </div>
+                {idleSim.uiState.expedition_group === id &&
+                    grp.list.map(id => <ExpeditionSelectable key={id} idleSim={idleSim} id={id} onSelectExpedition={onSelectExpedition} />)
+                }
+            </div>)}
         </div>
     </div>
 }
