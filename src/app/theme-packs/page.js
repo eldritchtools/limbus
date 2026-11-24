@@ -181,7 +181,7 @@ export default function ThemePacksPage() {
         return Object.entries(themePacksData).reduce((acc, [id, themePack]) => {
             acc[id] = [themePack.name];
             if (themePack.exclusive_gifts)
-                acc[id].push(...themePack.exclusive_gifts.map(x => giftsData[x]?.names[0] ?? "").filter(x => x.length > 0))
+                acc[id].push(...themePack.exclusive_gifts.map(x => [giftsData[x]?.names[0] ?? "", giftsData[x]?.search_desc ?? ""]).flat().filter(x => x.length > 0))
             return acc;
         }, {});
     }, [themePacksData, themePacksLoading, giftsData, giftsLoading]);
@@ -246,7 +246,7 @@ export default function ThemePacksPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                     <span style={{ fontWeight: "bold", textAlign: "end" }}>Search</span>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "start" }}>
-                        <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name..."} />
+                        <input value={searchString} onChange={e => setSearchString(e.target.value)} placeholder={"Search name or description..."} style={{ width: "90%" }} />
                         <label>
                             <input type="checkbox" checked={includeGifts} onChange={e => setIncludeGifts(e.target.checked)} />
                             <span {...getGeneralTooltipProps("This will check the names of the exclusive gifts that can be obtained from the theme pack.")}
