@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import MarkdownEditorWrapper from "../components/markdown/MarkdownEditorWrapper";
@@ -12,7 +11,6 @@ import { socialsData } from "../components/socials/userSocials";
 import { useAuth } from "../database/authProvider";
 import { getSupabase } from "../database/connection";
 import { fetchDiscordAccount, setDiscordNotificationsEnabled, unlinkDiscordAccount } from "../database/discord";
-import { fetchPatreonAccount, setPatreonDisplayPreference, unlinkPatreonAccount } from "../database/patreon";
 import { updateUser, updateUserAvatar } from "../database/users";
 
 export default function EditProfilePage() {
@@ -27,9 +25,7 @@ export default function EditProfilePage() {
     const [profileError, setProfileError] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [message, setMessage] = useState("");
-    const [patreon, setPatreon] = useState(null);
     const [discord, setDiscord] = useState(null);
-    const router = useRouter();
 
     useEffect(() => {
         if (profile) {
@@ -40,17 +36,11 @@ export default function EditProfilePage() {
             setAvatarId(profile.avatar_id);
             setProfileLoading(false);
 
-            const fetchPatreon = async () => {
-                const patreonData = await fetchPatreonAccount(user.id);
-                if (patreonData) setPatreon(patreonData);
-            }
-
             const fetchDiscord = async () => {
                 const discordData = await fetchDiscordAccount(user.id);
                 if (discordData) setDiscord(discordData);
             }
 
-            fetchPatreon();
             fetchDiscord();
         }
     }, [user, profile]);
@@ -114,8 +104,6 @@ export default function EditProfilePage() {
 
         setUpdating(true);
         await updateUser(user.id, flair.trim(), description, socials);
-        if (patreon)
-            setPatreonDisplayPreference(patreon.display_preference);
         if (discord)
             setDiscordNotificationsEnabled(discord.notifications_enabled);
         setUpdating(false);
@@ -149,19 +137,8 @@ export default function EditProfilePage() {
 
     }
 
-    const connectPatreon = async () => {
-        callConnectAPIRoute("patreon");
-    };
-
     const connectDiscord = async () => {
         callConnectAPIRoute("discord");
-    };
-
-    const handleUnlinkPatreonAccount = async () => {
-        if (unlinkPatreonAccount()) {
-            setPatreon(null);
-            return true;
-        }
     };
 
     const handleUnlinkDiscordAccount = async () => {
@@ -224,35 +201,6 @@ export default function EditProfilePage() {
                         <div>
                             <button className="text-link" onClick={() => connectDiscord()}>
                                 Link Discord
-                            </button>
-                        </div>
-                    }
-
-                    <h4 style={headerStyle}>Support</h4>
-                    <span className="sub-text">If you support the site on Patreon, you can link your account to control whether and how your name is shown on the Support page. This is optional. By default, Patreon supporters will be shown on the Support page using their Patreon name. <strong>Warning:</strong> Linking your account will redirect you to Patreon authentication which will discard any unsaved changes on the other fields on this page. Please save any edits you&apos;ve made before then.</span>
-                    {patreon ?
-                        <div>
-                            <div>
-                                Patreon connected as {patreon.patreon_name}
-                            </div>
-                            <span>Display Name: </span>
-                            <select
-                                value={patreon.display_preference}
-                                onChange={e => setPatreon(p => ({ ...p, display_preference: e.target.value }))}
-                            >
-                                <option value="patreon">Patreon name</option>
-                                <option value="username">Account username</option>
-                                <option value="hidden">Hidden</option>
-                            </select>
-                            <div>
-                                <button className="text-link" onClick={handleUnlinkPatreonAccount}>
-                                    Unlink Patreon
-                                </button>
-                            </div>
-                        </div> :
-                        <div>
-                            <button className="text-link" onClick={() => connectPatreon()}>
-                                Link Patreon
                             </button>
                         </div>
                     }
