@@ -1,6 +1,6 @@
-const name = "Support";
-const desc = "Information on supporting Limbus Company Tools and its current supporters.";
-const path = "/support";
+const name = "Acknowledgements";
+const desc = "Information on contributing to Limbus Company Tools.";
+const path = "/acknowledgements";
 
 export const metadata = {
     title: name,
@@ -22,6 +22,6 @@ export const metadata = {
     }
 };
 
-export default function SupportLayout({ children }) {
+export default function AcknowledgementsLayout({ children }) {
     return <>{children}</>
 }
