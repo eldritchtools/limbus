@@ -252,13 +252,7 @@ AS $$
         AND (
             p_tag_ids IS NULL
             OR cardinality(p_tag_ids) = 0
-            OR NOT EXISTS (
-                SELECT 1
-                FROM UNNEST(p_tag_ids) AS requested_tag
-                WHERE NOT (requested_tag = ANY(
-                    COALESCE(tags.tag_ids, '{}'::INTEGER[])
-                ))
-            )
+            OR COALESCE(tags.tag_ids, '{}'::INTEGER[]) && p_tag_ids
         )
 
         AND p_tag_threshold BETWEEN 0 AND 1
