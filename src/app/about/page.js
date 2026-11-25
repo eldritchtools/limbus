@@ -1,7 +1,7 @@
 import NoPrefetchLink from "../components/NoPrefetchLink";
 import { HorizontalDivider } from "../components/objects/Dividers";
 import SocialsDisplay from "../components/socials/SocialsDisplay";
-import { CONTACT_EMAIL, DISCORD_LINK, GITHUB_REPO, KOFI, PATREON, TWITTER, YOUTUBE_CHANNEL } from "../lib/socials";
+import { CONTACT_EMAIL, DISCORD_LINK, GITHUB_REPO, TWITTER, YOUTUBE_CHANNEL } from "../lib/socials";
 
 export default function AboutPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
@@ -23,9 +23,7 @@ export default function AboutPage() {
                         { type: "github", value: GITHUB_REPO },
                         { type: "email", value: CONTACT_EMAIL },
                         { type: "youtube", value: YOUTUBE_CHANNEL },
-                        { type: "twitter", value: TWITTER },
-                        { type: "patreon", value: PATREON },
-                        { type: "ko-fi", value: KOFI }
+                        { type: "twitter", value: TWITTER }
 
                     ]}
                     expandedDefault={true} button={true}
@@ -73,11 +71,6 @@ export default function AboutPage() {
                 Yes. The site is open to collaboration with creators.
                 <br />
                 Send me a message on Discord or use the <NoPrefetchLink href={"/feedback"} className="text-link">Contact</NoPrefetchLink> page.
-            </details>
-
-            <details>
-                <summary>How can I support the site?</summary>
-                Check out the <NoPrefetchLink href={"/support"} className="text-link">Support</NoPrefetchLink> page for more details.
             </details>
         </div>
     </div>;

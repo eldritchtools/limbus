@@ -468,8 +468,8 @@ export const guideData = [
                 ]
             },
             {
-                title: "Support",
-                description: "A page that details ways to support the site and thanks people who support it.",
+                title: "Acknowledgements",
+                description: "A page that details information on contributing to Limbus Company Tools.",
                 details: []
             },
             {
