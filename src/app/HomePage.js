@@ -76,7 +76,7 @@ export default async function HomePage() {
                 <br /> <br />
                 Use the links below to explore the site. The <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink>&nbsp;also provides a more detailed overview of the site&apos;s pages and features.
             </p>
-            <Announcement />
+            {/* <Announcement /> */}
             <LinksMenu />
             <Suspense fallback={null}>
                 <HomepageTimers />
