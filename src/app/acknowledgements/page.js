@@ -24,7 +24,7 @@ function Creator({ creator }) {
     </div>
 }
 
-export default async function SupportPage() {
+export default async function AcknowledgementsPage() {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", containerType: "inline-size" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "start", maxWidth: "1000px", gap: "1rem" }}>
             <h1 style={{ fontSize: "1.75rem", margin: 0, alignSelf: "center" }}>Acknowledgements</h1>

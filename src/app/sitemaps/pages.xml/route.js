@@ -26,7 +26,7 @@ export async function GET() {
         { loc: `${SITE_URL}/floor-planner`, lastmod: today },
         { loc: `${SITE_URL}/about`, lastmod: today },
         { loc: `${SITE_URL}/guide`, lastmod: today },
-        { loc: `${SITE_URL}/support`, lastmod: today },
+        { loc: `${SITE_URL}/acknowledgements`, lastmod: today },
         { loc: `${SITE_URL}/team-draft`, lastmod: today },
         { loc: `${SITE_URL}/artwork-guesser`, lastmod: today },
         { loc: `${SITE_URL}/voiceline-guesser`, lastmod: today },
