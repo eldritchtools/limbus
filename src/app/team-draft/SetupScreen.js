@@ -30,7 +30,6 @@ export default function SetupScreen({ settings, setSettings, wbState, wbOpen, se
                 After all rounds are complete, your team can be exported as a team code for use in Mirror Dungeons, Refraction Railways, Reflectrials, or other content in the game.
             </>}
             wide={true}
-            maxAds={1}
         >
             <div className={styles.setupLayout}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginLeft: "1rem" }}>

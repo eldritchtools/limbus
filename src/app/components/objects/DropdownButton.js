@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 
 import styles from "./DropdownButton.module.css";
 
-export default function DropdownButton({ value, setValue, options, defaultDisplay, left = true, styleOverride = {} }) {
+export default function DropdownButton({ value, setValue, options, defaultDisplay, styleOverride = {} }) {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
     const menuRef = useRef(null);

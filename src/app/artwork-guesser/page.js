@@ -8,7 +8,6 @@ import GuessingScreen from "./GuessingScreen";
 import RevealScreen from "./RevealScreen";
 import { dailySettings, defaultSettings } from "./settings";
 import SetupScreen from "./SetupScreen";
-import NitroAd from "../components/ads/NitroAd";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import PageHeader from "../components/pageTemplates/PageHeader";
@@ -346,7 +345,6 @@ export default function ArtworkGuesserPage() {
     }
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
         {!mode ?
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "0.5rem" }}>
                 <PageHeader
@@ -358,7 +356,6 @@ export default function ArtworkGuesserPage() {
                         <br /> <br />
                         Choose a mode to begin.
                     </>}
-                    showAd={false}
                 >
                     <span className="text-link" style={{ fontSize: "1.2rem" }} onClick={() => handleSetMode("standard")} disabled={identitiesLoading}>Standard</span>
                     <span className="sub-text">Standard mode lets you guess against a specified number of rounds with customizable settings.</span>

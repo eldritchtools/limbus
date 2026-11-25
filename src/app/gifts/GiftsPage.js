@@ -284,7 +284,6 @@ export default function GiftsPage({ initGifts }) {
                 <br /><br />
                 A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run or to help them track their gift compendium.
             </>}
-            maxAds={2}
         >
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>

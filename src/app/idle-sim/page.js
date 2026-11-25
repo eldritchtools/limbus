@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import AgentsTab from "./AgentsTab";
 import ExpeditionTab from "./ExpeditionTab";
@@ -17,7 +17,6 @@ import SettingsTab from "./SettingsTab";
 import SubjectsTab from "./SubjectsTab";
 import useIdleSim from "./useIdleSim";
 import { toCurrencyStr } from "./util";
-import NitroAd from "../components/ads/NitroAd";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 import { uiColors } from "../lib/colors";
 
@@ -39,6 +38,7 @@ function DevPanel({ idleSim }) {
 
 export default function IdleSimPage() {
     const idleSim = useIdleSim();
+    const [saving, setSaving] = useState(false);
 
     const tab = idleSim.uiState.tab;
     const setTab = tab => idleSim.setUiState({ tab });
@@ -51,13 +51,10 @@ export default function IdleSimPage() {
         ];
     }, [idleSim]);
 
-
     if (idleSim.uiState.intro)
         return <IntroScreen idleSim={idleSim} />
 
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
-
         <div style={{ width: "100%", textAlign: "center", fontSize: "1.6rem", fontWeight: "bold", letterSpacing: "1px", padding: "1rem 0" }}>
             L.C. Idle Management Simulator
         </div>
@@ -87,8 +84,9 @@ export default function IdleSimPage() {
                         {idleSim.state.hiring ? "Resume Hiring" : "Hire Agent"}
                     </button>
 
-                    <button onClick={() => idleSim.saveGame()}
+                    <button onClick={async () => { setSaving(true); await idleSim.saveGame(); setSaving(false) }}
                         {...getGeneralTooltipProps("Your game is automatically saved every 5 minutes or whenever a time block is simulated. Use this to manually save any changes you've made. The game will try to autosave changes when leaving this page, but this may not always work.")}
+                        disabled={saving}
                     >
                         Save Game
                     </button>

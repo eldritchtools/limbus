@@ -238,7 +238,6 @@ export default function TrainingCalcPage() {
                 Results may vary slightly due to excess experience when overcapping from training tickets and the randomness of Shard amounts from crate rewards.
             </>}
             wide={true}
-            maxAds={3}
         >
             {!identitiesLoading && !egosLoading &&
                 <div style={{

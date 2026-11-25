@@ -180,9 +180,7 @@ export default function UniversalGiftsPage() {
                 Some gifts require specific theme packs that may prevent you from obtaining other gifts. Use your discretion when planning routes. Gifts from hidden bosses or theme packs and EX gifts are excluded since they cannot be obtained by normal means.
                 <br /> <br />
                 A tracking mode is provided for users to mark gifts they&apos;ve obtained to help them during a run.
-
             </>}
-            maxAds={1}
         >
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem", maxWidth: "350px" }}>

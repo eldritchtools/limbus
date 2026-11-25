@@ -4,7 +4,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import CommentSection from "./CommentSection";
-import NitroAd from "../ads/NitroAd";
 import ContributeButton from "../contentActions/ContributeButton";
 import DeleteButton from "../contentActions/DeleteButton";
 import EditButton from "../contentActions/EditButton";
@@ -130,7 +129,6 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
                     </div>
                 </div>
             </div>
-            <NitroAd id={"content-page-header-ad"} height={90} style={{ width: "100%", maxWidth: "min(50%, 800px)" }} adLevel={"min"} mediaTypes={["desktop"]} />
         </div>
 
         {children}
@@ -168,7 +166,6 @@ export default function ContentPageTemplate({ targetType, targetId, content, tit
 
         {content.is_published ?
             <div id="comments" style={{ width: "clamp(300px, 100%, 1200px)", alignSelf: "center" }}>
-                <NitroAd id={"comment-section-ad"} height={90} style={{ width: "100%" }} adLevel={"avg"} />
                 <CommentSection targetType={targetType} targetId={targetId} ownerId={content.user_id} commentCount={content.comment_count} pinnedComment={content.pinned_comment} />
             </div> :
             <p style={{ color: "var(--secondary-text-color)", fontweight: "bold", textAlign: "center" }}>No comments while not published.</p>

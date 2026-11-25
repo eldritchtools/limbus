@@ -17,12 +17,15 @@ import RecentAdditions from "./RecentAdditions";
 import { HomepageTimers } from "./timers/TimersTable";
 
 
-function PopularityPoll() {
-    return <NoPrefetchLink href="/archive/pop-poll-s7" className="text-link">
+function Announcement() {
+    return <NoPrefetchLink href="https://limbus-company-multiplayer.project-aqua.workers.dev/" className="text-link">
         <div className="panel-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "500px", gap: "0.5rem" }}>
-            {/* <BannerIcon path={"season_7"} style={{ width: "80%" }} /> */}
+            <BannerIcon path={"limbus-draft"} style={{ width: "70%" }} />
             <span>
-                The Season 7 Popularity Poll results have been summarized and moved to the archive. You can access it through the Archive page or by clicking here. This announcement will be removed after a few weeks.
+                A Limbus creator by the name of Aqua recently released a new Limbus PvP game that I thought was worth sharing. Check it out by clicking here if you&apos;re interested.
+            </span>
+            <span className="sub-text" style={{ fontWeight: "normal" }}>
+                This isn&apos;t a sponsored announcement. I was approached about the game, checked it out, and thought it was worth sharing with the community.
             </span>
         </div>
     </NoPrefetchLink>
@@ -72,10 +75,8 @@ export default async function HomePage() {
                 The community features let you share team builds and Mirror Dungeon plans, rate and review Identities and E.G.O, discover creators, and showcase your in-game collection. Visit the <NoPrefetchLink className="text-link" href={"/edit-profile"}>Edit Profile</NoPrefetchLink> or <NoPrefetchLink className="text-link" href={"/site-customization"}>Site Customization</NoPrefetchLink> pages to personalize your profile or site experience.
                 <br /> <br />
                 Use the links below to explore the site. The <NoPrefetchLink className="text-link" href={"/guide"}>Manager&apos;s Guide</NoPrefetchLink>&nbsp;also provides a more detailed overview of the site&apos;s pages and features.
-                <br /> <br />
-                If you enjoy using Limbus Company Tools and would like to help with its continued development and maintenance, consider <NoPrefetchLink className="text-link" href={"/support"}>supporting the project</NoPrefetchLink>!
             </p>
-            <PopularityPoll />
+            <Announcement />
             <LinksMenu />
             <Suspense fallback={null}>
                 <HomepageTimers />

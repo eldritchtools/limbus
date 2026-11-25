@@ -148,7 +148,10 @@ function EgoList({
             Object.values(egos),
             combinedFilters,
             ego => {
-                if (companyFilter && company && !company.has(ego.id)) return false;
+                if (companyFilter && company) {
+                    if (companyFilter === "include" && !company.has(ego.id)) return false;
+                    if (companyFilter === "exclude" && company.has(ego.id)) return false;
+                }
                 return searchString.length === 0 || checkFilterMatch(searchString, buildSearchStrings(ego, altNamesLoading ? null : altNames));
             },
             strictFiltering
@@ -302,6 +305,11 @@ export default function EgosPage({ initEgos, compare }) {
         ]
     }, [egos, egosLoading, statuses, statusesLoading]);
 
+    const handleSetCompanyFilter = setting => {
+        if (setting === companyFilter) setCompanyFilter(false);
+        else setCompanyFilter(setting);
+    }
+
     return <>
         <PageHeader
             title={"E.G.Os"}
@@ -314,7 +322,6 @@ export default function EgosPage({ initEgos, compare }) {
                 <strong>Advanced Compare Mode</strong> turns the catalogue into a more powerful search and analysis tool. E.G.O can be filtered and sorted by their costs and resistances. Skills and passives can also be searched and filtered based on properties like power, coin count, damage type, and text from their descriptions. This makes it possible to find E.G.O based on specific characteristics rather than only by name or the existing filters.
             </>}
             wide={true}
-            maxAds={2}
         >
             <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
@@ -355,11 +362,13 @@ export default function EgosPage({ initEgos, compare }) {
                         isMulti={true}
                         excludeMode={seasonsExcluding}
                     />
-                    <span style={{ textAlign: "end" }}>Display Type:</span>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "end" }}>
+                        <span className="hover-text" {...getGeneralTooltipProps("Additional details like skills and passives can be viewed on the Cards and Full Details display types by turning on Advanced Compare Mode and changing the compare target.")}>Display Type:</span>
+                    </div>
                     <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                         <label>
                             <input type="radio" name="displayType" value={"icon"} checked={displayType === "icon"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                            Icons Only
+                            Icons
                         </label>
                         <label>
                             <input type="radio" name="displayType" value={"card"} checked={displayType === "card"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
@@ -367,7 +376,7 @@ export default function EgosPage({ initEgos, compare }) {
                         </label>
                         <label>
                             <input type="radio" name="displayType" value={"full"} checked={displayType === "full"} onChange={e => setDisplayType(e.target.value)} disabled={compareMode === "basic"} />
-                            Full Details
+                            Table
                         </label>
                     </div>
                     <div />
@@ -386,11 +395,12 @@ export default function EgosPage({ initEgos, compare }) {
                         </label>
                     </div>
                     <div />
-                    <div>
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                            <input type="checkbox" checked={companyFilter} onChange={e => setCompanyFilter(e.target.checked)} />
-                            Apply Company Filter
-                        </label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
+                        <button style={{ background: companyFilter === "include" ? "var(--bg-hover)" : null, padding: "0 2px", }}
+                            onClick={() => handleSetCompanyFilter("include")} {...getGeneralTooltipProps("Include")}>✓</button>
+                        <button style={{ background: companyFilter === "exclude" ? "var(--bg-hover)" : null, padding: "0 2px" }}
+                            onClick={() => handleSetCompanyFilter("exclude")} {...getGeneralTooltipProps("Exclude")}>−</button>
+                        Company Filter
                     </div>
                     <div />
                     <div>

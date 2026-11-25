@@ -193,6 +193,7 @@ Launching an expedition costs a **Base Fee** plus a **Per Agent Fee**.
 * HP carries over between waves. Deployed agents do not rest or heal between waves.
 * Damage is split evenly among opposing targets. All agents split their combined damage across all enemies, and all enemies split their damage across all agents.
 * Agent damage is scaled by SP by up to $\\pm 25\\%$ (at $+45$ and $-45$ SP). Enemy damage is not scaled by SP.
+* Certain enemies may cause SP damage. Agents that panic are removed for the remainder of the expedition. The 12 tick recovery period begins after the expedition is complete.
 
 #### Resolution & Events
 * **Clear:** Defeating all waves completes the expedition. Successful clears award XP to all participating agents, random item drops, and first clear bonuses.

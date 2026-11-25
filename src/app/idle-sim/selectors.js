@@ -232,6 +232,11 @@ export function AgentSpriteSelector({ idleSim, value, setValue }) {
         if (loading) return [];
         const options = [];
 
+        Object.entries(spriteUnlock.identity).forEach(([exp, ids]) => {
+            if (exp === "default" || idleSim.state.cleared_expeditions.includes(exp))
+                ids.forEach(id => options.push({ id: `I-${id}` }))
+        });
+
         Object.entries(spriteUnlock.enemy).forEach(([exp, ids]) => {
             if (exp === "default" || idleSim.state.cleared_expeditions.includes(exp))
                 ids.forEach(id => options.push({ id: `E-${id}` }))

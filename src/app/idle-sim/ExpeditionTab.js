@@ -15,6 +15,7 @@ import { getIdleSimTooltipProps } from "./idleSimTooltip";
 import { AgentMenuSelector, GearMenuSelector } from "./selectors";
 import { formatSp, toCurrencyStr } from "./util";
 import KeywordIcon from "../components/icons/KeywordIcon";
+import { HorizontalDivider } from "../components/objects/Dividers";
 import { getGeneralTooltipProps } from "../components/tooltips/GeneralTooltip";
 
 const overlayTextStyle = { color: "#ddd", textShadow: "0 0 4px #000, 0 0 12px #000, 2px 2px 4px #000, -2px -2px 4px #000" };
@@ -444,6 +445,58 @@ function ExpeditionPrepScreen({ idleSim, expeditionId, onBack }) {
     </div>
 }
 
+function ExpeditionSelectable({ idleSim, id, onSelectExpedition }) {
+    const unlocked = checkExpeditionUnlocked(idleSim.data, idleSim.state, id);
+    if (!unlocked) {
+        return <div key={id} className={styles.tile} style={{ flexDirection: "row", opacity: 0.6 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>???</span>
+                <span>
+                    {expeditionRequirementsText(idleSim.data, idleSim.state, id).join(" · ")}
+                </span>
+            </div>
+        </div>
+    }
+
+    const data = idleSim.data.expeditions[id];
+    return <div key={id} className={styles.clickableTile}
+        style={{ flexDirection: "row", gap: "0.75rem", width: "100%", boxSizing: "border-box" }}
+        onClick={() => onSelectExpedition(id)}
+    >
+        <img
+            src={`${ASSETS_ROOT}/backgrounds/${getSrc(data, -1)}.webp`} alt=""
+            style={{ width: "160px", height: "100px", objectFit: "cover", borderRadius: "0.3rem" }}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", flex: 1 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{data.name}</span>
+                <span style={{ fontWeight: "bold" }}>{toCurrencyStr(`${data.base_cost} + ${data.agent_cost}/Agent`)}</span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%", textAlign: "center" }}>
+                <span>Recommended Level: <strong>{data.rec_level}</strong></span>
+                <span>Recommended Min Agents: <strong>{data.rec_agents}</strong></span>
+                <span>Waves: <strong>{data.waves.length}</strong></span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center", justifyItems: "center", textAlign: "center" }}>
+                <span>Recommended Offense:</span>
+                <span>Recommended Defense:</span>
+                <div style={{ display: "flex", width: "auto" }}><KwList list={data.rec_offense} /></div>
+                <div style={{ display: "flex", width: "auto" }}><KwList list={data.rec_defense} /></div>
+            </div>
+
+            {
+                data.isChallenge &&
+                <span style={{ color: uiColors.red, fontSize: "0.8rem" }}>
+                    Caution: This expedition is challenge content. Ensure your agents are ready before dispatching them.
+                </span>
+            }
+        </div>
+    </div>
+
+}
+
 function ExpeditionSelectScreen({ idleSim, onSelectExpedition, onBack }) {
     return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "850px", gap: "0.75rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
@@ -452,51 +505,19 @@ function ExpeditionSelectScreen({ idleSim, onSelectExpedition, onBack }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
-            {Object.keys(idleSim.data.expeditions)
-                .sort((a, b) => Number(a.split("-")[1]) - Number(b.split("-")[1]))
-                .map(id => {
-                    const unlocked = checkExpeditionUnlocked(idleSim.data, idleSim.state, id);
-                    if (!unlocked) {
-                        return <div key={id} className={styles.tile} style={{ flexDirection: "row", opacity: 0.6 }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>???</span>
-                                <span>
-                                    {expeditionRequirementsText(idleSim.data, idleSim.state, id).join(" · ")}
-                                </span>
-                            </div>
-                        </div>
-                    }
-
-                    const data = idleSim.data.expeditions[id];
-                    return <div key={id} className={styles.clickableTile}
-                        style={{ flexDirection: "row", gap: "0.75rem", width: "100%", boxSizing: "border-box" }}
-                        onClick={() => onSelectExpedition(id)}
-                    >
-                        <img
-                            src={`${ASSETS_ROOT}/backgrounds/${getSrc(data, -1)}.webp`} alt=""
-                            style={{ width: "160px", height: "100px", objectFit: "cover", borderRadius: "0.3rem" }}
-                        />
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", flex: 1 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{data.name}</span>
-                                <span style={{ fontWeight: "bold" }}>{toCurrencyStr(`${data.base_cost} + ${data.agent_cost}/Agent`)}</span>
-                            </div>
-
-                            <div style={{ display: "flex", justifyContent: "space-between", width: "100%", textAlign: "center" }}>
-                                <span>Recommended Level: <strong>{data.rec_level}</strong></span>
-                                <span>Recommended Min Agents: <strong>{data.rec_agents}</strong></span>
-                                <span>Waves: <strong>{data.waves.length}</strong></span>
-                            </div>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center", justifyItems: "center", textAlign: "center" }}>
-                                <span>Recommended Offense:</span>
-                                <span>Recommended Defense:</span>
-                                <div style={{ display: "flex", width: "auto" }}><KwList list={data.rec_offense} /></div>
-                                <div style={{ display: "flex", width: "auto" }}><KwList list={data.rec_defense} /></div>
-                            </div>
-                        </div>
-                    </div>
-                })}
+            {Object.entries(idleSim.data.expedition_groups).map(([id, grp]) => <div key={id} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div className={styles.clickableTile} style={{ border: "none", fontSize: "1.2rem", fontWeight: "bold", padding: "0.2rem 0" }}
+                    onClick={() => {
+                        if (idleSim.uiState.expedition_group === id) idleSim.updateUiState({ expedition_group: null });
+                        else idleSim.updateUiState({ expedition_group: id });
+                    }}
+                >
+                    {grp.label} ({grp.list.length})
+                </div>
+                {idleSim.uiState.expedition_group === id &&
+                    grp.list.map(id => <ExpeditionSelectable key={id} idleSim={idleSim} id={id} onSelectExpedition={onSelectExpedition} />)
+                }
+            </div>)}
         </div>
     </div>
 }

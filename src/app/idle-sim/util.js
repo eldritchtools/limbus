@@ -83,6 +83,20 @@ export function findAgentExpedition(state, agentId) {
     return null;
 }
 
+export function evaluateTarget(options, targeting) {
+    if (options.length === 0) return [];
+
+    if (targeting === "all") return options;
+    if (targeting === "random") return [options[Math.floor(Math.random() * options.length)]];
+    if (targeting === "highest_hp") {
+        const target = Math.max(...options.map(x => x.hp)) - 1e-7;
+        const optionsFiltered = options.filter(x => x.hp >= target);
+        return [optionsFiltered[Math.floor(Math.random() * optionsFiltered.length)]];
+    }
+
+    return [];
+}
+
 export function createInitialState(serverTick) {
     return {
         game_tick: 0,
@@ -120,7 +134,7 @@ export function createInitialDevState(data, serverTick) {
     return {
         game_tick: 0,
         latest_simulated_tick: serverTick,
-        currency: 10_000_000,
+        currency: 1_000_000_000,
         inventory: {
             weapons: Object.fromEntries(Object.entries(data.weapons).map(([id, weapon]) => [id, weapon.max_copies ?? 5])),
             armor: Object.fromEntries(Object.entries(data.armor).map(([id, armor]) => [id, armor.max_copies ?? 5])),
@@ -133,13 +147,13 @@ export function createInitialDevState(data, serverTick) {
             1: {
                 id: 1,
                 name: "Default",
-                level: MAX_AGENT_LEVEL,
+                level: 100,
                 xp: 0,
                 unspent_points: 0,
-                max_hp: START_HP + (MAX_AGENT_LEVEL - 1) * HP_PER_LEVEL,
-                work_efficiency: START_WE + (MAX_AGENT_LEVEL - 1) * WE_PER_LEVEL,
+                max_hp: START_HP + (100 - 1) * HP_PER_LEVEL,
+                work_efficiency: START_WE + (100 - 1) * WE_PER_LEVEL,
                 offense: new Array(7).fill(100),
-                hp: START_HP + (MAX_AGENT_LEVEL - 1) * HP_PER_LEVEL,
+                hp: START_HP + (100 - 1) * HP_PER_LEVEL,
                 sp: MAX_SP,
                 statuses: [],
                 weapon: null,

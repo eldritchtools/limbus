@@ -22,6 +22,11 @@ export default function useIdleSim() {
         if (rawDataLoading) return [null, true];
         const data = { ...rawData };
 
+        data.enemies = Object.fromEntries(Object.entries(data.enemies).map(([id, enemy]) => {
+            if (enemy.base) return [id, { ...data.enemy_bases[enemy.base], ...enemy }];
+            return [id, enemy];
+        }))
+
         const defaultSubject = { max_agents: 1, reward_mult: 1, max_level: 5, effects: [] };
         data.subjects = Object.fromEntries(Object.entries(data.subjects).map(([id, subject]) => [id, { ...defaultSubject, id, ...subject }]));
 

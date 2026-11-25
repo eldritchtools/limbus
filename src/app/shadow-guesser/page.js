@@ -8,7 +8,6 @@ import GuessingScreen from "./GuessingScreen";
 import RevealScreen from "./RevealScreen";
 import SetupScreen from "./SetupScreen";
 import { answerToText, categories, checkAnswer, constructLabel, defaultSettings } from "./util";
-import NitroAd from "../components/ads/NitroAd";
 import { useData } from "../components/DataProvider";
 import { LoadingContentPageTemplate } from "../components/pageTemplates/ContentPageTemplate";
 import { useGuesser } from "../components/quiz/useGuesser";
@@ -114,8 +113,6 @@ export default function ShadowGuesserPage() {
     if (shadowDataLoading) return <LoadingContentPageTemplate />
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", width: "100%", containerType: "inline-size" }}>
-        <NitroAd id={"minigame-top-ad"} height={90} adLevel={"min"} style={{ width: "100%" }} />
-
         {guesser.phase === "setup" ?
             <SetupWrapper settings={settings} setSettings={setSettings} guesser={guesser} shadowData={shadowData} /> :
             <Guesser settings={settings} guesser={guesser} shadowData={shadowData} />

@@ -63,7 +63,7 @@ export const homepageLinks = [
         category: "Others",
         links: [
             { href: "/about", title: "About", icon: "KnowledgeExplored" },
-            { href: "/support", title: "Support", icon: "MagicalGirlAppear" },
+            { href: "/acknowledgements", title: "Acknowledgements", icon: "MagicalGirlAppear" },
             { href: "/feedback", title: "Feedback / Contact", icon: "TestWaitDocentRodion" }
         ]
     }

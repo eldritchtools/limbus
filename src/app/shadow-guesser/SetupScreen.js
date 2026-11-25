@@ -18,7 +18,6 @@ export default function SetupScreen({ settings, setSettings, shadowData, onStart
                 <br /> <br />
                 Unlike the other guessers, Daily and Multiplayer mode are unavailable. More features will be added over time.
             </>}
-            showAd={false}
         ></PageHeader>
 
         <span style={{ maxWidth: "1000px", textAlign: "center" }}>

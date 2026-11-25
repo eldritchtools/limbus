@@ -71,7 +71,6 @@ export default function CollectionsPage() {
                 <br /><br />
                 Collection owners can also allow other users to submit their own builds and MD plans for consideration. The owner can review each submission and choose whether to add it to the collection.
             </>}
-            maxAds={1}
         >
             <CollectionsSearchComponent createLink={true} searchFunc={triggerSearch} />
         </PageHeader>

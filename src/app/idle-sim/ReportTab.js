@@ -63,7 +63,7 @@ function Timeline({ idleSim, summary, scrollKey }) {
             {Object.keys(summary.subjects).map(id => <EnemySprite key={`${id}-s`} width={48} height={48} src={idleSim.data.subjects[id].src} />)}
             {Object.keys(summary.subjects).map(id => <span key={`${id}-n`}>{idleSim.data.subjects[id].name}</span>)}
             {Object.keys(summary.subjects).map(id => <ResultBar key={`${id}-r`} counts={summary.subjects[id]} keys={["good", "avg", "bad"]} height={CELL_HEIGHT / 2} />)}
-            {Object.keys(summary.subjects).map(id => <span key={`${id}-m`} style={{ fontSize: "0.8rem" }}>XP/h: {formatNumber(((summary.subjects[id].good ?? 0) * 2 + (summary.subjects[id].avg ?? 0)) / summary.ticks)}</span>)}
+            {Object.keys(summary.subjects).map(id => <span key={`${id}-m`} style={{ fontSize: "0.8rem" }}>R.XP/h: {formatNumber(((summary.subjects[id].good ?? 0) * 2 + (summary.subjects[id].avg ?? 0)) / summary.ticks)}</span>)}
             {Object.keys(summary.subjects).map(id => <span key={`${id}-m`} style={{ fontSize: "0.8rem" }}>Ahn/h: {formatNumber(summary.subjects[id].currency / summary.ticks)}</span>)}
         </div>
         <div ref={ref} style={{ overflowX: "auto", maxWidth: "100%" }}>

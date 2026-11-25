@@ -350,11 +350,11 @@ function AgentsScreen({ idleSim }) {
                         const panicStatus = agent.statuses.find(x => x.type === "panic");
                         let statusTag = null;
                         if (isIncap) {
-                            const hours = incapStatus ? Math.max(0, incapStatus.until - idleSim.state.game_tick) : 0;
+                            const hours = incapStatus ? Math.max(0, incapStatus.until - idleSim.state.game_tick) : "?";
                             statusTag = <span style={{ fontSize: "0.9rem", fontWeight: "bold" }}>Incapacitated ({hours}h)</span>;
                         } else if (isPanic) {
-                            const hours = panicStatus ? Math.max(0, panicStatus.until - idleSim.state.game_tick) : 0;
-                            const label = panicStatus.id === "corrosion" ? "Corroded" : "Panicked";
+                            const hours = panicStatus ? Math.max(0, panicStatus.until - idleSim.state.game_tick) : "?";
+                            const label = panicStatus?.id === "corrosion" ? "Corroded" : "Panicked";
                             statusTag = <span style={{ fontSize: "0.9rem", fontWeight: "bold" }}>{label} ({hours}h)</span>;
                         }
 

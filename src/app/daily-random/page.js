@@ -151,7 +151,6 @@ export default function DailyRandomizedPage() {
                 Updates daily at 6AM KST ({kstToLocalTime("6AM")} local) (same schedule as the in-game reset).
             </>}
             wide={true}
-            maxAds={3}
         >
             {identitiesLoading ?
                 <LoadingContentPageTemplate /> :

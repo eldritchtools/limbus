@@ -16,7 +16,7 @@ function IdleSimTooltipContent({ idleSim, type, id }) {
         const statuses = agent.statuses.map((x, i) => {
             const st = idleSim.data.statuses[x.id];
             if (!st) return null;
-            return `${st.name} (${x.value})`
+            return `${st.name}${x.value ? ` (${x.value})` : ""}${x.until ? ` (${x.until - idleSim.state.game_tick + 1} turns)` : ""}`
         }).filter(Boolean);
 
         return <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", padding: "0.5rem", maxWidth: "400px" }}>
