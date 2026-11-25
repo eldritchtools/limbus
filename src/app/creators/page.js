@@ -49,7 +49,7 @@ export default function CreatorsPage() {
             subDesc={<>
                 This is a directory of known creators who make content related to Project Moon games. For the purposes of this directory, Project Moon content means content where a Project Moon game is a primary focus. A passing mention or a brief look at a game does not qualify. Any creator who makes Project Moon content is eligible to be included. Search results are randomized by default to give creators a fair chance of being seen rather than favoring any particular creator.
                 <br /><br />
-                Being listed in this directory is <strong>not an endorsement or ranking</strong> by the site. This directory does not make any judgment about a creator&apos;s popularity, reputation, or standing within the community. The only creators specifically endorsed by the site are those listed on the <NoPrefetchLink className="text-link" href={"/support"}>Support page</NoPrefetchLink>.
+                Being listed in this directory is <strong>not an endorsement or ranking</strong> by the site. This directory does not make any judgment about a creator&apos;s popularity, reputation, or standing within the community. The only creators specifically endorsed by the site are those listed on the <NoPrefetchLink className="text-link" href={"/acknowledgements"}>Acknowledgements page</NoPrefetchLink>.
                 <br /><br />
                 Creator tags are based on submissions from users and are intended to describe the types of content a creator makes. If you think a creator&apos;s tags are inaccurate or incomplete, you can submit your own set of tags using the + button on their creator card (login required).
                 <br /><br />
