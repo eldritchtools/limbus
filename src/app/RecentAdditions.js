@@ -44,11 +44,11 @@ export default function RecentAdditions() {
         <div>
             <ul style={{ lineHeight: "1.3", marginTop: "0.5rem" }}>
                 {open ? <>
+                    <li>Added the {wrapLink("Schema Data", "/schema-data")} page which lets you see identity costs and the contents of packs in Schemacraft.</li>
                     <li>Added the {wrapLink("Lunacy Calculator", "/lunacy-calc")} tool which lets you compute your projected Lunacy by a certain date.</li>
                     <li>{wrapLink("LC Idle Management Sim", "/idle-sim")} has been added to the site. Check it out if you&apos;re interested!</li>
                     <li>{wrapLink("Clash Arena", "/clash-arena")} has had a minor balance patch changing the way identities gain bonus skill uses.</li>
                     <li>A site-wide search function have been added. You can find it beside the title of the site on the header.</li>
-                    <li>Added the {wrapLink("Community Trivia Quiz", "/community-trivia")} minigame. There aren&apos;t many questions to start with, but hopefully the dataset will grow over time. If you&apos;d like to contribue, you can submit your own questions for others to answer! (Login required to submit questions)</li>
                 </> : null}
             </ul>
         </div>

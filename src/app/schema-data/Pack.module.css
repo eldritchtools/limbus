@@ -1,0 +1,14 @@
+.pack {
+    border: 1px solid var(--primary-border-color);
+    border-radius: 0.5rem;
+    padding: 0.2rem;
+    box-sizing: border-box;
+    transition: 0.2s all ease;
+    width: 100%;
+    text-align: center;
+}
+
+.pack:hover {
+    background: var(--bg-hover);
+    cursor: pointer;
+}

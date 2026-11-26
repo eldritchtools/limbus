@@ -188,6 +188,13 @@ export const guideData = [
                 ],
             },
             {
+                title: "Schema Data",
+                description: "Browse data relevant to Limbus Company Schemacraft like costs and packs.",
+                details: [
+                    "Browse the costs of the different identities in Schemacraft or what identities and E.G.O are inside certain packs."
+                ],
+            },
+            {
                 title: "Release History",
                 description: "View the different identities and E.G.Os by release order.",
                 details: [
