@@ -4,6 +4,7 @@ const tagMap = {
     style: ({ value, children, key }) => <span key={key}>{children}</span>,
     color: ({ value, children, key }) => <span key={key} style={{ color: value }}>{children}</span>,
     mark: ({ value, children, key }) => <span key={key} style={{ backgroundColor: value }}>{children}</span>,
+    size: ({ value, children, key }) => <span key={key} style={{ fontSize: `${Number(value.replace("%", "")) / 100}rem` }}>{children}</span>,
     b: ({ children, key }) => <span key={key} style={{ fontWeight: "bold" }}>{children}</span>,
     i: ({ children, key }) => <span key={key} style={{ fontStyle: "italic" }}>{children}</span>,
     u: ({ children, key }) => <span key={key} style={{ textDecoration: "underline" }}>{children}</span>,

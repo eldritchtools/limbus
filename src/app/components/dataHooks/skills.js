@@ -44,8 +44,7 @@ function compileEgoPassives(skillData, threadspin) {
 }
 
 function compileEgoSynergies(skillData, threadspin) {
-    if (threadspin < 4) return [];
-    return skillData.synergyList ?? [];
+    return (skillData.synergyList ?? []).filter(s => s.uptie <= threadspin);
 }
 
 export function useSkillData(type, ids, tiers) {
