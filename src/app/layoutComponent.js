@@ -52,6 +52,7 @@ const paths = [
             { path: "/encounters", title: "Encounters" },
             { path: "/timers", title: "Timers and Roadmap" },
             { path: "/gms-explorer", title: "GMS Explorer" },
+            { path: "/schema-data", title: "Schema Data" },
             { path: "/release-history", title: "Release History" }
         ]
     },
@@ -124,7 +125,7 @@ const description = <span>
 //     return null;
 // }
 
-const ANNOUNCEMENT_NUMBER = 8;
+const ANNOUNCEMENT_NUMBER = 9;
 
 function Announcement() {
     const [hidden, setHidden, init] = useLocalState("latestHiddenAnnouncement", 0);
@@ -139,9 +140,7 @@ function Announcement() {
             <div style={{ padding: "8px 16px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--primary-text-color)" }}>
                     <span style={{ lineHeight: "1.3" }}>
-                        Hi! I&apos;ve just launched a new minigame on the site: <NoPrefetchLink className="text-link" href={"/idle-sim"}>LC Idle Management Sim</NoPrefetchLink>. It&apos;s basically a mix of Lob Corp facility management and Limbus team building, but built as an idle game that you just check in on from time to time. Just an idea I thought would be fun to make. I&apos;ll continue adding content to it if people like it.
-                        <br /><br />
-                        As usual, feel free to submit suggestions through the Discord or the <NoPrefetchLink className="text-link" href={"/feedback"}>Feedback</NoPrefetchLink> page if you decide to check it out. Thanks!
+                        I added the <NoPrefetchLink className="text-link" href={"/schema-data"}>Schema Data</NoPrefetchLink> page in case anyone needs information on costs and packs.
                     </span>
                 </div>
 

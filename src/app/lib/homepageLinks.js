@@ -12,7 +12,7 @@ export const homepageLinks = [
             { href: "/collections", title: "Collections", newHref: "/collections/new", icon: "WrappedCurseTag" },
             { href: "/rankings", title: "Community Rankings", icon: "EgoAwakenDongrangRadiantDesire" },
             { href: "/community-assets", title: "Community Assets", icon: "GotACompliment" },
-            { href: "/creators", title: "Creator Directory", icon: "Inspire"}
+            { href: "/creators", title: "Creator Directory", icon: "Inspire" }
         ]
     },
     {
@@ -22,7 +22,8 @@ export const homepageLinks = [
             { href: "/egos", title: "E.G.Os", icon: "ActivatedEgoPassive" },
             { href: "/encounters", title: "Encounters", icon: "HugeIrritationAlly" },
             { href: "/timers", title: "Timers and Roadmap", icon: "TickTockTickTock" },
-            { href: "/gms-explorer", title: "GMS Explorer", icon: "SisyphusDiamond"}
+            { href: "/gms-explorer", title: "GMS Explorer", icon: "SisyphusDiamond" },
+            { href: "/schema-data", title: "Schema Data", icon: "BulletWoundHole" }
         ]
     },
     {
@@ -45,7 +46,7 @@ export const homepageLinks = [
             { href: "/floor-planner", title: "Floor Planner", icon: "IndexPrescriptFaust_0" },
             { href: "/extraction-simulator", title: "Extraction Simulator", icon: "GiftGlass" },
             { href: "/team-draft", title: "Team Draft", icon: "HanafudaThree" },
-            { href: "/lunacy-calc", title: "Lunacy Calculator", oIcon: "lunacy"}
+            { href: "/lunacy-calc", title: "Lunacy Calculator", oIcon: "lunacy" }
         ]
     },
     {

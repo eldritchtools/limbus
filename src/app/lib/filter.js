@@ -88,6 +88,12 @@ const facadeFilterMatchFunctions = {
     "sinner": (filter, item) => filter === item.sinnerId,
 };
 
+const schemaFilterMatchFunctions = {
+    "status": (filter, item) => (item.keywords || []).includes(filter),
+    "sinner": (filter, item) => filter === item.sinnerId,
+    "tag": (filter, item) => (item.tags || []).includes(filter),
+}
+
 export function filterByFilters(type, items, filters, additionalFilter, strictFiltering = false) {
     const [f, fe] = filters.reduce(([f, fe], filter) => {
         let exc, realFilter, category;
@@ -152,6 +158,9 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
             } else if (type === "facade") {
                 if (!(filterType in facadeFilterMatchFunctions)) continue;
                 if (!f[filterType].some(x => facadeFilterMatchFunctions[filterType](x, item))) return false;
+            } else if (type === "schema") {
+                if (!(filterType in schemaFilterMatchFunctions)) continue;
+                if (!f[filterType].some(x => schemaFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
 
@@ -169,6 +178,8 @@ export function filterByFilters(type, items, filters, additionalFilter, strictFi
 
             } else if (type === "facade") {
                 if (fe[filterType].some(x => facadeFilterMatchFunctions[filterType](x, item))) return false;
+            } else if (type === "schema") {
+                if (fe[filterType].some(x => schemaFilterMatchFunctions[filterType](x, item))) return false;
             }
         }
         return true;

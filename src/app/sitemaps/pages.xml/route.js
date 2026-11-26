@@ -36,7 +36,8 @@ export async function GET() {
         { loc: `${SITE_URL}/shadow-guesser`, lastmod: today },
         { loc: `${SITE_URL}/community-trivia`, lastmod: today },
         { loc: `${SITE_URL}/idle-sim`, lastmod: today },
-        { loc: `${SITE_URL}/lunacy-calc`, lastmod: today }
+        { loc: `${SITE_URL}/lunacy-calc`, lastmod: today },
+        { loc: `${SITE_URL}/schema-data`, lastmod: today },
     ];
 
     return new Response(buildUrlSet(urls), {
