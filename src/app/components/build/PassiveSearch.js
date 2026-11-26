@@ -97,7 +97,7 @@ export default function PassiveSearch({ setIdentityId, setEgoId }) {
                             {
                                 (passives.ego_s[id] ?? []).map((passive, i) =>
                                     <div key={i} style={{ display: "flex", alignItems: "center" }}>
-                                        <TierIcon tier={4} />
+                                        <TierIcon tier={passive.uptie} />
                                         <PassiveCard passive={passive} noBorder={true} />
                                     </div>
                                 )

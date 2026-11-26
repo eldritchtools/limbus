@@ -1,3 +1,5 @@
+import ProcessedText from "../texts/ProcessedText";
+
 import { affinityColorMapping, affinityColorMappingAlt } from "@/app/lib/colors";
 
 export default function NamePill({ name, affinity = "none" }) {
@@ -25,8 +27,8 @@ export default function NamePill({ name, affinity = "none" }) {
             }}
         />
 
-        <span style={{position: "relative", zIndex: 1, marginRight: "2.5rem"}}>
-            {name}
+        <span style={{ position: "relative", zIndex: 1, marginRight: "2.5rem" }}>
+            <ProcessedText text={name} />
         </span>
     </div>
 }
